@@ -26,7 +26,11 @@
 # WARRANTIES OF ANY KIND, EITHER IMPLIED OR EXPRESSED, INCLUDING, BUT
 # NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
 import dolfin
-import dolfin_adjoint
+
+try:
+    from dolfin_adjoint import Constant
+except ImportError:
+    from dolfin import Constant
 
 from .. import kinematics
 from ..dolfin_utils import RegionalParameter
@@ -51,7 +55,7 @@ class ActiveModel(kinematics.Invariants):
         self.s0 = s0
         self.n0 = n0
 
-        self._activation = dolfin_adjoint.Constant(0, name="activation") \
+        self._activation = Constant(0, name="activation") \
             if activation is None else activation
 
         self.T_ref = dolfin.Constant(T_ref) \
@@ -98,54 +102,3 @@ class ActiveModel(kinematics.Invariants):
         return self._activation
 
 
-if __name__ == "__main__":
-
-    from patient_data import LVTestPatient
-    patient = LVTestPatient()
-
-    from pulse_adjoint.setup_parameters import setup_general_parameters
-    setup_general_parameters()
-
-    V = dolfin.VectorFunctionSpace(patient.mesh, "CG", 2)
-    u0 = dolfin.Function(V)
-    # u1 = df.Function(V, "../tests/data/inflate_mesh_simple_1.xml")
-
-    I = dolfin.Identity(3)
-    F0 = dolfin.grad(u0) + I
-    # F1 = df.grad(u1) + I
-
-    f0 = patient.fiber
-    s0 = None  # patient.sheet
-    n0 = None  # patient.sheet_normal
-    T_ref = None
-    activation = None  # dolfin_adjoint.Constant(0.0)
-    dev_iso_split = False
-
-    active_args = (activation, f0, s0, n0,
-                   T_ref, dev_iso_split)
-
-    for Active in [ActiveStrain, ActiveStress]:
-
-        active = Active(*active_args)
-
-        print active.type()
-
-        active.Fa()
-        active.Fa()
-
-        active.Fe(F0)
-        # active.Fe(F1)
-
-        active.I1(F0)
-        # active.I1(F1)
-
-        active.I4(F0, "fiber")
-        # active.I4(F1, "fiber")
-
-        active.Wactive(F0)
-        # active.Wactive(F1)
-
-        active.get_gamma()
-        active.get_activation()
-
-        active.is_isochoric()

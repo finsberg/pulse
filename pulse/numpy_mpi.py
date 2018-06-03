@@ -12,7 +12,8 @@
 # fee, and without a written agreement is hereby granted, provided
 # that the above copyright notice, and this license agreement in its
 # entirety appear in all copies. Those desiring to use this software
-# for commercial purposes should contact Simula Research Laboratory AS: post@simula.no
+# for commercial purposes should contact Simula Research Laboratory AS:
+# post@simula.no
 #
 # IN NO EVENT SHALL SIMULA RESEARCH LABORATORY BE LIABLE TO ANY PARTY
 # FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES,
@@ -157,4 +158,4 @@ def assign_to_vector(v, a):
     
 def mpi_print(mess):
     if mpi_comm_world().rank == 0:
-        print mess
+        print(mess)

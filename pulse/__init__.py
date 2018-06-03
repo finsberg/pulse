@@ -1,5 +1,7 @@
-# from .parameters import setup_adjoint_contraction_parameters
-# parameters = setup_adjoint_contraction_parameters()
+from .setup_parameters import parameters
+from . import setup_parameters
+
+setup_parameters.setup_general_parameters()
 
 from collections import namedtuple
 Patient = namedtuple('Patient', ['geometry', 'data'])
@@ -8,13 +10,25 @@ from . import utils
 from . import dolfin_utils
 from . import io_utils
 from . import numpy_mpi
+from . import kinematics
 from . import mechanicsproblem
-from .iterate import iterate
+from . import iterate
+from . import unloader
+
 # Subpackages
-from . import unloading
 from . import material
 from .material import *
 
+
+
+from .unloader import (MeshUnloader, RaghavanUnloader,
+                       FixedPointUnloader, HybridUnloader)
+from .geometry import (Geometry, Marker, CRLBasis, HeartGeometry,
+                       Microstructure, MarkerFunctions)
+from .example_meshes import mesh_paths
+from pulse.mechanicsproblem import (MechanicsProblem,
+                                    BoundaryConditions,
+                                    NeumannBC, RobinBC)
 
 
 # from .utils import logger

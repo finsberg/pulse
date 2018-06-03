@@ -22,7 +22,7 @@ def move(mesh, u, factor=1.0):
     u_int = dolfin.interpolate(u, W)
 
     u0 = dolfin.Function(W)
-    arr = factor * numpy_mpi.gather_broadcast(u_int.vector().array())
+    arr = factor * numpy_mpi.gather_broadcast(u_int.vector().get_local())
     numpy_mpi.assign_to_vector(u0.vector(), arr)
 
     V = dolfin.VectorFunctionSpace(mesh, "CG", 1)
@@ -268,8 +268,8 @@ def fill_coordinates_el(i, e_c_x, e_c_y, e_c_z, coord, foci):
 def calc_cross_products(e1, e2, VV):
     e_crossed = dolfin.Function(VV)
 
-    e1_arr = e1.vector().array().reshape((-1, 3))
-    e2_arr = e2.vector().array().reshape((-1, 3))
+    e1_arr = e1.vector().get_local().reshape((-1, 3))
+    e2_arr = e2.vector().get_local().reshape((-1, 3))
 
     crosses = []
     for c1, c2 in zip(e1_arr, e2_arr):
@@ -277,13 +277,6 @@ def calc_cross_products(e1, e2, VV):
 
     e_crossed.vector()[:] = np.array(crosses)[:]
     return e_crossed
-
-
-def check_norms(e):
-
-    e_arr = e.vector().array().reshape((-1, 3))
-    for e_i in e_arr:
-        assert(dolfin.near(np.linalg.norm(e_i), 1.0))
 
 
 def make_unit_vector(V, VV, dofs_x, fill_coordinates, foc=None):

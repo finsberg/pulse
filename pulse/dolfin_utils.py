@@ -1,4 +1,3 @@
-import logging
 import numpy as np
 import dolfin
 
@@ -11,7 +10,6 @@ except ImportError:
                         project, assemble,
                         FunctionAssigner)
 
-from ufl.domain import find_geometric_dimension
 
 from . import utils
 from . import numpy_mpi
@@ -40,7 +38,7 @@ def map_vector_field(f0, new_mesh, u=None, name="fiber",
         u_elm = u.function_space().ufl_element()
         V = dolfin.FunctionSpace(f0_mesh, u_elm)
         u0 = dolfin.Function(V)
-        arr = numpy_mpi.gather_broadcast(u.vector().array())
+        arr = numpy_mpi.gather_broadcast(u.vector().get_local())
         numpy_mpi.assign_to_vector(u0.vector(), arr)
 
         from .kinematics import DeformationGradient
@@ -51,11 +49,11 @@ def map_vector_field(f0, new_mesh, u=None, name="fiber",
         if normalize:
             f0_updated = normalize_vector_field(f0_updated)
 
-        f0_arr = numpy_mpi.gather_broadcast(f0_updated.vector().array())
+        f0_arr = numpy_mpi.gather_broadcast(f0_updated.vector().get_local())
         numpy_mpi.assign_to_vector(f0_new.vector(), f0_arr)
 
     else:
-        f0_arr = numpy_mpi.gather_broadcast(f0.vector().array())
+        f0_arr = numpy_mpi.gather_broadcast(f0.vector().get_local())
         numpy_mpi.assign_to_vector(f0_new.vector(), f0_arr)
 
     return f0_new
@@ -70,13 +68,13 @@ def normalize_vector_field(u):
     components = vectorfield_to_components(u, S, dim)
     normarray \
         = np.sqrt(sum(numpy_mpi.
-                      gather_broadcast(components[i].vector().array())**2
+                      gather_broadcast(components[i].vector().get_local())**2
                       for i in range(dim)))
 
     for comp in components:
         numpy_mpi.assign_to_vector(comp.vector(),
                                    numpy_mpi.
-                                   gather_broadcast(comp.vector().array())
+                                   gather_broadcast(comp.vector().get_local())
                                    / normarray)
 
     assigners = [dolfin.FunctionAssigner(u.function_space().sub(i), S)
@@ -161,7 +159,7 @@ def compute_meshvolume(domain=None, dx=dolfin.dx, subdomain_id=None):
                                  subdomain_id=subdomain_id)))
 
 
-def get_volume(geometry, unload=False, chamber="lv", u=None):
+def get_cavity_volume(geometry, unload=False, chamber="lv", u=None):
 
     from . import kinematics
 
@@ -219,6 +217,7 @@ def get_dimesion(u):
     # TODO : Check argument
 
     if dolfin.DOLFIN_VERSION_MAJOR > 1.6:
+        from ufl.domain import find_geometric_dimension
         dim = find_geometric_dimension(u)
     else:
         dim = u.geometric_dimension()
@@ -531,7 +530,7 @@ class RegionalParameter(Function):
 
         mesh = meshfunction.mesh()
 
-        self._values = set(numpy_mpi.gather_broadcast(meshfunction.array()))
+        self._values = set(numpy_mpi.gather_broadcast(meshfunction.array()()))
         self._nvalues = len(self._values)
 
         V = dolfin.VectorFunctionSpace(mesh, "R", 0, dim=self._nvalues)

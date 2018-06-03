@@ -1,30 +1,4 @@
 #!/usr/bin/env python
-# c) 2001-2017 Simula Research Laboratory ALL RIGHTS RESERVED
-# Authors: Henrik Finsberg
-# END-USER LICENSE AGREEMENT
-# PLEASE READ THIS DOCUMENT CAREFULLY. By installing or using this
-# software you agree with the terms and conditions of this license
-# agreement. If you do not accept the terms of this license agreement
-# you may not install or use this software.
-
-# Permission to use, copy, modify and distribute any part of this
-# software for non-profit educational and research purposes, without
-# fee, and without a written agreement is hereby granted, provided
-# that the above copyright notice, and this license agreement in its
-# entirety appear in all copies. Those desiring to use this software
-# for commercial purposes should contact Simula Research Laboratory AS:
-# post@simula.no
-#
-# IN NO EVENT SHALL SIMULA RESEARCH LABORATORY BE LIABLE TO ANY PARTY
-# FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES,
-# INCLUDING LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE
-# "PULSE-ADJOINT" EVEN IF SIMULA RESEARCH LABORATORY HAS BEEN ADVISED
-# OF THE POSSIBILITY OF SUCH DAMAGE. THE SOFTWARE PROVIDED HEREIN IS
-# ON AN "AS IS" BASIS, AND SIMULA RESEARCH LABORATORY HAS NO OBLIGATION
-# TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
-# SIMULA RESEARCH LABORATORY MAKES NO REPRESENTATIONS AND EXTENDS NO
-# WARRANTIES OF ANY KIND, EITHER IMPLIED OR EXPRESSED, INCLUDING, BUT
-# NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
 import numpy as np
 import operator as op
 import logging
@@ -33,8 +7,10 @@ import dolfin
 
 try:
     from dolfin_adjoint import Function
+    has_dolfin_adjoint = True
 except ImportError:
     from dolfin import Function
+    has_dolfin_adjoint = False
 
 from .utils import logger
 from . import numpy_mpi
@@ -147,11 +123,11 @@ def step_too_large(current, target, step, control):
 
     if control == "gamma":
         diff_before = current.vector()[:] - target.vector()[:]
-        diff_before_arr = numpy_mpi.gather_broadcast(diff_before.array())
+        diff_before_arr = numpy_mpi.gather_broadcast(diff_before.get_local())
 
         diff_after = current.vector()[:] + \
             step.vector()[:] - target.vector()[:]
-        diff_after_arr = numpy_mpi.gather_broadcast(diff_after.array())
+        diff_after_arr = numpy_mpi.gather_broadcast(diff_after.get_local())
 
         # diff_after.axpy(-1.0, target.vector())
         if dolfin.norm(diff_after, 'linf') < dolfin.DOLFIN_EPS:
@@ -216,13 +192,13 @@ def print_control(control):
         logger.info("\t{:>6.3f}".format(control))
 
     elif isinstance(control, (dolfin.Function, Function)):
-        arr = numpy_mpi.gather_broadcast(control.vector().array())
+        arr = numpy_mpi.gather_broadcast(control.vector().get_local())
         logger.info("\t{:>6}\t{:>6}\t{:>6}".format("Min", "Mean", "Max"))
         logger.info("\t{:>6.2f}\t{:>6.2f}\t{:>6.2f}".format(np.min(arr),
                                                             np.mean(arr),
                                                             np.max(arr)))
     elif isinstance(control, (dolfin.GenericVector, dolfin.Vector)):
-        arr = numpy_mpi.gather_broadcast(control.array())
+        arr = numpy_mpi.gather_broadcast(control.get_local())
         print_arr(arr)
 
     elif isinstance(control, (tuple, np.ndarray, list)):
@@ -238,16 +214,16 @@ def get_delta(new_control, c0, c1):
         return (new_control[0] - c0[0]) / float(c1[0] - c0[0])
 
     elif isinstance(new_control, (dolfin.GenericVector, dolfin.Vector)):
-        new_control_arr = numpy_mpi.gather_broadcast(new_control.array())
-        c0_arr = numpy_mpi.gather_broadcast(c0.array())
-        c1_arr = numpy_mpi.gather_broadcast(c1.array())
+        new_control_arr = numpy_mpi.gather_broadcast(new_control.get_local())
+        c0_arr = numpy_mpi.gather_broadcast(c0.get_local())
+        c1_arr = numpy_mpi.gather_broadcast(c1.get_local())
         return (new_control_arr[0] - c0_arr[0]) / float(c1_arr[0] - c0_arr[0])
 
     elif isinstance(new_control, (dolfin.Function, Function)):
         new_control_arr = numpy_mpi.\
-                          gather_broadcast(new_control.vector().array())
-        c0_arr = numpy_mpi.gather_broadcast(c0.vector().array())
-        c1_arr = numpy_mpi.gather_broadcast(c1.vector().array())
+                          gather_broadcast(new_control.vector().get_local())
+        c0_arr = numpy_mpi.gather_broadcast(c0.vector().get_local())
+        c1_arr = numpy_mpi.gather_broadcast(c1.vector().get_local())
         return (new_control_arr[0] - c0_arr[0]) / float(c1_arr[0] - c0_arr[0])
 
 
@@ -332,7 +308,8 @@ def iterate_pressure(problem, target, p_expr,
 
             delta = get_delta(new_control, c0, c1)
 
-            if not dolfin.parameters["adjoint"]["stop_annotating"]:
+            if has_dolfin_adjoint and \
+               not dolfin.parameters["adjoint"]["stop_annotating"]:
                 w = dolfin.Function(problem.state.function_space())
 
                 w.vector().zero()
@@ -461,7 +438,8 @@ def iterate_expression(problem, expr, attr, target, continuation=True,
             s0, s1 = prev_states[-2:]
 
             delta = get_delta(val, c0, c1)
-            if not dolfin.parameters["adjoint"]["stop_annotating"]:
+            if has_dolfin_adjoint and \
+               not dolfin.parameters["adjoint"]["stop_annotating"]:
                 w = dolfin.Function(problem.state.function_space())
                 w.vector().zero()
                 w.vector().axpy(1.0-delta, s0.vector())
@@ -523,11 +501,11 @@ def iterate_expression(problem, expr, attr, target, continuation=True,
 
 
 def get_mean(f):
-    return numpy_mpi.gather_broadcast(f.vector().array()).mean()
+    return numpy_mpi.gather_broadcast(f.vector().get_local()).mean()
 
 
 def get_max(f):
-    return numpy_mpi.gather_broadcast(f.vector().array()).max()
+    return numpy_mpi.gather_broadcast(f.vector().get_local()).max()
 
 
 def get_max_diff(f1, f2):
@@ -602,8 +580,11 @@ def iterate_gamma(problem, target, gamma,
     control_values = [gamma.copy(deepcopy=True)]
     prev_states = [problem.state.copy(deepcopy=True)]
 
-    annotate = not dolfin.parameters["adjoint"]["stop_annotating"]
-
+    if has_dolfin_adjoint:
+        annotate = not dolfin.parameters["adjoint"]["stop_annotating"]
+    else:
+        annotate = False
+        
     ncrashes = 0
     niters = 0
 

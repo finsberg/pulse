@@ -1,5 +1,9 @@
 import dolfin
-import dolfin_adjoint
+
+try:
+    from dolfin_adjoint import Constant
+except ImportError:
+    from dolfin import Constant
 
 from .. import kinematics
 from ..dolfin_utils import get_dimesion
@@ -50,7 +54,7 @@ class Guccione(Material):
         E = kinematics.\
             GreenLagrangeStrain(F, isochoric=self.is_isochoric)
 
-        CC = dolfin_adjoint.Constant(params['C'], name='C')
+        CC = Constant(params['C'], name='C')
 
         e1 = self.active.f0
         e2 = self.active.s0
@@ -68,9 +72,9 @@ class Guccione(Material):
 
         else:
             # fully anisotropic
-            bt = dolfin_adjoint.Constant(params['bt'], name='bt')
-            bf = dolfin_adjoint.Constant(params['bf'], name='bf')
-            bfs = dolfin_adjoint.Constant(params['bfs'], name='bfs')
+            bt = Constant(params['bt'], name='bt')
+            bf = Constant(params['bf'], name='bf')
+            bfs = Constant(params['bfs'], name='bfs')
 
             E11, E12, E13 = dolfin.inner(E*e1, e1), \
                 dolfin.inner(E*e1, e2), \

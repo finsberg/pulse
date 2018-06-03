@@ -3,9 +3,6 @@ import dolfin
 import logging
 
 
-parameters = dolfin.Parameters("Pulse_parameters")
-parameters.add('log_level', logging.INFO)  # INFO=20, DEBUG=10
-
 
 def setup_general_parameters():
     """
@@ -18,7 +15,7 @@ def setup_general_parameters():
     # dolfin.parameters["form_compiler"]["representation"] = "uflacs"
     dolfin.parameters["form_compiler"]["cpp_optimize"] = True
     dolfin.parameters["form_compiler"]["cpp_optimize_flags"] = " ".join(flags)
-
+    
     dolfin.set_log_active(False)
     dolfin.set_log_level(logging.INFO)
 

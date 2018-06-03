@@ -132,19 +132,19 @@ def test_material(unitcube_geometry, Material, active_model, isochoric):
         if not isochoric:
             if material.name in ["guccione", "linear_elastic",
                                  "saint_venant_kirchhoff"]:
-                assert all(abs(p.vector().array()) < tol)
+                assert all(abs(p.vector().get_local()) < tol)
             elif material.name == "holzapfel_ogden":
 
-                assert all(abs(p.vector().array()
+                assert all(abs(p.vector().get_local()
                                - material.parameters["a"]) < tol)
             elif material.name == "neo_hookean":
-                assert all(abs(p.vector().array()
+                assert all(abs(p.vector().get_local()
                                - material.parameters["mu"]) < tol)
             else:
                 raise TypeError("Unkown material {}".format(material.name))
 
         else:
-            assert all(abs(p.vector().array()) < tol)
+            assert all(abs(p.vector().get_local()) < tol)
 
     else:
 
@@ -162,25 +162,25 @@ def test_material(unitcube_geometry, Material, active_model, isochoric):
 
         tol = 1e-10
 
-        assert all(abs(Tf_dg.vector().array() - active_value) < tol)
-        assert all(abs(u.vector().array()) < tol)
+        assert all(abs(Tf_dg.vector().get_local() - active_value) < tol)
+        assert all(abs(u.vector().get_local()) < tol)
 
         if not isochoric:
             if material.name in ["guccione", "linear_elastic",
                                  "saint_venant_kirchhoff"]:
-                assert all(abs(p.vector().array()) < tol)
+                assert all(abs(p.vector().get_local()) < tol)
             elif material.name == "holzapfel_ogden":
 
-                assert all(abs(p.vector().array()
+                assert all(abs(p.vector().get_local()
                                - material.parameters["a"]) < tol)
             elif material.name == "neo_hookean":
-                assert all(abs(p.vector().array()
+                assert all(abs(p.vector().get_local()
                                - material.parameters["mu"]) < tol)
             else:
                 raise TypeError("Unkown material {}".format(material.name))
 
         else:
-            assert all(abs(p.vector().array()) < tol)
+            assert all(abs(p.vector().get_local()) < tol)
 
 
 if __name__ == "__main__":

@@ -2,7 +2,8 @@ import pytest
 import dolfin
 import numpy as np
 
-from pulse.geometry import (Geometry, Marker, CRLBasis,
+from pulse.example_meshes import mesh_paths
+from pulse.geometry import (Geometry, Marker, CRLBasis, HeartGeometry,
                             Microstructure, MarkerFunctions)
 from pulse.parameters import setup_general_parameters
 from pulse.dolfin_utils import QuadratureSpace
@@ -134,8 +135,26 @@ def test_crl_basis(unitcube_geometry):
     assert unitcube_geometry.crl_basis_list
     assert unitcube_geometry.nbasis == 3
 
+
+def test_simple_ellipsoid():
+    geometry = HeartGeometry.from_file(mesh_paths['simple_ellipsoid'])
+
+    assert abs(geometry.cavity_volume() - 2.511304019359619) < 1e-14
+    assert geometry.is_biv is False
+
+
+def test_biv_ellipsoid():
+    geometry = HeartGeometry.from_file(mesh_paths['biv_ellipsoid'])
+
+    assert abs(geometry.cavity_volume(chamber='lv')
+               - 0.7422747965172004) < 1e-14
+    assert abs(geometry.cavity_volume(chamber='rv')
+               - 0.8171389194959642) < 1e-14
+    assert geometry.is_biv is True
     
 if __name__ == "__main__":
-    geo = unitcube_geometry()
+    # geo = unitcube_geometry()
     # test_create_geometry(geo)
-    test_mesvolumes(geo)
+    # test_mesvolumes(geo)
+    test_simple_ellipsoid()
+    test_biv_ellipsoid()

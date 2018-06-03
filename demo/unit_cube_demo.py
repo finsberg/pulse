@@ -1,4 +1,4 @@
-
+import matplotlib.pyplot as plt
 import dolfin
 from pulse.parameters import setup_general_parameters
 from pulse.mechanicsproblem import (MechanicsProblem,
@@ -13,7 +13,8 @@ from pulse.material import HolzapfelOgden
 setup_general_parameters()
 
 # Create mesh
-mesh = dolfin.UnitCubeMesh(3, 3, 3)
+N = 6
+mesh = dolfin.UnitCubeMesh(N, N, N)
 
 
 # Create subdomains
@@ -83,12 +84,12 @@ active_model = "active_strain"
 # active_model = "active_stress"
 
 # Set the activation
-activation = dolfin.Constant(0.0)
+activation = dolfin.Constant(0.1)
 
 # Create material
 material = HolzapfelOgden(active_model=active_model,
                           params=material_parameters,
-                          gamma=activation)
+                          activation=activation)
 
 
 # Make Dirichlet boundary conditions
@@ -100,7 +101,7 @@ def dirichlet_bc(W):
 
 
 # Make Neumann boundary conditions
-neumann_bc = NeumannBC(traction=dolfin.Constant(-0.3),
+neumann_bc = NeumannBC(traction=dolfin.Constant(0.0),
                        marker=free_marker.value)
 
 # Collect Boundary Conditions
@@ -117,6 +118,12 @@ problem.solve()
 u, p = problem.state.split(deepcopy=True)
 
 # Plot
-dolfin.plot(u, mode="displacement", title="displacement")
-dolfin.plot(p, title="hydrostatic pressure")
-dolfin.interactive()
+u_int = dolfin.interpolate(u,
+                           dolfin.VectorFunctionSpace(geometry.mesh, "CG", 1))
+mesh = dolfin.Mesh(geometry.mesh)
+dolfin.ALE.move(mesh, u_int)
+dolfin.plot(geometry.mesh, alpha=0.5, edgecolor='k', title="original")
+dolfin.plot(mesh, edgecolor='g', alpha=0.7, title='Contracting cube')
+ax = plt.gca()
+ax.view_init(elev=2, azim=-92)
+plt.show()

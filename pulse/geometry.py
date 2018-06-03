@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from collections import namedtuple
 import dolfin
 
@@ -5,7 +6,7 @@ from .geometry_utils import load_geometry_from_h5, move
 
 from . import numpy_mpi
 # from . import config
-from .dolfin_utils import compute_meshvolume, map_vector_field
+from .dolfin_utils import compute_meshvolume, map_vector_field, get_cavity_volume
 from .utils import set_default_none, make_logger
 logger = make_logger(__name__, 10)
 
@@ -71,8 +72,6 @@ class Geometry(object):
         self.microstructure = microstructure or Microstructure
         self.crl_basis = crl_basis or CRLBasis()
 
-        self._geometry_index = 0
-
     def __repr__(self):
         args = []
         for attr in ('f0', 's0', 'n0', 'vfun',
@@ -84,10 +83,6 @@ class Geometry(object):
                 '({self.mesh}), '
                 '{args})').format(self=self,
                                   args=", ".join(args))
-
-    @property
-    def is_biv(self):
-        return 'ENDO_RV' in self.markers
 
     @classmethod
     def from_file(cls, h5name, h5group='', comm=None):
@@ -175,21 +170,6 @@ class Geometry(object):
 
     def save(self, h5name):
         pass
-
-    @property
-    def geometry_index(self):
-        """Which index does the geometry correspond to
-        "0" means first measurement numer
-        "-1" means end-diastole
-        Any number between 0 and passive filling duration
-        also work (passive filling duration would correspond)
-        to end-diastole.
-        """
-        return self._geometry_index
-
-    @geometry_index.setter
-    def geometry_index(self, val):
-        self._geometry_index = val
 
     def dim(self):
         return self.mesh.geometry.dim()
@@ -335,3 +315,17 @@ class Geometry(object):
         """Radial
         """
         return self.crl_basis.r0
+
+
+class HeartGeometry(Geometry):
+    def __init__(self, *args, **kwargs):
+        super(HeartGeometry, self).__init__(*args, **kwargs)
+
+    @property
+    def is_biv(self):
+        return 'ENDO_RV' in self.markers
+
+    def cavity_volume(self, chamber="lv", u=None):
+
+        return get_cavity_volume(self, chamber=chamber, u=u)
+                 

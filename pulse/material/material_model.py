@@ -26,15 +26,18 @@
 # WARRANTIES OF ANY KIND, EITHER IMPLIED OR EXPRESSED, INCLUDING, BUT
 # NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
 import dolfin
-import dolfin_adjoint
+
+try:
+    from dolfin_adjoint import Constant, Function, project
+except ImportError:
+    from dolfin import Constant, Function, project
+    
+from .. import kinematics
+from ..dolfin_utils import get_dimesion, RegionalParameter
+
 
 from .active_strain import ActiveStrain
 from .active_stress import ActiveStress
-
-
-from .. import kinematics
-
-from ..dolfin_utils import get_dimesion, RegionalParameter
 
 
 def compressibility(model, *args, **kwargs):
@@ -90,17 +93,16 @@ class Material(object):
         for k, v in parameters.items():
 
             if isinstance(v, (float, int)):
-                setattr(self, k, dolfin_adjoint.Constant(v))
+                setattr(self, k, Constant(v))
 
             elif isinstance(v, RegionalParameter):
 
-                setattr(self, k,
-                        dolfin_adjoint.Function(v.get_ind_space(), name=k))
+                setattr(self, k, Function(v.get_ind_space(), name=k))
 
                 mat = getattr(self, k)
                 matfun = v.get_function()
                 ind_space = v.get_ind_space()
-                mat.assign(dolfin_adjoint.project(matfun, ind_space))
+                mat.assign(project(matfun, ind_space))
 
             else:
                 setattr(self, k, v)
