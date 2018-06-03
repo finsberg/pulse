@@ -14,7 +14,7 @@ def setup_general_parameters():
     # Parameter for the compiler
     flags = ["-O3", "-ffast-math", "-march=native"]
     dolfin.parameters["form_compiler"]["quadrature_degree"] = 4
-    # dolfin.parameters["form_compiler"]["representation"] = "uflacs"
+    dolfin.parameters["form_compiler"]["representation"] = "uflacs"
     dolfin.parameters["form_compiler"]["cpp_optimize"] = True
     dolfin.parameters["form_compiler"]["cpp_optimize_flags"] = " ".join(flags)
     
