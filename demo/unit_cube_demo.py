@@ -1,16 +1,8 @@
 import matplotlib.pyplot as plt
 import dolfin
-from pulse.parameters import setup_general_parameters
-from pulse.mechanicsproblem import (MechanicsProblem,
-                                    BoundaryConditions, NeumannBC)
-from pulse.geometry import (Geometry, Marker,
-                            Microstructure, MarkerFunctions)
-from pulse.dolfin_utils import QuadratureSpace
-from pulse.material import HolzapfelOgden
 
+import pulse
 
-# Set up some paraeters for the compiler
-setup_general_parameters()
 
 # Create mesh
 N = 6
@@ -48,15 +40,15 @@ cfun.set_all(0)
 
 
 # Collect the functions containing the markers
-marker_functions = MarkerFunctions(ffun=ffun, cfun=cfun)
+marker_functions = pulse.MarkerFunctions(ffun=ffun, cfun=cfun)
 
 # Collect the individual markers
-fixed_marker = Marker(name='fixed', value=1, dimension=2)
-free_marker = Marker(name='free', value=2, dimension=2)
+fixed_marker = pulse.Marker(name='fixed', value=1, dimension=2)
+free_marker = pulse.Marker(name='free', value=2, dimension=2)
 markers = (fixed_marker, free_marker)
 
 # Create mictrotructure
-V_f = QuadratureSpace(mesh, 4)
+V_f = pulse.QuadratureSpace(mesh, 4)
 
 # Fibers
 f0 = dolfin.interpolate(
@@ -69,15 +61,15 @@ n0 = dolfin.interpolate(
     dolfin.Expression(("0.0", "0.0", "1.0"), degree=1), V_f)
 
 # Collect the mictrotructure
-microstructure = Microstructure(f0=f0, s0=s0, n0=n0)
+microstructure = pulse.Microstructure(f0=f0, s0=s0, n0=n0)
 
 # Create the geometry
-geometry = Geometry(mesh=mesh, markers=markers,
-                    marker_functions=marker_functions,
-                    microstructure=microstructure)
+geometry = pulse.Geometry(mesh=mesh, markers=markers,
+                          marker_functions=marker_functions,
+                          microstructure=microstructure)
 
 # Use the default material parameters
-material_parameters = HolzapfelOgden.default_parameters()
+material_parameters = pulse.HolzapfelOgden.default_parameters()
 
 # Select model for active contraction
 active_model = "active_strain"
@@ -87,9 +79,9 @@ active_model = "active_strain"
 activation = dolfin.Constant(0.1)
 
 # Create material
-material = HolzapfelOgden(active_model=active_model,
-                          params=material_parameters,
-                          activation=activation)
+material = pulse.HolzapfelOgden(active_model=active_model,
+                                params=material_parameters,
+                                activation=activation)
 
 
 # Make Dirichlet boundary conditions
@@ -101,15 +93,15 @@ def dirichlet_bc(W):
 
 
 # Make Neumann boundary conditions
-neumann_bc = NeumannBC(traction=dolfin.Constant(0.0),
-                       marker=free_marker.value)
+neumann_bc = pulse.NeumannBC(traction=dolfin.Constant(0.0),
+                             marker=free_marker.value)
 
 # Collect Boundary Conditions
-bcs = BoundaryConditions(dirichlet=(dirichlet_bc,),
-                         neumann=(neumann_bc,))
+bcs = pulse.BoundaryConditions(dirichlet=(dirichlet_bc,),
+                               neumann=(neumann_bc,))
 
 # Create problem
-problem = MechanicsProblem(geometry, material, bcs)
+problem = pulse.MechanicsProblem(geometry, material, bcs)
 
 # Solve problem
 problem.solve()

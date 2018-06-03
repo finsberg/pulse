@@ -29,6 +29,7 @@ from .example_meshes import mesh_paths
 from pulse.mechanicsproblem import (MechanicsProblem,
                                     BoundaryConditions,
                                     NeumannBC, RobinBC)
+from .dolfin_utils import QuadratureSpace
 
 
 # from .utils import logger
