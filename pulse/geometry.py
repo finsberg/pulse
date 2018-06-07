@@ -5,10 +5,12 @@ import dolfin
 from .geometry_utils import load_geometry_from_h5, move
 
 from . import numpy_mpi
-# from . import config
-from .dolfin_utils import compute_meshvolume, map_vector_field, get_cavity_volume
+from . import parameters
+from .dolfin_utils import (compute_meshvolume,
+                           map_vector_field, get_cavity_volume)
 from .utils import set_default_none, make_logger
-logger = make_logger(__name__, 10)
+
+logger = make_logger(__name__, parameters['log_level'])
 
 Marker = namedtuple('Marker', ['name', 'value', 'dimension'])
 
@@ -91,7 +93,7 @@ class Geometry(object):
 
         return cls(**cls.load_from_file(h5name, h5group, comm))
 
-    def copy(self, u=None):
+    def _copy(self, u=None, factor=1.0):
         """
         Return a copy of this geometry and attach a moved
         mesh according to the provided displacement.
@@ -101,7 +103,7 @@ class Geometry(object):
         new_mesh = dolfin.Mesh(self.mesh)
 
         if u is not None:
-            U = move(new_mesh, u, -1.0)
+            U = move(new_mesh, u, factor)
         else:
             U = u
 
@@ -138,11 +140,18 @@ class Geometry(object):
             crl_basis_[basis] = v
         crl_basis = CRLBasis(**crl_basis_)
 
-        return Geometry(mesh=new_mesh,
-                        markers=self.markers,
-                        marker_functions=marker_functions,
-                        microstructure=microstructure,
-                        crl_basis=crl_basis)
+        return dict(mesh=new_mesh,
+                    markers=self.markers,
+                    marker_functions=marker_functions,
+                    microstructure=microstructure,
+                    crl_basis=crl_basis)
+
+    def copy(self, u=None, factor=1.0):
+        """Return as copy of the geometry with possiblity to
+        move the new geometry according to some factor times
+        some displacement (u)
+        """
+        return self.__class__(**self._copy(u=u, factor=factor))
 
     @staticmethod
     def load_from_file(h5name, h5group, comm):
@@ -320,6 +329,9 @@ class Geometry(object):
 class HeartGeometry(Geometry):
     def __init__(self, *args, **kwargs):
         super(HeartGeometry, self).__init__(*args, **kwargs)
+
+    # def copy(self, u=None, factor=1.0):
+        # return HeartGeometry(**self._copy(u, factor))
 
     @property
     def is_biv(self):

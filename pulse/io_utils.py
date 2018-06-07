@@ -3,6 +3,8 @@ import h5py
 import dolfin
 
 from .utils import make_logger
+from . import parameters
+logger = make_logger(__name__, parameters['log_level'])
 
 parallel_h5py = h5py.h5.get_config().mpi
 

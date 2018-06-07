@@ -1,3 +1,10 @@
+try:
+    from ffc.quadrature.deprecation import QuadratureRepresentationDeprecationWarning
+    import warnings
+    warnings.filterwarnings("ignore", category=QuadratureRepresentationDeprecationWarning)
+except:
+    pass
+
 from .setup_parameters import parameters
 from . import setup_parameters
 
@@ -22,7 +29,7 @@ from .material import *
 
 
 from .unloader import (MeshUnloader, RaghavanUnloader,
-                       FixedPointUnloader, HybridUnloader)
+                       FixedPointUnloader)
 from .geometry import (Geometry, Marker, CRLBasis, HeartGeometry,
                        Microstructure, MarkerFunctions)
 from .example_meshes import mesh_paths

@@ -26,7 +26,9 @@ def map_vector_field(f0, new_mesh, u=None, name="fiber",
     map the vector field.
     """
 
-    dolfin.parameters["form_compiler"]["representation"] = "quadrature"
+    if dolfin.DOLFIN_VERSION_MAJOR > 2016:
+        dolfin.parameters["form_compiler"]["representation"] = "quadrature"
+
     dolfin.parameters["form_compiler"]["quadrature_degree"] = 4
 
     ufl_elem = f0.function_space().ufl_element()
@@ -56,8 +58,24 @@ def map_vector_field(f0, new_mesh, u=None, name="fiber",
         f0_arr = numpy_mpi.gather_broadcast(f0.vector().get_local())
         numpy_mpi.assign_to_vector(f0_new.vector(), f0_arr)
 
+    if dolfin.DOLFIN_VERSION_MAJOR > 2016:
+        dolfin.parameters["form_compiler"]["representation"] = "uflacs"
+
     return f0_new
 
+
+def update_function(mesh, f):
+    """Given a function :math:`f` defined on some domain,
+    update the function so that it now is defined on the domain
+    given in the mesh
+    """
+
+    f_new = Function(dolfin.FunctionSpace(mesh, f.ufl_element()))
+    numpy_mpi.\
+        assign_to_vector(f_new.vector(),
+                         numpy_mpi.
+                         gather_broadcast(f.vector().get_local()))
+    return f_new
 
 def normalize_vector_field(u):
     """Given a vector field, return a vector field with an L2 norm equal to 1.0

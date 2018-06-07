@@ -1,19 +1,27 @@
 #!/usr/bin/env python
 from collections import namedtuple
+from functools import partial
+
 import dolfin
 try:
-    from dolfin_adjoint import (Function, NonlinearVariationalSolver,
+    from dolfin_adjoint import (Function, Constant,
+                                NonlinearVariationalSolver,
                                 NonlinearVariationalProblem,
                                 FunctionAssigner)
+    has_dolfin_adjoint = True
 except ImportError:
-    from dolfin import (Function, NonlinearVariationalSolver,
+    from dolfin import (Function, Constant,
+                        NonlinearVariationalSolver,
                         NonlinearVariationalProblem,
                         FunctionAssigner)
+    has_dolfin_adjoint = False
 
 from . import kinematics
-from .utils import set_default_none, make_logger
+from . import parameters
+from .utils import set_default_none, make_logger, get_lv_marker
+from .geometry import HeartGeometry
 
-logger = make_logger(__name__, 10)
+logger = make_logger(__name__, parameters['log_level'])
 
 BoundaryConditions = namedtuple('BoundaryConditions',
                                 ['dirichlet', 'neumann',
@@ -43,6 +51,63 @@ def dirichlet_fix_base_directional(W, ffun, marker, direction=0):
     return bc
 
 
+def cardiac_boundary_conditions(geometry, pericardium_spring=0.0,
+                                base_spring=0.0, base_bc='fix_x'):
+
+    msg = ('Cardiac boundary conditions can only be applied to a '
+           'HeartGeometry got {}'.format(type(geometry)))
+    assert isinstance(geometry, HeartGeometry), msg
+
+    # Neumann BC
+    lv_marker = get_lv_marker(geometry)
+    lv_pressure = NeumannBC(traction=Constant(0.0, name="lv_pressure"),
+                            marker=lv_marker, name='lv')
+    neumann_bc = [lv_pressure]
+
+    if 'ENDO_RV' in geometry.markers:
+
+        rv_pressure = NeumannBC(traction=Constant(0.0, name='lv_pressure'),
+                                marker=geometry.markers['ENDO_RV'][0],
+                                name='rv')
+
+        neumann_bc += [rv_pressure]
+
+    # Robin BC
+    if pericardium_spring > 0.0:
+
+        robin_bc = [RobinBC(value=dolfin.Constant(pericardium_spring),
+                            marker=geometry.markers["EPI"][0])]
+
+    else:
+        robin_bc = []
+
+    # Apply a linear sprint robin type BC to limit motion
+    if base_spring > 0.0:
+        robin_bc += [RobinBC(value=dolfin.Constant(base_spring),
+                             marker=geometry.markers["BASE"][0])]
+
+    # Dirichlet BC
+    if base_bc == "fixed":
+
+        dirichlet_bc = [partial(dirichlet_fix_base,
+                                ffun=geometry.ffun,
+                                marker=geometry.markers["BASE"][0])]
+
+    elif base_bc == 'fix_x':
+
+        dirichlet_bc = [partial(dirichlet_fix_base_directional,
+                                ffun=geometry.ffun,
+                                marker=geometry.markers["BASE"][0])]
+    else:
+        raise ValueError("Unknown base bc {}".format(base_bc))
+
+    boundary_conditions = BoundaryConditions(dirichlet=dirichlet_bc,
+                                             neumann=neumann_bc,
+                                             robin=robin_bc)
+
+    return boundary_conditions
+
+
 class SolverDidNotConverge(Exception):
     pass
 
@@ -51,19 +116,45 @@ class MechanicsProblem(object):
     """
     Base class for mechanics problem
     """
-    def __init__(self, geometry, material, bcs):
+    def __init__(self, geometry, material, bcs=None, bcs_parameters=None):
 
         logger.debug('Initialize mechanics problem')
         self.geometry = geometry
         self.material = material
-        self.bcs = bcs
 
+        if bcs is None:
+            if isinstance(geometry, HeartGeometry):
+                self.bcs_parameters = MechanicsProblem.default_bcs_parameters()
+                self.bcs_parameters.update(**bcs_parameters)
+                
+            else:
+                raise ValueError(('Please provive boundary conditions '
+                                  'to MechanicsProblem'))
+
+            self.bcs = cardiac_boundary_conditions(geometry,
+                                                   **self.bcs_parameters)
+            
+        else:
+            self.bcs = bcs
+
+            # Just store this as well in case both is provided
+            if bcs_parameters is not None:
+                self.bcs_parameters = MechanicsProblem.default_bcs_parameters()
+                self.bcs_parameters.update(**bcs_parameters)
+            
+            
         # Make sure that the material has microstructure information
         for attr in ("f0", "s0", "n0"):
             setattr(self.material, attr, getattr(self.geometry, attr))
 
         self._init_spaces()
         self._init_forms()
+
+    @staticmethod
+    def default_bcs_parameters():
+        return dict(pericardium_spring=0.0,
+                    base_spring=0.0,
+                    base_bc='fixed')
 
     def _init_spaces(self):
 
@@ -94,12 +185,13 @@ class MechanicsProblem(object):
         # Some geometrical quantities
         N = self.geometry.facet_normal
         ds = self.geometry.ds
+        dx = self.geometry.dx
 
         internal_energy = self.material.strain_energy(F) \
             + self.material.compressibility(p, J)
 
         self._virtual_work \
-            = dolfin.derivative(internal_energy * dolfin.dx,
+            = dolfin.derivative(internal_energy * dx,
                                 self.state, self.state_test)
 
         # DirichletBC
@@ -134,8 +226,7 @@ class MechanicsProblem(object):
         for body_force in self.bcs.body_force:
 
             self._virtual_work \
-                += -dolfin.derivative(dolfin.inner(body_force, u)
-                                      * dolfin.dx, u, v)
+                += -dolfin.derivative(dolfin.inner(body_force, u) * dx, u, v)
 
         self._jacobian \
             = dolfin.derivative(self._virtual_work, self.state,
@@ -144,7 +235,13 @@ class MechanicsProblem(object):
     def reinit(self, state, annotate=False):
         """Reinitialze state
         """
-        self.state.assign(state, annotate=annotate)
+        
+        if has_dolfin_adjoint:
+            self.state.assign(state, annotate=annotate)
+            
+        else:
+            self.state.assign(state)
+            
         self._init_forms()
 
     def solve(self):
@@ -168,19 +265,21 @@ class MechanicsProblem(object):
         solver = NonlinearVariationalSolver(problem)
 
         try:
-            logger.debug('Try to solve without annotation')
+            logger.debug('Try to solve')
             nliter, nlconv = solver.solve()
             if not nlconv:
-                logger.debug('Failed to solve without annotation')
+                logger.debug('Failed')
                 raise SolverDidNotConverge("Solver did not converge...")
 
         except RuntimeError as ex:
-            logger.debug('Failed to solve without annotation')
+            logger.debug('Failed')
             logger.debug('Reintialize old state and raise exception')
 
             self.reinit(old_state)
 
             raise SolverDidNotConverge(ex)
+        else:
+            logger.debug('Sucess')
 
         return nliter, nlconv
 
@@ -191,6 +290,24 @@ class MechanicsProblem(object):
 
         fa = FunctionAssigner(V, D)
         u = Function(V, name='displacement')
-        fa.assign(u, self.state.split()[0],
-                  annotate=annotate)
+        if has_dolfin_adjoint:
+            fa.assign(u, self.state.split()[0],
+                      annotate=annotate)
+        else:
+            fa.assign(u, self.state.split()[0])
+            
         return u
+
+    @classmethod
+    def from_geometry(self, geometry):
+
+        if not hasattr(self, 'bcs_parameters'):
+            msg = ('Cannot update geometry wihout bcs_parameters '
+                   'Please provide bcs_parameters to the constructor')
+            raise AttributeError(msg)
+
+        self.material.update_geometry(geometry)
+        
+        MechanicsProblem.__init__(self, geometry=geometry,
+                                  material=self.material,
+                                  bcs_parameters=self.bcs_parameters)

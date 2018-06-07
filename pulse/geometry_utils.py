@@ -466,6 +466,9 @@ def generate_fibers(mesh, fiber_params):
                                         sheet_angle_epi,
                                         sheet_angle_endo)
 
+    if dolfin.DOLFIN_VERSION_MAJOR > 2016:
+        dolfin.parameters["form_compiler"]["representation"] = "uflacs"
+
     microstructures[0].rename("fiber",
                               "epi{}_endo{}".format(fiber_params["fiber_angle_epi"], 
                                                     fiber_params["fiber_angle_endo"]))

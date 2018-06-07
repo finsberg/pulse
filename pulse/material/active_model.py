@@ -101,4 +101,7 @@ class ActiveModel(kinematics.Invariants):
         """
         return self._activation
 
+    @activation.setter
+    def activation(self, f):
+        self._activation = f
 

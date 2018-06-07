@@ -33,8 +33,8 @@ except ImportError:
     from dolfin import Constant, Function, project
     
 from .. import kinematics
-from ..dolfin_utils import get_dimesion, RegionalParameter
-
+from .. import numpy_mpi
+from ..dolfin_utils import get_dimesion, RegionalParameter, update_function
 
 from .active_strain import ActiveStrain
 from .active_stress import ActiveStress
@@ -82,6 +82,7 @@ class Material(object):
                  active_model="active_strain", T_ref=None,
                  eta=0.0, isochoric=True,
                  compressible_model="incompressible",
+                 geometry=None,
                  f0=None, s0=None, n0=None, *args, **kwargs):
 
         # Parameters
@@ -89,23 +90,7 @@ class Material(object):
             parameters = self.default_parameters()
 
         self.parameters = parameters
-
-        for k, v in parameters.items():
-
-            if isinstance(v, (float, int)):
-                setattr(self, k, Constant(v))
-
-            elif isinstance(v, RegionalParameter):
-
-                setattr(self, k, Function(v.get_ind_space(), name=k))
-
-                mat = getattr(self, k)
-                matfun = v.get_function()
-                ind_space = v.get_ind_space()
-                mat.assign(project(matfun, ind_space))
-
-            else:
-                setattr(self, k, v)
+        self._set_parameter_attrs(geometry)
 
         # Active model
         assert active_model in \
@@ -121,6 +106,74 @@ class Material(object):
             self.active = ActiveStrain(*active_args)
 
         self.compressible_model = compressible_model
+
+        activation_element = self.activation.ufl_element()
+        if geometry is not None and activation_element.cell() is not None:
+            self.activation = update_function(geometry.mesh,
+                                              self.activation)
+
+    def _set_parameter_attrs(self, geometry=None):
+        for k, v in self.parameters.items():
+
+            if isinstance(v, (float, int)):
+                setattr(self, k, Constant(v))
+
+            elif isinstance(v, RegionalParameter):
+
+                if geometry is not None:
+
+                    v_new = RegionalParameter(geometry.sfun)
+                    numpy_mpi.\
+                        assign_to_vector(v_new.vector(),
+                                         numpy_mpi.
+                                         gather_broadcast(v.vector().get_local()))
+                    v = v_new
+
+                ind_space = v.get_ind_space()
+                setattr(self, k, Function(ind_space, name=k))
+
+                mat = getattr(self, k)
+
+                matfun = v.get_function()
+
+                mat.assign(project(matfun, ind_space))
+
+            else:
+
+                if geometry is not None and v.ufl_element().cell() is not None:
+                    v_new = update_function(geometry.mesh, v)
+                    v = v_new
+
+                setattr(self, k, v)
+
+    def update_geometry(self, geometry):
+
+        # Loop over the possible attributes containing
+        # a domain and update it
+        for m in ('f0', 's0', 'n0'):
+            setattr(self, m, getattr(geometry, m))
+
+        self._set_parameter_attrs(geometry)
+
+        activation_element = self.activation.ufl_element()
+        if activation_element.cell() is not None:
+
+            self.activation = update_function(geometry.mesh,
+                                              self.activation)
+
+    def copy(self, geometry=None):
+
+        if geometry is not None:
+            f0, s0, n0 = geometry.f0, geometry.s0, geometry.n0
+        else:
+            f0, s0, n0 = self.f0, self.s0, self.n0
+
+        return self.__class__(activation=self.activation,
+                              parameters=self.parameters,
+                              active_model=self.active_model,
+                              geometry=geometry,
+                              f0=f0, s0=s0, n0=n0,
+                              T_ref=float(self.active.T_ref))
 
     @property
     def name(self):
@@ -179,6 +232,10 @@ class Material(object):
         for each segment.
         """
         return self.active.activation
+
+    @activation.setter
+    def activation(self, f):
+        self.active.activation = f
 
     @property
     def activation_field(self):

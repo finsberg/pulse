@@ -30,8 +30,9 @@ if on_rtd:
     REQUIREMENTS = []
 else:
     REQUIREMENTS = [
-        "numpy>=1.13",
-        "h5py>=2.5"
+        "numpy>=1.13,<=1.14.3",
+        "h5py>=2.5,<2.8",
+        "scipy<=1.0.1",
     ]
 
 dependency_links = []

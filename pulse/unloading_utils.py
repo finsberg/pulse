@@ -3,27 +3,50 @@ import os
 import numpy as np
 import dolfin
 from . import numpy_mpi
-from .utils import logger, Object
+from .utils import make_logger
+from .io_utils import check_and_delete
+from .iterate import iterate, logger as logger_it
+from .dolfin_utils import get_pressure_dict
+
+from . import parameters
+logger = make_logger(__name__, parameters['log_level'])
+
+
+
+    
 
 
 class ResidualCalculator(object):
     def __init__(self, mesh):
-        self.mesh = mesh
-        d = self.mesh.topology().dim()
-        self.bbtree = dolfin.BoundingBoxTree()
-        local_points = [v.point() for v in dolfin.vertices(self.mesh)]
-        coords = [(p.x(), p.y(), p.z()) for p in local_points]
 
-        coords = numpy_mpi.\
-            gather_broadcast(np.array(coords).flatten())
-        coords.resize(len(coords)/d, d)
-        glob_points = [dolfin.Point(p) for p in coords]
-        self.bbtree.build(glob_points, 3)
+        try:
+            from scipy import spatial
+            
+        except ImportError:
+            logger.warning(('Scipy is not install. Residual in the unloading '
+                            'algorithm cannot be computed. Please install '
+                            'scipy "pip install scipy" if you want to compute '
+                            'the residual'))
+            self.bbtree = None
+
+        else:
+
+            self.mesh = mesh
+            d = self.mesh.topology().dim()
+            local_points = [v.point() for v in dolfin.vertices(self.mesh)]
+            coords = [(p.x(), p.y(), p.z()) for p in local_points]
+
+            coords = numpy_mpi.\
+                gather_broadcast(np.array(coords).flatten())
+            coords.resize(int(len(coords)/d), d)
+
+            self.bbtree = spatial.KDTree(coords)
 
     def calculate_residual(self, mesh2):
         boundmesh = dolfin.BoundaryMesh(mesh2, "exterior")
-        d = max([self.bbtree.compute_closest_point(dolfin.Vertex(boundmesh, v_idx).point())[1] \
-                 for v_idx in xrange(boundmesh.num_vertices())])
+        d = max([self.bbtree.query(dolfin.Vertex(boundmesh, v_idx).point().array())[0]
+                 for v_idx in range(boundmesh.num_vertices())])
+
         return dolfin.MPI.max(dolfin.mpi_comm_world(), d)
 
 
@@ -47,7 +70,6 @@ def save(obj, h5name, name, h5group=""):
     file_mode = "a" if os.path.isfile(h5name) else "w"
 
     if os.path.isfile(h5name):
-        from ..io_utils import check_and_delete
         check_and_delete(h5name, group)
         file_mode = "a"
     else:
@@ -96,11 +118,12 @@ def quad_to_xdmf(obj, h5name, h5group="", file_mode="w"):
                                   data=vecs)
 
 
-def inflate_to_pressure(pressure, problem, p_expr, ntries=5, n=2,
+def inflate_to_pressure(pressure, problem, ntries=5, n=2,
                         annotate=False):
 
     logger.debug("\nInflate geometry to p = {} kPa".format(pressure))
-    solve(pressure, problem, p_expr, ntries, n, annotate)
+    pressure_dict = get_pressure_dict(problem)
+    solve(pressure, problem, pressure_dict, ntries, n, annotate)
 
     return problem.get_displacement(annotate=annotate)
 
@@ -118,18 +141,19 @@ def print_volumes(geometry, logger=logger, is_biv=False):
 
 def solve(pressure, problem, p_expr, ntries=5, n=2, annotate=False):
 
-    dolfin.parameters["adjoint"]["stop_annotating"] = True
-    from ..iterate import iterate, logger as logger_it
+    if 'adjoint' in dolfin.parameters:
+        dolfin.parameters["adjoint"]["stop_annotating"] = True
+        
 
     level = logger_it.level
     logger_it.setLevel(dolfin.WARNING)
 
     ps, states = iterate("pressure", problem, pressure, p_expr)
 
-    if annotate:
+    if annotate and 'adjoint' in dolfin.parameters:
         # Only record the last solve, otherwise it becomes too
         # expensive memorywise.
-        dolfin.parameters["adjoint"]["stop_annotating"] = not annotate
+        dolfin.parameters["adjoint"]["stop_annotating"] = False
         problem.solve()
 
     logger_it.setLevel(level)
