@@ -1,9 +1,11 @@
+import warnings as _warnings
 try:
     from ffc.quadrature.deprecation import QuadratureRepresentationDeprecationWarning
-    import warnings
-    warnings.filterwarnings("ignore", category=QuadratureRepresentationDeprecationWarning)
+    _warnings.filterwarnings("ignore", category=QuadratureRepresentationDeprecationWarning)
 except:
     pass
+
+_warnings.filterwarnings("ignore", category=FutureWarning)
 
 from .setup_parameters import parameters
 from . import setup_parameters

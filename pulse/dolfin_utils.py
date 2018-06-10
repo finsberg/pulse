@@ -233,13 +233,24 @@ def get_constant(value_size, value_rank, val):
 def get_dimesion(u):
 
     # TODO : Check argument
+    try:
+        if dolfin.DOLFIN_VERSION_MAJOR > 1.6:
+            from ufl.domain import find_geometric_dimension
+            dim = find_geometric_dimension(u)
+        else:
+            dim = u.geometric_dimension()
 
-    if dolfin.DOLFIN_VERSION_MAJOR > 1.6:
-        from ufl.domain import find_geometric_dimension
-        dim = find_geometric_dimension(u)
-    else:
-        dim = u.geometric_dimension()
+    except Exception as ex:
 
+        try:
+            dim = len(u)
+        except Exception as ex2:
+            logger.warning(ex)
+            logger.warning(ex2)
+            # Assume dimension is 3
+            logger.warning("Assume dimension is 3")
+            dim = 3
+                
     return dim
 
 

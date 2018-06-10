@@ -33,8 +33,8 @@ def setup_unloading_parameters():
 
     params = dolfin.Parameters("Unloading_parameters")
 
-    params.add("method", "hybrid",
-               ["hybrid", "fixed_point", "raghavan"])
+    params.add("method", "fixed_point",
+               ["fixed_point", "raghavan"])
     # Terminate if difference in reference (unloaded) volume
     # is less than tol
     params.add("tol", 0.05)
