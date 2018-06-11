@@ -2,11 +2,11 @@ import numpy as np
 import dolfin
 
 try:
-    from dolfin_adjoint import (Function, interpolate,
+    from dolfin_adjoint import (Function, interpolate, Constant,
                                 project, assemble,
                                 FunctionAssigner)
 except ImportError:
-    from dolfin import (Function, interpolate,
+    from dolfin import (Function, interpolate, Constant,
                         project, assemble,
                         FunctionAssigner)
 
@@ -219,14 +219,30 @@ def get_cavity_volume(geometry, unload=False, chamber="lv", u=None):
     return vol
 
 
-def get_constant(value_size, value_rank, val):
+def get_constant(val, value_size=None, value_rank=0, constant=dolfin.Constant):
+
+    if isinstance(val, (Constant, dolfin.Constant)):
+        return val
+    
+    if value_size is None:
+        if np.isscalar(val):
+            value_size = 1
+        else:
+            try:
+                value_size = len(val)
+                val = np.array(val)
+            except Exception as ex:
+                logger.debug(ex)
+                # Hope for the best
+                value_size = 1
+                
     if value_size == 1:
         if value_rank == 0:
-            c = dolfin.Constant(val)
+            c = constant(val)
         else:
-            c = dolfin.Constant([val])
+            c = constant([val])
     else:
-        c = dolfin.Constant([val]*value_size)
+        c = constant([val]*value_size)
     return c
 
 

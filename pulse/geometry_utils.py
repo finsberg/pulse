@@ -513,6 +513,10 @@ def load_local_basis(h5file, lgroup, mesh, geo):
             lb = dolfin.Function(V, name=name)
             h5file.read(lb, lgroup+"/{}".format(name))
             setattr(geo, name, lb)
+    else:
+        setattr(geo, 'circumferential', None)
+        setattr(geo, 'radial', None)
+        setattr(geo, 'longitudinal', None)
 
 
 def load_microstructure(h5file, fgroup, mesh, geo, include_sheets=True):

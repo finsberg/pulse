@@ -6,13 +6,14 @@ import logging
 import dolfin
 
 try:
-    from dolfin_adjoint import Function
+    from dolfin_adjoint import Function, Constant
     has_dolfin_adjoint = True
 except ImportError:
-    from dolfin import Function
+    from dolfin import Function, Constant
     has_dolfin_adjoint = False
 
 from .utils import logger
+from .dolfin_utils import get_constant
 from . import numpy_mpi
 from .mechanicsproblem import SolverDidNotConverge
 
@@ -24,60 +25,80 @@ MAX_CRASH = 20
 MAX_ITERS = 40
     
 
-def get_diff(current, target, control):
+def get_diff(current, target):
 
-    if control == "gamma":
+    msg = ('Expected target and current to be of same type. '
+           'Got type(current) = {}, type(target) = {}'
+           ).format(type(current), type(target))
+    assert type(current) == type(target), msg
+
+    if isinstance(target, (Function, dolfin.Function)):
         diff = target.vector() - current.vector()
-        
-    elif control == "pressure":
-        diff = np.subtract(target, current)
 
+    elif isinstance(target, (Constant, dolfin.Constant)):
+        diff = np.subtract(float(target), float(current))
+    elif isinstance(target, (tuple, list)):
+        diff = np.subtract([float(t) for t in target],
+                           [float(c) for c in target])
     else:
-        raise ValueError("Unknown control mode {}".format(control))
+        try:
+            diff = np.subtract(target, current)
+        except Exception as ex:
+            logger.error(ex)
+            raise ValueError(("Unable to compute diff with type {}"
+                              "").format(type(current)))
 
     return diff
 
 
-def get_current_control_value(problem, expr, control):
+def get_current_control_value(control, value=None):
 
-    if control == "gamma":
-        return expr
+    if has_dolfin_adjoint and value is not None:
+        return value
 
-    elif control == "pressure":
-        if "p_rv" in expr:
+    # else:
+    #     return control
+    if isinstance(control, (Function, dolfin.Function)):
+        return control
 
-            return (float(expr["p_lv"]),
-                    float(expr["p_rv"]))
-        else:
-            return float(expr["p_lv"])
-
-
-def assign_new_control(control, control_mode, new_control):
-
-    if control_mode == "gamma":
-        control.assign(new_control)
+    elif isinstance(control, (Constant, dolfin.Constant)):
+        return float(control)
+    
+    elif isinstance(control, (tuple, list)):
+        return tuple(float(c) for c in control)
         
-    elif control_mode == "pressure":
-        if "p_rv" in control:
-            control["p_lv"].assign(new_control[0])
-            control["p_rv"].assign(new_control[1])
-        else:
-            control["p_lv"].assign(new_control)
-
     else:
-        raise ValueError("Unknown control mode {}".format(control_mode))
+        raise ValueError("Unknown control type {}".format(type(control)))
 
 
-def check_target_reached(problem, expr, control, target):
+def assign_new_control(control, new_control):
 
-    current = get_current_control_value(problem, expr,  control)
-    diff = get_diff(current, target, control)
+    msg = ('Expected old and new control to be of same type. '
+           'Got type(control) = {}, type(new_control) = {}'
+           ).format(type(control), type(new_control))
+    assert type(control) == type(new_control), msg
 
-    if control == "gamma":
+    if isinstance(control, (tuple, list)):
+        for c, n in zip(control, new_control):
+            c.assign(n)
+    else:
+        try:
+            control.assign(new_control)
+        except Exception as ex:
+            logger.error(ex)
+            raise ValueError(("Unable to assign control of type {}"
+                             "").format(type(control)))
+
+
+def check_target_reached(problem, current, target):
+
+    diff = get_diff(current, target)
+
+    if isinstance(diff, dolfin.GenericVector):
         diff.abs()
         max_diff = diff.max()
 
-    elif control == "pressure":
+    else:
         max_diff = np.max(abs(diff))
 
     reached = max_diff < 1e-6
@@ -90,38 +111,75 @@ def check_target_reached(problem, expr, control, target):
     return reached
 
 
-def get_initial_step(problem, expr, control, target):
+def copy(f, deepcopy=True):
 
-    current = get_current_control_value(problem, expr, control)
-    diff = get_diff(current, target, control)
+    if isinstance(f, (dolfin.Function, Function)):
+        return f.copy(deepcopy=deepcopy)
+    elif isinstance(f, dolfin.Constant):
+        return dolfin.Constant(f)
+    elif isinstance(f, Constant):
+        return Constant(f)
+    elif isinstance(f, (float, int)):
+        return f
+    elif isinstance(f, (list, tuple)):
+        l = []
+        for fi in f:
+            l.apply(copy(fi))
+        return tuple(l)
+    else:
+        return f    
 
-    if control == "gamma":
+
+def get_initial_step(problem, current, target, nsteps=None):
+
+    diff = get_diff(current, target)
+
+    if isinstance(diff, dolfin.GenericVector):
         max_diff = dolfin.norm(diff, 'linf')
-        nsteps = int(np.ceil(float(max_diff)/MAX_GAMMA_STEP) + 1)
-        step = Function(expr.function_space(), name="step")
+        if nsteps is None:
+            nsteps = int(np.ceil(float(max_diff)/MAX_GAMMA_STEP) + 1)
+        step = Function(current.function_space())
         step.vector().axpy(1.0/float(nsteps), diff)
 
-    elif control == "pressure":
+    else:
         max_diff = abs(np.max(diff))
         if hasattr(diff, "__len__") and len(diff) == 2:
             MAX_STEP = MAX_PRESSURE_STEP_BIV
         else:
             MAX_STEP = MAX_PRESSURE_STEP
 
-        nsteps = int(np.ceil(float(max_diff) / MAX_STEP)) + 1
+        if nsteps is None:
+            nsteps = int(np.ceil(float(max_diff) / MAX_STEP)) + 1
         step = diff/float(nsteps)
 
     logger.debug("Intial number of steps: {}".format(nsteps))
 
-    if control == "gamma":
-        return step, nsteps
+    # if control == "gamma":
+        # return step, nsteps
 
     return step
 
 
-def step_too_large(current, target, step, control):
+def constant2float(const):
 
-    if control == "gamma":
+    try:
+        c = float(const)
+    except TypeError:
+        c = np.zeros(len(const))
+        const.eval(c, c)
+
+    return c
+
+
+def step_too_large(current, target, step):
+
+    if isinstance(target, (Constant, dolfin.Constant)):
+
+        target = constant2float(target)
+        current = constant2float(current)
+        step = constant2float(step)
+
+    if isinstance(target, (dolfin.Function, Function)):
         diff_before = current.vector()[:] - target.vector()[:]
         diff_before_arr = numpy_mpi.gather_broadcast(diff_before.get_local())
 
@@ -129,7 +187,6 @@ def step_too_large(current, target, step, control):
             step.vector()[:] - target.vector()[:]
         diff_after_arr = numpy_mpi.gather_broadcast(diff_after.get_local())
 
-        # diff_after.axpy(-1.0, target.vector())
         if dolfin.norm(diff_after, 'linf') < dolfin.DOLFIN_EPS:
             # We will reach the target in next iteration
             return False
@@ -137,36 +194,36 @@ def step_too_large(current, target, step, control):
         return not all(np.sign(diff_before_arr) ==
                        np.sign(diff_after_arr))
 
-    elif control == "pressure":
+    elif isinstance(target, (float, int)):
+        comp = op.gt if current < target else op.lt
+        return comp(current + step, target)
+    else:
+        assert hasattr(target, "__len__")
 
-        if isinstance(target, (float, int)):
-            comp = op.gt if current < target else op.lt
-            return comp(current + step, target)
-        else:
-            assert hasattr(target, "__len__")
+        too_large = []
+        for (c, t, s) in zip(current, target, step):
+            comp = op.gt if c < t else op.lt
+            too_large.append(comp(c+s, t))
 
-            too_large = []
-            for (c, t, s) in zip(current, target, step):
-                comp = op.gt if c < t else op.lt
-                too_large.append(comp(c+s, t))
-
-            return any(too_large)
+        return any(too_large)
 
 
-def change_step_size(step, factor, control):
+def change_step_size(step, factor):
 
-    if control == "gamma":
+    if isinstance(step, (dolfin.Function, Function)):
         new_step = dolfin.Function(step.function_space())
         new_step.vector()[:] = factor*step.vector()[:]
-        # new_step.assign(factor*step)
 
-    elif control == "pressure":
+    else:
         new_step = np.multiply(factor, step)
 
     return new_step
 
 
 def print_control(control):
+
+    if isinstance(control, (Constant, dolfin.Constant)):
+        control = constant2float(control)
 
     def print_arr(arr):
 
@@ -207,6 +264,11 @@ def print_control(control):
 
 def get_delta(new_control, c0, c1):
 
+    if isinstance(c0, (Constant, dolfin.Constant)):
+        c0 = constant2float(c0)
+        c1 = constant2float(c1)
+        new_control = constant2float(new_control)
+
     if isinstance(new_control, (int, float)):
         return (new_control - c0) / float(c1 - c0)
 
@@ -225,157 +287,6 @@ def get_delta(new_control, c0, c1):
         c0_arr = numpy_mpi.gather_broadcast(c0.vector().get_local())
         c1_arr = numpy_mpi.gather_broadcast(c1.vector().get_local())
         return (new_control_arr[0] - c0_arr[0]) / float(c1_arr[0] - c0_arr[0])
-
-
-def iterate_pressure(problem, target, p_expr,
-                     continuation=True, max_adapt_iter=8, adapt_step=True,
-                     max_nr_crash=MAX_CRASH, max_iters=MAX_ITERS):
-    """
-    Using the given problem, iterate control to given target.
-
-    *Parameters*
-
-    problem (LVProblem)
-        The problem
-    target (dolfin.Function or tuple or float)
-        The target value. Typically a float if target is LVP, a tuple
-        if target is (LVP, RVP) and a function if target is gamma.
-    p_expr (dict)
-        A dictionary with expression for the pressure and keys
-        'p_lv' (and 'p_rv' if BiV)
-    continuation (bool)
-        Apply continuation for better guess for newton problem
-        Note: Replay test seems to fail when continuation is True,
-        but taylor test passes
-    max_adapt_iter (int)
-        If number of iterations is less than this number and adapt_step=True,
-        then adapt control step
-    adapt_step (bool)
-        Adapt / increase step size when sucessful iterations are achevied.
-
-    """
-    assert p_expr is not None, "provide the pressure"
-    assert isinstance(p_expr, dict), "p_expr should be a dictionray"
-    assert "p_lv" in p_expr, "p_expr do not have the key 'p_lv'"
-
-    target_reached = check_target_reached(problem, p_expr, "pressure", target)
-    logger.info("\nIterate Control: pressure")
-
-    step = get_initial_step(problem, p_expr, "pressure", target)
-    new_control = get_current_control_value(problem, p_expr, "pressure")
-
-    logger.info("Current value")
-    print_control(new_control)
-    control_values = [new_control]
-    prev_states = [problem.state.copy(deepcopy=True)]
-
-    ncrashes = 0
-    niters = 0
-
-    while not target_reached:
-
-        niters += 1
-        control_value_old = control_values[-1]
-        state_old = prev_states[-1]
-        
-        if ncrashes > MAX_CRASH or niters > 2*MAX_ITERS:
-
-            # Go to last converged state
-            assign_new_control(p_expr, "pressure", control_value_old)
-            problem.reinit(state_old)
-            raise SolverDidNotConverge
-
-        first_step = len(prev_states) < 2
-
-        # Check if we are close
-        if step_too_large(control_value_old, target, step, "pressure"):
-            logger.info("Change step size for final iteration")
-            # Change step size so that target is reached in the next iteration
-            step = target-control_value_old
-
-        new_control = get_current_control_value(problem, p_expr, "pressure")
-        new_control += step
-
-        assign_new_control(p_expr, "pressure", new_control)
-        logger.info("\nTry new pressure")
-        print_control(new_control)
-
-        # Prediction step (Make a better guess for newtons method)
-        # Assuming state depends continuously on the control
-        if not first_step and continuation:
-            c0, c1 = control_values[-2:]
-            s0, s1 = prev_states
-
-            delta = get_delta(new_control, c0, c1)
-
-            if has_dolfin_adjoint and \
-               not dolfin.parameters["adjoint"]["stop_annotating"]:
-                w = dolfin.Function(problem.state.function_space())
-
-                w.vector().zero()
-                w.vector().axpy(1.0-delta, s0.vector())
-                w.vector().axpy(delta, s1.vector())
-                problem.reinit(w, annotate=True)
-            else:
-                problem.state.vector().zero()
-                problem.state.vector().axpy(1.0-delta, s0.vector())
-                problem.state.vector().axpy(delta, s1.vector())
-
-        try:
-            nliter, nlconv = problem.solve()
-            if not nlconv:
-                raise SolverDidNotConverge("Problem did not converge")
-
-        except SolverDidNotConverge as ex:
-            logger.debug(ex)
-            logger.info("\nNOT CONVERGING")
-            logger.info("Reduce control step")
-            ncrashes += 1
-
-            new_control -= step
-
-            # Assign old state
-            logger.debug("Assign old state")
-            # problem.reinit(state_old)
-            problem.state.vector().zero()
-            problem.reinit(state_old)
-
-            # Assign old control value
-            logger.debug("Assign old control")
-            assign_new_control(p_expr, "pressure", new_control)
-            # Reduce step size
-            step = change_step_size(step, 0.5, "pressure")
-
-            continue
-
-        else:
-            ncrashes = 0
-            logger.info("\nSUCCESFULL STEP:")
-
-            target_reached = check_target_reached(problem, p_expr,
-                                                  "pressure", target)
-
-            if not target_reached:
-
-                if nliter < max_adapt_iter and adapt_step:
-                    logger.info("Adapt step size. New step size:")
-                    step = change_step_size(step, 1.5, "pressure")
-                    print_control(step)
-
-                control_values.append(new_control)
-
-                if first_step:
-                    prev_states.append(problem.state.copy(deepcopy=True))
-                else:
-
-                    # Switch place of the state vectors
-                    prev_states = [prev_states[-1], prev_states[0]]
-
-                    # Inplace update of last state values
-                    prev_states[-1].vector().zero()
-                    prev_states[-1].vector().axpy(1.0, problem.state.vector())
-
-    return control_values, prev_states
 
 
 def iterate_expression(problem, expr, attr, target, continuation=True,
@@ -508,17 +419,12 @@ def get_max(f):
     return numpy_mpi.gather_broadcast(f.vector().get_local()).max()
 
 
-def get_max_diff(f1, f2):
-    diff = f1.vector() - f2.vector()
-    diff.abs()
-    return diff.max()
+def iterate(problem, control, target,
+            continuation=True, max_adapt_iter=8,
+            adapt_step=True, old_states=None, old_controls=None,
+            max_nr_crash=MAX_CRASH, max_iters=MAX_ITERS,
+            initial_number_of_steps=None):
 
-
-def iterate_gamma(problem, target, gamma,
-                  continuation=True, max_adapt_iter=8,
-                  adapt_step=True, old_states=None, old_gammas=None,
-                  max_nr_crash=MAX_CRASH, max_iters=MAX_ITERS,
-                  initial_number_of_steps=None):
     """
     Using the given problem, iterate control to given target.
 
@@ -526,14 +432,11 @@ def iterate_gamma(problem, target, gamma,
 
     problem (LVProblem)
         The problem
-    target (dolfin.Function or tuple or float)
+    control (dolfin.Function or dolfin.Constant)
+        The control
+    target (dolfin.Function, dolfin.Constant, tuple or float)
         The target value. Typically a float if target is LVP, a tuple
         if target is (LVP, RVP) and a function if target is gamma.
-    control (str)
-        Control mode, so far either 'pressure' or 'gamma'
-    p_expr (dict)
-        A dictionary with expression for the pressure and keys
-        'p_lv' (and 'p_rv' if BiV)
     continuation (bool)
         Apply continuation for better guess for newton problem
         Note: Replay test seems to fail when continuation is True,
@@ -544,52 +447,44 @@ def iterate_gamma(problem, target, gamma,
     adapt_step (bool)
         Adapt / increase step size when sucessful iterations are achevied.
     """
-    old_gammas = [] if old_gammas is None else old_gammas
+    old_controls = [] if old_controls is None else old_controls
     old_states = [] if old_states is None else old_states
 
-    if isinstance(target, (float, int)):
-        target_ = Function(gamma.function_space())
-        target_.assign(dolfin.Constant(target))
-        target = target_
+    if isinstance(target, (float, int, list, np.ndarray)):
+        value_size = 1 if isinstance(target, (float, int)) else len(target)
+        target = get_constant(value_size=value_size, value_rank=0,
+                              val=target, constant=Constant)
 
-    elif isinstance(target, (list, np.ndarray)):
-        target_ = dolfin.Function(gamma.function_space())
-        numpy_mpi.assign_to_vector(target_.vector(), np.array(target))
-        target = target_
-
-    target_reached = check_target_reached(problem, gamma, "gamma", target)
-
-    if initial_number_of_steps is None:
-        step, nr_steps = get_initial_step(problem, gamma, "gamma", target)
     else:
-        nr_steps = initial_number_of_steps
-        diff = get_diff(gamma, target, "gamma")
-        step = Function(gamma.function_space(),
-                        name="gamma_step")
-        step.vector().axpy(1.0/float(nr_steps), diff)
+        msg = "Unknown targt type {}".format(type(target))
+        assert isinstance(target, (dolfin.Constant, Constant,
+                                   dolfin.Function, Function)), msg
 
-    logger.debug("\tGamma:    Mean    Max   ")
-    logger.debug("\tPrevious  {:.3f}  {:.3f}  ".format(get_mean(gamma),
-                                                       get_max(gamma)))
-    logger.debug("\tNext      {:.3f}  {:.3f} ".format(get_mean(target),
-                                                      get_max(target)))
+    target_reached = check_target_reached(problem, control, target)
 
-    g_previous = gamma.copy(deepcopy=True)
-    g_next = gamma.copy(deepcopy=True)
+    step = get_initial_step(problem, control,
+                            target, initial_number_of_steps)
 
-    control_values = [gamma.copy(deepcopy=True)]
-    prev_states = [problem.state.copy(deepcopy=True)]
+    # logger.debug("\tGamma:    Mean    Max   ")
+    # logger.debug("\tPrevious  {:.3f}  {:.3f}  ".format(get_mean(gamma),
+    #                                                    get_max(gamma)))
+    # logger.debug("\tNext      {:.3f}  {:.3f} ".format(get_mean(target),
+    #                                                   get_max(target)))
 
+    control_prev = None
+    control_next = None
     if has_dolfin_adjoint:
-        annotate = not dolfin.parameters["adjoint"]["stop_annotating"]
-    else:
-        annotate = False
-        
+        try:
+            control_prev = copy(control, deepcopy=True)
+            control_next = copy(control, deepcopy=True)
+        except Exception as ex:
+            pass
+
+    control_values = [copy(control)]
+    prev_states = [copy(problem.state)]
+
     ncrashes = 0
     niters = 0
-
-    logger.info("\n\tIncrement gamma...")
-    logger.info("\tMean \tMax")
 
     while not target_reached:
 
@@ -597,48 +492,59 @@ def iterate_gamma(problem, target, gamma,
         if ncrashes > max_nr_crash or niters > max_iters:
 
             problem.reinit(prev_states[0])
-            gamma.assign(control_values[0])
+            assign_new_control(control, control_values[0])
 
             raise SolverDidNotConverge
 
         state_old = prev_states[-1]
+        control_old = control_prev or control_values[-1]
 
         # Check if we are close
-        if step_too_large(g_previous, target, step, "gamma"):
+        if step_too_large(control_old, target, step):
             logger.info("Change step size for final iteration")
+            
             # Change step size so that target is reached in the next iteration
-            step = Function(target.function_space(),
-                            name='final step')
-            step.vector().axpy(1.0, target.vector())
-            step.vector().axpy(-1.0, g_previous.vector())
+            if isinstance(step, (dolfin.Function, Function)):
+                step = Function(target.function_space())
+                step.vector().axpy(1.0, target.vector())
+                step.vector().axpy(-1.0, control_old.vector())
+            else:
+                step = target - control_old
 
         # Increment gamma
-        g_next.vector()[:] += step.vector()[:]
-        assign_new_control(gamma, "gamma", g_next)
+        current_control = get_current_control_value(control, control_next)
+        if isinstance(current_control, (dolfin.Function, Function)):
+            current_control.vector()[:] += step.vector()[:]
+        else:
+            current_control += step
+            current_control = get_constant(current_control)
+        assign_new_control(control, current_control)
 
+        first_step = len(prev_states) < 2
         # Prediction step
         # Hopefully a better guess for the newton problem
-        if continuation and old_states:
+        if not first_step and continuation:
 
-            old_diffs = [dolfin.norm(gamma.vector() - g.vector(), "linf")
-                         for g in old_gammas]
+            c0, c1 = control_values[-2:]
+            s0, s1 = prev_states
 
-            cur_diff = dolfin.norm(step.vector(), "linf")
+            delta = get_delta(current_control, c0, c1)
 
-            if any([old_diff < cur_diff for old_diff in old_diffs]):
+            if has_dolfin_adjoint and \
+               not dolfin.parameters["adjoint"]["stop_annotating"]:
+                w = dolfin.Function(problem.state.function_space())
 
-                logger.info("Assign an old state")
-                idx = np.argmin(old_diffs)
-                state_old = old_states[idx]
+                w.vector().zero()
+                w.vector().axpy(1.0-delta, s0.vector())
+                w.vector().axpy(delta, s1.vector())
+                problem.reinit(w, annotate=True)
+            else:
+                problem.state.vector().zero()
+                problem.state.vector().axpy(1.0-delta, s0.vector())
+                problem.state.vector().axpy(delta, s1.vector())
 
-                problem.reinit(state_old, annotate=annotate)
-                prev_states.append(state_old)
-                control_values.append(old_gammas[idx])
-
-        # Try to solve
-        logger.info("\nTry new gamma")
-        logger.info("\t{:.3f} \t{:.3f}".format(get_mean(gamma),
-                                               get_max(gamma)))
+        logger.info("Try new control")
+        print_control(control)
         try:
             nliter, nlconv = problem.solve()
 
@@ -648,44 +554,43 @@ def iterate_gamma(problem, target, gamma,
             logger.info("Reduce control step")
             ncrashes += 1
 
-            assign_new_control(gamma, "gamma", g_previous)
+            assign_new_control(control, control_old)
 
             # Assign old state
             logger.debug("Assign old state")
             problem.state.vector().zero()
             problem.reinit(state_old)
 
-            step = change_step_size(step, 0.5, "gamma")
+            step = change_step_size(step, 0.5)
 
         else:
             ncrashes = 0
             logger.info("\nSUCCESFULL STEP:")
-            g_next = gamma.copy(deepcopy=True)
-            g_previous = gamma.copy(deepcopy=True)
+            if has_dolfin_adjoint:
+                try:
+                    control_prev = copy(control, deepcopy=True)
+                    control_next = copy(control, deepcopy=True)
+                except Exception as ex:
+                    pass
 
-            target_reached = check_target_reached(problem, gamma,
-                                                  "gamma", target)
+            target_reached = check_target_reached(problem, control, target)
             if not target_reached:
 
                 if nliter < max_adapt_iter and adapt_step:
                     logger.info("Adapt step size. New step size:")
-                    step = change_step_size(step, 1.5, "gamma")
+                    step = change_step_size(step, 1.5)
                     print_control(step)
 
-                control_values.append(gamma.copy(deepcopy=True))
-                prev_states.append(problem.state.copy(deepcopy=True))
+                control_values.append(copy(control, deepcopy=True))
 
-    return control_values, prev_states
+                if first_step:
+                    prev_states.append(problem.state.copy(deepcopy=True))
+                else:
 
+                    # Switch place of the state vectors
+                    prev_states = [prev_states[-1], prev_states[0]]
 
-def iterate(control, *args, **kwargs):
-
-    if control == "pressure":
-        return iterate_pressure(*args, **kwargs)
-
-    if control == "gamma":
-        return iterate_gamma(*args, **kwargs)
-
-    if control == "expression":
-        return iterate_expression(*args, **kwargs)
+                    # Inplace update of last state values
+                    prev_states[-1].vector().zero()
+                    prev_states[-1].vector().axpy(1.0, problem.state.vector())
 
