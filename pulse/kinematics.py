@@ -104,10 +104,12 @@ class Invariants(object):
         return I1
 
     def _I2(self, F):
-        raise NotImplementedError
+        C = RightCauchyGreen(F, self._isochoric)
+        return 0.5 * (self._I1(F) * self._I1(F) - tr(C * C))
 
     def _I3(self, F):
-        raise NotImplementedError
+        C = RightCauchyGreen(F, self._isochoric)
+        return det(C)
 
     def _I4(self, F, a0):
 
@@ -115,14 +117,21 @@ class Invariants(object):
         I4 = inner(C*a0, a0)
         return I4
 
-    def _I5(self, u, a0):
-        raise NotImplementedError
+    def _I5(self, F, a0):
+        C = RightCauchyGreen(F, self._isochoric)
+        I5 = inner(C*a0, C*a0)
+        return I5
 
-    def _I6(self, u, a0):
-        raise NotImplementedError
+    def _I6(self, F, a0):
+        return self._I4(F, a0)
+
+    def _I7(self, F, a0):
+        return self._I5(F, a0)
 
     def _I8(self, u, a0, b0):
-        raise NotImplementedError
+        C = RightCauchyGreen(F, self._isochoric)
+        I8 = inner(C*a0, C*b0)
+        return I8
 
 
 # Transforms #####

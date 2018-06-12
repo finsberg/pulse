@@ -1,4 +1,4 @@
-
+from .material_model import Material
 # Material models
 from .holzapfelogden import HolzapfelOgden
 from .guccione import Guccione
