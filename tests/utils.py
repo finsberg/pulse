@@ -35,7 +35,6 @@ def make_mechanics_problem(geometry):
     bcs_parameters = MechanicsProblem.default_bcs_parameters()
     bcs_parameters['base_spring'] = 1.0
     bcs_parameters['base_bc'] = 'fix_x'
-    
 
     problem = MechanicsProblem(geometry, material,
                                bcs_parameters=bcs_parameters)

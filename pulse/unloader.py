@@ -348,14 +348,7 @@ class FixedPointUnloader(MeshUnloader):
             logger.debug("Create new reference geometry")
             new_geometry = self.problem.geometry.copy(u=self.U, factor=-1.0)
 
-            # Compute volume of new reference geometry
-            logger.info(("LV Volume of new reference geometry = "
-                         "{:.3f} ml".format(new_geometry.
-                                            cavity_volume(chamber='lv'))))
-            if new_geometry.is_biv:
-                logger.info(("RV Volume of new reference geometry = "
-                             "{:.3f} ml".format(new_geometry.
-                                                cavity_volume(chamber="rv"))))
+            utils.print_volumes(new_geometry, txt='original')
             if save:
                 self.save(new_geometry.mesh,
                           "reference_geometry/mesh", str(it))
@@ -370,19 +363,11 @@ class FixedPointUnloader(MeshUnloader):
                                           self.parameters["solve_tries"],
                                           self.n, annotate=False)
 
-            logger.debug(("LV Volume of new inflated geometry +u= "
-                         "{:.3f} ml".format(new_geometry.
-                                            cavity_volume(chamber='lv', u=u))))
+            utils.print_volumes(new_geometry, txt='inflated', u=u)
 
             # Move the mesh accoring to the new displacement
             ed_geometry = problem.geometry.copy(u=u, factor=1.0)
-            logger.info(("LV Volume of new reference geometry = "
-                         "{:.3f} ml".format(ed_geometry.
-                                            cavity_volume(chamber='lv'))))
-            if new_geometry.is_biv:
-                logger.info(("RV Volume of new reference geometry = "
-                             "{:.3f} ml".format(ed_geometry.
-                                                cavity_volume(chamber="rv"))))
+            utils.print_volumes(ed_geometry, txt='new reference')
                 
             if save:
                 self.save(ed_geometry.mesh, "ed_geometry", str(it))

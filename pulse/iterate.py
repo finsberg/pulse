@@ -460,6 +460,12 @@ def iterate(problem, control, target,
         assert isinstance(target, (dolfin.Constant, Constant,
                                    dolfin.Function, Function)), msg
 
+    if not type(target) == type(control):
+        if isinstance(control, Function):
+            target_ = Function(control.function_space())
+            target_.assign(target)
+            target = target_
+
     target_reached = check_target_reached(problem, control, target)
 
     step = get_initial_step(problem, control,

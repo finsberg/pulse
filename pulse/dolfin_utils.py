@@ -77,6 +77,7 @@ def update_function(mesh, f):
                          gather_broadcast(f.vector().get_local()))
     return f_new
 
+
 def normalize_vector_field(u):
     """Given a vector field, return a vector field with an L2 norm equal to 1.0
     """
@@ -113,20 +114,20 @@ def vectorfield_to_components(u, S, dim):
     return components
 
 
-def get_pressure_dict(problem):
-    """Returns a dictionary with keys p_lv (and p_rv if BiV mesh)
-    and values being the traction on the endocardium
+def get_pressure(problem):
+    """Returns p_lv (and p_rv if BiV mesh)
     """
 
     plv = [p.traction for p in problem.bcs.neumann if p.name == 'lv']
     prv = [p.traction for p in problem.bcs.neumann if p.name == 'rv']
 
     assert len(plv) > 0, "Problem has no Neumann BC for LV endo"
-    pressure_dict = {'p_lv': plv[0]}
+    pressure = [plv[0]]
     if prv:
-        pressure_dict['p_rv'] = prv[0]
-
-    return pressure_dict
+        pressure.append(prv[0])
+        return tuple(pressure)
+    else:
+        return pressure[0]
 
 
 def read_hdf5(h5name, func, h5group="", comm=dolfin.mpi_comm_world()):

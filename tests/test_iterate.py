@@ -2,8 +2,7 @@ import pytest
 import itertools
 
 from pulse.example_meshes import mesh_paths
-from pulse.geometry import Geometry
-from pulse.parameters import setup_general_parameters
+from pulse.geometry import HeartGeometry
 from pulse.iterate import iterate
 
 try:
@@ -13,7 +12,7 @@ except ImportError:
     has_dolfin_adjoint = False
 
 import dolfin
-setup_general_parameters()
+
 
 has_dolfin_adjoint = False
 if has_dolfin_adjoint:
@@ -28,7 +27,7 @@ cases = itertools.product((False, True), annotates)
 @pytest.fixture
 def problem():
 
-    geometry = Geometry.from_file(mesh_paths['simple_ellipsoid'])
+    geometry = HeartGeometry.from_file(mesh_paths['simple_ellipsoid'])
     from utils import make_mechanics_problem
     problem = make_mechanics_problem(geometry)
 
@@ -40,14 +39,14 @@ def test_iterate_pressure(problem, continuation, annotate):
 
     target_pressure = 1.0
     plv = [p.traction for p in problem.bcs.neumann if p.name == 'lv']
-    pressure = {'p_lv': plv[0]}
+    pressure = plv[0]
 
     if has_dolfin_adjoint:
         dolfin.parameters["adjoint"]["stop_annotating"] = not annotate
         dolfin_adjoint.adj_reset()
 
-    iterate("pressure", problem,
-            target_pressure, pressure,
+    iterate(problem, pressure,
+            target_pressure,
             continuation=continuation)
 
     if annotate:
@@ -70,11 +69,11 @@ def test_iterate_gamma(problem, continuation, annotate):
         dolfin.parameters["adjoint"]["stop_annotating"] = not annotate
         dolfin_adjoint.adj_reset()
 
-    iterate("gamma", problem,
-            target_gamma, gamma,
+    iterate(problem, gamma,
+            target_gamma,
             continuation=continuation)
 
-    assert all(gamma.vector().array() == target_gamma)
+    assert all(gamma.vector().get_local() == target_gamma)
     assert dolfin.norm(problem.state.vector()) > 0
 
     if annotate:

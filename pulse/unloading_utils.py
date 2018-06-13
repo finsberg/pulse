@@ -6,14 +6,10 @@ from . import numpy_mpi
 from .utils import make_logger
 from .io_utils import check_and_delete
 from .iterate import iterate, logger as logger_it
-from .dolfin_utils import get_pressure_dict
+from .dolfin_utils import get_pressure
 
 from . import parameters
 logger = make_logger(__name__, parameters['log_level'])
-
-
-
-    
 
 
 class ResidualCalculator(object):
@@ -118,37 +114,34 @@ def quad_to_xdmf(obj, h5name, h5group="", file_mode="w"):
                                   data=vecs)
 
 
-def inflate_to_pressure(pressure, problem, ntries=5, n=2,
+def inflate_to_pressure(target_pressure, problem, ntries=5, n=2,
                         annotate=False):
 
-    logger.debug("\nInflate geometry to p = {} kPa".format(pressure))
-    pressure_dict = get_pressure_dict(problem)
-    solve(pressure, problem, pressure_dict, ntries, n, annotate)
+    logger.debug("\nInflate geometry to p = {} kPa".format(target_pressure))
+    pressure = get_pressure(problem)
+    solve(target_pressure, problem, pressure, ntries, n, annotate)
 
     return problem.get_displacement(annotate=annotate)
 
 
-def print_volumes(geometry, logger=logger, is_biv=False):
+def print_volumes(geometry, logger=logger, txt='original', u=None):
 
-    logger.info(("\nLV Volume of original geometry = "
-                 "{:.3f} ml".format(get_volume(geometry))))
-    if is_biv:
-        logger.info(("RV Volume of original geometry = "
-                     "{:.3f} ml".format(get_volume(geometry, chamber="rv"))))
-
-
+    logger.info(("\nLV Volume of {} geometry = {:.3f} ml"
+                 "").format(txt, geometry.cavity_volume(chamber='lv')))
+    if geometry.is_biv:
+        logger.info(("RV Volume of {} geometry = {:.3f} ml"
+                     "").format(txt, geometry.cavity_volume(chamber='rv')))
 
 
-def solve(pressure, problem, p_expr, ntries=5, n=2, annotate=False):
+def solve(target_pressure, problem, pressure, ntries=5, n=2, annotate=False):
 
     if 'adjoint' in dolfin.parameters:
         dolfin.parameters["adjoint"]["stop_annotating"] = True
-        
 
     level = logger_it.level
     logger_it.setLevel(dolfin.WARNING)
 
-    ps, states = iterate("pressure", problem, pressure, p_expr)
+    iterate(problem, pressure, target_pressure)
 
     if annotate and 'adjoint' in dolfin.parameters:
         # Only record the last solve, otherwise it becomes too

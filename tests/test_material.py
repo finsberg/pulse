@@ -5,7 +5,6 @@ import dolfin
 from pulse.geometry import (Geometry, Marker,
                             Microstructure, MarkerFunctions)
 from pulse.dolfin_utils import QuadratureSpace
-from pulse.parameters import setup_general_parameters
 from pulse import kinematics
 
 
@@ -15,8 +14,6 @@ from pulse.mechanicsproblem import (MechanicsProblem,
                                     BoundaryConditions,
                                     NeumannBC)
 
-
-setup_general_parameters()
 
 
 class Free(dolfin.SubDomain):

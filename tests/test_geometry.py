@@ -5,11 +5,7 @@ import numpy as np
 from pulse.example_meshes import mesh_paths
 from pulse.geometry import (Geometry, Marker, CRLBasis, HeartGeometry,
                             Microstructure, MarkerFunctions)
-from pulse.parameters import setup_general_parameters
 from pulse.dolfin_utils import QuadratureSpace
-
-
-setup_general_parameters()
 
 
 class Free(dolfin.SubDomain):
