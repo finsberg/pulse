@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 import numpy as np
 import operator as op
-import logging
-
 import dolfin
 
 try:
@@ -12,11 +10,14 @@ except ImportError:
     from dolfin import Function, Constant
     has_dolfin_adjoint = False
 
-from .utils import logger
-from .dolfin_utils import get_constant
-from . import numpy_mpi
-from .mechanicsproblem import SolverDidNotConverge
 
+from . import numpy_mpi
+from . import parameters
+from .mechanicsproblem import SolverDidNotConverge
+from .dolfin_utils import get_constant
+from .utils import make_logger
+
+logger = make_logger(__name__, parameters['log_level'])
 
 MAX_GAMMA_STEP = 0.05
 MAX_PRESSURE_STEP = 0.2
@@ -289,128 +290,6 @@ def get_delta(new_control, c0, c1):
         return (new_control_arr[0] - c0_arr[0]) / float(c1_arr[0] - c0_arr[0])
 
 
-def iterate_expression(problem, expr, attr, target, continuation=True,
-                       max_adapt_iter=8, adapt_step=True,
-                       max_nr_crash=MAX_CRASH, max_iters=MAX_ITERS,
-                       initial_number_of_steps=3, log_level=logging.INFO):
-    """
-    Iterate expression with attribute attr to target.
-    Increment until expr.attr = target
-
-    """
-
-    old_level = logger.level
-    logger.setLevel(log_level)
-    logger.info("\nIterate Control")
-
-    assert isinstance(expr, dolfin.Expression)
-    assert isinstance(target, (float, int))
-    if isinstance(target, int):
-        target = float(target)
-
-    val = getattr(expr, attr)
-    step = abs(target - val) / float(initial_number_of_steps)
-
-    logger.info("Current value: {}".format(val))
-    control_values = [float(val)]
-    prev_states = [problem.state.copy(deepcopy=True)]
-
-    ncrashes = 0
-    niters = 0
-
-    target_reached = (val == target)
-
-    while not target_reached:
-        niters += 1
-        if ncrashes > MAX_CRASH or niters > 2*MAX_ITERS:
-            raise SolverDidNotConverge
-
-        control_value_old = control_values[-1]
-        state_old = prev_states[-1]
-
-        first_step = len(prev_states) < 2
-
-        # Check if we are close
-        if step_too_large(control_value_old, target, step, "pressure"):
-            logger.info("Change step size for final iteration")
-            # Change step size so that target is reached in the next iteration
-            step = target-control_value_old
-
-        val = getattr(expr, attr)
-        val += step
-        setattr(expr, attr, val)
-        logger.info("\nTry new control: {}".format(val))
-
-        # Prediction step (Make a better guess for newtons method)
-        # Assuming state depends continuously on the control
-        if not first_step and continuation:
-            logger.debug("\nContinuation step")
-            c0, c1 = control_values[-2:]
-            s0, s1 = prev_states[-2:]
-
-            delta = get_delta(val, c0, c1)
-            if has_dolfin_adjoint and \
-               not dolfin.parameters["adjoint"]["stop_annotating"]:
-                w = dolfin.Function(problem.state.function_space())
-                w.vector().zero()
-                w.vector().axpy(1.0-delta, s0.vector())
-                w.vector().axpy(delta, s1.vector())
-                problem.reinit(w, annotate=True)
-            else:
-                problem.state.vector().zero()
-                problem.state.vector().axpy(1.0-delta, s0.vector())
-                problem.state.vector().axpy(delta, s1.vector())
-
-        try:
-            nliter, nlconv = problem.solve()
-            if not nlconv:
-                raise SolverDidNotConverge("Problem did not converge")
-        except SolverDidNotConverge as ex:
-            logger.debug(ex)
-            logger.info("\nNOT CONVERGING")
-            logger.info("Reduce control step")
-            ncrashes += 1
-
-            val = getattr(expr, attr)
-            val -= step
-            setattr(expr, attr, val)
-
-            # Assign old state
-            logger.debug("Assign old state")
-            # problem.reinit(state_old)
-            problem.state.vector().zero()
-            problem.reinit(state_old)
-
-            # Assign old control value
-            logger.debug("Assign old control")
-
-            # Reduce step size
-            step /= 2.0
-
-            continue
-
-        else:
-            ncrashes = 0
-            logger.info("\nSUCCESFULL STEP:")
-
-            val = getattr(expr, attr)
-            target_reached = (val == target)
-
-            if not target_reached:
-
-                if nliter < max_adapt_iter and adapt_step:
-                    step *= 1.5
-                    logger.info(("Adapt step size. "
-                                "New step size: {}").format(step))
-
-                control_values.append(float(val))
-
-                prev_states.append(problem.state.copy(deepcopy=True))
-
-    logger.setLevel(old_level)
-    return control_values, prev_states
-
-
 def get_mean(f):
     return numpy_mpi.gather_broadcast(f.vector().get_local()).mean()
 
@@ -447,6 +326,8 @@ def iterate(problem, control, target,
     adapt_step (bool)
         Adapt / increase step size when sucessful iterations are achevied.
     """
+    logger.setLevel(parameters['log_level'])
+
     old_controls = [] if old_controls is None else old_controls
     old_states = [] if old_states is None else old_states
 
@@ -470,12 +351,6 @@ def iterate(problem, control, target,
 
     step = get_initial_step(problem, control,
                             target, initial_number_of_steps)
-
-    # logger.debug("\tGamma:    Mean    Max   ")
-    # logger.debug("\tPrevious  {:.3f}  {:.3f}  ".format(get_mean(gamma),
-    #                                                    get_max(gamma)))
-    # logger.debug("\tNext      {:.3f}  {:.3f} ".format(get_mean(target),
-    #                                                   get_max(target)))
 
     control_prev = None
     control_next = None
