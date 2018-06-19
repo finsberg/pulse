@@ -20,6 +20,7 @@ from . import kinematics
 from . import parameters
 from .utils import set_default_none, make_logger, get_lv_marker
 from .geometry import HeartGeometry
+from .dolfin_utils import list_sum
 
 logger = make_logger(__name__, parameters['log_level'])
 
@@ -141,8 +142,7 @@ class MechanicsProblem(object):
             if bcs_parameters is not None:
                 self.bcs_parameters = MechanicsProblem.default_bcs_parameters()
                 self.bcs_parameters.update(**bcs_parameters)
-            
-            
+
         # Make sure that the material has microstructure information
         for attr in ("f0", "s0", "n0"):
             setattr(self.material, attr, getattr(self.geometry, attr))
@@ -181,10 +181,6 @@ class MechanicsProblem(object):
         # Some mechanical quantities
         F = dolfin.variable(kinematics.DeformationGradient(u))
         J = kinematics.Jacobian(F)
-
-        # Some geometrical quantities
-        N = self.geometry.facet_normal
-        ds = self.geometry.ds
         dx = self.geometry.dx
 
         internal_energy = self.material.strain_energy(F) \
@@ -194,6 +190,15 @@ class MechanicsProblem(object):
             = dolfin.derivative(internal_energy * dx,
                                 self.state, self.state_test)
 
+        self._virtual_work += self.external_work(u, p, v, q)
+
+        self._jacobian \
+            = dolfin.derivative(self._virtual_work, self.state,
+                                dolfin.TrialFunction(self.state_space))
+
+        self.set_dirichlet_bc()
+
+    def set_dirichlet_bc(self):
         # DirichletBC
         for dirichlet_bc in self.bcs.dirichlet:
 
@@ -213,24 +218,35 @@ class MechanicsProblem(object):
 
                 raise NotImplementedError(msg)
 
+    def external_work(self, u, p, v, q):
+
+        F = dolfin.variable(kinematics.DeformationGradient(u))
+
+        N = self.geometry.facet_normal
+        ds = self.geometry.ds
+        dx = self.geometry.dx
+
+        external_work = []
+        
         for neumann in self.bcs.neumann:
 
             n = neumann.traction * dolfin.cofac(F) * N
-            self._virtual_work += dolfin.inner(v, n) * ds(neumann.marker)
+            external_work.append(dolfin.inner(v, n) * ds(neumann.marker))
 
         for robin in self.bcs.robin:
 
-            self._virtual_work += dolfin.inner(robin.value * u, v) \
-                                  * ds(robin.marker)
+            external_work.append(dolfin.inner(robin.value * u, v)
+                                 * ds(robin.marker))
 
         for body_force in self.bcs.body_force:
 
-            self._virtual_work \
-                += -dolfin.derivative(dolfin.inner(body_force, u) * dx, u, v)
+            external_work.append(
+                -dolfin.derivative(dolfin.inner(body_force, u) * dx, u, v))
 
-        self._jacobian \
-            = dolfin.derivative(self._virtual_work, self.state,
-                                dolfin.TrialFunction(self.state_space))
+        if len(external_work) > 0:
+            return list_sum(external_work)
+        else:
+            return dolfin.Constant(0.0)
 
     def reinit(self, state, annotate=False):
         """Reinitialze state

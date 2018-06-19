@@ -4,6 +4,7 @@ import os
 import logging
 
 import dolfin
+from . import parameters
 
 
 def set_default_none(NamedTuple, default=None):
@@ -16,7 +17,7 @@ class Object(object):
     pass
 
 
-def make_logger(name, level=logging.INFO):
+def make_logger(name, level=parameters['log_level']):
 
     def log_if_process0(record):
         if dolfin.MPI.rank(dolfin.mpi_comm_world()) == 0:
@@ -55,7 +56,7 @@ def make_logger(name, level=logging.INFO):
     return logger
 
 
-logger = make_logger("Adjoint_Contraction", 10)
+logger = make_logger(__name__)
 
 
 def number_of_passive_controls(params):
