@@ -313,17 +313,3 @@ class MechanicsProblem(object):
             fa.assign(u, self.state.split()[0])
             
         return u
-
-    @classmethod
-    def from_geometry(self, geometry):
-
-        if not hasattr(self, 'bcs_parameters'):
-            msg = ('Cannot update geometry wihout bcs_parameters '
-                   'Please provide bcs_parameters to the constructor')
-            raise AttributeError(msg)
-
-        self.material.update_geometry(geometry)
-        
-        MechanicsProblem.__init__(self, geometry=geometry,
-                                  material=self.material,
-                                  bcs_parameters=self.bcs_parameters)
