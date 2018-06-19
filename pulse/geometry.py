@@ -2,7 +2,7 @@
 from collections import namedtuple
 import dolfin
 
-from .geometry_utils import load_geometry_from_h5, move
+from .geometry_utils import load_geometry_from_h5, move, logger as logger_utils
 
 from . import numpy_mpi
 from . import parameters
@@ -61,6 +61,9 @@ class Geometry(object):
             geo = Geometry.from_file("geometry.h5")
 
     """
+    logger.setLevel(parameters['log_level'])
+    logger_utils.setLevel(parameters['log_level'])
+
     def __init__(self, mesh,
                  markers=None,
                  marker_functions=None,
@@ -329,9 +332,7 @@ class Geometry(object):
 class HeartGeometry(Geometry):
     def __init__(self, *args, **kwargs):
         super(HeartGeometry, self).__init__(*args, **kwargs)
-
-    # def copy(self, u=None, factor=1.0):
-        # return HeartGeometry(**self._copy(u, factor))
+        self.xshift = 0.0
 
     @property
     def is_biv(self):
@@ -339,5 +340,25 @@ class HeartGeometry(Geometry):
 
     def cavity_volume(self, chamber="lv", u=None):
 
-        return get_cavity_volume(self, chamber=chamber, u=u)
-                 
+        return get_cavity_volume(self, chamber=chamber, u=u,
+                                 xshift=self.xshift)
+
+    @property
+    def base_mean_position(self):
+        """
+        Return mean coordinates of the base
+        (serial only?)
+        """
+        import numpy as np
+        facet_indices, = np.where(self.ffun.array()
+                                  == self.markers["BASE"][0])
+        point_inidces = []
+        for facet in dolfin.facets(self.mesh):
+            if facet.index() in facet_indices:
+                point_inidces.extend(facet.entities(0).tolist())
+
+        return np.mean(self.mesh.coordinates()[point_inidces, :], 0)
+
+    def update_xshift(self):
+
+        self.xshift = self.base_mean_position[0]

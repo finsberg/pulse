@@ -5,11 +5,11 @@ import dolfin
 
 from . import numpy_mpi
 from . import io_utils
-# from . import config
+from . import parameters
 from .utils import make_logger
 
 
-logger = make_logger(__name__, 10)
+logger = make_logger(__name__, parameters['log_level'])
 
 
 def move(mesh, u, factor=1.0):
