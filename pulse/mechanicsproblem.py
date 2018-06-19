@@ -190,7 +190,7 @@ class MechanicsProblem(object):
             = dolfin.derivative(internal_energy * dx,
                                 self.state, self.state_test)
 
-        self._virtual_work += self.external_work(u, p, v, q)
+        self._virtual_work += self.external_work(u, v)
 
         self._jacobian \
             = dolfin.derivative(self._virtual_work, self.state,
@@ -218,7 +218,7 @@ class MechanicsProblem(object):
 
                 raise NotImplementedError(msg)
 
-    def external_work(self, u, p, v, q):
+    def external_work(self, u, v):
 
         F = dolfin.variable(kinematics.DeformationGradient(u))
 
