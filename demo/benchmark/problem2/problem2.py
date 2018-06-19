@@ -11,7 +11,7 @@ import dolfin
 import pulse
 
 
-geometry = pulse.HeartGeometry.from_file(pulse.mesh_paths['bechmark'])
+geometry = pulse.HeartGeometry.from_file(pulse.mesh_paths['benchmark'])
 
 # Create the material
 material_parameters = pulse.Guccione.default_parameters()
