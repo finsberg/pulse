@@ -178,9 +178,7 @@ def compute_meshvolume(domain=None, dx=dolfin.dx, subdomain_id=None):
                                  subdomain_id=subdomain_id)))
 
 
-def get_cavity_volume(geometry, unload=False, chamber="lv", u=None):
-
-    from . import kinematics
+def get_cavity_volume(geometry, unload=False, chamber="lv", u=None, xshift=0.0):
 
     if unload:
         mesh = geometry.original_geometry
@@ -205,7 +203,16 @@ def get_cavity_volume(geometry, unload=False, chamber="lv", u=None):
                         subdomain_data=ffun,
                         domain=mesh)(endo_marker)
 
-    X = dolfin.SpatialCoordinate(mesh)
+    vol_form = get_cavity_volume_form(geometry.mesh, unload, chamber, u, xshift)
+    return assemble(vol_form * ds)
+
+
+def get_cavity_volume_form(mesh, unload=False, chamber="lv", u=None, xshift=0.0):
+
+    from . import kinematics
+
+    shift = dolfin.Constant((xshift, 0.0, 0.0))
+    X = dolfin.SpatialCoordinate(mesh) - shift
     N = dolfin.FacetNormal(mesh)
 
     if u is None:
@@ -216,8 +223,7 @@ def get_cavity_volume(geometry, unload=False, chamber="lv", u=None):
         vol_form = (-1.0/3.0) * dolfin.dot(X + u,
                                            J * dolfin.inv(F).T * N)
 
-    vol = assemble(vol_form * ds)
-    return vol
+    return vol_form
 
 
 def get_constant(val, value_size=None, value_rank=0, constant=dolfin.Constant):
