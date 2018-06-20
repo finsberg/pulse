@@ -1,6 +1,6 @@
 # pulse
 A software for solving problems in cardiac mechanics.
-The code in this repo used to be part of [pulse-ajoint](https://bitbucket.org/finsberg/pulse_adjoint), but now works as a standalone mechanics solver without the need for dolfin-adjoint
+The code in this repo used to be part of [pulse-adjoint](https://bitbucket.org/finsberg/pulse_adjoint), but now works as a standalone mechanics solver without the need for dolfin-adjoint
 
 ## Installation intructions
 Install with python
