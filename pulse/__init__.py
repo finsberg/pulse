@@ -10,6 +10,8 @@ _warnings.filterwarnings("ignore", category=FutureWarning)
 from .setup_parameters import parameters
 from . import setup_parameters
 
+from .utils import annotate
+
 setup_parameters.setup_general_parameters()
 
 from collections import namedtuple

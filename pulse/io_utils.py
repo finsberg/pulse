@@ -125,3 +125,12 @@ def check_and_delete(h5name, h5group, comm=dolfin.mpi_comm_world()):
 
                     logger.debug("Deleting existing group: '{}'".format(h5group))
                     del h5file[h5group]
+
+
+def read_h5file(h5file, obj, group, *args, **kwargs):
+
+    # Hack in order to work with fenics-adjoint
+    if not hasattr(obj, 'create_block_variable'):
+        obj.create_block_variable = lambda: None
+
+    h5file.read(obj, group, *args, **kwargs)

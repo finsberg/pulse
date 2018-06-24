@@ -7,6 +7,41 @@ import dolfin
 from . import parameters
 
 
+class Annotation(object):
+    """
+    Object holding global annotation for dolfin-adjoint
+    """
+    def __init__(self):
+        self.annotate = False
+
+    @property
+    def annotate(self):
+        return self._annotate
+
+    @annotate.setter
+    def annotate(self, annotate=False):
+        """
+        Set global annotation for dolfin-adjoint.
+        Default False
+        """
+        if 'adjoint' in dolfin.parameters:
+            dolfin.parameters["adjoint"]["stop_annotating"] = not annotate
+        else:
+            try:
+                from pyadjoint.tape import _stop_annotating
+            except ImportError:
+                # Dolfin-adjoint is most likely not installed
+                pass
+            else:
+                _stop_annotating = not annotate
+
+        # Update local variable
+        self._annotate = annotate
+
+
+annotate = Annotation()
+
+
 def set_default_none(NamedTuple, default=None):
     NamedTuple.__new__.__defaults__ = (default,) \
                                       * len(NamedTuple._fields)

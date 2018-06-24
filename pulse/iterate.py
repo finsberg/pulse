@@ -12,7 +12,7 @@ except ImportError:
 
 
 from . import numpy_mpi
-from . import parameters
+from . import parameters, annotate
 from .mechanicsproblem import SolverDidNotConverge
 from .dolfin_utils import get_constant
 from .utils import make_logger
@@ -28,10 +28,10 @@ MAX_ITERS = 40
 
 def get_diff(current, target):
 
-    msg = ('Expected target and current to be of same type. '
-           'Got type(current) = {}, type(target) = {}'
-           ).format(type(current), type(target))
-    assert type(current) == type(target), msg
+    # msg = ('Expected target and current to be of same type. '
+    #        'Got type(current) = {}, type(target) = {}'
+    #        ).format(type(current), type(target))
+    # assert type(current) == type(target), msg
 
     if isinstance(target, (Function, dolfin.Function)):
         diff = target.vector() - current.vector()
@@ -411,8 +411,7 @@ def iterate(problem, control, target,
 
             delta = get_delta(current_control, c0, c1)
 
-            if has_dolfin_adjoint and \
-               not dolfin.parameters["adjoint"]["stop_annotating"]:
+            if has_dolfin_adjoint and annotate.annotate:
                 w = dolfin.Function(problem.state.function_space())
 
                 w.vector().zero()

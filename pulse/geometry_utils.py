@@ -148,8 +148,7 @@ def load_geometry_from_h5(h5name, h5group="",
 
         # Load mesh
         mesh = dolfin.Mesh(comm)
-        # h5file.read(mesh, mgroup, False)
-        h5file.read(mesh, mgroup, True)
+        io_utils.read_h5file(h5file, mesh, mgroup, True)
         geo.mesh = mesh
 
         # Get mesh functions
@@ -157,8 +156,10 @@ def load_geometry_from_h5(h5name, h5group="",
 
             dgroup = '{}/mesh/meshfunction_{}'.format(ggroup, dim)
             mf = dolfin.MeshFunction("size_t", mesh, dim, mesh.domains())
+
             if h5file.has_dataset(dgroup):
-                h5file.read(mf, dgroup)
+                io_utils.read_h5file(h5file, mf, dgroup)
+                
 
             setattr(geo, attr, mf)
 
@@ -173,7 +174,7 @@ def load_geometry_from_h5(h5name, h5group="",
         origmeshgroup = "{}/original_geometry".format(h5group)
         if h5file.has_dataset(origmeshgroup):
             original_mesh = dolfin.Mesh(comm)
-            h5file.read(original_mesh, origmeshgroup, True)
+            io_utils.read_h5file(h5file, original_mesh, origmeshgroup, True)
             setattr(geo, "original_geometry", original_mesh)
 
     return geo
@@ -511,7 +512,8 @@ def load_local_basis(h5file, lgroup, mesh, geo):
 
         for name in names:
             lb = dolfin.Function(V, name=name)
-            h5file.read(lb, lgroup+"/{}".format(name))
+
+            io_utils.read_h5file(h5file, lb, lgroup+"/{}".format(name))
             setattr(geo, name, lb)
     else:
         setattr(geo, 'circumferential', None)
@@ -558,7 +560,8 @@ def load_microstructure(h5file, fgroup, mesh, geo, include_sheets=True):
         for i, name in enumerate(names):
             func = dolfin.Function(V, name=name)
             fsubgroup = fgroup+"/{}".format(name)
-            h5file.read(func, fsubgroup)
+
+            io_utils.read_h5file(h5file, func, fsubgroup)
 
             setattr(geo, attrs[i], func)
 
