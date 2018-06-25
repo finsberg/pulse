@@ -45,6 +45,7 @@ jobs:
       - run:
           name: run tests
           command: |
+            pip uninstall mpi4py -y
             python3 -m pytest -v tests
 
       - save_cache:
