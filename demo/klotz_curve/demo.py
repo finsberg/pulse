@@ -107,8 +107,8 @@ def main():
 
     def fix_basal_plane(W):
         V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
-        bc = dolfin.DirichletBC(V.sub(0),
-                                dolfin.Constant(0.0),
+        bc = dolfin.DirichletBC(V,
+                                dolfin.Constant((0.0, 0.0, 0.0)),
                                 geometry.ffun, geometry.markers["BASE"][0])
         return bc
 
