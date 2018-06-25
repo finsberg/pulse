@@ -1,5 +1,5 @@
 # pulse
-(https://circleci.com/gh/:finsberg/:pulse.svg?style=shield&circle-token=:circle-token)
+[![CircleCI](https://circleci.com/gh/finsberg/pulse.svg?style=svg)](https://circleci.com/gh/finsberg/pulse)
 
 A software for solving problems in cardiac mechanics.
 The code in this repo used to be part of [pulse-adjoint](https://bitbucket.org/finsberg/pulse_adjoint), but now works as a standalone mechanics solver without the need for dolfin-adjoint
