@@ -4,12 +4,12 @@
 A software for solving problems in cardiac mechanics.
 The code in this repo used to be part of [pulse-adjoint](https://bitbucket.org/finsberg/pulse_adjoint), but now works as a standalone mechanics solver without the need for dolfin-adjoint
 
-## Installation intructions
+## Installation instructions
 First install the requrements
 ```
 pip install -r requirements.txt
 ```
-Then install pulse with python
+then install pulse with python
 ```
 python setup.py install --prefix=/path/to/install/directory
 ```
