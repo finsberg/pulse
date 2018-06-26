@@ -66,14 +66,14 @@ def copy_h5group(h5name, src, dst, comm=None, overwrite=False):
 
 def open_h5py(h5name, file_mode="a", comm=dolfin.mpi_comm_world()):
 
-    if has_mpi4py and has_petsc4py:
-        assert isinstance(comm, (petsc4py.PETSc.Comm, mpi4py.MPI.Intracomm))
+    if parallel_h5py:
+        if has_mpi4py and has_petsc4py:
+            assert isinstance(comm, (petsc4py.PETSc.Comm, mpi4py.MPI.Intracomm))
 
-        if parallel_h5py:
-            if isinstance(comm, petsc4py.PETSc.Comm):
-                comm = comm.tompi4py()
+        if isinstance(comm, petsc4py.PETSc.Comm):
+            comm = comm.tompi4py()
 
-        return h5py.File(h5name, file_mode, driver='mpio', comm=comm)
+        return h5py.File(h5name, file_mode, comm=comm)
     else:
         return h5py.File(h5name, file_mode)
 
