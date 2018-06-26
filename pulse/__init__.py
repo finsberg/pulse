@@ -6,7 +6,7 @@ except:
     pass
 
 _warnings.filterwarnings("ignore", category=FutureWarning)
-
+import h5py
 from .setup_parameters import parameters
 from . import setup_parameters
 
