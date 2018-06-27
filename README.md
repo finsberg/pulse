@@ -18,7 +18,7 @@ or install with pip
 pip install .
 ```
 
-## Requrirements
+## Requirements
 * FEniCS verision 2016.x or 2017
 
 Note that if you install FEniCS using anaconda then you will not get support for paralell HDF5
