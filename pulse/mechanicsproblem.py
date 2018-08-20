@@ -192,10 +192,6 @@ class MechanicsProblem(object):
 
         self._virtual_work += self._external_work(u, v)
 
-        self._jacobian \
-            = dolfin.derivative(self._virtual_work, self.state,
-                                dolfin.TrialFunction(self.state_space))
-
         self._set_dirichlet_bc()
 
     def _set_dirichlet_bc(self):
@@ -269,6 +265,11 @@ class MechanicsProblem(object):
            \delta W = 0
 
         """
+
+        self._jacobian \
+            = dolfin.derivative(self._virtual_work, self.state,
+                                dolfin.TrialFunction(self.state_space))
+        
         logger.debug('Solving variational problem')
         # Get old state in case of non-convergence
         old_state = self.state.copy(deepcopy=True)
