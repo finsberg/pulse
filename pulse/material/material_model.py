@@ -101,14 +101,20 @@ class Material(object):
                        T_ref, isochoric)
         # Activation
         if active_model == "active_stress":
-            self.active = ActiveStress(*active_args, eta=eta)
+            self.active = ActiveStress(*active_args, eta=eta,
+                                       **kwargs)
         else:
             self.active = ActiveStrain(*active_args)
 
         self.compressible_model = compressible_model
 
-        activation_element = self.activation.ufl_element()
-        if geometry is not None and activation_element.cell() is not None:
+        try:
+            activation_element = self.activation.ufl_element()
+            cell = activation_element.cell()
+        except AttributeError:
+            cell = activation.cell()
+            
+        if geometry is not None and cell is not None:
             self.activation = update_function(geometry.mesh,
                                               self.activation)
 

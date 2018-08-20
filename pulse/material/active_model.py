@@ -48,7 +48,7 @@ class ActiveModel(kinematics.Invariants):
     def __init__(self, activation=None,
                  f0=None, s0=None,
                  n0=None, T_ref=None,
-                 isochoric=True, *args):
+                 isochoric=True, *args, **kwargs):
 
         # Fiber system
         self.f0 = f0
