@@ -10,7 +10,9 @@ geometry = pulse.Geometry.from_file(pulse.mesh_paths['simple_ellipsoid'])
 # ax.view_init(elev=-67, azim=-179)
 # ax.set_axis_off()
 # plt.show()
-
+f = dolfin.File('mesh.pvd')
+f << geometry.mesh
+exit()
 activation = dolfin.Function(dolfin.FunctionSpace(geometry.mesh, "R", 0))
 activation.assign(dolfin.Constant(0.2))
 matparams = pulse.HolzapfelOgden.default_parameters()

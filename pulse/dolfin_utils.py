@@ -3,12 +3,12 @@ import dolfin
 
 try:
     from dolfin_adjoint import (Function, interpolate, Constant,
-                                project, assemble,
-                                FunctionAssigner)
+                                FunctionSpace,
+                                project, assemble)
 except ImportError:
     from dolfin import (Function, interpolate, Constant,
-                        project, assemble,
-                        FunctionAssigner)
+                        FunctionSpace,
+                        project, assemble)
 
 
 from . import utils
@@ -170,12 +170,11 @@ def map_displacement(u, old_space, new_space, approx):
 
 
 def compute_meshvolume(domain=None, dx=dolfin.dx, subdomain_id=None):
-    return dolfin\
-        .Constant(dolfin
-                  .assemble(dolfin
-                            .Constant(1.0)
-                            * dx(domain=domain,
-                                 subdomain_id=subdomain_id)))
+    return Constant(dolfin
+                    .assemble(dolfin
+                              .Constant(1.0)
+                              * dx(domain=domain,
+                                   subdomain_id=subdomain_id)))
 
 
 def get_cavity_volume(geometry, unload=False, chamber="lv", u=None, xshift=0.0):
@@ -203,15 +202,15 @@ def get_cavity_volume(geometry, unload=False, chamber="lv", u=None, xshift=0.0):
                         subdomain_data=ffun,
                         domain=mesh)(endo_marker)
 
-    vol_form = get_cavity_volume_form(geometry.mesh, unload, chamber, u, xshift)
+    vol_form = get_cavity_volume_form(geometry.mesh, u, xshift)
     return assemble(vol_form * ds)
 
 
-def get_cavity_volume_form(mesh, unload=False, chamber="lv", u=None, xshift=0.0):
+def get_cavity_volume_form(mesh, u=None, xshift=0.0):
 
     from . import kinematics
 
-    shift = dolfin.Constant((xshift, 0.0, 0.0))
+    shift = Constant((xshift, 0.0, 0.0))
     X = dolfin.SpatialCoordinate(mesh) - shift
     N = dolfin.FacetNormal(mesh)
 
@@ -384,7 +383,7 @@ def QuadratureSpace(mesh, degree, dim=3):
                                            degree=degree,
                                            quad_scheme="default")
 
-        return dolfin.FunctionSpace(mesh, element)
+        return FunctionSpace(mesh, element)
     else:
         if dim == 1:
             return dolfin.FunctionSpace(mesh, "Quadrature", degree)
@@ -553,7 +552,7 @@ class MixedParameter(Function):
 
         # Create a function assigner
         self.function_assigner \
-            = [FunctionAssigner(W.sub(i), V) for i in range(n)]
+            = [dolfin.FunctionAssigner(W.sub(i), V) for i in range(n)]
 
         # Store the original function space
         self.basespace = V

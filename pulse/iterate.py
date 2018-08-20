@@ -74,10 +74,10 @@ def get_current_control_value(control, value=None):
 
 def assign_new_control(control, new_control):
 
-    msg = ('Expected old and new control to be of same type. '
-           'Got type(control) = {}, type(new_control) = {}'
-           ).format(type(control), type(new_control))
-    assert type(control) == type(new_control), msg
+    # msg = ('Expected old and new control to be of same type. '
+    #        'Got type(control) = {}, type(new_control) = {}'
+    #        ).format(type(control), type(new_control))
+    # assert type(control) == type(new_control), msg
 
     if isinstance(control, (tuple, list)):
         for c, n in zip(control, new_control):

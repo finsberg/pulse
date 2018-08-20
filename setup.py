@@ -26,14 +26,14 @@ on_rtd = os.environ.get('READTHEDOCS') == 'True'
 #     scripts.extend(batch_files)
 
 
-if on_rtd:
-    REQUIREMENTS = []
-else:
-    REQUIREMENTS = [
-        "numpy>=1.13,<=1.14.3",
-        "h5py>=2.5,<2.8",
-        "scipy<=1.0.1",
-    ]
+# if on_rtd:
+#     REQUIREMENTS = []
+# else:
+#     REQUIREMENTS = [
+#         "numpy>=1.13,<=1.14.3",
+#         "h5py>=2.5,<2.8",
+#         "scipy<=1.0.1",
+#     ]
 
 dependency_links = []
 
@@ -44,7 +44,7 @@ setup(name="pulse",
       author="Henrik Finsberg",
       author_email="henriknf@simula.no",
       license="LGPL version 3 or later",
-      install_requires=REQUIREMENTS,
+      # install_requires=REQUIREMENTS,
       dependency_links=dependency_links,
       packages=['pulse',
                 'pulse.material',

@@ -6,6 +6,7 @@ except:
     pass
 
 _warnings.filterwarnings("ignore", category=FutureWarning)
+_warnings.filterwarnings("ignore", category=UserWarning)
 
 from .setup_parameters import parameters
 from . import setup_parameters

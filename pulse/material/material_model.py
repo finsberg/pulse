@@ -116,7 +116,7 @@ class Material(object):
         for k, v in self.parameters.items():
 
             if isinstance(v, (float, int)):
-                setattr(self, k, Constant(v))
+                setattr(self, k, Constant(v, name=k))
 
             elif isinstance(v, RegionalParameter):
 

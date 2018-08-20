@@ -3,6 +3,11 @@ import numpy as np
 import h5py
 import dolfin
 
+try:
+    from dolfin_adjoint import Constant, Function
+except ImportError:
+    from dolfin import Constant, Function
+
 from . import numpy_mpi
 from . import io_utils
 from . import parameters
@@ -511,7 +516,7 @@ def load_local_basis(h5file, lgroup, mesh, geo):
             V = dolfin.VectorFunctionSpace(mesh, family, int(order))
 
         for name in names:
-            lb = dolfin.Function(V, name=name)
+            lb = Function(V, name=name)
 
             io_utils.read_h5file(h5file, lb, lgroup+"/{}".format(name))
             setattr(geo, name, lb)
@@ -558,7 +563,7 @@ def load_microstructure(h5file, fgroup, mesh, geo, include_sheets=True):
 
         attrs = ["f0", "s0", "n0"]
         for i, name in enumerate(names):
-            func = dolfin.Function(V, name=name)
+            func = Function(V, name=name)
             fsubgroup = fgroup+"/{}".format(name)
 
             io_utils.read_h5file(h5file, func, fsubgroup)

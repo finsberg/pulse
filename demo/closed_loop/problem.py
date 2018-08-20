@@ -70,12 +70,12 @@ class Problem(MechanicsProblem):
             = dolfin.derivative(internal_energy,
                                 self.state, self.state_test)
 
-        self._virtual_work += self.external_work(u, v)
+        self._virtual_work += self._external_work(u, v)
 
         self._jacobian \
             = dolfin.derivative(self._virtual_work, self.state,
                                 dolfin.TrialFunction(self.state_space))
 
-        self.set_dirichlet_bc()
+        self._set_dirichlet_bc()
 
 

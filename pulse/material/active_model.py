@@ -58,8 +58,8 @@ class ActiveModel(kinematics.Invariants):
         self._activation = Constant(0, name="activation") \
             if activation is None else activation
 
-        self.T_ref = dolfin.Constant(T_ref) \
-            if T_ref else dolfin.Constant(1.0)
+        self.T_ref = Constant(T_ref, name="T_ref") \
+            if T_ref else Constant(1.0, name="T_ref")
 
         kinematics.Invariants.__init__(self, isochoric, *args)
 

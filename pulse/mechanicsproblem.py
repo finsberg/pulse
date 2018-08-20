@@ -4,16 +4,16 @@ from functools import partial
 
 import dolfin
 try:
-    from dolfin_adjoint import (Function, Constant,
+    from dolfin_adjoint import (Function, Constant, DirichletBC,
+                                FunctionSpace,
                                 NonlinearVariationalSolver,
-                                NonlinearVariationalProblem,
-                                FunctionAssigner)
+                                NonlinearVariationalProblem)
     has_dolfin_adjoint = True
 except ImportError:
-    from dolfin import (Function, Constant,
+    from dolfin import (Function, Constant, DirichletBC,
+                        FunctionSpace,
                         NonlinearVariationalSolver,
-                        NonlinearVariationalProblem,
-                        FunctionAssigner)
+                        NonlinearVariationalProblem)
     has_dolfin_adjoint = False
 
 from . import kinematics
@@ -39,16 +39,16 @@ def dirichlet_fix_base(W, ffun, marker):
     '''Fix the basal plane.
     '''
     V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
-    bc = dolfin.DirichletBC(V, dolfin.Constant((0, 0, 0)),
-                            ffun, marker)
+    bc = DirichletBC(V, dolfin.Constant((0, 0, 0)),
+                     ffun, marker)
     return bc
 
 
 def dirichlet_fix_base_directional(W, ffun, marker, direction=0):
     V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
-    bc = dolfin.DirichletBC(V.sub(direction),
-                            dolfin.Constant(0.0),
-                            ffun, marker)
+    bc = DirichletBC(V.sub(direction),
+                     dolfin.Constant(0.0),
+                     ffun, marker)
     return bc
 
 
@@ -166,7 +166,7 @@ class MechanicsProblem(object):
 
         # P2_space = FunctionSpace(mesh, P2)
         # P1_space = FunctionSpace(mesh, P1)
-        self.state_space = dolfin.FunctionSpace(mesh, P2*P1)
+        self.state_space = FunctionSpace(mesh, P2*P1)
 
         self.state = Function(self.state_space, name="state")
         self.state_test = dolfin.TestFunction(self.state_space)
@@ -190,15 +190,15 @@ class MechanicsProblem(object):
             = dolfin.derivative(internal_energy * dx,
                                 self.state, self.state_test)
 
-        self._virtual_work += self.external_work(u, v)
+        self._virtual_work += self._external_work(u, v)
 
         self._jacobian \
             = dolfin.derivative(self._virtual_work, self.state,
                                 dolfin.TrialFunction(self.state_space))
 
-        self.set_dirichlet_bc()
+        self._set_dirichlet_bc()
 
-    def set_dirichlet_bc(self):
+    def _set_dirichlet_bc(self):
         # DirichletBC
         for dirichlet_bc in self.bcs.dirichlet:
 
@@ -218,7 +218,7 @@ class MechanicsProblem(object):
 
                 raise NotImplementedError(msg)
 
-    def external_work(self, u, v):
+    def _external_work(self, u, v):
 
         F = dolfin.variable(kinematics.DeformationGradient(u))
 
@@ -304,12 +304,13 @@ class MechanicsProblem(object):
         D = self.state_space.sub(0)
         V = D.collapse()
 
-        fa = FunctionAssigner(V, D)
+        fa = dolfin.FunctionAssigner(V, D)
         u = Function(V, name='displacement')
-        if has_dolfin_adjoint:
-            fa.assign(u, self.state.split()[0],
-                      annotate=annotate)
-        else:
-            fa.assign(u, self.state.split()[0])
+
+        # if has_dolfin_adjoint:
+            # fa.assign(u, self.state.split()[0],
+                      # annotate=annotate)
+        # else:
+        fa.assign(u, self.state.split()[0])
             
         return u
