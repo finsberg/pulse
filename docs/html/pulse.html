@@ -27,7 +27,9 @@
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="pulse.material package" href="pulse.material.html" />
+    <link rel="prev" title="pulse" href="modules.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -76,28 +78,38 @@
               
             
             
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">pulse package</a><ul>
-<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-pulse.dolfin_utils">pulse.dolfin_utils module</a></li>
-<li><a class="reference internal" href="#module-pulse.geometry">pulse.geometry module</a></li>
-<li><a class="reference internal" href="#module-pulse.geometry_utils">pulse.geometry_utils module</a></li>
-<li><a class="reference internal" href="#module-pulse.io_utils">pulse.io_utils module</a></li>
-<li><a class="reference internal" href="#module-pulse.iterate">pulse.iterate module</a></li>
-<li><a class="reference internal" href="#module-pulse.kinematics">pulse.kinematics module</a></li>
-<li><a class="reference internal" href="#module-pulse.mechanicsproblem">pulse.mechanicsproblem module</a></li>
-<li><a class="reference internal" href="#module-pulse.numpy_mpi">pulse.numpy_mpi module</a></li>
-<li><a class="reference internal" href="#module-pulse.setup_parameters">pulse.setup_parameters module</a></li>
-<li><a class="reference internal" href="#module-pulse.unloader">pulse.unloader module</a></li>
-<li><a class="reference internal" href="#module-pulse.unloading_utils">pulse.unloading_utils module</a></li>
-<li><a class="reference internal" href="#module-pulse.utils">pulse.utils module</a></li>
-<li><a class="reference internal" href="#module-pulse">Module contents</a></li>
+              <p class="caption"><span class="caption-text">Demos</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="demos/demos.html">Demos</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Programmers reference:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">pulse</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">pulse package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pulse.material.html">pulse.material package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pulse.dolfin_utils">pulse.dolfin_utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pulse.geometry">pulse.geometry module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pulse.geometry_utils">pulse.geometry_utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pulse.io_utils">pulse.io_utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pulse.iterate">pulse.iterate module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pulse.kinematics">pulse.kinematics module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pulse.mechanicsproblem">pulse.mechanicsproblem module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pulse.numpy_mpi">pulse.numpy_mpi module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pulse.setup_parameters">pulse.setup_parameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pulse.unloader">pulse.unloader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pulse.unloading_utils">pulse.unloading_utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pulse.utils">pulse.utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pulse">Module contents</a></li>
 </ul>
 </li>
 </ul>
-</div>
+</li>
+</ul>
+
             
           
         </div>
@@ -140,6 +152,8 @@
   <ul class="wy-breadcrumbs">
     
       <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">pulse</a> &raquo;</li>
         
       <li>pulse package</li>
     
@@ -479,15 +493,15 @@ given in the mesh</p>
 <p>Base class for geometry</p>
 <p>Geometry can be intanciated directly</p>
 <p class="rubric">Example</p>
-<p>..code-block: python</p>
-<blockquote>
-<div># To be implemented</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># To be implemented</span>
+</pre></div>
+</div>
 <p>You can load create and instace be loading a geometry from a file</p>
 <p class="rubric">Example</p>
-<p>..code-block: python</p>
-<blockquote>
-<div># Geometry is stored in a file “geometry.h5”
-geo = Geometry.from_file(“geometry.h5”)</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Geometry is stored in a file &quot;geometry.h5&quot;</span>
+<span class="n">geo</span> <span class="o">=</span> <span class="n">Geometry</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;geometry.h5&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="attribute">
 <dt id="pulse.geometry.Geometry.c0">
 <code class="descname">c0</code><a class="headerlink" href="#pulse.geometry.Geometry.c0" title="Permalink to this definition">¶</a></dt>
@@ -1701,6 +1715,15 @@ withing the HDF file. Default: ‘’</li>
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="pulse.material.html" class="btn btn-neutral float-right" title="pulse.material package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="modules.html" class="btn btn-neutral" title="pulse" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>
