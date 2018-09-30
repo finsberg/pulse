@@ -27,4 +27,7 @@ see e.g [this issue](https://github.com/conda-forge/hdf5-feedstock/issues/51).
 ## Getting started
 Check out the demos in the demo folder.
 
+## Documentation
+Documentation can be found at [finsberg.github.io/pulse](https://finsberg.github.io/pulse)
+
 
