@@ -1,0 +1,571 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pulse.iterate &#8212; pulse 1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for pulse.iterate</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">operator</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">import</span> <span class="nn">dolfin</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">dolfin_adjoint</span> <span class="k">import</span> <span class="n">Function</span><span class="p">,</span> <span class="n">Constant</span>
+    <span class="n">has_dolfin_adjoint</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">dolfin</span> <span class="k">import</span> <span class="n">Function</span><span class="p">,</span> <span class="n">Constant</span>
+    <span class="n">has_dolfin_adjoint</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">numpy_mpi</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">annotate</span>
+<span class="kn">from</span> <span class="nn">.mechanicsproblem</span> <span class="k">import</span> <span class="n">SolverDidNotConverge</span>
+<span class="kn">from</span> <span class="nn">.dolfin_utils</span> <span class="k">import</span> <span class="n">get_constant</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">make_logger</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">make_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;log_level&#39;</span><span class="p">])</span>
+
+<span class="n">MAX_GAMMA_STEP</span> <span class="o">=</span> <span class="mf">0.05</span>
+<span class="n">MAX_PRESSURE_STEP</span> <span class="o">=</span> <span class="mf">0.2</span>
+<span class="n">MAX_PRESSURE_STEP_BIV</span> <span class="o">=</span> <span class="mf">0.05</span>
+<span class="n">MAX_CRASH</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">MAX_ITERS</span> <span class="o">=</span> <span class="mi">40</span>
+    
+
+<div class="viewcode-block" id="get_diff"><a class="viewcode-back" href="../../pulse.html#pulse.iterate.get_diff">[docs]</a><span class="k">def</span> <span class="nf">get_diff</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+
+    <span class="c1"># msg = (&#39;Expected target and current to be of same type. &#39;</span>
+    <span class="c1">#        &#39;Got type(current) = {}, type(target) = {}&#39;</span>
+    <span class="c1">#        ).format(type(current), type(target))</span>
+    <span class="c1"># assert type(current) == type(target), msg</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="p">(</span><span class="n">Function</span><span class="p">,</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">)):</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span> <span class="o">-</span> <span class="n">current</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="p">(</span><span class="n">Constant</span><span class="p">,</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Constant</span><span class="p">)):</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">target</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">current</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">subtract</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">target</span><span class="p">],</span>
+                           <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">target</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">current</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">((</span><span class="s2">&quot;Unable to compute diff with type </span><span class="si">{}</span><span class="s2">&quot;</span>
+                              <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">current</span><span class="p">)))</span>
+
+    <span class="k">return</span> <span class="n">diff</span></div>
+
+
+<div class="viewcode-block" id="get_current_control_value"><a class="viewcode-back" href="../../pulse.html#pulse.iterate.get_current_control_value">[docs]</a><span class="k">def</span> <span class="nf">get_current_control_value</span><span class="p">(</span><span class="n">control</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="n">has_dolfin_adjoint</span> <span class="ow">and</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="c1"># else:</span>
+    <span class="c1">#     return control</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">control</span><span class="p">,</span> <span class="p">(</span><span class="n">Function</span><span class="p">,</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">control</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">control</span><span class="p">,</span> <span class="p">(</span><span class="n">Constant</span><span class="p">,</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Constant</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">control</span><span class="p">)</span>
+    
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">control</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">control</span><span class="p">)</span>
+        
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown control type </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">control</span><span class="p">)))</span></div>
+
+
+<div class="viewcode-block" id="assign_new_control"><a class="viewcode-back" href="../../pulse.html#pulse.iterate.assign_new_control">[docs]</a><span class="k">def</span> <span class="nf">assign_new_control</span><span class="p">(</span><span class="n">control</span><span class="p">,</span> <span class="n">new_control</span><span class="p">):</span>
+
+    <span class="c1"># msg = (&#39;Expected old and new control to be of same type. &#39;</span>
+    <span class="c1">#        &#39;Got type(control) = {}, type(new_control) = {}&#39;</span>
+    <span class="c1">#        ).format(type(control), type(new_control))</span>
+    <span class="c1"># assert type(control) == type(new_control), msg</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">control</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">control</span><span class="p">,</span> <span class="n">new_control</span><span class="p">):</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">control</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">new_control</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">((</span><span class="s2">&quot;Unable to assign control of type </span><span class="si">{}</span><span class="s2">&quot;</span>
+                             <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">control</span><span class="p">)))</span></div>
+
+
+<div class="viewcode-block" id="check_target_reached"><a class="viewcode-back" href="../../pulse.html#pulse.iterate.check_target_reached">[docs]</a><span class="k">def</span> <span class="nf">check_target_reached</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">current</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+
+    <span class="n">diff</span> <span class="o">=</span> <span class="n">get_diff</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">GenericVector</span><span class="p">):</span>
+        <span class="n">diff</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span>
+        <span class="n">max_diff</span> <span class="o">=</span> <span class="n">diff</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">max_diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">diff</span><span class="p">))</span>
+
+    <span class="n">reached</span> <span class="o">=</span> <span class="n">max_diff</span> <span class="o">&lt;</span> <span class="mf">1e-6</span>
+    <span class="k">if</span> <span class="n">reached</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Check target reached: YES!&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Check target reached: NO&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Maximum difference: </span><span class="si">{:.3e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">max_diff</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">reached</span></div>
+
+
+<div class="viewcode-block" id="copy"><a class="viewcode-back" href="../../pulse.html#pulse.iterate.copy">[docs]</a><span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">deepcopy</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="p">(</span><span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">,</span> <span class="n">Function</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deepcopy</span><span class="o">=</span><span class="n">deepcopy</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Constant</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">Constant</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Constant</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">f</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">fi</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">copy</span><span class="p">(</span><span class="n">fi</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">f</span>    </div>
+
+
+<div class="viewcode-block" id="get_initial_step"><a class="viewcode-back" href="../../pulse.html#pulse.iterate.get_initial_step">[docs]</a><span class="k">def</span> <span class="nf">get_initial_step</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">current</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">nsteps</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="n">diff</span> <span class="o">=</span> <span class="n">get_diff</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">GenericVector</span><span class="p">):</span>
+        <span class="n">max_diff</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="s1">&#39;linf&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nsteps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">nsteps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">max_diff</span><span class="p">)</span><span class="o">/</span><span class="n">MAX_GAMMA_STEP</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">current</span><span class="o">.</span><span class="n">function_space</span><span class="p">())</span>
+        <span class="n">step</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">axpy</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">nsteps</span><span class="p">),</span> <span class="n">diff</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">max_diff</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">diff</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="s2">&quot;__len__&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">MAX_STEP</span> <span class="o">=</span> <span class="n">MAX_PRESSURE_STEP_BIV</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">MAX_STEP</span> <span class="o">=</span> <span class="n">MAX_PRESSURE_STEP</span>
+
+        <span class="k">if</span> <span class="n">nsteps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">nsteps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">max_diff</span><span class="p">)</span> <span class="o">/</span> <span class="n">MAX_STEP</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="n">diff</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">nsteps</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Intial number of steps: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nsteps</span><span class="p">))</span>
+
+    <span class="c1"># if control == &quot;gamma&quot;:</span>
+        <span class="c1"># return step, nsteps</span>
+
+    <span class="k">return</span> <span class="n">step</span></div>
+
+
+<div class="viewcode-block" id="constant2float"><a class="viewcode-back" href="../../pulse.html#pulse.iterate.constant2float">[docs]</a><span class="k">def</span> <span class="nf">constant2float</span><span class="p">(</span><span class="n">const</span><span class="p">):</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">const</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">const</span><span class="p">))</span>
+        <span class="n">const</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">c</span></div>
+
+
+<div class="viewcode-block" id="step_too_large"><a class="viewcode-back" href="../../pulse.html#pulse.iterate.step_too_large">[docs]</a><span class="k">def</span> <span class="nf">step_too_large</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="p">(</span><span class="n">Constant</span><span class="p">,</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Constant</span><span class="p">)):</span>
+
+        <span class="n">target</span> <span class="o">=</span> <span class="n">constant2float</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="n">constant2float</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="n">constant2float</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="p">(</span><span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">,</span> <span class="n">Function</span><span class="p">)):</span>
+        <span class="n">diff_before</span> <span class="o">=</span> <span class="n">current</span><span class="o">.</span><span class="n">vector</span><span class="p">()[:]</span> <span class="o">-</span> <span class="n">target</span><span class="o">.</span><span class="n">vector</span><span class="p">()[:]</span>
+        <span class="n">diff_before_arr</span> <span class="o">=</span> <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">gather_broadcast</span><span class="p">(</span><span class="n">diff_before</span><span class="o">.</span><span class="n">get_local</span><span class="p">())</span>
+
+        <span class="n">diff_after</span> <span class="o">=</span> <span class="n">current</span><span class="o">.</span><span class="n">vector</span><span class="p">()[:]</span> <span class="o">+</span> \
+            <span class="n">step</span><span class="o">.</span><span class="n">vector</span><span class="p">()[:]</span> <span class="o">-</span> <span class="n">target</span><span class="o">.</span><span class="n">vector</span><span class="p">()[:]</span>
+        <span class="n">diff_after_arr</span> <span class="o">=</span> <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">gather_broadcast</span><span class="p">(</span><span class="n">diff_after</span><span class="o">.</span><span class="n">get_local</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">diff_after</span><span class="p">,</span> <span class="s1">&#39;linf&#39;</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">DOLFIN_EPS</span><span class="p">:</span>
+            <span class="c1"># We will reach the target in next iteration</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">diff_before_arr</span><span class="p">)</span> <span class="o">==</span>
+                       <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">diff_after_arr</span><span class="p">))</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
+        <span class="n">comp</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">gt</span> <span class="k">if</span> <span class="n">current</span> <span class="o">&lt;</span> <span class="n">target</span> <span class="k">else</span> <span class="n">op</span><span class="o">.</span><span class="n">lt</span>
+        <span class="k">return</span> <span class="n">comp</span><span class="p">(</span><span class="n">current</span> <span class="o">+</span> <span class="n">step</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;__len__&quot;</span><span class="p">)</span>
+
+        <span class="n">too_large</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+            <span class="n">comp</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">gt</span> <span class="k">if</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="n">t</span> <span class="k">else</span> <span class="n">op</span><span class="o">.</span><span class="n">lt</span>
+            <span class="n">too_large</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">comp</span><span class="p">(</span><span class="n">c</span><span class="o">+</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">too_large</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="change_step_size"><a class="viewcode-back" href="../../pulse.html#pulse.iterate.change_step_size">[docs]</a><span class="k">def</span> <span class="nf">change_step_size</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">factor</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="p">(</span><span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">,</span> <span class="n">Function</span><span class="p">)):</span>
+        <span class="n">new_step</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">step</span><span class="o">.</span><span class="n">function_space</span><span class="p">())</span>
+        <span class="n">new_step</span><span class="o">.</span><span class="n">vector</span><span class="p">()[:]</span> <span class="o">=</span> <span class="n">factor</span><span class="o">*</span><span class="n">step</span><span class="o">.</span><span class="n">vector</span><span class="p">()[:]</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">new_step</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">factor</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">new_step</span></div>
+
+
+<div class="viewcode-block" id="print_control"><a class="viewcode-back" href="../../pulse.html#pulse.iterate.print_control">[docs]</a><span class="k">def</span> <span class="nf">print_control</span><span class="p">(</span><span class="n">control</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">control</span><span class="p">,</span> <span class="p">(</span><span class="n">Constant</span><span class="p">,</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Constant</span><span class="p">)):</span>
+        <span class="n">control</span> <span class="o">=</span> <span class="n">constant2float</span><span class="p">(</span><span class="n">control</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">print_arr</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1"># This has to be (LV, RV)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{:&gt;6}</span><span class="se">\t</span><span class="si">{:&gt;6}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;LV&quot;</span><span class="p">,</span> <span class="s2">&quot;RV&quot;</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{:&gt;6.2f}</span><span class="se">\t</span><span class="si">{:&gt;6.2f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                                      <span class="n">arr</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+            
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="c1"># This has to be (LV, Septum, RV)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{:&gt;6}</span><span class="se">\t</span><span class="si">{:&gt;6}</span><span class="se">\t</span><span class="si">{:&gt;6}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;LV&quot;</span><span class="p">,</span> <span class="s2">&quot;SEPT&quot;</span><span class="p">,</span> <span class="s2">&quot;RV&quot;</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{:&gt;6.2f}</span><span class="se">\t</span><span class="si">{:&gt;6.2f}</span><span class="se">\t</span><span class="si">{:&gt;6.2f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                                                <span class="n">arr</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                                                <span class="n">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Print min, mean and max</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{:&gt;6}</span><span class="se">\t</span><span class="si">{:&gt;6}</span><span class="se">\t</span><span class="si">{:&gt;6}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;Min&quot;</span><span class="p">,</span> <span class="s2">&quot;Mean&quot;</span><span class="p">,</span> <span class="s2">&quot;Max&quot;</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{:&gt;6.2f}</span><span class="se">\t</span><span class="si">{:&gt;6.2f}</span><span class="se">\t</span><span class="si">{:&gt;6.2f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">arr</span><span class="p">),</span>
+                                                                <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">arr</span><span class="p">),</span>
+                                                                <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">arr</span><span class="p">)))</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">control</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{:&gt;6.3f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">control</span><span class="p">))</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">control</span><span class="p">,</span> <span class="p">(</span><span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">,</span> <span class="n">Function</span><span class="p">)):</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">gather_broadcast</span><span class="p">(</span><span class="n">control</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">get_local</span><span class="p">())</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{:&gt;6}</span><span class="se">\t</span><span class="si">{:&gt;6}</span><span class="se">\t</span><span class="si">{:&gt;6}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;Min&quot;</span><span class="p">,</span> <span class="s2">&quot;Mean&quot;</span><span class="p">,</span> <span class="s2">&quot;Max&quot;</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{:&gt;6.2f}</span><span class="se">\t</span><span class="si">{:&gt;6.2f}</span><span class="se">\t</span><span class="si">{:&gt;6.2f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">arr</span><span class="p">),</span>
+                                                            <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">arr</span><span class="p">),</span>
+                                                            <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">arr</span><span class="p">)))</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">control</span><span class="p">,</span> <span class="p">(</span><span class="n">dolfin</span><span class="o">.</span><span class="n">GenericVector</span><span class="p">,</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Vector</span><span class="p">)):</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">gather_broadcast</span><span class="p">(</span><span class="n">control</span><span class="o">.</span><span class="n">get_local</span><span class="p">())</span>
+        <span class="n">print_arr</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">control</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+        <span class="n">print_arr</span><span class="p">(</span><span class="n">control</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_delta"><a class="viewcode-back" href="../../pulse.html#pulse.iterate.get_delta">[docs]</a><span class="k">def</span> <span class="nf">get_delta</span><span class="p">(</span><span class="n">new_control</span><span class="p">,</span> <span class="n">c0</span><span class="p">,</span> <span class="n">c1</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">c0</span><span class="p">,</span> <span class="p">(</span><span class="n">Constant</span><span class="p">,</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Constant</span><span class="p">)):</span>
+        <span class="n">c0</span> <span class="o">=</span> <span class="n">constant2float</span><span class="p">(</span><span class="n">c0</span><span class="p">)</span>
+        <span class="n">c1</span> <span class="o">=</span> <span class="n">constant2float</span><span class="p">(</span><span class="n">c1</span><span class="p">)</span>
+        <span class="n">new_control</span> <span class="o">=</span> <span class="n">constant2float</span><span class="p">(</span><span class="n">new_control</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_control</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">new_control</span> <span class="o">-</span> <span class="n">c0</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">c1</span> <span class="o">-</span> <span class="n">c0</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_control</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">new_control</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">c0</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">c1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">c0</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_control</span><span class="p">,</span> <span class="p">(</span><span class="n">dolfin</span><span class="o">.</span><span class="n">GenericVector</span><span class="p">,</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Vector</span><span class="p">)):</span>
+        <span class="n">new_control_arr</span> <span class="o">=</span> <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">gather_broadcast</span><span class="p">(</span><span class="n">new_control</span><span class="o">.</span><span class="n">get_local</span><span class="p">())</span>
+        <span class="n">c0_arr</span> <span class="o">=</span> <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">gather_broadcast</span><span class="p">(</span><span class="n">c0</span><span class="o">.</span><span class="n">get_local</span><span class="p">())</span>
+        <span class="n">c1_arr</span> <span class="o">=</span> <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">gather_broadcast</span><span class="p">(</span><span class="n">c1</span><span class="o">.</span><span class="n">get_local</span><span class="p">())</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">new_control_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">c0_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">c1_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">c0_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_control</span><span class="p">,</span> <span class="p">(</span><span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">,</span> <span class="n">Function</span><span class="p">)):</span>
+        <span class="n">new_control_arr</span> <span class="o">=</span> <span class="n">numpy_mpi</span><span class="o">.</span>\
+                          <span class="n">gather_broadcast</span><span class="p">(</span><span class="n">new_control</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">get_local</span><span class="p">())</span>
+        <span class="n">c0_arr</span> <span class="o">=</span> <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">gather_broadcast</span><span class="p">(</span><span class="n">c0</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">get_local</span><span class="p">())</span>
+        <span class="n">c1_arr</span> <span class="o">=</span> <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">gather_broadcast</span><span class="p">(</span><span class="n">c1</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">get_local</span><span class="p">())</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">new_control_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">c0_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">c1_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">c0_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="get_mean"><a class="viewcode-back" href="../../pulse.html#pulse.iterate.get_mean">[docs]</a><span class="k">def</span> <span class="nf">get_mean</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">gather_broadcast</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">get_local</span><span class="p">())</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="get_max"><a class="viewcode-back" href="../../pulse.html#pulse.iterate.get_max">[docs]</a><span class="k">def</span> <span class="nf">get_max</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">gather_broadcast</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">get_local</span><span class="p">())</span><span class="o">.</span><span class="n">max</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="iterate"><a class="viewcode-back" href="../../pulse.html#pulse.iterate.iterate">[docs]</a><span class="k">def</span> <span class="nf">iterate</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">control</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span>
+            <span class="n">continuation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_adapt_iter</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+            <span class="n">adapt_step</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">old_states</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">old_controls</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">max_nr_crash</span><span class="o">=</span><span class="n">MAX_CRASH</span><span class="p">,</span> <span class="n">max_iters</span><span class="o">=</span><span class="n">MAX_ITERS</span><span class="p">,</span>
+            <span class="n">initial_number_of_steps</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Using the given problem, iterate control to given target.</span>
+
+<span class="sd">    *Parameters*</span>
+
+<span class="sd">    problem (LVProblem)</span>
+<span class="sd">        The problem</span>
+<span class="sd">    control (dolfin.Function or dolfin.Constant)</span>
+<span class="sd">        The control</span>
+<span class="sd">    target (dolfin.Function, dolfin.Constant, tuple or float)</span>
+<span class="sd">        The target value. Typically a float if target is LVP, a tuple</span>
+<span class="sd">        if target is (LVP, RVP) and a function if target is gamma.</span>
+<span class="sd">    continuation (bool)</span>
+<span class="sd">        Apply continuation for better guess for newton problem</span>
+<span class="sd">        Note: Replay test seems to fail when continuation is True,</span>
+<span class="sd">        but taylor test passes</span>
+<span class="sd">    max_adapt_iter (int)</span>
+<span class="sd">        If number of iterations is less than this number and adapt_step=True,</span>
+<span class="sd">        then adapt control step</span>
+<span class="sd">    adapt_step (bool)</span>
+<span class="sd">        Adapt / increase step size when sucessful iterations are achevied.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;log_level&#39;</span><span class="p">])</span>
+
+    <span class="n">old_controls</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">old_controls</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">old_controls</span>
+    <span class="n">old_states</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">old_states</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">old_states</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+        <span class="n">value_size</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span> <span class="k">else</span> <span class="nb">len</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">get_constant</span><span class="p">(</span><span class="n">value_size</span><span class="o">=</span><span class="n">value_size</span><span class="p">,</span> <span class="n">value_rank</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                              <span class="n">val</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="n">constant</span><span class="o">=</span><span class="n">Constant</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Unknown targt type </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="p">(</span><span class="n">dolfin</span><span class="o">.</span><span class="n">Constant</span><span class="p">,</span> <span class="n">Constant</span><span class="p">,</span>
+                                   <span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">,</span> <span class="n">Function</span><span class="p">)),</span> <span class="n">msg</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="n">target</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="n">control</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">control</span><span class="p">,</span> <span class="n">Function</span><span class="p">):</span>
+            <span class="n">target_</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">control</span><span class="o">.</span><span class="n">function_space</span><span class="p">())</span>
+            <span class="n">target_</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">target_</span>
+
+    <span class="n">target_reached</span> <span class="o">=</span> <span class="n">check_target_reached</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">control</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+
+    <span class="n">step</span> <span class="o">=</span> <span class="n">get_initial_step</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">control</span><span class="p">,</span>
+                            <span class="n">target</span><span class="p">,</span> <span class="n">initial_number_of_steps</span><span class="p">)</span>
+
+    <span class="n">control_prev</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">control_next</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">has_dolfin_adjoint</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">control_prev</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">control</span><span class="p">,</span> <span class="n">deepcopy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">control_next</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">control</span><span class="p">,</span> <span class="n">deepcopy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="n">control_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">copy</span><span class="p">(</span><span class="n">control</span><span class="p">)]</span>
+    <span class="n">prev_states</span> <span class="o">=</span> <span class="p">[</span><span class="n">copy</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">state</span><span class="p">)]</span>
+
+    <span class="n">ncrashes</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">niters</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">target_reached</span><span class="p">:</span>
+
+        <span class="n">niters</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">ncrashes</span> <span class="o">&gt;</span> <span class="n">max_nr_crash</span> <span class="ow">or</span> <span class="n">niters</span> <span class="o">&gt;</span> <span class="n">max_iters</span><span class="p">:</span>
+
+            <span class="n">problem</span><span class="o">.</span><span class="n">reinit</span><span class="p">(</span><span class="n">prev_states</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">assign_new_control</span><span class="p">(</span><span class="n">control</span><span class="p">,</span> <span class="n">control_values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+            <span class="k">raise</span> <span class="n">SolverDidNotConverge</span>
+
+        <span class="n">state_old</span> <span class="o">=</span> <span class="n">prev_states</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">control_old</span> <span class="o">=</span> <span class="n">control_prev</span> <span class="ow">or</span> <span class="n">control_values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># Check if we are close</span>
+        <span class="k">if</span> <span class="n">step_too_large</span><span class="p">(</span><span class="n">control_old</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Change step size for final iteration&quot;</span><span class="p">)</span>
+            
+            <span class="c1"># Change step size so that target is reached in the next iteration</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="p">(</span><span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">,</span> <span class="n">Function</span><span class="p">)):</span>
+                <span class="n">step</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">function_space</span><span class="p">())</span>
+                <span class="n">step</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">axpy</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">target</span><span class="o">.</span><span class="n">vector</span><span class="p">())</span>
+                <span class="n">step</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">axpy</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">control_old</span><span class="o">.</span><span class="n">vector</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">step</span> <span class="o">=</span> <span class="n">target</span> <span class="o">-</span> <span class="n">control_old</span>
+
+        <span class="c1"># Increment gamma</span>
+        <span class="n">current_control</span> <span class="o">=</span> <span class="n">get_current_control_value</span><span class="p">(</span><span class="n">control</span><span class="p">,</span> <span class="n">control_next</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_control</span><span class="p">,</span> <span class="p">(</span><span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">,</span> <span class="n">Function</span><span class="p">)):</span>
+            <span class="n">current_control</span><span class="o">.</span><span class="n">vector</span><span class="p">()[:]</span> <span class="o">+=</span> <span class="n">step</span><span class="o">.</span><span class="n">vector</span><span class="p">()[:]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">current_control</span> <span class="o">+=</span> <span class="n">step</span>
+            <span class="n">current_control</span> <span class="o">=</span> <span class="n">get_constant</span><span class="p">(</span><span class="n">current_control</span><span class="p">)</span>
+        <span class="n">assign_new_control</span><span class="p">(</span><span class="n">control</span><span class="p">,</span> <span class="n">current_control</span><span class="p">)</span>
+
+        <span class="n">first_step</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">prev_states</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span>
+        <span class="c1"># Prediction step</span>
+        <span class="c1"># Hopefully a better guess for the newton problem</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">first_step</span> <span class="ow">and</span> <span class="n">continuation</span><span class="p">:</span>
+
+            <span class="n">c0</span><span class="p">,</span> <span class="n">c1</span> <span class="o">=</span> <span class="n">control_values</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
+            <span class="n">s0</span><span class="p">,</span> <span class="n">s1</span> <span class="o">=</span> <span class="n">prev_states</span>
+
+            <span class="n">delta</span> <span class="o">=</span> <span class="n">get_delta</span><span class="p">(</span><span class="n">current_control</span><span class="p">,</span> <span class="n">c0</span><span class="p">,</span> <span class="n">c1</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">has_dolfin_adjoint</span> <span class="ow">and</span> <span class="n">annotate</span><span class="o">.</span><span class="n">annotate</span><span class="p">:</span>
+                <span class="n">w</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">function_space</span><span class="p">())</span>
+
+                <span class="n">w</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span>
+                <span class="n">w</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">axpy</span><span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">delta</span><span class="p">,</span> <span class="n">s0</span><span class="o">.</span><span class="n">vector</span><span class="p">())</span>
+                <span class="n">w</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">axpy</span><span class="p">(</span><span class="n">delta</span><span class="p">,</span> <span class="n">s1</span><span class="o">.</span><span class="n">vector</span><span class="p">())</span>
+                <span class="n">problem</span><span class="o">.</span><span class="n">reinit</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">annotate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">problem</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span>
+                <span class="n">problem</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">axpy</span><span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">delta</span><span class="p">,</span> <span class="n">s0</span><span class="o">.</span><span class="n">vector</span><span class="p">())</span>
+                <span class="n">problem</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">axpy</span><span class="p">(</span><span class="n">delta</span><span class="p">,</span> <span class="n">s1</span><span class="o">.</span><span class="n">vector</span><span class="p">())</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Try new control&quot;</span><span class="p">)</span>
+        <span class="n">print_control</span><span class="p">(</span><span class="n">control</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">nliter</span><span class="p">,</span> <span class="n">nlconv</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+
+        <span class="k">except</span> <span class="n">SolverDidNotConverge</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">NOT CONVERGING&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reduce control step&quot;</span><span class="p">)</span>
+            <span class="n">ncrashes</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">assign_new_control</span><span class="p">(</span><span class="n">control</span><span class="p">,</span> <span class="n">control_old</span><span class="p">)</span>
+
+            <span class="c1"># Assign old state</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Assign old state&quot;</span><span class="p">)</span>
+            <span class="n">problem</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span>
+            <span class="n">problem</span><span class="o">.</span><span class="n">reinit</span><span class="p">(</span><span class="n">state_old</span><span class="p">)</span>
+
+            <span class="n">step</span> <span class="o">=</span> <span class="n">change_step_size</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ncrashes</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">SUCCESFULL STEP:&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">has_dolfin_adjoint</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">control_prev</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">control</span><span class="p">,</span> <span class="n">deepcopy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">control_next</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">control</span><span class="p">,</span> <span class="n">deepcopy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+            <span class="n">target_reached</span> <span class="o">=</span> <span class="n">check_target_reached</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">control</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">target_reached</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="n">nliter</span> <span class="o">&lt;</span> <span class="n">max_adapt_iter</span> <span class="ow">and</span> <span class="n">adapt_step</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Adapt step size. New step size:&quot;</span><span class="p">)</span>
+                    <span class="n">step</span> <span class="o">=</span> <span class="n">change_step_size</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span>
+                    <span class="n">print_control</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+
+                <span class="n">control_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">copy</span><span class="p">(</span><span class="n">control</span><span class="p">,</span> <span class="n">deepcopy</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+
+                <span class="k">if</span> <span class="n">first_step</span><span class="p">:</span>
+                    <span class="n">prev_states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deepcopy</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+
+                    <span class="c1"># Switch place of the state vectors</span>
+                    <span class="n">prev_states</span> <span class="o">=</span> <span class="p">[</span><span class="n">prev_states</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">prev_states</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+
+                    <span class="c1"># Inplace update of last state values</span>
+                    <span class="n">prev_states</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span>
+                    <span class="n">prev_states</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">axpy</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">problem</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">vector</span><span class="p">())</span></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">pulse</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  <li><a href="../pulse.html">pulse</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Henrik Finsberg.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

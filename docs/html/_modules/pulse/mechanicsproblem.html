@@ -1,0 +1,412 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pulse.mechanicsproblem &#8212; pulse 1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for pulse.mechanicsproblem</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
+
+<span class="kn">import</span> <span class="nn">dolfin</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">dolfin_adjoint</span> <span class="k">import</span> <span class="p">(</span><span class="n">Function</span><span class="p">,</span> <span class="n">Constant</span><span class="p">,</span> <span class="n">DirichletBC</span><span class="p">,</span>
+                                <span class="n">FunctionSpace</span><span class="p">,</span>
+                                <span class="n">NonlinearVariationalSolver</span><span class="p">,</span>
+                                <span class="n">NonlinearVariationalProblem</span><span class="p">)</span>
+    <span class="n">has_dolfin_adjoint</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">dolfin</span> <span class="k">import</span> <span class="p">(</span><span class="n">Function</span><span class="p">,</span> <span class="n">Constant</span><span class="p">,</span> <span class="n">DirichletBC</span><span class="p">,</span>
+                        <span class="n">FunctionSpace</span><span class="p">,</span>
+                        <span class="n">NonlinearVariationalSolver</span><span class="p">,</span>
+                        <span class="n">NonlinearVariationalProblem</span><span class="p">)</span>
+    <span class="n">has_dolfin_adjoint</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">kinematics</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">parameters</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">set_default_none</span><span class="p">,</span> <span class="n">make_logger</span><span class="p">,</span> <span class="n">get_lv_marker</span>
+<span class="kn">from</span> <span class="nn">.geometry</span> <span class="k">import</span> <span class="n">HeartGeometry</span>
+<span class="kn">from</span> <span class="nn">.dolfin_utils</span> <span class="k">import</span> <span class="n">list_sum</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">make_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;log_level&#39;</span><span class="p">])</span>
+
+<span class="n">BoundaryConditions</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;BoundaryConditions&#39;</span><span class="p">,</span>
+                                <span class="p">[</span><span class="s1">&#39;dirichlet&#39;</span><span class="p">,</span> <span class="s1">&#39;neumann&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;robin&#39;</span><span class="p">,</span> <span class="s1">&#39;body_force&#39;</span><span class="p">])</span>
+<span class="n">set_default_none</span><span class="p">(</span><span class="n">BoundaryConditions</span><span class="p">,</span> <span class="p">())</span>
+
+<span class="n">NeumannBC</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;NeumannBC&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;traction&#39;</span><span class="p">,</span> <span class="s1">&#39;marker&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">])</span>
+<span class="c1"># Name is optional</span>
+<span class="n">NeumannBC</span><span class="o">.</span><span class="fm">__new__</span><span class="o">.</span><span class="vm">__defaults__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,)</span>
+<span class="n">RobinBC</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;RobinBC&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;marker&#39;</span><span class="p">])</span>
+
+
+<div class="viewcode-block" id="dirichlet_fix_base"><a class="viewcode-back" href="../../pulse.html#pulse.mechanicsproblem.dirichlet_fix_base">[docs]</a><span class="k">def</span> <span class="nf">dirichlet_fix_base</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">ffun</span><span class="p">,</span> <span class="n">marker</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Fix the basal plane.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="n">W</span> <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">num_sub_spaces</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">W</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">bc</span> <span class="o">=</span> <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Constant</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+                     <span class="n">ffun</span><span class="p">,</span> <span class="n">marker</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">bc</span></div>
+
+
+<div class="viewcode-block" id="dirichlet_fix_base_directional"><a class="viewcode-back" href="../../pulse.html#pulse.mechanicsproblem.dirichlet_fix_base_directional">[docs]</a><span class="k">def</span> <span class="nf">dirichlet_fix_base_directional</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">ffun</span><span class="p">,</span> <span class="n">marker</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="n">W</span> <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">num_sub_spaces</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">W</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">bc</span> <span class="o">=</span> <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">direction</span><span class="p">),</span>
+                     <span class="n">dolfin</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">),</span>
+                     <span class="n">ffun</span><span class="p">,</span> <span class="n">marker</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">bc</span></div>
+
+
+<div class="viewcode-block" id="cardiac_boundary_conditions"><a class="viewcode-back" href="../../pulse.html#pulse.mechanicsproblem.cardiac_boundary_conditions">[docs]</a><span class="k">def</span> <span class="nf">cardiac_boundary_conditions</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">pericardium_spring</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                                <span class="n">base_spring</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">base_bc</span><span class="o">=</span><span class="s1">&#39;fix_x&#39;</span><span class="p">):</span>
+
+    <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Cardiac boundary conditions can only be applied to a &#39;</span>
+           <span class="s1">&#39;HeartGeometry got </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">geometry</span><span class="p">)))</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">HeartGeometry</span><span class="p">),</span> <span class="n">msg</span>
+
+    <span class="c1"># Neumann BC</span>
+    <span class="n">lv_marker</span> <span class="o">=</span> <span class="n">get_lv_marker</span><span class="p">(</span><span class="n">geometry</span><span class="p">)</span>
+    <span class="n">lv_pressure</span> <span class="o">=</span> <span class="n">NeumannBC</span><span class="p">(</span><span class="n">traction</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;lv_pressure&quot;</span><span class="p">),</span>
+                            <span class="n">marker</span><span class="o">=</span><span class="n">lv_marker</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;lv&#39;</span><span class="p">)</span>
+    <span class="n">neumann_bc</span> <span class="o">=</span> <span class="p">[</span><span class="n">lv_pressure</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="s1">&#39;ENDO_RV&#39;</span> <span class="ow">in</span> <span class="n">geometry</span><span class="o">.</span><span class="n">markers</span><span class="p">:</span>
+
+        <span class="n">rv_pressure</span> <span class="o">=</span> <span class="n">NeumannBC</span><span class="p">(</span><span class="n">traction</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;lv_pressure&#39;</span><span class="p">),</span>
+                                <span class="n">marker</span><span class="o">=</span><span class="n">geometry</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="s1">&#39;ENDO_RV&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="n">name</span><span class="o">=</span><span class="s1">&#39;rv&#39;</span><span class="p">)</span>
+
+        <span class="n">neumann_bc</span> <span class="o">+=</span> <span class="p">[</span><span class="n">rv_pressure</span><span class="p">]</span>
+
+    <span class="c1"># Robin BC</span>
+    <span class="k">if</span> <span class="n">pericardium_spring</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+
+        <span class="n">robin_bc</span> <span class="o">=</span> <span class="p">[</span><span class="n">RobinBC</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">dolfin</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="n">pericardium_spring</span><span class="p">),</span>
+                            <span class="n">marker</span><span class="o">=</span><span class="n">geometry</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="s2">&quot;EPI&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">])]</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">robin_bc</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Apply a linear sprint robin type BC to limit motion</span>
+    <span class="k">if</span> <span class="n">base_spring</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="n">robin_bc</span> <span class="o">+=</span> <span class="p">[</span><span class="n">RobinBC</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">dolfin</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="n">base_spring</span><span class="p">),</span>
+                             <span class="n">marker</span><span class="o">=</span><span class="n">geometry</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="s2">&quot;BASE&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">])]</span>
+
+    <span class="c1"># Dirichlet BC</span>
+    <span class="k">if</span> <span class="n">base_bc</span> <span class="o">==</span> <span class="s2">&quot;fixed&quot;</span><span class="p">:</span>
+
+        <span class="n">dirichlet_bc</span> <span class="o">=</span> <span class="p">[</span><span class="n">partial</span><span class="p">(</span><span class="n">dirichlet_fix_base</span><span class="p">,</span>
+                                <span class="n">ffun</span><span class="o">=</span><span class="n">geometry</span><span class="o">.</span><span class="n">ffun</span><span class="p">,</span>
+                                <span class="n">marker</span><span class="o">=</span><span class="n">geometry</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="s2">&quot;BASE&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">])]</span>
+
+    <span class="k">elif</span> <span class="n">base_bc</span> <span class="o">==</span> <span class="s1">&#39;fix_x&#39;</span><span class="p">:</span>
+
+        <span class="n">dirichlet_bc</span> <span class="o">=</span> <span class="p">[</span><span class="n">partial</span><span class="p">(</span><span class="n">dirichlet_fix_base_directional</span><span class="p">,</span>
+                                <span class="n">ffun</span><span class="o">=</span><span class="n">geometry</span><span class="o">.</span><span class="n">ffun</span><span class="p">,</span>
+                                <span class="n">marker</span><span class="o">=</span><span class="n">geometry</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="s2">&quot;BASE&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">])]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown base bc </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">base_bc</span><span class="p">))</span>
+
+    <span class="n">boundary_conditions</span> <span class="o">=</span> <span class="n">BoundaryConditions</span><span class="p">(</span><span class="n">dirichlet</span><span class="o">=</span><span class="n">dirichlet_bc</span><span class="p">,</span>
+                                             <span class="n">neumann</span><span class="o">=</span><span class="n">neumann_bc</span><span class="p">,</span>
+                                             <span class="n">robin</span><span class="o">=</span><span class="n">robin_bc</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">boundary_conditions</span></div>
+
+
+<div class="viewcode-block" id="SolverDidNotConverge"><a class="viewcode-back" href="../../pulse.html#pulse.mechanicsproblem.SolverDidNotConverge">[docs]</a><span class="k">class</span> <span class="nc">SolverDidNotConverge</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="MechanicsProblem"><a class="viewcode-back" href="../../pulse.html#pulse.mechanicsproblem.MechanicsProblem">[docs]</a><span class="k">class</span> <span class="nc">MechanicsProblem</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for mechanics problem</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometry</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">bcs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bcs_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Initialize mechanics problem&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span> <span class="o">=</span> <span class="n">geometry</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">material</span> <span class="o">=</span> <span class="n">material</span>
+
+        <span class="k">if</span> <span class="n">bcs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">HeartGeometry</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bcs_parameters</span> <span class="o">=</span> <span class="n">MechanicsProblem</span><span class="o">.</span><span class="n">default_bcs_parameters</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bcs_parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">bcs_parameters</span><span class="p">)</span>
+                
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">((</span><span class="s1">&#39;Please provive boundary conditions &#39;</span>
+                                  <span class="s1">&#39;to MechanicsProblem&#39;</span><span class="p">))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">bcs</span> <span class="o">=</span> <span class="n">cardiac_boundary_conditions</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span>
+                                                   <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">bcs_parameters</span><span class="p">)</span>
+            
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bcs</span> <span class="o">=</span> <span class="n">bcs</span>
+
+            <span class="c1"># Just store this as well in case both is provided</span>
+            <span class="k">if</span> <span class="n">bcs_parameters</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bcs_parameters</span> <span class="o">=</span> <span class="n">MechanicsProblem</span><span class="o">.</span><span class="n">default_bcs_parameters</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bcs_parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">bcs_parameters</span><span class="p">)</span>
+
+        <span class="c1"># Make sure that the material has microstructure information</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;f0&quot;</span><span class="p">,</span> <span class="s2">&quot;s0&quot;</span><span class="p">,</span> <span class="s2">&quot;n0&quot;</span><span class="p">):</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span> <span class="n">attr</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_spaces</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_forms</span><span class="p">()</span>
+
+<div class="viewcode-block" id="MechanicsProblem.default_bcs_parameters"><a class="viewcode-back" href="../../pulse.html#pulse.mechanicsproblem.MechanicsProblem.default_bcs_parameters">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">default_bcs_parameters</span><span class="p">():</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">pericardium_spring</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                    <span class="n">base_spring</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                    <span class="n">base_bc</span><span class="o">=</span><span class="s1">&#39;fixed&#39;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_init_spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Initialize spaces for mechanics problem&#39;</span><span class="p">)</span>
+        <span class="n">mesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">mesh</span>
+
+        <span class="n">P2</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">VectorElement</span><span class="p">(</span><span class="s2">&quot;Lagrange&quot;</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">ufl_cell</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">P1</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">FiniteElement</span><span class="p">(</span><span class="s2">&quot;Lagrange&quot;</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">ufl_cell</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># P2_space = FunctionSpace(mesh, P2)</span>
+        <span class="c1"># P1_space = FunctionSpace(mesh, P1)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_space</span> <span class="o">=</span> <span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">P2</span><span class="o">*</span><span class="n">P1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_space</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;state&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_test</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">TestFunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_space</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_init_forms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Initialize forms mechanics problem&#39;</span><span class="p">)</span>
+        <span class="c1"># Displacement and hydrostatic_pressure</span>
+        <span class="n">u</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+        <span class="n">v</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_test</span><span class="p">)</span>
+
+        <span class="c1"># Some mechanical quantities</span>
+        <span class="n">F</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">variable</span><span class="p">(</span><span class="n">kinematics</span><span class="o">.</span><span class="n">DeformationGradient</span><span class="p">(</span><span class="n">u</span><span class="p">))</span>
+        <span class="n">J</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">Jacobian</span><span class="p">(</span><span class="n">F</span><span class="p">)</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">dx</span>
+
+        <span class="n">internal_energy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">strain_energy</span><span class="p">(</span><span class="n">F</span><span class="p">)</span> \
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">compressibility</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">J</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_virtual_work</span> \
+            <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">derivative</span><span class="p">(</span><span class="n">internal_energy</span> <span class="o">*</span> <span class="n">dx</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_test</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_virtual_work</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_external_work</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_dirichlet_bc</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_set_dirichlet_bc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># DirichletBC</span>
+        <span class="k">for</span> <span class="n">dirichlet_bc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bcs</span><span class="o">.</span><span class="n">dirichlet</span><span class="p">:</span>
+
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;DirichletBC only implemented for as &#39;</span>
+                   <span class="s1">&#39;callable. Please provide DirichletBC &#39;</span>
+                   <span class="s1">&#39;as a callable with argument being the &#39;</span>
+                   <span class="s1">&#39;state space only&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dirichlet_bc</span><span class="p">,</span> <span class="s1">&#39;__call__&#39;</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_dirichlet_bc</span> \
+                        <span class="o">=</span> <span class="n">dirichlet_bc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_space</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">ex</span>
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_external_work</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+
+        <span class="n">F</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">variable</span><span class="p">(</span><span class="n">kinematics</span><span class="o">.</span><span class="n">DeformationGradient</span><span class="p">(</span><span class="n">u</span><span class="p">))</span>
+
+        <span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">facet_normal</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">ds</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">dx</span>
+
+        <span class="n">external_work</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="k">for</span> <span class="n">neumann</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bcs</span><span class="o">.</span><span class="n">neumann</span><span class="p">:</span>
+
+            <span class="n">n</span> <span class="o">=</span> <span class="n">neumann</span><span class="o">.</span><span class="n">traction</span> <span class="o">*</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">cofac</span><span class="p">(</span><span class="n">F</span><span class="p">)</span> <span class="o">*</span> <span class="n">N</span>
+            <span class="n">external_work</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dolfin</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">ds</span><span class="p">(</span><span class="n">neumann</span><span class="o">.</span><span class="n">marker</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">robin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bcs</span><span class="o">.</span><span class="n">robin</span><span class="p">:</span>
+
+            <span class="n">external_work</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dolfin</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="n">robin</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                                 <span class="o">*</span> <span class="n">ds</span><span class="p">(</span><span class="n">robin</span><span class="o">.</span><span class="n">marker</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">body_force</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bcs</span><span class="o">.</span><span class="n">body_force</span><span class="p">:</span>
+
+            <span class="n">external_work</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="o">-</span><span class="n">dolfin</span><span class="o">.</span><span class="n">derivative</span><span class="p">(</span><span class="n">dolfin</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="n">body_force</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span> <span class="o">*</span> <span class="n">dx</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">external_work</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">list_sum</span><span class="p">(</span><span class="n">external_work</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MechanicsProblem.reinit"><a class="viewcode-back" href="../../pulse.html#pulse.mechanicsproblem.MechanicsProblem.reinit">[docs]</a>    <span class="k">def</span> <span class="nf">reinit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">annotate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Reinitialze state</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">if</span> <span class="n">has_dolfin_adjoint</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">annotate</span><span class="o">=</span><span class="n">annotate</span><span class="p">)</span>
+            
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+            
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_forms</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MechanicsProblem.solve"><a class="viewcode-back" href="../../pulse.html#pulse.mechanicsproblem.MechanicsProblem.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Solve the variational problem</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">           \delta W = 0</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_jacobian</span> \
+            <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">derivative</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_virtual_work</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
+                                <span class="n">dolfin</span><span class="o">.</span><span class="n">TrialFunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_space</span><span class="p">))</span>
+        
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Solving variational problem&#39;</span><span class="p">)</span>
+        <span class="c1"># Get old state in case of non-convergence</span>
+        <span class="n">old_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deepcopy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">problem</span> \
+            <span class="o">=</span> <span class="n">NonlinearVariationalProblem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_virtual_work</span><span class="p">,</span>
+                                          <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
+                                          <span class="bp">self</span><span class="o">.</span><span class="n">_dirichlet_bc</span><span class="p">,</span>
+                                          <span class="bp">self</span><span class="o">.</span><span class="n">_jacobian</span><span class="p">)</span>
+
+        <span class="n">solver</span> <span class="o">=</span> <span class="n">NonlinearVariationalSolver</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Try to solve&#39;</span><span class="p">)</span>
+            <span class="n">nliter</span><span class="p">,</span> <span class="n">nlconv</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">nlconv</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Failed&#39;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">SolverDidNotConverge</span><span class="p">(</span><span class="s2">&quot;Solver did not converge...&quot;</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Failed&#39;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Reintialize old state and raise exception&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">reinit</span><span class="p">(</span><span class="n">old_state</span><span class="p">)</span>
+
+            <span class="k">raise</span> <span class="n">SolverDidNotConverge</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Sucess&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">nliter</span><span class="p">,</span> <span class="n">nlconv</span></div>
+
+<div class="viewcode-block" id="MechanicsProblem.get_displacement"><a class="viewcode-back" href="../../pulse.html#pulse.mechanicsproblem.MechanicsProblem.get_displacement">[docs]</a>    <span class="k">def</span> <span class="nf">get_displacement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">annotate</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+        <span class="n">D</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_space</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">V</span> <span class="o">=</span> <span class="n">D</span><span class="o">.</span><span class="n">collapse</span><span class="p">()</span>
+
+        <span class="n">fa</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">FunctionAssigner</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;displacement&#39;</span><span class="p">)</span>
+
+        <span class="c1"># if has_dolfin_adjoint:</span>
+            <span class="c1"># fa.assign(u, self.state.split()[0],</span>
+                      <span class="c1"># annotate=annotate)</span>
+        <span class="c1"># else:</span>
+        <span class="n">fa</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+            
+        <span class="k">return</span> <span class="n">u</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">pulse</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  <li><a href="../pulse.html">pulse</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Henrik Finsberg.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

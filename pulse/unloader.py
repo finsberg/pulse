@@ -218,7 +218,7 @@ class RaghavanUnloader(MeshUnloader):
     geometry to the target pressure and subtacting
     the displacement times some factor `k`.
     Use a 1D minimization algorithm from scipy to find `k`.
-    The method is described in [1]
+    The method is described in [1]_
     This method assumes that material properties are given.
     Make sure to change this in utils.py
 
@@ -260,8 +260,8 @@ class RaghavanUnloader(MeshUnloader):
 
 
 
-    Reference
-    ---------
+    References
+    ----------
     .. [1] Raghavan, M. L., Baoshun Ma, and Mark F. Fillinger.
        "Non-invasive determination of zero-pressure geometry of
        arterial aneurysms." Annals of biomedical engineering 34.9
@@ -313,16 +313,16 @@ class FixedPointUnloader(MeshUnloader):
 
     Find the reference configuration corresponding
     to zero pressure using a backward displacement method,
-    described in [1].
+    described in [2]_.
     This method assumes that material properties are given.
     Make sure to change this in utils.py
 
     This also runs in parallel.
 
 
-    Reference
-    ---------
-    .. [1] Bols, Joris, et al. "A computational method to assess the in 
+    References
+    ----------
+    .. [2] Bols, Joris, et al. "A computational method to assess the in 
         vivo stresses and unloaded configuration of patient-specific blood 
         vessels." Journal of computational and Applied mathematics 246 (2013): 10-17.
 

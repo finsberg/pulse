@@ -18,7 +18,7 @@ def setup_general_parameters():
     dolfin.parameters["form_compiler"]["cpp_optimize"] = True
     dolfin.parameters["form_compiler"]["cpp_optimize_flags"] = " ".join(flags)
     
-    dolfin.set_log_active(False)
+    # dolfin.set_log_active(False)
     dolfin.set_log_level(logging.INFO)
 
 

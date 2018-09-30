@@ -77,15 +77,14 @@ def make_logger(name, level=parameters['log_level']):
     logger.addHandler(ch)
     logger.addFilter(mpi_filt)
 
-    dolfin.set_log_active(False)
-    dolfin.set_log_level(dolfin.WARNING)
+    dolfin.set_log_level(logging.WARNING)
 
     ffc_logger = logging.getLogger('FFC')
-    ffc_logger.setLevel(dolfin.WARNING)
+    ffc_logger.setLevel(logging.WARNING)
     ffc_logger.addFilter(mpi_filt)
 
     ufl_logger = logging.getLogger('UFL')
-    ufl_logger.setLevel(dolfin.WARNING)
+    ufl_logger.setLevel(logging.WARNING)
     ufl_logger.addFilter(mpi_filt)
 
     return logger

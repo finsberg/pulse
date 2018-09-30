@@ -1,0 +1,376 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pulse.utils &#8212; pulse 1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for pulse.utils</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">dolfin</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">parameters</span>
+
+
+<div class="viewcode-block" id="Annotation"><a class="viewcode-back" href="../../pulse.html#pulse.utils.Annotation">[docs]</a><span class="k">class</span> <span class="nc">Annotation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Object holding global annotation for dolfin-adjoint</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">annotate</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_annotate</span>
+
+    <span class="nd">@annotate</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">annotate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set global annotation for dolfin-adjoint.</span>
+<span class="sd">        Default False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s1">&#39;adjoint&#39;</span> <span class="ow">in</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span>
+            <span class="n">dolfin</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;adjoint&quot;</span><span class="p">][</span><span class="s2">&quot;stop_annotating&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">annotate</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">pyadjoint.tape</span> <span class="k">import</span> <span class="n">_stop_annotating</span>
+            <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+                <span class="c1"># Dolfin-adjoint is most likely not installed</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">_stop_annotating</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">annotate</span>
+
+        <span class="c1"># Update local variable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_annotate</span> <span class="o">=</span> <span class="n">annotate</span></div>
+
+
+<span class="n">annotate</span> <span class="o">=</span> <span class="n">Annotation</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="set_default_none"><a class="viewcode-back" href="../../pulse.html#pulse.utils.set_default_none">[docs]</a><span class="k">def</span> <span class="nf">set_default_none</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">NamedTuple</span><span class="o">.</span><span class="fm">__new__</span><span class="o">.</span><span class="vm">__defaults__</span> <span class="o">=</span> <span class="p">(</span><span class="n">default</span><span class="p">,)</span> \
+                                      <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">NamedTuple</span><span class="o">.</span><span class="n">_fields</span><span class="p">)</span></div>
+
+
+<span class="c1"># Dummy object</span>
+<div class="viewcode-block" id="Object"><a class="viewcode-back" href="../../pulse.html#pulse.utils.Object">[docs]</a><span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="make_logger"><a class="viewcode-back" href="../../pulse.html#pulse.utils.make_logger">[docs]</a><span class="k">def</span> <span class="nf">make_logger</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;log_level&#39;</span><span class="p">]):</span>
+
+    <span class="k">def</span> <span class="nf">log_if_process0</span><span class="p">(</span><span class="n">record</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">rank</span><span class="p">(</span><span class="n">dolfin</span><span class="o">.</span><span class="n">mpi_comm_world</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="n">mpi_filt</span> <span class="o">=</span> <span class="n">Object</span><span class="p">()</span>
+    <span class="n">mpi_filt</span><span class="o">.</span><span class="n">filter</span> <span class="o">=</span> <span class="n">log_if_process0</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+
+    <span class="n">ch</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+    <span class="n">ch</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># formatter = logging.Formatter(&#39;%(message)s&#39;)</span>
+    <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">((</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - &#39;</span>
+                                   <span class="s1">&#39;</span><span class="si">%(name)s</span><span class="s1"> - &#39;</span>
+                                   <span class="s1">&#39;</span><span class="si">%(levelname)s</span><span class="s1"> - &#39;</span>
+                                   <span class="s1">&#39;</span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">))</span>
+    <span class="n">ch</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">addFilter</span><span class="p">(</span><span class="n">mpi_filt</span><span class="p">)</span>
+
+    <span class="n">dolfin</span><span class="o">.</span><span class="n">set_log_level</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+
+    <span class="n">ffc_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;FFC&#39;</span><span class="p">)</span>
+    <span class="n">ffc_logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+    <span class="n">ffc_logger</span><span class="o">.</span><span class="n">addFilter</span><span class="p">(</span><span class="n">mpi_filt</span><span class="p">)</span>
+
+    <span class="n">ufl_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;UFL&#39;</span><span class="p">)</span>
+    <span class="n">ufl_logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+    <span class="n">ufl_logger</span><span class="o">.</span><span class="n">addFilter</span><span class="p">(</span><span class="n">mpi_filt</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">logger</span></div>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">make_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="number_of_passive_controls"><a class="viewcode-back" href="../../pulse.html#pulse.utils.number_of_passive_controls">[docs]</a><span class="k">def</span> <span class="nf">number_of_passive_controls</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+    <span class="c1"># Number of passive parameters to optimize</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span><span class="ow">not</span> <span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;Fixed_parameters&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span></div>
+
+
+<div class="viewcode-block" id="get_lv_marker"><a class="viewcode-back" href="../../pulse.html#pulse.utils.get_lv_marker">[docs]</a><span class="k">def</span> <span class="nf">get_lv_marker</span><span class="p">(</span><span class="n">geometry</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="s1">&#39;ENDO&#39;</span> <span class="ow">in</span> <span class="n">geometry</span><span class="o">.</span><span class="n">markers</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">geometry</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="s1">&#39;ENDO&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="s1">&#39;ENDO_LV&#39;</span> <span class="ow">in</span> <span class="n">geometry</span><span class="o">.</span><span class="n">markers</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">geometry</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="s1">&#39;ENDO_LV&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;Geometry is missing marker for LV ENDO&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="save_logger"><a class="viewcode-back" href="../../pulse.html#pulse.utils.save_logger">[docs]</a><span class="k">def</span> <span class="nf">save_logger</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+
+    <span class="n">outdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;sim_file&quot;</span><span class="p">])</span>
+    <span class="n">logfile</span> <span class="o">=</span> <span class="s2">&quot;output.log&quot;</span> <span class="k">if</span> <span class="n">outdir</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="k">else</span> <span class="n">outdir</span> <span class="o">+</span> <span class="s2">&quot;/output.log&quot;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">logfile</span><span class="p">,</span>
+                        <span class="n">filemode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
+                        <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span>
+                        <span class="n">datefmt</span><span class="o">=</span><span class="s1">&#39;%H:%M:%S&#39;</span><span class="p">,</span>
+                        <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+
+    <span class="n">ffc_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;FFC&#39;</span><span class="p">)</span>
+    <span class="n">ffc_logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+    <span class="n">ufl_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;UFL&#39;</span><span class="p">)</span>
+    <span class="n">ufl_logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+
+    <span class="kn">import</span> <span class="nn">datetime</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+                                      <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Time: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="UnableToChangePressureExeption"><a class="viewcode-back" href="../../pulse.html#pulse.utils.UnableToChangePressureExeption">[docs]</a><span class="k">class</span> <span class="nc">UnableToChangePressureExeption</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="AutoVivification"><a class="viewcode-back" href="../../pulse.html#pulse.utils.AutoVivification">[docs]</a><span class="k">class</span> <span class="nc">AutoVivification</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Implementation of perl&#39;s autovivification feature.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)()</span>
+            <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="print_head"><a class="viewcode-back" href="../../pulse.html#pulse.utils.print_head">[docs]</a><span class="k">def</span> <span class="nf">print_head</span><span class="p">(</span><span class="n">for_res</span><span class="p">,</span> <span class="n">display_iter</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+    <span class="n">targets</span> <span class="o">=</span> <span class="n">for_res</span><span class="p">[</span><span class="s2">&quot;optimization_targets&quot;</span><span class="p">]</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="n">targets</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="o">+</span><span class="p">[</span><span class="s2">&quot;regularization&quot;</span><span class="p">]</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
+
+    <span class="n">head</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="si">{:&lt;6}</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;Iter&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">display_iter</span> <span class="k">else</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">+</span><span class="s2">&quot; &quot;</span><span class="o">*</span><span class="mi">7</span>
+    <span class="n">head</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">{:&lt;10}</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;Obj&quot;</span><span class="p">)</span> <span class="o">+</span> \
+            <span class="s2">&quot;</span><span class="si">{:&lt;10}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;||grad||&quot;</span><span class="p">)</span> <span class="o">+</span> \
+            <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">+</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="s2">&quot;I_</span><span class="si">{:&lt;10}</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">keys</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">head</span></div>
+
+
+<div class="viewcode-block" id="print_line"><a class="viewcode-back" href="../../pulse.html#pulse.utils.print_line">[docs]</a><span class="k">def</span> <span class="nf">print_line</span><span class="p">(</span><span class="n">for_res</span><span class="p">,</span> <span class="n">it</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">grad_norm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">func_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="n">func_value</span> <span class="o">=</span> <span class="n">for_res</span><span class="p">[</span><span class="s2">&quot;func_value&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">func_value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">func_value</span>
+    <span class="n">grad_norm</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="k">if</span> <span class="n">grad_norm</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">grad_norm</span>
+
+    <span class="n">targets</span> <span class="o">=</span> <span class="n">for_res</span><span class="p">[</span><span class="s2">&quot;target_values&quot;</span><span class="p">]</span>
+    <span class="n">reg_func</span> <span class="o">=</span> <span class="n">targets</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;regularization&quot;</span><span class="p">)</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">targets</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="o">+</span> <span class="p">[</span><span class="n">reg_func</span><span class="p">]</span>
+    <span class="n">targets</span><span class="p">[</span><span class="s2">&quot;regularization&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reg_func</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+    <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:&lt;6d}</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">it</span><span class="p">)</span> <span class="k">if</span> <span class="n">it</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">line</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">{:&lt;10.2e}</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">func_value</span><span class="p">)</span> <span class="o">+</span> \
+            <span class="s2">&quot;</span><span class="si">{:&lt;10.2e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">grad_norm</span><span class="p">)</span> <span class="o">+</span> \
+            <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">+</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="s2">&quot;</span><span class="si">{:&lt;10.2e}</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">values</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">line</span></div>
+
+
+<div class="viewcode-block" id="rename_attribute"><a class="viewcode-back" href="../../pulse.html#pulse.utils.rename_attribute">[docs]</a><span class="k">def</span> <span class="nf">rename_attribute</span><span class="p">(</span><span class="n">object_</span><span class="p">,</span> <span class="n">old_attribute_name</span><span class="p">,</span> <span class="n">new_attribute_name</span><span class="p">):</span>
+    <span class="nb">setattr</span><span class="p">(</span><span class="n">object_</span><span class="p">,</span> <span class="n">new_attribute_name</span><span class="p">,</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">object_</span><span class="p">,</span> <span class="n">old_attribute_name</span><span class="p">))</span>
+    <span class="nb">delattr</span><span class="p">(</span><span class="n">object_</span><span class="p">,</span> <span class="n">old_attribute_name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TablePrint"><a class="viewcode-back" href="../../pulse.html#pulse.utils.TablePrint">[docs]</a><span class="k">class</span> <span class="nc">TablePrint</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Print output in nice table format.</span>
+
+<span class="sd">    **Example of use**::</span>
+
+<span class="sd">      fldmap = (</span>
+<span class="sd">         &#39;LVP&#39;,  &#39;0.5f&#39;,</span>
+<span class="sd">         &#39;LV_Volume&#39;, &#39;0.5f&#39;,</span>
+<span class="sd">         &#39;Target_Volume&#39;, &#39;0.5f&#39;,</span>
+<span class="sd">         &#39;I_strain&#39;, &#39;0.2e&#39;,</span>
+<span class="sd">         &#39;I_volume&#39;, &#39;0.2e&#39;,</span>
+<span class="sd">         &#39;I_reg&#39;, &#39;0.2e&#39;,</span>
+<span class="sd">         )</span>
+
+<span class="sd">      my_print = TablePrint(fldmap)</span>
+<span class="sd">      print my_print.print_head()</span>
+<span class="sd">      print my_print.print_line(LVP=1, LV_Volume=1, Target_Volume=1,</span>
+<span class="sd">                                I_strain=1, I_volume=1, I_reg=1)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fldmap</span><span class="p">,</span> <span class="n">fancyhead</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">fancyhead</span><span class="p">:</span>
+            <span class="n">q</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">fldmap</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]]</span>
+
+            <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;{:&#39;</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;}&#39;</span>
+                             <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">q</span><span class="p">])</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">head</span> <span class="o">=</span> <span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">fldmap</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">head</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fldmap</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">fldmap</span><span class="p">):</span><span class="mi">2</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;{&#39;</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">:</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;}&#39;</span>
+                              <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                                      <span class="n">fldmap</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">fldmap</span><span class="p">):</span><span class="mi">2</span><span class="p">],</span>
+                                      <span class="n">fldmap</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">fldmap</span><span class="p">):</span><span class="mi">2</span><span class="p">]</span>
+                              <span class="p">)])</span>
+
+<div class="viewcode-block" id="TablePrint.print_head"><a class="viewcode-back" href="../../pulse.html#pulse.utils.TablePrint.print_head">[docs]</a>    <span class="k">def</span> <span class="nf">print_head</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head</span></div>
+
+<div class="viewcode-block" id="TablePrint.print_line"><a class="viewcode-back" href="../../pulse.html#pulse.utils.TablePrint.print_line">[docs]</a>    <span class="k">def</span> <span class="nf">print_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Text"><a class="viewcode-back" href="../../pulse.html#pulse.utils.Text">[docs]</a><span class="k">class</span> <span class="nc">Text</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Ansi escape sequences for coloured text output</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_PURPLE</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[95m&#39;</span>
+    <span class="n">_OKBLUE</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[94m&#39;</span>
+    <span class="n">_OKGREEN</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[92m&#39;</span>
+    <span class="n">_YELLOW</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[93m&#39;</span>
+    <span class="n">_RED</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[91m &#39;</span>
+    <span class="n">_ENDC</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[0m&#39;</span>
+
+<div class="viewcode-block" id="Text.blue"><a class="viewcode-back" href="../../pulse.html#pulse.utils.Text.blue">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">blue</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">Text</span><span class="o">.</span><span class="n">_OKBLUE</span> <span class="o">+</span> <span class="n">text</span> <span class="o">+</span> <span class="n">Text</span><span class="o">.</span><span class="n">_ENDC</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+<div class="viewcode-block" id="Text.green"><a class="viewcode-back" href="../../pulse.html#pulse.utils.Text.green">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">green</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">Text</span><span class="o">.</span><span class="n">_OKGREEN</span> <span class="o">+</span> <span class="n">text</span> <span class="o">+</span> <span class="n">Text</span><span class="o">.</span><span class="n">_ENDC</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+<div class="viewcode-block" id="Text.red"><a class="viewcode-back" href="../../pulse.html#pulse.utils.Text.red">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">red</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">Text</span><span class="o">.</span><span class="n">_RED</span> <span class="o">+</span> <span class="n">text</span> <span class="o">+</span> <span class="n">Text</span><span class="o">.</span><span class="n">_ENDC</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+<div class="viewcode-block" id="Text.yellow"><a class="viewcode-back" href="../../pulse.html#pulse.utils.Text.yellow">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">yellow</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">Text</span><span class="o">.</span><span class="n">_YELLOW</span> <span class="o">+</span> <span class="n">text</span> <span class="o">+</span> <span class="n">Text</span><span class="o">.</span><span class="n">_ENDC</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+<div class="viewcode-block" id="Text.purple"><a class="viewcode-back" href="../../pulse.html#pulse.utils.Text.purple">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">purple</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">Text</span><span class="o">.</span><span class="n">_PURPLE</span> <span class="o">+</span> <span class="n">text</span> <span class="o">+</span> <span class="n">Text</span><span class="o">.</span><span class="n">_ENDC</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+<div class="viewcode-block" id="Text.decolour"><a class="viewcode-back" href="../../pulse.html#pulse.utils.Text.decolour">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">decolour</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+        <span class="n">to_remove</span> <span class="o">=</span> <span class="p">[</span><span class="n">Text</span><span class="o">.</span><span class="n">_ENDC</span><span class="p">,</span>
+                     <span class="n">Text</span><span class="o">.</span><span class="n">_OKBLUE</span><span class="p">,</span>
+                     <span class="n">Text</span><span class="o">.</span><span class="n">_OKGREEN</span><span class="p">,</span>
+                     <span class="n">Text</span><span class="o">.</span><span class="n">_RED</span><span class="p">,</span>
+                     <span class="n">Text</span><span class="o">.</span><span class="n">_YELLOW</span><span class="p">,</span>
+                     <span class="n">Text</span><span class="o">.</span><span class="n">_PURPLE</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">chars</span> <span class="ow">in</span> <span class="n">to_remove</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">chars</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">text</span></div></div>
+
+        
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">pulse</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  <li><a href="../pulse.html">pulse</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Henrik Finsberg.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

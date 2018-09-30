@@ -112,7 +112,10 @@ class Material(object):
             activation_element = self.activation.ufl_element()
             cell = activation_element.cell()
         except AttributeError:
-            cell = activation.cell()
+            if not hasattr(activation, 'cell'):
+                cell = None
+            else:
+                cell = activation.cell()
             
         if geometry is not None and cell is not None:
             self.activation = update_function(geometry.mesh,

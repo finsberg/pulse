@@ -1,0 +1,773 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pulse.geometry_utils &#8212; pulse 1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for pulse.geometry_utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">dolfin</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">dolfin_adjoint</span> <span class="k">import</span> <span class="n">Constant</span><span class="p">,</span> <span class="n">Function</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">dolfin</span> <span class="k">import</span> <span class="n">Constant</span><span class="p">,</span> <span class="n">Function</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">numpy_mpi</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">io_utils</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">parameters</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">make_logger</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">make_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;log_level&#39;</span><span class="p">])</span>
+
+
+<div class="viewcode-block" id="move"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.move">[docs]</a><span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Move mesh according to some displacement times some factor</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">W</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">mesh</span><span class="p">(),</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Use interpolation for now. It is the only thing that makes sense</span>
+    <span class="n">u_int</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span>
+
+    <span class="n">u0</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
+    <span class="n">arr</span> <span class="o">=</span> <span class="n">factor</span> <span class="o">*</span> <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">gather_broadcast</span><span class="p">(</span><span class="n">u_int</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">get_local</span><span class="p">())</span>
+    <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">assign_to_vector</span><span class="p">(</span><span class="n">u0</span><span class="o">.</span><span class="n">vector</span><span class="p">(),</span> <span class="n">arr</span><span class="p">)</span>
+
+    <span class="n">V</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">U</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
+    <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">assign_to_vector</span><span class="p">(</span><span class="n">U</span><span class="o">.</span><span class="n">vector</span><span class="p">(),</span> <span class="n">arr</span><span class="p">)</span>
+
+    <span class="n">dolfin</span><span class="o">.</span><span class="n">ALE</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">U</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">u0</span></div>
+
+
+<div class="viewcode-block" id="get_fiber_markers"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.get_fiber_markers">[docs]</a><span class="k">def</span> <span class="nf">get_fiber_markers</span><span class="p">(</span><span class="n">mesh_type</span><span class="o">=</span><span class="s2">&quot;lv&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the markers for the mesh.</span>
+<span class="sd">    This is the default markers for fiberrules.</span>
+
+<span class="sd">    :param str mesh_type: type of mesh, &#39;lv&#39; or &#39;biv&#39;</span>
+<span class="sd">    :returns: The markers</span>
+<span class="sd">    :rtype: dict</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">mesh_type</span> <span class="o">==</span> <span class="s2">&quot;lv&quot;</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;BASE&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+                <span class="s1">&#39;ENDO&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+                <span class="s1">&#39;EPI&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
+                <span class="s1">&#39;WALL&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+                <span class="s1">&#39;ENDORING&#39;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
+                <span class="s1">&#39;EPIRING&#39;</span><span class="p">:</span> <span class="mi">400</span><span class="p">,</span>
+                <span class="s1">&#39;WALL&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">}</span>
+
+    <span class="k">elif</span> <span class="n">mesh_type</span> <span class="o">==</span> <span class="s2">&quot;biv&quot;</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;BASE&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+                <span class="s1">&#39;ENDO_RV&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+                <span class="s1">&#39;ENDO_LV&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+                <span class="s1">&#39;EPI&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
+                <span class="s1">&#39;ENDORING_RV&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+                <span class="s1">&#39;ENDORING_LV&#39;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
+                <span class="s1">&#39;EPIRING&#39;</span><span class="p">:</span> <span class="mi">400</span><span class="p">,</span>
+                <span class="s1">&#39;WALL&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="get_markers"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.get_markers">[docs]</a><span class="k">def</span> <span class="nf">get_markers</span><span class="p">(</span><span class="n">mesh_type</span><span class="o">=</span><span class="s2">&quot;lv&quot;</span><span class="p">):</span>
+
+    <span class="k">assert</span> <span class="n">mesh_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;lv&quot;</span><span class="p">,</span> <span class="s2">&quot;biv&quot;</span><span class="p">]</span>
+
+    <span class="n">fiber_markers</span> <span class="o">=</span> <span class="n">get_fiber_markers</span><span class="p">(</span><span class="n">mesh_type</span><span class="p">)</span>
+
+    <span class="n">markers</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">markers</span><span class="p">[</span><span class="s2">&quot;NONE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+    <span class="n">markers</span><span class="p">[</span><span class="s2">&quot;BASE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">fiber_markers</span><span class="p">[</span><span class="s2">&quot;BASE&quot;</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">markers</span><span class="p">[</span><span class="s2">&quot;EPI&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">fiber_markers</span><span class="p">[</span><span class="s2">&quot;EPI&quot;</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">markers</span><span class="p">[</span><span class="s2">&quot;EPIRING&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">fiber_markers</span><span class="p">[</span><span class="s2">&quot;EPIRING&quot;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">mesh_type</span> <span class="o">==</span> <span class="s2">&quot;lv&quot;</span><span class="p">:</span>
+
+        <span class="n">markers</span><span class="p">[</span><span class="s2">&quot;ENDO&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">fiber_markers</span><span class="p">[</span><span class="s2">&quot;ENDO&quot;</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">markers</span><span class="p">[</span><span class="s2">&quot;ENDORING&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">fiber_markers</span><span class="p">[</span><span class="s2">&quot;ENDORING&quot;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="n">markers</span><span class="p">[</span><span class="s2">&quot;ENDO_RV&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">fiber_markers</span><span class="p">[</span><span class="s2">&quot;ENDO_RV&quot;</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">markers</span><span class="p">[</span><span class="s2">&quot;ENDO_LV&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">fiber_markers</span><span class="p">[</span><span class="s2">&quot;ENDO_LV&quot;</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">markers</span><span class="p">[</span><span class="s2">&quot;ENDORING_RV&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">fiber_markers</span><span class="p">[</span><span class="s2">&quot;ENDORING_RV&quot;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">markers</span><span class="p">[</span><span class="s2">&quot;ENDORING_LV&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">fiber_markers</span><span class="p">[</span><span class="s2">&quot;ENDORING_LV&quot;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">markers</span></div>
+
+
+<div class="viewcode-block" id="load_geometry_from_h5"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.load_geometry_from_h5">[docs]</a><span class="k">def</span> <span class="nf">load_geometry_from_h5</span><span class="p">(</span><span class="n">h5name</span><span class="p">,</span> <span class="n">h5group</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                          <span class="n">fendo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fepi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                          <span class="n">include_sheets</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                          <span class="n">comm</span><span class="o">=</span><span class="n">dolfin</span><span class="o">.</span><span class="n">mpi_comm_world</span><span class="p">()):</span>
+    <span class="sd">&quot;&quot;&quot;Load geometry and other mesh data from</span>
+<span class="sd">    a h5file to an object.</span>
+<span class="sd">    If the file contains muliple fiber fields</span>
+<span class="sd">    you can spefify the angles, and if the file</span>
+<span class="sd">    contais sheets and cross-sheets this can also</span>
+<span class="sd">    be included</span>
+
+<span class="sd">    :param str h5name: Name of the h5file</span>
+<span class="sd">    :param str h5group: The group within the file</span>
+<span class="sd">    :param int fendo: Helix fiber angle (endocardium) (if available)</span>
+<span class="sd">    :param int fepi: Helix fiber angle (epicardium) (if available)</span>
+<span class="sd">    :param bool include_sheets: Include sheets and cross-sheets</span>
+<span class="sd">    :returns: An object with geometry data</span>
+<span class="sd">    :rtype: object</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Load mesh from h5&quot;</span><span class="p">)</span>
+    <span class="c1"># Set default groups</span>
+    <span class="n">ggroup</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/geometry&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5group</span><span class="p">)</span>
+    <span class="n">mgroup</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/mesh&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ggroup</span><span class="p">)</span>
+    <span class="n">lgroup</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/local basis functions&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5group</span><span class="p">)</span>
+    <span class="n">fgroup</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/microstructure/&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5group</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">h5name</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;File </span><span class="si">{}</span><span class="s2"> does not exist&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5name</span><span class="p">))</span>
+
+    <span class="c1"># Check that the given file contains</span>
+    <span class="c1"># the geometry in the given h5group</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">io_utils</span><span class="o">.</span><span class="n">check_h5group</span><span class="p">(</span><span class="n">h5name</span><span class="p">,</span> <span class="n">mgroup</span><span class="p">,</span>
+                                  <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">comm</span><span class="o">=</span><span class="n">comm</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Warning!</span><span class="se">\n</span><span class="s2">Group: &#39;</span><span class="si">{}</span><span class="s2">&#39; does not exist in file:&quot;</span>
+               <span class="s2">&quot;</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mgroup</span><span class="p">,</span> <span class="n">h5name</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">h5name</span><span class="p">)</span> <span class="k">as</span> <span class="n">h</span><span class="p">:</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Possible values for the h5group are </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="c1"># Create a dummy object for easy parsing</span>
+    <span class="k">class</span> <span class="nc">Geometry</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="k">pass</span>
+    <span class="n">geo</span> <span class="o">=</span> <span class="n">Geometry</span><span class="p">()</span>
+
+    <span class="k">with</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">HDF5File</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">h5name</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5file</span><span class="p">:</span>
+
+        <span class="c1"># Load mesh</span>
+        <span class="n">mesh</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Mesh</span><span class="p">(</span><span class="n">comm</span><span class="p">)</span>
+        <span class="n">io_utils</span><span class="o">.</span><span class="n">read_h5file</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">mgroup</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">geo</span><span class="o">.</span><span class="n">mesh</span> <span class="o">=</span> <span class="n">mesh</span>
+
+        <span class="c1"># Get mesh functions</span>
+        <span class="k">for</span> <span class="n">dim</span><span class="p">,</span> <span class="n">attr</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> <span class="p">[</span><span class="s2">&quot;vfun&quot;</span><span class="p">,</span> <span class="s2">&quot;efun&quot;</span><span class="p">,</span> <span class="s2">&quot;ffun&quot;</span><span class="p">,</span> <span class="s2">&quot;cfun&quot;</span><span class="p">]):</span>
+
+            <span class="n">dgroup</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/mesh/meshfunction_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ggroup</span><span class="p">,</span> <span class="n">dim</span><span class="p">)</span>
+            <span class="n">mf</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">MeshFunction</span><span class="p">(</span><span class="s2">&quot;size_t&quot;</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">domains</span><span class="p">())</span>
+
+            <span class="k">if</span> <span class="n">h5file</span><span class="o">.</span><span class="n">has_dataset</span><span class="p">(</span><span class="n">dgroup</span><span class="p">):</span>
+                <span class="n">io_utils</span><span class="o">.</span><span class="n">read_h5file</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">mf</span><span class="p">,</span> <span class="n">dgroup</span><span class="p">)</span>
+                
+
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">geo</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">mf</span><span class="p">)</span>
+
+        <span class="n">load_local_basis</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">lgroup</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">geo</span><span class="p">)</span>
+
+        <span class="n">load_microstructure</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">fgroup</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">geo</span><span class="p">,</span> <span class="n">include_sheets</span><span class="p">)</span>
+
+        <span class="c1"># Load the boundary markers</span>
+        <span class="n">markers</span> <span class="o">=</span> <span class="n">load_markers</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">ggroup</span><span class="p">,</span> <span class="n">dgroup</span><span class="p">)</span>
+        <span class="n">geo</span><span class="o">.</span><span class="n">markers</span> <span class="o">=</span> <span class="n">markers</span>
+
+        <span class="n">origmeshgroup</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/original_geometry&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5group</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">h5file</span><span class="o">.</span><span class="n">has_dataset</span><span class="p">(</span><span class="n">origmeshgroup</span><span class="p">):</span>
+            <span class="n">original_mesh</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Mesh</span><span class="p">(</span><span class="n">comm</span><span class="p">)</span>
+            <span class="n">io_utils</span><span class="o">.</span><span class="n">read_h5file</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">original_mesh</span><span class="p">,</span> <span class="n">origmeshgroup</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">geo</span><span class="p">,</span> <span class="s2">&quot;original_geometry&quot;</span><span class="p">,</span> <span class="n">original_mesh</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">geo</span></div>
+
+
+<div class="viewcode-block" id="load_markers"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.load_markers">[docs]</a><span class="k">def</span> <span class="nf">load_markers</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">ggroup</span><span class="p">,</span> <span class="n">dgroup</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span> 
+        <span class="n">markers</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">ufl_domain</span><span class="p">()</span><span class="o">.</span><span class="n">topological_dimension</span><span class="p">()</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">key_str</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;domain&quot;</span><span class="p">,</span> <span class="s2">&quot;meshfunction&quot;</span><span class="p">]:</span>
+                <span class="n">dgroup</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/mesh/</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ggroup</span><span class="p">,</span> <span class="n">key_str</span><span class="p">,</span> <span class="n">dim</span><span class="p">)</span>
+
+                <span class="c1"># If dataset is not present</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">h5file</span><span class="o">.</span><span class="n">has_dataset</span><span class="p">(</span><span class="n">dgroup</span><span class="p">):</span>
+                    <span class="k">continue</span>
+
+                <span class="k">for</span> <span class="n">aname</span> <span class="ow">in</span> <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">dgroup</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>\
+                                                            <span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">aname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;marker_name&#39;</span><span class="p">):</span>
+
+                        <span class="n">name</span> <span class="o">=</span> <span class="n">aname</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;marker_name_&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                        <span class="n">marker</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">dgroup</span><span class="p">)[</span><span class="s1">&#39;marker_name_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)]</span>
+                        <span class="n">markers</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">marker</span><span class="p">),</span> <span class="n">dim</span><span class="p">)</span>
+        
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Unable to load makers&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+        <span class="n">markers</span> <span class="o">=</span> <span class="n">get_markers</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">markers</span></div>
+
+
+<div class="viewcode-block" id="full_arctangent"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.full_arctangent">[docs]</a><span class="k">def</span> <span class="nf">full_arctangent</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">t</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">t</span></div>
+
+
+<div class="viewcode-block" id="cartesian_to_prolate_ellipsoidal"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.cartesian_to_prolate_ellipsoidal">[docs]</a><span class="k">def</span> <span class="nf">cartesian_to_prolate_ellipsoidal</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+
+    <span class="n">b1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">x</span> <span class="o">+</span> <span class="n">a</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">y</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">z</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">b2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">y</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">z</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">sigma</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mf">2.0</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">b1</span> <span class="o">+</span> <span class="n">b2</span><span class="p">)</span>
+    <span class="n">tau</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mf">2.0</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">b1</span> <span class="o">-</span> <span class="n">b2</span><span class="p">)</span>
+    <span class="n">phi</span> <span class="o">=</span> <span class="n">full_arctangent</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccosh</span><span class="p">(</span><span class="n">sigma</span><span class="p">)</span>
+    <span class="n">nu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">tau</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mu</span><span class="p">,</span> <span class="n">nu</span><span class="p">,</span> <span class="n">phi</span></div>
+
+
+<div class="viewcode-block" id="prolate_ellipsoidal_to_cartesian"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.prolate_ellipsoidal_to_cartesian">[docs]</a><span class="k">def</span> <span class="nf">prolate_ellipsoidal_to_cartesian</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">nu</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">a</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">nu</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">a</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sinh</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">nu</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">a</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sinh</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">nu</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span></div>
+
+
+<div class="viewcode-block" id="fill_coordinates_ec"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.fill_coordinates_ec">[docs]</a><span class="k">def</span> <span class="nf">fill_coordinates_ec</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">e_c_x</span><span class="p">,</span> <span class="n">e_c_y</span><span class="p">,</span> <span class="n">e_c_z</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span> <span class="n">foci</span><span class="p">):</span>
+    <span class="n">norm</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">coord</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">coord</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">near</span><span class="p">(</span><span class="n">norm</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">e_c_y</span><span class="o">.</span><span class="n">vector</span><span class="p">()[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">coord</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="n">norm</span>
+        <span class="n">e_c_z</span><span class="o">.</span><span class="n">vector</span><span class="p">()[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">coord</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">norm</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># We are at the apex where crl system doesn&#39;t make sense</span>
+        <span class="c1"># So just pick something.</span>
+        <span class="n">e_c_y</span><span class="o">.</span><span class="n">vector</span><span class="p">()[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">e_c_z</span><span class="o">.</span><span class="n">vector</span><span class="p">()[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+        
+<div class="viewcode-block" id="fill_coordinates_el"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.fill_coordinates_el">[docs]</a><span class="k">def</span> <span class="nf">fill_coordinates_el</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">e_c_x</span><span class="p">,</span> <span class="n">e_c_y</span><span class="p">,</span> <span class="n">e_c_z</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span> <span class="n">foci</span><span class="p">):</span>
+
+    <span class="n">norm</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">coord</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">coord</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">near</span><span class="p">(</span><span class="n">norm</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">mu</span><span class="p">,</span> <span class="n">nu</span><span class="p">,</span> <span class="n">phi</span> \
+            <span class="o">=</span> <span class="n">cartesian_to_prolate_ellipsoidal</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">coord</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="o">+</span> <span class="p">[</span><span class="n">foci</span><span class="p">]))</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">prolate_ellipsoidal_to_cartesian</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">nu</span> <span class="o">+</span> <span class="mf">0.01</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">foci</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">coord</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">,</span>
+                      <span class="n">coord</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">y</span><span class="p">,</span>
+                      <span class="n">coord</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">z</span><span class="p">])</span>
+        <span class="n">e_r</span> <span class="o">=</span> <span class="n">r</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+        <span class="n">e_c_x</span><span class="o">.</span><span class="n">vector</span><span class="p">()[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">e_r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">e_c_y</span><span class="o">.</span><span class="n">vector</span><span class="p">()[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">e_r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">e_c_z</span><span class="o">.</span><span class="n">vector</span><span class="p">()[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">e_r</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">e_c_y</span><span class="o">.</span><span class="n">vector</span><span class="p">()[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">e_c_z</span><span class="o">.</span><span class="n">vector</span><span class="p">()[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="calc_cross_products"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.calc_cross_products">[docs]</a><span class="k">def</span> <span class="nf">calc_cross_products</span><span class="p">(</span><span class="n">e1</span><span class="p">,</span> <span class="n">e2</span><span class="p">,</span> <span class="n">VV</span><span class="p">):</span>
+    <span class="n">e_crossed</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">VV</span><span class="p">)</span>
+
+    <span class="n">e1_arr</span> <span class="o">=</span> <span class="n">e1</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">get_local</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="n">e2_arr</span> <span class="o">=</span> <span class="n">e2</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">get_local</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+    <span class="n">crosses</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">e1_arr</span><span class="p">,</span> <span class="n">e2_arr</span><span class="p">):</span>
+        <span class="n">crosses</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="o">.</span><span class="n">tolist</span><span class="p">()))</span>
+
+    <span class="n">e_crossed</span><span class="o">.</span><span class="n">vector</span><span class="p">()[:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">crosses</span><span class="p">)[:]</span>
+    <span class="k">return</span> <span class="n">e_crossed</span></div>
+
+
+<div class="viewcode-block" id="make_unit_vector"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.make_unit_vector">[docs]</a><span class="k">def</span> <span class="nf">make_unit_vector</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">VV</span><span class="p">,</span> <span class="n">dofs_x</span><span class="p">,</span> <span class="n">fill_coordinates</span><span class="p">,</span> <span class="n">foc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">e_c_x</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
+    <span class="n">e_c_y</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
+    <span class="n">e_c_z</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">coord</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dofs_x</span><span class="p">):</span>
+        <span class="n">fill_coordinates</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">e_c_x</span><span class="p">,</span> <span class="n">e_c_y</span><span class="p">,</span> <span class="n">e_c_z</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span> <span class="n">foc</span><span class="p">)</span>
+
+    <span class="n">e</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">VV</span><span class="p">)</span>
+
+    <span class="n">fa</span> <span class="o">=</span> <span class="p">[</span><span class="n">dolfin</span><span class="o">.</span><span class="n">FunctionAssigner</span><span class="p">(</span><span class="n">VV</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">V</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">e_c_comp</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="n">e_c_x</span><span class="p">,</span> <span class="n">e_c_y</span><span class="p">,</span> <span class="n">e_c_z</span><span class="p">]):</span>
+        <span class="n">fa</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="n">i</span><span class="p">],</span> <span class="n">e_c_comp</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">e</span></div>
+
+
+<div class="viewcode-block" id="make_LV_crl_basis"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.make_LV_crl_basis">[docs]</a><span class="k">def</span> <span class="nf">make_LV_crl_basis</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">foc</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Makes the crl  basis for the LV mesh (prolate ellipsoidal)</span>
+<span class="sd">    with prespecified focal length.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">VV</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">DOLFIN_VERSION_MAJOR</span> <span class="o">&gt;</span> <span class="mf">1.6</span><span class="p">:</span>
+        <span class="n">dofs_x</span> <span class="o">=</span> <span class="n">V</span><span class="o">.</span><span class="n">tabulate_dof_coordinates</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">geometry</span><span class="p">()</span><span class="o">.</span><span class="n">dim</span><span class="p">()))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dm</span> <span class="o">=</span> <span class="n">V</span><span class="o">.</span><span class="n">dofmap</span><span class="p">()</span>
+        <span class="n">dofs_x</span> <span class="o">=</span> <span class="n">dm</span><span class="o">.</span><span class="n">tabulate_all_coordinates</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">geometry</span><span class="p">()</span><span class="o">.</span><span class="n">dim</span><span class="p">()))</span>
+
+    <span class="n">e_c</span> <span class="o">=</span> <span class="n">make_unit_vector</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">VV</span><span class="p">,</span> <span class="n">dofs_x</span><span class="p">,</span> <span class="n">fill_coordinates_ec</span><span class="p">)</span>
+    <span class="n">e_l</span> <span class="o">=</span> <span class="n">make_unit_vector</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">VV</span><span class="p">,</span> <span class="n">dofs_x</span><span class="p">,</span> <span class="n">fill_coordinates_el</span><span class="p">,</span> <span class="n">foc</span><span class="p">)</span>
+    <span class="n">e_r</span> <span class="o">=</span> <span class="n">calc_cross_products</span><span class="p">(</span><span class="n">e_c</span><span class="p">,</span> <span class="n">e_l</span><span class="p">,</span> <span class="n">VV</span><span class="p">)</span>
+
+    <span class="n">e_c</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">&quot;c0&quot;</span><span class="p">,</span> <span class="s2">&quot;local_basis_function&quot;</span><span class="p">)</span>
+    <span class="n">e_r</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">&quot;r0&quot;</span><span class="p">,</span> <span class="s2">&quot;local_basis_function&quot;</span><span class="p">)</span>
+    <span class="n">e_l</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">&quot;l0&quot;</span><span class="p">,</span> <span class="s2">&quot;local_basis_function&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">e_c</span><span class="p">,</span> <span class="n">e_r</span><span class="p">,</span> <span class="n">e_l</span></div>
+
+
+<div class="viewcode-block" id="make_BiV_crl_basis"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.make_BiV_crl_basis">[docs]</a><span class="k">def</span> <span class="nf">make_BiV_crl_basis</span><span class="p">(</span><span class="n">mesh</span><span class="p">):</span>
+
+    <span class="n">c0</span> <span class="o">=</span> <span class="n">get_circ_field</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
+    <span class="n">l0</span> <span class="o">=</span> <span class="n">get_long_field</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;biv&quot;</span><span class="p">)</span>
+    <span class="n">r0</span> <span class="o">=</span> <span class="n">calc_cross_products</span><span class="p">(</span><span class="n">c0</span><span class="p">,</span> <span class="n">l0</span><span class="p">,</span> <span class="n">c0</span><span class="o">.</span><span class="n">function_space</span><span class="p">())</span>
+
+    <span class="k">return</span> <span class="n">c0</span><span class="p">,</span> <span class="n">r0</span><span class="p">,</span> <span class="n">l0</span></div>
+
+
+<div class="viewcode-block" id="generate_local_basis_functions"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.generate_local_basis_functions">[docs]</a><span class="k">def</span> <span class="nf">generate_local_basis_functions</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">focal_point</span><span class="p">,</span> <span class="n">mesh_type</span><span class="o">=</span><span class="s2">&quot;lv&quot;</span><span class="p">):</span>
+
+    <span class="k">assert</span> <span class="n">mesh_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;lv&quot;</span><span class="p">,</span> <span class="s2">&quot;biv&quot;</span><span class="p">],</span> <span class="s2">&quot;Excepted mesh_type to be &#39;lv&#39; or &#39;biv&#39;&quot;</span>
+
+    <span class="k">if</span> <span class="n">mesh_type</span> <span class="o">==</span> <span class="s2">&quot;biv&quot;</span><span class="p">:</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">c0</span><span class="p">,</span> <span class="n">r0</span><span class="p">,</span> <span class="n">l0</span> <span class="o">=</span> <span class="n">make_BiV_crl_basis</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">c0</span><span class="p">,</span> <span class="n">r0</span><span class="p">,</span> <span class="n">l0</span>
+
+    <span class="c1"># Make basis functions</span>
+    <span class="n">c0</span><span class="p">,</span> <span class="n">r0</span><span class="p">,</span> <span class="n">l0</span> <span class="o">=</span> <span class="n">make_crl_basis</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">focal_point</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">c0</span><span class="p">,</span> <span class="n">r0</span><span class="p">,</span> <span class="n">l0</span></div>
+
+
+<div class="viewcode-block" id="fibers"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.fibers">[docs]</a><span class="k">def</span> <span class="nf">fibers</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">fiber_endo</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span> <span class="n">fiber_epi</span><span class="o">=-</span><span class="mi">60</span><span class="p">):</span>
+    
+    <span class="n">fiber_params</span> <span class="o">=</span> <span class="n">Parameters</span><span class="p">(</span><span class="s2">&quot;Fibers&quot;</span><span class="p">)</span>
+    <span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;fiber_space&quot;</span><span class="p">,</span> <span class="s2">&quot;Quadrature_4&quot;</span><span class="p">)</span>
+    <span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;include_sheets&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;fiber_angle_epi&quot;</span><span class="p">,</span> <span class="n">fiber_epi</span><span class="p">)</span>
+    <span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;fiber_angle_endo&quot;</span><span class="p">,</span> <span class="n">fiber_endo</span><span class="p">)</span>
+    <span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;sheet_angle_epi&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;sheet_angle_endo&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">f0</span> <span class="o">=</span> <span class="n">generate_fibers</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">fiber_params</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">f0</span></div>
+
+<div class="viewcode-block" id="get_circ_field"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.get_circ_field">[docs]</a><span class="k">def</span> <span class="nf">get_circ_field</span><span class="p">(</span><span class="n">mesh</span><span class="p">):</span>
+
+    <span class="n">fiber_params</span> <span class="o">=</span> <span class="n">Parameters</span><span class="p">(</span><span class="s2">&quot;Fibers&quot;</span><span class="p">)</span>
+    <span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;fiber_space&quot;</span><span class="p">,</span> <span class="s2">&quot;Quadrature_4&quot;</span><span class="p">)</span>
+    <span class="c1"># fiber_params.add(&quot;fiber_space&quot;, &quot;Lagrange_1&quot;)</span>
+    <span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;include_sheets&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># Parameter set from Bayer et al.</span>
+    <span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;fiber_angle_epi&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;fiber_angle_endo&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;sheet_angle_epi&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;sheet_angle_endo&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">f0</span> <span class="o">=</span> <span class="n">generate_fibers</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">fiber_params</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">f0</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">&quot;circumferential&quot;</span><span class="p">,</span> <span class="s2">&quot;local_basis_function&quot;</span><span class="p">)</span>
+   
+    <span class="k">return</span> <span class="n">f0</span></div>
+
+<div class="viewcode-block" id="get_long_field"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.get_long_field">[docs]</a><span class="k">def</span> <span class="nf">get_long_field</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">mesh_type</span><span class="o">=</span><span class="s2">&quot;biv&quot;</span><span class="p">):</span>
+    <span class="n">fiber_params</span> <span class="o">=</span> <span class="n">Parameters</span><span class="p">(</span><span class="s2">&quot;Fibers&quot;</span><span class="p">)</span>
+    <span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;fiber_space&quot;</span><span class="p">,</span> <span class="s2">&quot;Quadrature_4&quot;</span><span class="p">)</span>
+    <span class="c1"># fiber_params.add(&quot;fiber_space&quot;, &quot;Lagrange_1&quot;)</span>
+    <span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;include_sheets&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># Parameter set from Bayer et al.</span>
+    <span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;fiber_angle_epi&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">90</span><span class="p">)</span>
+    <span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;fiber_angle_endo&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">90</span><span class="p">)</span>
+    <span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;sheet_angle_epi&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;sheet_angle_endo&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">mesh_type</span> <span class="o">==</span> <span class="s2">&quot;biv&quot;</span><span class="p">:</span>
+        <span class="c1"># We need to set the markers for then LV and RV facets </span>
+        <span class="n">ffun</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">MeshFunction</span><span class="p">(</span><span class="s2">&quot;size_t&quot;</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">domains</span><span class="p">())</span>
+
+        <span class="n">markers</span> <span class="o">=</span> <span class="n">get_fiber_markers</span><span class="p">(</span><span class="s2">&quot;biv&quot;</span><span class="p">)</span>
+        <span class="c1"># Mark the mesh with same markers on the LV and RV before</span>
+        <span class="c1"># running the LDRB algorithm</span>
+        <span class="n">markers</span><span class="p">[</span><span class="s2">&quot;ENDO_RV&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">markers</span><span class="p">[</span><span class="s2">&quot;ENDO_LV&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">doflin</span><span class="o">.</span><span class="n">facets</span><span class="p">(</span><span class="n">mesh</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">ffun</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">mesh</span><span class="o">.</span><span class="n">domains</span><span class="p">()</span><span class="o">.</span><span class="n">set_marker</span><span class="p">((</span><span class="n">facet</span><span class="o">.</span><span class="n">index</span><span class="p">(),</span>
+                                           <span class="n">markers</span><span class="p">[</span><span class="n">ffun</span><span class="p">[</span><span class="n">facet</span><span class="p">]]),</span> <span class="mi">2</span><span class="p">)</span>
+
+
+    <span class="n">f0</span> <span class="o">=</span> <span class="n">generate_fibers</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">fiber_params</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">f0</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">&quot;longitudinal&quot;</span><span class="p">,</span> <span class="s2">&quot;local_basis_function&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">mesh_type</span> <span class="o">==</span> <span class="s2">&quot;biv&quot;</span><span class="p">:</span>
+        <span class="c1"># Put the correct markers</span>
+        <span class="n">markers</span> <span class="o">=</span> <span class="n">get_fiber_markers</span><span class="p">(</span><span class="s2">&quot;biv&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">doflin</span><span class="o">.</span><span class="n">facets</span><span class="p">(</span><span class="n">mesh</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">ffun</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">mesh</span><span class="o">.</span><span class="n">domains</span><span class="p">()</span><span class="o">.</span><span class="n">set_marker</span><span class="p">((</span><span class="n">facet</span><span class="o">.</span><span class="n">index</span><span class="p">(),</span>
+                                           <span class="n">markers</span><span class="p">[</span><span class="n">ffun</span><span class="p">[</span><span class="n">facet</span><span class="p">]]),</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">f0</span></div>
+
+
+<div class="viewcode-block" id="generate_fibers"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.generate_fibers">[docs]</a><span class="k">def</span> <span class="nf">generate_fibers</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">fiber_params</span><span class="p">):</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">fiberrules</span> <span class="k">import</span> <span class="n">dolfin_fiberrules</span>
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Unable to generate fibers without fiberrules package&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;This package is protected by copyright&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">ex</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">GENERATING FIBERS ...&quot;</span><span class="p">)</span>
+
+    <span class="n">fiber_space_name</span> <span class="o">=</span> <span class="n">fiber_params</span><span class="p">[</span><span class="s2">&quot;fiber_space&quot;</span><span class="p">]</span>
+
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">fiber_space_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">))</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> \
+        <span class="s2">&quot;expected fiber_space_name in &#39;FamilyName_Degree&#39; format&quot;</span>
+
+    <span class="n">family</span><span class="p">,</span> <span class="n">degree</span> <span class="o">=</span> <span class="n">fiber_space_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">DOLFIN_VERSION_MAJOR</span> <span class="o">&gt;</span> <span class="mf">1.6</span><span class="p">:</span>
+        <span class="n">el</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">FiniteElement</span><span class="p">(</span><span class="n">family</span><span class="o">=</span><span class="n">family</span><span class="p">,</span>
+                                  <span class="n">cell</span><span class="o">=</span><span class="n">mesh</span><span class="o">.</span><span class="n">ufl_cell</span><span class="p">(),</span>
+                                  <span class="n">degree</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">degree</span><span class="p">),</span>
+                                  <span class="n">quad_scheme</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">)</span>
+        <span class="n">fiber_space</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">el</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fiber_space</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">degree</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">family</span> <span class="o">==</span> <span class="s2">&quot;Quadrature&quot;</span><span class="p">:</span>
+        <span class="n">dolfin</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;form_compiler&quot;</span><span class="p">][</span><span class="s2">&quot;quadrature_degree&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">degree</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">DOLFIN_VERSION_MAJOR</span> <span class="o">&gt;</span> <span class="mi">2016</span><span class="p">:</span>
+            <span class="n">dolfin</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;form_compiler&quot;</span><span class="p">][</span><span class="s2">&quot;representation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;quadrature&quot;</span>
+
+    <span class="c1"># There are some strange shifting in the fiberrults angles</span>
+    <span class="n">fiber_angle_epi</span> <span class="o">=</span> <span class="mi">90</span> <span class="o">-</span> <span class="p">(</span><span class="o">-</span><span class="n">fiber_params</span><span class="p">[</span><span class="s2">&quot;fiber_angle_epi&quot;</span><span class="p">])</span>
+    <span class="n">fiber_angle_endo</span> <span class="o">=</span> <span class="mi">90</span> <span class="o">-</span> <span class="p">(</span><span class="n">fiber_params</span><span class="p">[</span><span class="s2">&quot;fiber_angle_endo&quot;</span><span class="p">])</span>
+    <span class="n">sheet_angle_endo</span> <span class="o">=</span> <span class="n">fiber_params</span><span class="p">[</span><span class="s2">&quot;sheet_angle_endo&quot;</span><span class="p">]</span>
+    <span class="n">sheet_angle_epi</span> <span class="o">=</span> <span class="n">fiber_params</span><span class="p">[</span><span class="s2">&quot;sheet_angle_epi&quot;</span><span class="p">]</span>
+
+    <span class="n">microstructures</span> <span class="o">=</span> <span class="n">dolfin_fiberrules</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span>
+                                        <span class="n">fiber_space</span><span class="p">,</span>
+                                        <span class="n">fiber_angle_epi</span><span class="p">,</span>
+                                        <span class="n">fiber_angle_endo</span><span class="p">,</span>
+                                        <span class="n">sheet_angle_epi</span><span class="p">,</span>
+                                        <span class="n">sheet_angle_endo</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">DOLFIN_VERSION_MAJOR</span> <span class="o">&gt;</span> <span class="mi">2016</span><span class="p">:</span>
+        <span class="n">dolfin</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;form_compiler&quot;</span><span class="p">][</span><span class="s2">&quot;representation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;uflacs&quot;</span>
+
+    <span class="n">microstructures</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">&quot;fiber&quot;</span><span class="p">,</span>
+                              <span class="s2">&quot;epi</span><span class="si">{}</span><span class="s2">_endo</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fiber_params</span><span class="p">[</span><span class="s2">&quot;fiber_angle_epi&quot;</span><span class="p">],</span> 
+                                                    <span class="n">fiber_params</span><span class="p">[</span><span class="s2">&quot;fiber_angle_endo&quot;</span><span class="p">]))</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="n">microstructures</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+
+
+    <span class="k">if</span> <span class="n">fiber_params</span><span class="p">[</span><span class="s2">&quot;include_sheets&quot;</span><span class="p">]:</span>
+        <span class="n">microstructures</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">&quot;sheet&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;epi</span><span class="si">{}</span><span class="s2">_endo</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sheet_angle_epi</span><span class="p">,</span> 
+                                                                <span class="n">sheet_angle_endo</span><span class="p">))</span>
+        <span class="n">microstructures</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">&quot;cross_sheet&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;fepi</span><span class="si">{}</span><span class="s2">_fendo</span><span class="si">{}</span><span class="s2">_sepi</span><span class="si">{}</span><span class="s2">_sendo</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fiber_params</span><span class="p">[</span><span class="s2">&quot;fiber_angle_epi&quot;</span><span class="p">],</span> 
+                                                                         <span class="n">fiber_params</span><span class="p">[</span><span class="s2">&quot;fiber_angle_endo&quot;</span><span class="p">],</span>
+                                                                         <span class="n">sheet_angle_epi</span><span class="p">,</span> 
+                                                                         <span class="n">sheet_angle_endo</span><span class="p">))</span>
+        <span class="n">fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">microstructures</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">microstructures</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">fields</span></div>
+
+<div class="viewcode-block" id="load_local_basis"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.load_local_basis">[docs]</a><span class="k">def</span> <span class="nf">load_local_basis</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">lgroup</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">geo</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="n">h5file</span><span class="o">.</span><span class="n">has_dataset</span><span class="p">(</span><span class="n">lgroup</span><span class="p">):</span>
+        <span class="c1"># Get local bais functions</span>
+        <span class="n">local_basis_attrs</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">lgroup</span><span class="p">)</span>
+        <span class="n">lspace</span> <span class="o">=</span> <span class="n">local_basis_attrs</span><span class="p">[</span><span class="s2">&quot;space&quot;</span><span class="p">]</span>
+        <span class="n">family</span><span class="p">,</span> <span class="n">order</span> <span class="o">=</span> <span class="n">lspace</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)</span>
+
+        <span class="n">namesstr</span> <span class="o">=</span> <span class="n">local_basis_attrs</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="n">namesstr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">DOLFIN_VERSION_MAJOR</span> <span class="o">&gt;</span> <span class="mf">1.6</span><span class="p">:</span>
+            <span class="n">elm</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">VectorElement</span><span class="p">(</span><span class="n">family</span><span class="o">=</span><span class="n">family</span><span class="p">,</span>
+                                       <span class="n">cell</span><span class="o">=</span><span class="n">mesh</span><span class="o">.</span><span class="n">ufl_cell</span><span class="p">(),</span>
+                                       <span class="n">degree</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">order</span><span class="p">),</span>
+                                       <span class="n">quad_scheme</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">)</span>
+            <span class="n">V</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">elm</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">V</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">order</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+            <span class="n">lb</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+            <span class="n">io_utils</span><span class="o">.</span><span class="n">read_h5file</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">lb</span><span class="p">,</span> <span class="n">lgroup</span><span class="o">+</span><span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">geo</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">lb</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">geo</span><span class="p">,</span> <span class="s1">&#39;circumferential&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">geo</span><span class="p">,</span> <span class="s1">&#39;radial&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">geo</span><span class="p">,</span> <span class="s1">&#39;longitudinal&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="load_microstructure"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.load_microstructure">[docs]</a><span class="k">def</span> <span class="nf">load_microstructure</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">fgroup</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">geo</span><span class="p">,</span> <span class="n">include_sheets</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="n">h5file</span><span class="o">.</span><span class="n">has_dataset</span><span class="p">(</span><span class="n">fgroup</span><span class="p">):</span>
+        <span class="c1"># Get fibers</span>
+        <span class="n">fiber_attrs</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">fgroup</span><span class="p">)</span>
+        <span class="n">fspace</span> <span class="o">=</span> <span class="n">fiber_attrs</span><span class="p">[</span><span class="s2">&quot;space&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">fspace</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Assume quadrature 4</span>
+            <span class="n">family</span> <span class="o">=</span> <span class="s2">&quot;Quadrature&quot;</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="mi">4</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">family</span><span class="p">,</span> <span class="n">order</span> <span class="o">=</span> <span class="n">fspace</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)</span>
+
+        <span class="n">namesstr</span> <span class="o">=</span> <span class="n">fiber_attrs</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">namesstr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;fiber&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="n">namesstr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check that these fibers exists</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+            <span class="n">fsubgroup</span> <span class="o">=</span> <span class="n">fgroup</span><span class="o">+</span><span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">h5file</span><span class="o">.</span><span class="n">has_dataset</span><span class="p">(</span><span class="n">fsubgroup</span><span class="p">):</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;H5File does not have dataset </span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fsubgroup</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">DOLFIN_VERSION_MAJOR</span> <span class="o">&gt;</span> <span class="mf">1.6</span><span class="p">:</span>
+            <span class="n">elm</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">VectorElement</span><span class="p">(</span><span class="n">family</span><span class="o">=</span><span class="n">family</span><span class="p">,</span>
+                                       <span class="n">cell</span><span class="o">=</span><span class="n">mesh</span><span class="o">.</span><span class="n">ufl_cell</span><span class="p">(),</span>
+                                       <span class="n">degree</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">order</span><span class="p">),</span>
+                                       <span class="n">quad_scheme</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">)</span>
+            <span class="n">V</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">elm</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">V</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">order</span><span class="p">))</span>
+
+        <span class="n">attrs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;f0&quot;</span><span class="p">,</span> <span class="s2">&quot;s0&quot;</span><span class="p">,</span> <span class="s2">&quot;n0&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">fsubgroup</span> <span class="o">=</span> <span class="n">fgroup</span><span class="o">+</span><span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+            <span class="n">io_utils</span><span class="o">.</span><span class="n">read_h5file</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">fsubgroup</span><span class="p">)</span>
+
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">geo</span><span class="p">,</span> <span class="n">attrs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">func</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="save_geometry_to_h5"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.save_geometry_to_h5">[docs]</a><span class="k">def</span> <span class="nf">save_geometry_to_h5</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">h5name</span><span class="p">,</span> <span class="n">h5group</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">markers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">fields</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">local_basis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">comm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">other_functions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">other_attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">overwrite_file</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">overwrite_group</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Save geometry and other geometrical functions to a HDF file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Save mesh to h5&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Mesh</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">comm</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">comm</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">mpi_comm</span><span class="p">()</span>
+    <span class="n">file_mode</span> <span class="o">=</span> <span class="s2">&quot;a&quot;</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">h5name</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite_file</span> <span class="k">else</span> <span class="s2">&quot;w&quot;</span>
+
+    <span class="c1"># IF we should append the file but overwrite the group we need to</span>
+    <span class="c1"># check that the group does not exist. If so we need to open it in</span>
+    <span class="c1"># h5py and delete it.</span>
+    <span class="k">if</span> <span class="n">file_mode</span> <span class="o">==</span> <span class="s2">&quot;a&quot;</span> <span class="ow">and</span> <span class="n">overwrite_group</span> <span class="ow">and</span> <span class="n">h5group</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="n">io_utils</span><span class="o">.</span><span class="n">check_h5group</span><span class="p">(</span><span class="n">h5name</span><span class="p">,</span> <span class="n">h5group</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">comm</span><span class="o">=</span><span class="n">comm</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">HDF5File</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">h5name</span><span class="p">,</span> <span class="n">file_mode</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5file</span><span class="p">:</span>
+
+        <span class="c1"># Save mesh</span>
+        <span class="n">ggroup</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/geometry&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5group</span><span class="p">)</span>
+
+        <span class="n">mgroup</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/mesh&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ggroup</span><span class="p">)</span>
+
+        <span class="n">h5file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">mgroup</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="n">mf</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">MeshFunction</span><span class="p">(</span><span class="s2">&quot;size_t&quot;</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">domains</span><span class="p">())</span>
+            <span class="n">save_mf</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">mf</span><span class="o">.</span><span class="n">array</span><span class="p">())))</span> <span class="o">&gt;</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">save_mf</span><span class="p">:</span>
+                <span class="n">dgroup</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/mesh/meshfunction_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ggroup</span><span class="p">,</span> <span class="n">dim</span><span class="p">)</span>
+                <span class="n">h5file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mf</span><span class="p">,</span> <span class="n">dgroup</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">markers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Save the boundary markers</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">marker</span><span class="p">,</span> <span class="n">dim</span><span class="p">)</span> <span class="ow">in</span> <span class="n">markers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+                <span class="k">for</span> <span class="n">key_str</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;domain&quot;</span><span class="p">,</span> <span class="s2">&quot;meshfunction&quot;</span><span class="p">]:</span>
+
+                    <span class="n">dgroup</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/mesh/</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ggroup</span><span class="p">,</span> <span class="n">key_str</span><span class="p">,</span> <span class="n">dim</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">h5file</span><span class="o">.</span><span class="n">has_dataset</span><span class="p">(</span><span class="n">dgroup</span><span class="p">):</span>
+                        <span class="n">aname</span> <span class="o">=</span> <span class="s1">&#39;marker_name_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                        <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">dgroup</span><span class="p">)[</span><span class="n">aname</span><span class="p">]</span> <span class="o">=</span> <span class="n">marker</span>
+
+        <span class="k">if</span> <span class="n">local_basis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Save local basis functions</span>
+            <span class="n">lgroup</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/local basis functions&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5group</span><span class="p">)</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">local_basis</span><span class="p">:</span>
+                <span class="n">h5file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">lgroup</span> <span class="o">+</span> <span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">name</span><span class="p">()))</span>
+                <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
+
+            <span class="n">elm</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span>
+            <span class="n">family</span><span class="p">,</span> <span class="n">degree</span> <span class="o">=</span> <span class="n">elm</span><span class="o">.</span><span class="n">family</span><span class="p">(),</span> <span class="n">elm</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
+            <span class="n">lspace</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">family</span><span class="p">,</span> <span class="n">degree</span><span class="p">)</span>
+            <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">lgroup</span><span class="p">)[</span><span class="s1">&#39;space&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lspace</span>
+            <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">lgroup</span><span class="p">)[</span><span class="s1">&#39;names&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;:&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">fields</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Save fiber field</span>
+            <span class="n">fgroup</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/microstructure&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5group</span><span class="p">)</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">label</span><span class="p">()</span> \
+                        <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">label</span><span class="p">()</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">&#39;a Function&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">field</span><span class="p">),</span> <span class="n">label</span><span class="p">]))</span>
+                <span class="n">fsubgroup</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fgroup</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+                <span class="n">h5file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">fsubgroup</span><span class="p">)</span>
+                <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">fsubgroup</span><span class="p">)[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">()</span>
+                <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+            <span class="n">elm</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span>
+            <span class="n">family</span><span class="p">,</span> <span class="n">degree</span> <span class="o">=</span> <span class="n">elm</span><span class="o">.</span><span class="n">family</span><span class="p">(),</span> <span class="n">elm</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
+            <span class="n">fspace</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">family</span><span class="p">,</span> <span class="n">degree</span><span class="p">)</span>
+            <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">fgroup</span><span class="p">)[</span><span class="s1">&#39;space&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fspace</span>
+            <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">fgroup</span><span class="p">)[</span><span class="s1">&#39;names&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;:&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">fun</span> <span class="ow">in</span> <span class="n">other_functions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">fungroup</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">h5group</span><span class="p">,</span> <span class="n">k</span><span class="p">])</span>
+            <span class="n">h5file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">fungroup</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">):</span>
+                <span class="n">elm</span> <span class="o">=</span> <span class="n">fun</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span>
+                <span class="n">family</span><span class="p">,</span> <span class="n">degree</span><span class="p">,</span> <span class="n">vsize</span> \
+                    <span class="o">=</span> <span class="n">elm</span><span class="o">.</span><span class="n">family</span><span class="p">(),</span> <span class="n">elm</span><span class="o">.</span><span class="n">degree</span><span class="p">(),</span> <span class="n">elm</span><span class="o">.</span><span class="n">value_size</span><span class="p">()</span>
+                <span class="n">fspace</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">family</span><span class="p">,</span> <span class="n">degree</span><span class="p">)</span>
+                <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">fungroup</span><span class="p">)[</span><span class="s1">&#39;space&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fspace</span>
+                <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">fungroup</span><span class="p">)[</span><span class="s1">&#39;value_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">vsize</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">other_attributes</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">h5group</span><span class="p">)[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Invalid attribute </span><span class="si">{}</span><span class="s2"> = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Geometry saved to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5name</span><span class="p">))</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">pulse</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  <li><a href="../pulse.html">pulse</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Henrik Finsberg.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
