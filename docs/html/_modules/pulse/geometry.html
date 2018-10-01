@@ -152,7 +152,8 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
 <span class="kn">import</span> <span class="nn">dolfin</span>
 
-<span class="kn">from</span> <span class="nn">.geometry_utils</span> <span class="k">import</span> <span class="n">load_geometry_from_h5</span><span class="p">,</span> <span class="n">move</span><span class="p">,</span> <span class="n">logger</span> <span class="k">as</span> <span class="n">logger_utils</span>
+<span class="kn">from</span> <span class="nn">.geometry_utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">load_geometry_from_h5</span><span class="p">,</span> <span class="n">move</span><span class="p">,</span>
+                             <span class="n">save_geometry_to_h5</span><span class="p">,</span> <span class="n">logger</span> <span class="k">as</span> <span class="n">logger_utils</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">numpy_mpi</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">parameters</span>
@@ -191,6 +192,23 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for geometry</span>
 
+<span class="sd">    Arguments</span>
+<span class="sd">    ---------</span>
+<span class="sd">    mesh : :class:`dolfin.mesh`</span>
+<span class="sd">        The mesh</span>
+<span class="sd">    markers : dict</span>
+<span class="sd">        A dictionary with markers for the mesh (optional)</span>
+<span class="sd">    marker_functions : :class:`pulse.geometry.MarkerFunctions`</span>
+<span class="sd">        A Markerfunction object with Meshfunctions for</span>
+<span class="sd">        the mesh</span>
+<span class="sd">    microstructure : :class:`pulse.geometry.Microstructure`</span>
+<span class="sd">        A Markerfunction object with functions for the</span>
+<span class="sd">        fiber, sheet and sheet normal (optional)</span>
+<span class="sd">    crl_basis : :class:`pulse.geometry.CRLBasis`</span>
+<span class="sd">        A CRLBasis objedt with funcions for the circumferential,</span>
+<span class="sd">        radial and longitudinal vectors. (optional)</span>
+<span class="sd">     </span>
+
 <span class="sd">    Geometry can be intanciated directly</span>
 
 <span class="sd">    Example</span>
@@ -198,7 +216,9 @@
 
 <span class="sd">        .. code-block:: python</span>
 
-<span class="sd">            # To be implemented</span>
+<span class="sd">            import dolfin</span>
+<span class="sd">            mesh = dolfin.UnitCubeMesh(3,3,3)</span>
+<span class="sd">            geometry = Geometry(mesh)</span>
 
 <span class="sd">    You can load create and instace be loading a geometry from a file</span>
 
@@ -330,13 +350,23 @@
 
         <span class="k">return</span> <span class="n">kwargs</span></div>
 
-<div class="viewcode-block" id="Geometry.save"><a class="viewcode-back" href="../../pulse.html#pulse.geometry.Geometry.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h5name</span><span class="p">):</span>
-        <span class="k">pass</span></div>
+<div class="viewcode-block" id="Geometry.save"><a class="viewcode-back" href="../../pulse.html#pulse.geometry.Geometry.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h5name</span><span class="p">,</span> <span class="n">h5group</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Save to </span><span class="si">{}</span><span class="s1">...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5name</span><span class="p">))</span>
+        <span class="n">save_geometry_to_h5</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span>
+                            <span class="n">h5name</span><span class="o">=</span><span class="n">h5name</span><span class="p">,</span>
+                            <span class="n">h5group</span><span class="o">=</span><span class="n">h5group</span><span class="p">,</span>
+                            <span class="n">markers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">markers</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
+                            <span class="n">fields</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">microstructure_list</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
+                            <span class="n">local_basis</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">crl_basis_list</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Saved&#39;</span><span class="p">)</span></div>
+                            
+        
 
 <div class="viewcode-block" id="Geometry.dim"><a class="viewcode-back" href="../../pulse.html#pulse.geometry.Geometry.dim">[docs]</a>    <span class="k">def</span> <span class="nf">dim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Geometry.crl_basis_list"><a class="viewcode-back" href="../../pulse.html#pulse.geometry.Geometry.crl_basis_list">[docs]</a>    <span class="k">def</span> <span class="nf">crl_basis_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">crl_basis_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return a list of the CRL basis in the order</span>
 <span class="sd">        c0, r0, l0. Basis elements that are none will not</span>
 <span class="sd">        be included</span>
@@ -349,7 +379,7 @@
                 <span class="k">if</span> <span class="n">e</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_crl_basis_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_crl_basis_list</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_crl_basis_list</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">nbasis</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -417,6 +447,17 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_meshvol</span> <span class="o">=</span> <span class="n">compute_meshvolume</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meshvol</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">microstructure_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fibers, sheet and sheet-normals in a list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;f0&#39;</span><span class="p">,</span> <span class="s1">&#39;s0&#39;</span><span class="p">,</span> <span class="s1">&#39;n0&#39;</span><span class="p">]:</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">microstructure</span><span class="p">,</span> <span class="n">l</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">e</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">fields</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">vfun</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

@@ -1,5 +1,5 @@
 
-Findgin the unloaded geometry
+Finding the unloaded geometry
 =============================
 
 This demo demonstrates how to unload a geometry using

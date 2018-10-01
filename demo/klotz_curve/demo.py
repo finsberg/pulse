@@ -149,7 +149,8 @@ def main():
     ax.legend(loc="best")
     ax.set_xlabel('Volume (ml)')
     ax.set_ylabel('Pressure (kPa)')
-    plt.show()
+    # plt.show()
+    plt.savefig('klotz_curve.png')
 
 
 if __name__ == "__main__":

@@ -462,8 +462,8 @@ def generate_fibers(mesh, fiber_params):
     # There are some strange shifting in the fiberrults angles
     fiber_angle_epi = 90 - (-fiber_params["fiber_angle_epi"])
     fiber_angle_endo = 90 - (fiber_params["fiber_angle_endo"])
-    sheet_angle_endo = fiber_params["sheet_angle_endo"]
-    sheet_angle_epi = fiber_params["sheet_angle_epi"]
+    sheet_angle_endo = fiber_params.to_dict().get("sheet_angle_endo", 0)
+    sheet_angle_epi = fiber_params.to_dict().get("sheet_angle_epi", 0)
 
     microstructures = dolfin_fiberrules(mesh,
                                         fiber_space,
@@ -580,7 +580,30 @@ def save_geometry_to_h5(mesh, h5name, h5group="", markers=None,
 
     Parameters
     ----------
-
+    mesh : :class:`dolfin.mesh`
+        The mesh
+    h5name : str
+        Path to the file
+    h5group : str
+        Folder within the file. Default is "" which means in
+        the top folder.
+    markers : dict
+        A dictionary with markers. See `get_markers`.
+    fields : list
+        A list of functions for the microstructure
+    local_basis : list
+        A list of functions for the crl basis
+    comm : :class:`dolfin.MPI`
+        MPI communicator
+    other_functions : dict
+        Dictionary with other functions you want to save
+    other_attributes: dict
+        Dictionary with other attributes you want to save
+    overwrite_file : bool
+        If true, and the file exists, the file will be overwritten (default: False)
+    overwrite_group : bool
+        If true and h5group exist, the group will be overwritten. 
+    
     """
 
     logger.info("\nSave mesh to h5")
@@ -657,9 +680,10 @@ def save_geometry_to_h5(mesh, h5name, h5group="", markers=None,
             h5file.attributes(fgroup)['space'] = fspace
             h5file.attributes(fgroup)['names'] = ":".join(names)
 
-        for k, fun in other_functions.items():
-            fungroup = "/".join([h5group, k])
-            h5file.write(fun, fungroup)
+        if other_functions is not None:
+            for k, fun in other_functions.items():
+                fungroup = "/".join([h5group, k])
+                h5file.write(fun, fungroup)
 
             if isinstance(fun, dolfin.Function):
                 elm = fun.function_space().ufl_element()
@@ -669,10 +693,11 @@ def save_geometry_to_h5(mesh, h5name, h5group="", markers=None,
                 h5file.attributes(fungroup)['space'] = fspace
                 h5file.attributes(fungroup)['value_size'] = vsize
 
-        for k, v in other_attributes.iteritems():
-            if isinstance(v, str) and isinstance(k, str):
-                h5file.attributes(h5group)[k] = v
-            else:
-                logger.warning("Invalid attribute {} = {}".format(k, v))
+        if other_attributes is not None:
+            for k, v in other_attributes.iteritems():
+                if isinstance(v, str) and isinstance(k, str):
+                    h5file.attributes(h5group)[k] = v
+                else:
+                    logger.warning("Invalid attribute {} = {}".format(k, v))
 
     logger.info("Geometry saved to {}".format(h5name))

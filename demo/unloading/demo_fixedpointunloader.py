@@ -35,4 +35,5 @@ unloaded_geometry = unloader.unloaded_geometry
 plt.figure()
 dolfin.plot(geometry.mesh, alpha=0.1, edgecolor='k', color='w')
 dolfin.plot(unloaded_geometry.mesh)
-plt.show()
+# plt.show()
+plt.savefig('unloaded.png')

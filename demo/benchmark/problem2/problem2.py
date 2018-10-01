@@ -71,16 +71,13 @@ u_int = dolfin.interpolate(u, V)
 mesh = dolfin.Mesh(geometry.mesh)
 dolfin.ALE.move(mesh, u_int)
 
-plt.figure()
-dolfin.plot(geometry.mesh, alpha=0.5, color='w',
-            edgecolor='b', title='Original geometry')
-ax1 = plt.gca()
+fig = plt.figure()
 
-plt.figure()
-dolfin.plot(mesh, color='r', edgecolor='k', alpha=0.7,
+dolfin.plot(geometry.mesh, color='b',
+            edgecolor='k', title='Original geometry')
+dolfin.plot(mesh, color='r', alpha=0.3,
             title='Inflating ellipsoid')
-ax2 = plt.gca()
+ax = plt.gca()
+ax.view_init(elev=-83, azim=-179)
 
-for ax in (ax1, ax2):
-    ax.view_init(elev=-83, azim=-179)
-plt.show()
+fig.savefig('problem2.png')

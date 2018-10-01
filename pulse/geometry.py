@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 from collections import namedtuple
+import os
 import dolfin
 
-from .geometry_utils import load_geometry_from_h5, move, logger as logger_utils
+from .geometry_utils import (load_geometry_from_h5, move,
+                             save_geometry_to_h5, logger as logger_utils)
 
 from . import numpy_mpi
 from . import parameters
@@ -41,21 +43,40 @@ class Geometry(object):
     """
     Base class for geometry
 
+    Arguments
+    ---------
+    mesh : :class:`dolfin.mesh`
+        The mesh
+    markers : dict
+        A dictionary with markers for the mesh (optional)
+    marker_functions : :class:`pulse.geometry.MarkerFunctions`
+        A Markerfunction object with Meshfunctions for
+        the mesh
+    microstructure : :class:`pulse.geometry.Microstructure`
+        A Markerfunction object with functions for the
+        fiber, sheet and sheet normal (optional)
+    crl_basis : :class:`pulse.geometry.CRLBasis`
+        A CRLBasis objedt with funcions for the circumferential,
+        radial and longitudinal vectors. (optional)
+     
+
     Geometry can be intanciated directly
 
     Example
     -------
 
-        ..code-block: python
+        .. code-block:: python
 
-            # To be implemented
+            import dolfin
+            mesh = dolfin.UnitCubeMesh(3,3,3)
+            geometry = Geometry(mesh)
 
     You can load create and instace be loading a geometry from a file
 
     Example
     -------
 
-        ..code-block: python
+        .. code-block:: python
 
             # Geometry is stored in a file "geometry.h5"
             geo = Geometry.from_file("geometry.h5")
@@ -180,12 +201,26 @@ class Geometry(object):
 
         return kwargs
 
-    def save(self, h5name):
-        pass
+    def save(self, h5name, h5group="", overwrite_file=False, overwrite_group=True):
+
+        h5name = os.path.splitext(h5name)[0] + '.h5'
+        logger.debug('Save to {}...'.format(h5name))
+        save_geometry_to_h5(self.mesh,
+                            h5name=h5name,
+                            h5group=h5group,
+                            markers=self.markers or None,
+                            fields=self.microstructure_list or None,
+                            local_basis=self.crl_basis_list or None,
+                            overwrite_file=overwrite_file,
+                            overwrite_group=overwrite_group)
+        logger.debug('Saved')
+                            
+        
 
     def dim(self):
         return self.mesh.geometry.dim()
 
+    @property
     def crl_basis_list(self):
         """Return a list of the CRL basis in the order
         c0, r0, l0. Basis elements that are none will not
@@ -267,6 +302,17 @@ class Geometry(object):
             self._meshvol = compute_meshvolume(domain=self.mesh)
 
         return self._meshvol
+
+    @property
+    def microstructure_list(self):
+        """Fibers, sheet and sheet-normals in a list
+        """
+        fields = []
+        for l in ['f0', 's0', 'n0']:
+            e = getattr(self.microstructure, l)
+            if e is not None:
+                fields.append(e)
+        return fields
 
     @property
     def vfun(self):

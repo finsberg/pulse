@@ -101,4 +101,4 @@ ax = plt.gca()
 ax.view_init(elev=-67, azim=-179)
 ax.set_axis_off()
 plt.show()
-
+# plt.savefig('from_xml.png')

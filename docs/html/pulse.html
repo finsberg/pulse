@@ -491,9 +491,29 @@ given in the mesh</p>
 <em class="property">class </em><code class="descclassname">pulse.geometry.</code><code class="descname">Geometry</code><span class="sig-paren">(</span><em>mesh</em>, <em>markers=None</em>, <em>marker_functions=None</em>, <em>microstructure=None</em>, <em>crl_basis=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry.html#Geometry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry.Geometry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Base class for geometry</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mesh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dolfin.mesh</span></code>) – The mesh</li>
+<li><strong>markers</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – A dictionary with markers for the mesh (optional)</li>
+<li><strong>marker_functions</strong> (<a class="reference internal" href="#pulse.geometry.MarkerFunctions" title="pulse.geometry.MarkerFunctions"><code class="xref py py-class docutils literal notranslate"><span class="pre">pulse.geometry.MarkerFunctions</span></code></a>) – A Markerfunction object with Meshfunctions for
+the mesh</li>
+<li><strong>microstructure</strong> (<a class="reference internal" href="#pulse.geometry.Microstructure" title="pulse.geometry.Microstructure"><code class="xref py py-class docutils literal notranslate"><span class="pre">pulse.geometry.Microstructure</span></code></a>) – A Markerfunction object with functions for the
+fiber, sheet and sheet normal (optional)</li>
+<li><strong>crl_basis</strong> (<a class="reference internal" href="#pulse.geometry.CRLBasis" title="pulse.geometry.CRLBasis"><code class="xref py py-class docutils literal notranslate"><span class="pre">pulse.geometry.CRLBasis</span></code></a>) – A CRLBasis objedt with funcions for the circumferential,
+radial and longitudinal vectors. (optional)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 <p>Geometry can be intanciated directly</p>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># To be implemented</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dolfin</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">UnitCubeMesh</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">Geometry</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>You can load create and instace be loading a geometry from a file</p>
@@ -522,9 +542,9 @@ move the new geometry according to some factor times
 some displacement (u)</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="attribute">
 <dt id="pulse.geometry.Geometry.crl_basis_list">
-<code class="descname">crl_basis_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry.html#Geometry.crl_basis_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry.Geometry.crl_basis_list" title="Permalink to this definition">¶</a></dt>
+<code class="descname">crl_basis_list</code><a class="headerlink" href="#pulse.geometry.Geometry.crl_basis_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a list of the CRL basis in the order
 c0, r0, l0. Basis elements that are none will not
 be included</p>
@@ -602,6 +622,12 @@ by the cell function (cfun)</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="pulse.geometry.Geometry.microstructure_list">
+<code class="descname">microstructure_list</code><a class="headerlink" href="#pulse.geometry.Geometry.microstructure_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fibers, sheet and sheet-normals in a list</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="pulse.geometry.Geometry.n0">
 <code class="descname">n0</code><a class="headerlink" href="#pulse.geometry.Geometry.n0" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cross-Sheets</p>
@@ -637,7 +663,7 @@ by the cell function (cfun)</p>
 
 <dl class="method">
 <dt id="pulse.geometry.Geometry.save">
-<code class="descname">save</code><span class="sig-paren">(</span><em>h5name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry.html#Geometry.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry.Geometry.save" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save</code><span class="sig-paren">(</span><em>h5name</em>, <em>h5group=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry.html#Geometry.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry.Geometry.save" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
