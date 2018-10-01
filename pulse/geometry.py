@@ -209,8 +209,8 @@ class Geometry(object):
                             h5name=h5name,
                             h5group=h5group,
                             markers=self.markers or None,
-                            fields=self.microstructure_list or None,
-                            local_basis=self.crl_basis_list or None,
+                            fields=self.microstructure_list() or None,
+                            local_basis=self.crl_basis_list() or None,
                             overwrite_file=overwrite_file,
                             overwrite_group=overwrite_group)
         logger.debug('Saved')
@@ -220,7 +220,6 @@ class Geometry(object):
     def dim(self):
         return self.mesh.geometry.dim()
 
-    @property
     def crl_basis_list(self):
         """Return a list of the CRL basis in the order
         c0, r0, l0. Basis elements that are none will not
@@ -303,7 +302,6 @@ class Geometry(object):
 
         return self._meshvol
 
-    @property
     def microstructure_list(self):
         """Fibers, sheet and sheet-normals in a list
         """
