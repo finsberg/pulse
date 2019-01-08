@@ -1,0 +1,47 @@
+{% set name = "pulse" %}
+{% set version = "0.1" %}
+{% set sha256 = "72bd4130be4137ffc5650a39227805019e3806261cbdc016a1a4f3b45d8f1e18" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/finsberg/pulse/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  script: python setup.py install
+  # skip: True
+
+requirements:
+  build:
+    - python<3.7
+  run:
+    - python
+    - h5py
+    - fenics 2017.*
+    - numpy
+
+test:
+  imports:
+    - pulse
+
+about:
+  home: https://finsberg.github.io/pulse/html/index.html
+  license: LGPL-3.0
+  license_family: LGPL
+  license_file: LICENSE
+  summary: 'pulse is a python library based on FEniCS that aims to solve problems in continuum mechanics'
+
+  description: |
+    pulse is a python library based on FEniCS that aims to solve
+    problems in continuum mechanics, in particular cardiac mechanics.
+  doc_url: https://finsberg.github.io/pulse/html/index.html
+  dev_url: https://github.com/finsberg/pulse
+
+extra:
+  recipe-maintainers:
+    - johannesring
+    - funsim
