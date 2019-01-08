@@ -118,7 +118,10 @@ def check_target_reached(problem, current, target):
 def copy(f, deepcopy=True, name='copied_function'):
 
     if isinstance(f, (dolfin.Function, Function)):
-        return f.copy(deepcopy=deepcopy, name=name)
+        if has_dolfin_adjoint:
+            return f.copy(deepcopy=deepcopy, name=name)
+        else:
+            return f.copy(deepcopy=deepcopy)
     elif isinstance(f, dolfin.Constant):
         return dolfin.Constant(f, name=name)
     elif isinstance(f, Constant):

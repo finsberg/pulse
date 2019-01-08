@@ -271,9 +271,10 @@ class MechanicsProblem(object):
         logger.debug('Solving variational problem')
         # Get old state in case of non-convergence
         if has_dolfin_adjoint:
-            old_state = self.state.copy(deepcopy=True, name='Old state (pulse)')
+            old_state = self.state.copy(deepcopy=True,
+                                        name='Old state (pulse)')
         else:
-            old_state = self.state.copy(deepcopy=True, name='Old state (pulse)')
+            old_state = self.state.copy(deepcopy=True)
         problem \
             = NonlinearVariationalProblem(self._virtual_work,
                                           self.state,
