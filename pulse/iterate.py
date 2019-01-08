@@ -507,8 +507,8 @@ def iterate(problem, control, target,
                                            name='Previous control'))
 
                 if first_step:
-                    prev_states.append(problem.state.copy(deepcopy=True,
-                                                          name='Previous state'))
+                    prev_states.append(copy(problem.state, deepcopy=True,
+                                            name='Previous state'))
                 else:
 
                     # Switch place of the state vectors
