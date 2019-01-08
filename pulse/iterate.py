@@ -12,7 +12,7 @@ except ImportError:
 
 
 from . import numpy_mpi
-from . import parameters, annotate
+from . import parameters, annotation
 from .mechanicsproblem import SolverDidNotConverge
 from .dolfin_utils import get_constant
 from .utils import make_logger
@@ -24,7 +24,7 @@ MAX_PRESSURE_STEP = 0.2
 MAX_PRESSURE_STEP_BIV = 0.05
 MAX_CRASH = 20
 MAX_ITERS = 40
-    
+
 
 def get_diff(current, target):
 
@@ -40,7 +40,7 @@ def get_diff(current, target):
         diff = np.subtract(float(target), float(current))
     elif isinstance(target, (tuple, list)):
         diff = np.subtract([float(t) for t in target],
-                           [float(c) for c in target])
+                           [float(c) for c in current])
     else:
         try:
             diff = np.subtract(target, current)
@@ -64,10 +64,10 @@ def get_current_control_value(control, value=None):
 
     elif isinstance(control, (Constant, dolfin.Constant)):
         return float(control)
-    
+
     elif isinstance(control, (tuple, list)):
         return tuple(float(c) for c in control)
-        
+
     else:
         raise ValueError("Unknown control type {}".format(type(control)))
 
@@ -81,7 +81,10 @@ def assign_new_control(control, new_control):
 
     if isinstance(control, (tuple, list)):
         for c, n in zip(control, new_control):
-            c.assign(n)
+            try:
+                c.assign(n)
+            except TypeError:
+                c.assign(Constant(n))
     else:
         try:
             control.assign(new_control)
@@ -112,23 +115,23 @@ def check_target_reached(problem, current, target):
     return reached
 
 
-def copy(f, deepcopy=True):
+def copy(f, deepcopy=True, name='copied_function'):
 
     if isinstance(f, (dolfin.Function, Function)):
-        return f.copy(deepcopy=deepcopy)
+        return f.copy(deepcopy=deepcopy, name=name)
     elif isinstance(f, dolfin.Constant):
-        return dolfin.Constant(f)
+        return dolfin.Constant(f, name=name)
     elif isinstance(f, Constant):
-        return Constant(f)
+        return Constant(f, name=name)
     elif isinstance(f, (float, int)):
         return f
     elif isinstance(f, (list, tuple)):
         l = []
         for fi in f:
-            l.apply(copy(fi))
+            l.append(copy(fi))
         return tuple(l)
     else:
-        return f    
+        return f
 
 
 def get_initial_step(problem, current, target, nsteps=None):
@@ -151,7 +154,9 @@ def get_initial_step(problem, current, target, nsteps=None):
 
         if nsteps is None:
             nsteps = int(np.ceil(float(max_diff) / MAX_STEP)) + 1
-        step = diff/float(nsteps)
+        step = diff / float(nsteps)
+        if isinstance(current, (list, tuple)):
+            step = step.tolist()
 
     logger.debug("Intial number of steps: {}".format(nsteps))
 
@@ -166,19 +171,17 @@ def constant2float(const):
     try:
         c = float(const)
     except TypeError:
-        c = np.zeros(len(const))
-        const.eval(c, c)
+        try:
+            c = np.zeros(len(const))
+            const.eval(c, c)
+        except Exception as ex:
+            logger.warning(ex, exc_info=True)
+            return const
 
     return c
 
 
 def step_too_large(current, target, step):
-
-    if isinstance(target, (Constant, dolfin.Constant)):
-
-        target = constant2float(target)
-        current = constant2float(current)
-        step = constant2float(step)
 
     if isinstance(target, (dolfin.Function, Function)):
         diff_before = current.vector()[:] - target.vector()[:]
@@ -195,16 +198,28 @@ def step_too_large(current, target, step):
         return not all(np.sign(diff_before_arr) ==
                        np.sign(diff_after_arr))
 
-    elif isinstance(target, (float, int)):
-        comp = op.gt if current < target else op.lt
-        return comp(current + step, target)
     else:
-        assert hasattr(target, "__len__")
 
-        too_large = []
-        for (c, t, s) in zip(current, target, step):
-            comp = op.gt if c < t else op.lt
-            too_large.append(comp(c+s, t))
+        if isinstance(target, (Constant, dolfin.Constant)):
+            target = constant2float(target)
+            step = constant2float(step)
+            current = constant2float(current)
+
+        if isinstance(target, (float, int)):
+            comp = op.gt if current < target else op.lt
+            return comp(current + step, target)
+        else:
+            assert hasattr(target, "__len__")
+
+            too_large = []
+            for (c, t, s) in zip(current, target, step):
+
+                t = constant2float(t)
+                c = constant2float(c)
+                s = constant2float(s)
+
+                comp = op.gt if c < t else op.lt
+                too_large.append(comp(c+s, t))
 
         return any(too_large)
 
@@ -225,15 +240,20 @@ def print_control(control):
 
     if isinstance(control, (Constant, dolfin.Constant)):
         control = constant2float(control)
+    elif isinstance(control, (list, tuple)):
+        control = [constant2float(c) for c in control]
 
     def print_arr(arr):
 
-        if len(arr) == 2:
+        if len(arr) == 1:
+            logger.info("\t{:>6.2f}".format(arr[0]))
+
+        elif len(arr) == 2:
             # This has to be (LV, RV)
             logger.info("\t{:>6}\t{:>6}".format("LV", "RV"))
             logger.info("\t{:>6.2f}\t{:>6.2f}".format(arr[0],
                                                       arr[1]))
-            
+
         elif len(arr) == 3:
             # This has to be (LV, Septum, RV)
             logger.info("\t{:>6}\t{:>6}\t{:>6}".format("LV", "SEPT", "RV"))
@@ -242,10 +262,14 @@ def print_control(control):
                                                                 arr[2]))
         else:
             # Print min, mean and max
-            logger.info("\t{:>6}\t{:>6}\t{:>6}".format("Min", "Mean", "Max"))
-            logger.info("\t{:>6.2f}\t{:>6.2f}\t{:>6.2f}".format(np.min(arr),
-                                                                np.mean(arr),
-                                                                np.max(arr)))
+            try:
+                logger.info("\t{:>6}\t{:>6}\t{:>6}".format("Min", "Mean", "Max"))
+                logger.info("\t{:>6.2f}\t{:>6.2f}\t{:>6.2f}".format(np.min(arr),
+                                                                    np.mean(arr),
+                                                                    np.max(arr)))
+            except Exception as ex:
+                logger.info(arr)
+
     if isinstance(control, (float, int)):
         logger.info("\t{:>6.3f}".format(control))
 
@@ -274,6 +298,9 @@ def get_delta(new_control, c0, c1):
         return (new_control - c0) / float(c1 - c0)
 
     elif isinstance(new_control, (tuple, np.ndarray, list)):
+        c0 = [constant2float(c) for c in c0]
+        c1 = [constant2float(c) for c in c1]
+        new_control = [constant2float(c) for c in new_control]
         return (new_control[0] - c0[0]) / float(c1[0] - c0[0])
 
     elif isinstance(new_control, (dolfin.GenericVector, dolfin.Vector)):
@@ -288,6 +315,12 @@ def get_delta(new_control, c0, c1):
         c0_arr = numpy_mpi.gather_broadcast(c0.vector().get_local())
         c1_arr = numpy_mpi.gather_broadcast(c1.vector().get_local())
         return (new_control_arr[0] - c0_arr[0]) / float(c1_arr[0] - c0_arr[0])
+
+
+def add_step(current_control, step):
+    if isinstance(current_control, (tuple, list)):
+        return [c + s for c, s in zip(current_control, step)]
+    return current_control + step
 
 
 def get_mean(f):
@@ -331,27 +364,27 @@ def iterate(problem, control, target,
     old_controls = [] if old_controls is None else old_controls
     old_states = [] if old_states is None else old_states
 
-    if isinstance(target, (float, int, list, np.ndarray)):
+    if isinstance(target, (float, int, np.ndarray)):
         value_size = 1 if isinstance(target, (float, int)) else len(target)
         target = get_constant(value_size=value_size, value_rank=0,
                               val=target, constant=Constant)
 
     else:
-        msg = "Unknown targt type {}".format(type(target))
-        assert isinstance(target, (dolfin.Constant, Constant,
-                                   dolfin.Function, Function)), msg
+        if not isinstance(target, (list, tuple)):
+            msg = "Unknown targt type {}".format(type(target))
+            assert isinstance(target, (dolfin.Constant, Constant,
+                                       dolfin.Function, Function)), msg
 
     if not type(target) == type(control):
         if isinstance(control, Function):
             target_ = Function(control.function_space())
-            target_.assign(target)
+            target_.assign(Constant(target))
             target = target_
 
     target_reached = check_target_reached(problem, control, target)
 
     step = get_initial_step(problem, control,
                             target, initial_number_of_steps)
-
     control_prev = None
     control_next = None
     if has_dolfin_adjoint:
@@ -383,12 +416,15 @@ def iterate(problem, control, target,
         # Check if we are close
         if step_too_large(control_old, target, step):
             logger.info("Change step size for final iteration")
-            
+
             # Change step size so that target is reached in the next iteration
             if isinstance(step, (dolfin.Function, Function)):
                 step = Function(target.function_space())
                 step.vector().axpy(1.0, target.vector())
                 step.vector().axpy(-1.0, control_old.vector())
+            elif isinstance(step, (list, np.ndarray, tuple)):
+                step = np.array([constant2float(t) - constant2float(c)
+                                 for (t, c) in zip(target, control_old)])
             else:
                 step = target - control_old
 
@@ -397,8 +433,11 @@ def iterate(problem, control, target,
         if isinstance(current_control, (dolfin.Function, Function)):
             current_control.vector()[:] += step.vector()[:]
         else:
-            current_control += step
-            current_control = get_constant(current_control)
+            current_control = add_step(current_control, step)
+            if isinstance(current_control, (list, tuple)):
+                current_control = tuple([get_constant(c) for c in current_control])
+            else:
+                current_control = get_constant(current_control)
         assign_new_control(control, current_control)
 
         first_step = len(prev_states) < 2
@@ -411,16 +450,16 @@ def iterate(problem, control, target,
 
             delta = get_delta(current_control, c0, c1)
 
-            if has_dolfin_adjoint and annotate.annotate:
+            if has_dolfin_adjoint and annotation.annotate:
                 w = dolfin.Function(problem.state.function_space())
 
                 w.vector().zero()
-                w.vector().axpy(1.0-delta, s0.vector())
+                w.vector().axpy(1.0 - delta, s0.vector())
                 w.vector().axpy(delta, s1.vector())
                 problem.reinit(w, annotate=True)
             else:
                 problem.state.vector().zero()
-                problem.state.vector().axpy(1.0-delta, s0.vector())
+                problem.state.vector().axpy(1.0 - delta, s0.vector())
                 problem.state.vector().axpy(delta, s1.vector())
 
         logger.info("Try new control")
@@ -461,10 +500,12 @@ def iterate(problem, control, target,
                     step = change_step_size(step, 1.5)
                     print_control(step)
 
-                control_values.append(copy(control, deepcopy=True))
+                control_values.append(copy(control, deepcopy=True,
+                                           name='Previous control'))
 
                 if first_step:
-                    prev_states.append(problem.state.copy(deepcopy=True))
+                    prev_states.append(problem.state.copy(deepcopy=True,
+                                                          name='Previous state'))
                 else:
 
                     # Switch place of the state vectors
@@ -473,4 +514,4 @@ def iterate(problem, control, target,
                     # Inplace update of last state values
                     prev_states[-1].vector().zero()
                     prev_states[-1].vector().axpy(1.0, problem.state.vector())
-
+    return prev_states, control_values

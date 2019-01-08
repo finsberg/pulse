@@ -31,7 +31,7 @@ try:
     from dolfin_adjoint import Constant, Function, project
 except ImportError:
     from dolfin import Constant, Function, project
-    
+
 from .. import kinematics
 from .. import numpy_mpi
 from ..dolfin_utils import get_dimesion, RegionalParameter, update_function
@@ -116,7 +116,7 @@ class Material(object):
                 cell = None
             else:
                 cell = activation.cell()
-            
+
         if geometry is not None and cell is not None:
             self.activation = update_function(geometry.mesh,
                                               self.activation)
@@ -138,12 +138,12 @@ class Material(object):
                                          gather_broadcast(v.vector().get_local()))
                     v = v_new
 
-                ind_space = v.get_ind_space()
+                ind_space = v.proj_space
                 setattr(self, k, Function(ind_space, name=k))
 
                 mat = getattr(self, k)
 
-                matfun = v.get_function()
+                matfun = v.function
 
                 mat.assign(project(matfun, ind_space))
 
@@ -325,7 +325,7 @@ class Material(object):
 
         f0 = self.f0
         f0f0 = dolfin.outer(f0, f0)
-        
+
         I1 = dolfin.variable(self.active.I1(F))
         I4f = dolfin.variable(self.active.I4(F))
 

@@ -4,14 +4,12 @@ from functools import partial
 
 import dolfin
 try:
-    from dolfin_adjoint import (Function, Constant, DirichletBC,
-                                FunctionSpace,
+    from dolfin_adjoint import (Function, Constant, FunctionAssigner,
                                 NonlinearVariationalSolver,
                                 NonlinearVariationalProblem)
     has_dolfin_adjoint = True
 except ImportError:
-    from dolfin import (Function, Constant, DirichletBC,
-                        FunctionSpace,
+    from dolfin import (Function, Constant, FunctionAssigner,
                         NonlinearVariationalSolver,
                         NonlinearVariationalProblem)
     has_dolfin_adjoint = False
@@ -39,14 +37,14 @@ def dirichlet_fix_base(W, ffun, marker):
     '''Fix the basal plane.
     '''
     V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
-    bc = DirichletBC(V, dolfin.Constant((0, 0, 0)),
+    bc = dolfin.DirichletBC(V, dolfin.Constant((0, 0, 0)),
                      ffun, marker)
     return bc
 
 
 def dirichlet_fix_base_directional(W, ffun, marker, direction=0):
     V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
-    bc = DirichletBC(V.sub(direction),
+    bc = dolfin.DirichletBC(V.sub(direction),
                      dolfin.Constant(0.0),
                      ffun, marker)
     return bc
@@ -127,14 +125,14 @@ class MechanicsProblem(object):
             if isinstance(geometry, HeartGeometry):
                 self.bcs_parameters = MechanicsProblem.default_bcs_parameters()
                 self.bcs_parameters.update(**bcs_parameters)
-                
+
             else:
                 raise ValueError(('Please provive boundary conditions '
                                   'to MechanicsProblem'))
 
             self.bcs = cardiac_boundary_conditions(geometry,
                                                    **self.bcs_parameters)
-            
+
         else:
             self.bcs = bcs
 
@@ -166,7 +164,7 @@ class MechanicsProblem(object):
 
         # P2_space = FunctionSpace(mesh, P2)
         # P1_space = FunctionSpace(mesh, P1)
-        self.state_space = FunctionSpace(mesh, P2*P1)
+        self.state_space = dolfin.FunctionSpace(mesh, P2*P1)
 
         self.state = Function(self.state_space, name="state")
         self.state_test = dolfin.TestFunction(self.state_space)
@@ -223,7 +221,7 @@ class MechanicsProblem(object):
         dx = self.geometry.dx
 
         external_work = []
-        
+
         for neumann in self.bcs.neumann:
 
             n = neumann.traction * dolfin.cofac(F) * N
@@ -247,13 +245,13 @@ class MechanicsProblem(object):
     def reinit(self, state, annotate=False):
         """Reinitialze state
         """
-        
+
         if has_dolfin_adjoint:
             self.state.assign(state, annotate=annotate)
-            
+
         else:
             self.state.assign(state)
-            
+
         self._init_forms()
 
     def solve(self):
@@ -269,10 +267,10 @@ class MechanicsProblem(object):
         self._jacobian \
             = dolfin.derivative(self._virtual_work, self.state,
                                 dolfin.TrialFunction(self.state_space))
-        
+
         logger.debug('Solving variational problem')
         # Get old state in case of non-convergence
-        old_state = self.state.copy(deepcopy=True)
+        old_state = self.state.copy(deepcopy=True, name='Old state (pulse)')
         problem \
             = NonlinearVariationalProblem(self._virtual_work,
                                           self.state,
@@ -305,13 +303,13 @@ class MechanicsProblem(object):
         D = self.state_space.sub(0)
         V = D.collapse()
 
-        fa = dolfin.FunctionAssigner(V, D)
+        fa = FunctionAssigner(V, D)
         u = Function(V, name='displacement')
 
-        # if has_dolfin_adjoint:
-            # fa.assign(u, self.state.split()[0],
-                      # annotate=annotate)
-        # else:
-        fa.assign(u, self.state.split()[0])
-            
+        if has_dolfin_adjoint:
+            fa.assign(u, self.state.split()[0],
+                      annotate=annotate)
+        else:
+            fa.assign(u, self.state.split()[0])
+
         return u

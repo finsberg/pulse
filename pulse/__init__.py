@@ -2,6 +2,7 @@ import warnings as _warnings
 try:
     from ffc.quadrature.deprecation import QuadratureRepresentationDeprecationWarning
     _warnings.filterwarnings("ignore", category=QuadratureRepresentationDeprecationWarning)
+    _warnings.filterwarnings("ignore", category=DeprecationWarning)
 except:
     pass
 
@@ -11,7 +12,7 @@ _warnings.filterwarnings("ignore", category=UserWarning)
 from .setup_parameters import parameters
 from . import setup_parameters
 
-from .utils import annotate
+from .utils import annotation
 
 setup_parameters.setup_general_parameters()
 
@@ -41,7 +42,7 @@ from .example_meshes import mesh_paths
 from pulse.mechanicsproblem import (MechanicsProblem,
                                     BoundaryConditions,
                                     NeumannBC, RobinBC)
-from .dolfin_utils import QuadratureSpace
+from .dolfin_utils import QuadratureSpace, MixedParameter, RegionalParameter
 
 
 # from .utils import logger

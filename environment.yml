@@ -1,0 +1,7 @@
+dependencies:
+-numpy
+-matplotlib
+-h5py
+-fenics>=2016,<2018"
+pip:
+-pytest

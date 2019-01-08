@@ -164,7 +164,7 @@ def load_geometry_from_h5(h5name, h5group="",
 
             if h5file.has_dataset(dgroup):
                 io_utils.read_h5file(h5file, mf, dgroup)
-                
+
 
             setattr(geo, attr, mf)
 
@@ -182,11 +182,16 @@ def load_geometry_from_h5(h5name, h5group="",
             io_utils.read_h5file(h5file, original_mesh, origmeshgroup, True)
             setattr(geo, "original_geometry", original_mesh)
 
+    for attr in ['f0', 's0', 'n0', 'r0', 'c0',
+                 'l0', 'cfun', 'vfun', 'efun', 'ffun']:
+        if not hasattr(geo, attr):
+            setattr(geo, attr, None)
+
     return geo
 
 
 def load_markers(h5file, mesh, ggroup, dgroup):
-    try: 
+    try:
         markers = {}
         for dim in range(mesh.ufl_domain().topological_dimension()+1):
             for key_str in ["domain", "meshfunction"]:
@@ -203,7 +208,7 @@ def load_markers(h5file, mesh, ggroup, dgroup):
                         name = aname.rsplit('marker_name_')[-1]
                         marker = h5file.attributes(dgroup)['marker_name_{}'.format(name)]
                         markers[name] = (int(marker), dim)
-        
+
     except Exception as ex:
         logger.info("Unable to load makers")
         logger.info(ex)
@@ -251,7 +256,7 @@ def fill_coordinates_ec(i, e_c_x, e_c_y, e_c_z, coord, foci):
         e_c_y.vector()[i] = 1
         e_c_z.vector()[i] = 0
 
-        
+
 def fill_coordinates_el(i, e_c_x, e_c_y, e_c_z, coord, foci):
 
     norm = dolfin.sqrt(coord[1]**2 + coord[2]**2)
@@ -357,7 +362,7 @@ def generate_local_basis_functions(mesh, focal_point, mesh_type="lv"):
 
 
 def fibers(mesh, fiber_endo = 60, fiber_epi=-60):
-    
+
     fiber_params = Parameters("Fibers")
     fiber_params.add("fiber_space", "Quadrature_4")
     fiber_params.add("include_sheets", False)
@@ -385,7 +390,7 @@ def get_circ_field(mesh):
 
     f0 = generate_fibers(mesh, fiber_params)[0]
     f0.rename("circumferential", "local_basis_function")
-   
+
     return f0
 
 def get_long_field(mesh, mesh_type="biv"):
@@ -401,7 +406,7 @@ def get_long_field(mesh, mesh_type="biv"):
     fiber_params.add("sheet_angle_endo", 0)
 
     if mesh_type == "biv":
-        # We need to set the markers for then LV and RV facets 
+        # We need to set the markers for then LV and RV facets
         ffun = dolfin.MeshFunction("size_t", mesh, 2, mesh.domains())
 
         markers = get_fiber_markers("biv")
@@ -476,19 +481,19 @@ def generate_fibers(mesh, fiber_params):
         dolfin.parameters["form_compiler"]["representation"] = "uflacs"
 
     microstructures[0].rename("fiber",
-                              "epi{}_endo{}".format(fiber_params["fiber_angle_epi"], 
+                              "epi{}_endo{}".format(fiber_params["fiber_angle_epi"],
                                                     fiber_params["fiber_angle_endo"]))
     fields = [microstructures[0]]
 
 
     if fiber_params["include_sheets"]:
         microstructures[1].rename("sheet",
-                                  "epi{}_endo{}".format(sheet_angle_epi, 
+                                  "epi{}_endo{}".format(sheet_angle_epi,
                                                                 sheet_angle_endo))
         microstructures[2].rename("cross_sheet",
-                                  "fepi{}_fendo{}_sepi{}_sendo{}".format(fiber_params["fiber_angle_epi"], 
+                                  "fepi{}_fendo{}_sepi{}_sendo{}".format(fiber_params["fiber_angle_epi"],
                                                                          fiber_params["fiber_angle_endo"],
-                                                                         sheet_angle_epi, 
+                                                                         sheet_angle_epi,
                                                                          sheet_angle_endo))
         fields.append(microstructures[1])
         fields.append(microstructures[2])
@@ -602,8 +607,8 @@ def save_geometry_to_h5(mesh, h5name, h5group="", markers=None,
     overwrite_file : bool
         If true, and the file exists, the file will be overwritten (default: False)
     overwrite_group : bool
-        If true and h5group exist, the group will be overwritten. 
-    
+        If true and h5group exist, the group will be overwritten.
+
     """
 
     logger.info("\nSave mesh to h5")

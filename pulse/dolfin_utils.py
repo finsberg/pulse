@@ -3,12 +3,10 @@ import dolfin
 
 try:
     from dolfin_adjoint import (Function, interpolate, Constant,
-                                FunctionSpace,
-                                project, assemble)
+                                project, assemble, FunctionAssigner)
 except ImportError:
     from dolfin import (Function, interpolate, Constant,
-                        FunctionSpace,
-                        project, assemble)
+                        project, assemble, FunctionAssigner)
 
 
 from . import utils
@@ -96,7 +94,7 @@ def normalize_vector_field(u):
                                    gather_broadcast(comp.vector().get_local())
                                    / normarray)
 
-    assigners = [dolfin.FunctionAssigner(u.function_space().sub(i), S)
+    assigners = [FunctionAssigner(u.function_space().sub(i), S)
                  for i in range(dim)]
     for i, comp, assigner in zip(range(dim), components, assigners):
         assigner.assign(u.sub(i), comp)
@@ -106,7 +104,7 @@ def normalize_vector_field(u):
 
 def vectorfield_to_components(u, S, dim):
     components = [dolfin.Function(S) for i in range(dim)]
-    assigners = [dolfin.FunctionAssigner(S, u.function_space().sub(i))
+    assigners = [FunctionAssigner(S, u.function_space().sub(i))
                  for i in range(dim)]
     for i, comp, assigner in zip(range(dim), components, assigners):
         assigner.assign(comp, u.sub(i))
@@ -152,16 +150,17 @@ def read_hdf5(h5name, func, h5group="", comm=dolfin.mpi_comm_world()):
         raise ex
 
 
-def map_displacement(u, old_space, new_space, approx):
+def map_displacement(u, old_space, new_space, approx,
+                     name='mapped displacement'):
 
     if approx == "interpolate":
         # Do we need dolfin-adjoint here or is dolfin enough?
         u_int = interpolate(project(u, old_space),
-                            new_space)
+                            new_space, name=name)
 
     elif approx == "project":
         # Do we need dolfin-adjoint here or is dolfin enough?
-        u_int = project(u, new_space)
+        u_int = project(u, new_space, name=name)
 
     else:
         u_int = u
@@ -229,7 +228,7 @@ def get_constant(val, value_size=None, value_rank=0, constant=dolfin.Constant):
 
     if isinstance(val, (Constant, dolfin.Constant)):
         return val
-    
+
     if value_size is None:
         if np.isscalar(val):
             value_size = 1
@@ -241,7 +240,7 @@ def get_constant(val, value_size=None, value_rank=0, constant=dolfin.Constant):
                 logger.debug(ex)
                 # Hope for the best
                 value_size = 1
-                
+
     if value_size == 1:
         if value_rank == 0:
             c = constant(val)
@@ -272,7 +271,7 @@ def get_dimesion(u):
             # Assume dimension is 3
             logger.warning("Assume dimension is 3")
             dim = 3
-                
+
     return dim
 
 
@@ -383,7 +382,7 @@ def QuadratureSpace(mesh, degree, dim=3):
                                            degree=degree,
                                            quad_scheme="default")
 
-        return FunctionSpace(mesh, element)
+        return dolfin.FunctionSpace(mesh, element)
     else:
         if dim == 1:
             return dolfin.FunctionSpace(mesh, "Quadrature", degree)
@@ -552,7 +551,7 @@ class MixedParameter(Function):
 
         # Create a function assigner
         self.function_assigner \
-            = [dolfin.FunctionAssigner(W.sub(i), V) for i in range(n)]
+            = [FunctionAssigner(W.sub(i), V) for i in range(n)]
 
         # Store the original function space
         self.basespace = V
@@ -574,36 +573,53 @@ class MixedParameter(Function):
 
 
 class RegionalParameter(Function):
-    def __init__(self, meshfunction):
+    """
+    A regional paramerter defined in terms of a dolfin.MeshFunction
+
+    Suppose you have a MeshFunction defined different regions in your mesh,
+    and you want to define different parameters on different regions,
+    then this is what you want.
+    """
+    def __init__(self, meshfunction, name="RegionalParameter"):
 
         assert isinstance(meshfunction, dolfin.MeshFunctionSizet), \
-            "Invalid meshfunction for regional gamma"
+            "Invalid meshfunction for RegionalParameter"
 
         mesh = meshfunction.mesh()
 
-        self._values = set(numpy_mpi.gather_broadcast(meshfunction.array()()))
+        self._values = set(numpy_mpi.gather_broadcast(meshfunction.array()))
         self._nvalues = len(self._values)
 
         V = dolfin.VectorFunctionSpace(mesh, "R", 0, dim=self._nvalues)
 
-        Function.__init__(self, V)
+        Function.__init__(self, V, name=name)
         self._meshfunction = meshfunction
 
         # Functionspace for the indicator functions
-        self._IndSpace = dolfin.FunctionSpace(mesh, "DG", 0)
+        self._proj_space = dolfin.FunctionSpace(mesh, "DG", 0)
 
         # Make indicator functions
-        self._ind_functions = []
+        self._id_functions = []
         for v in self._values:
-            self._ind_functions.append(self._make_indicator_function(v))
+            self._id_functions.append(self._make_indicator_function(v))
 
-    def get_ind_space(self):
-        return self._IndSpace
+    @property
+    def proj_space(self):
+        """
+        Space for projecting the scalars.
+        This is a DG 0 space.
+        """
+        return self._proj_space
 
-    def get_values(self):
+    @property
+    def values(self):
+        """
+        The regional values
+        """
         return self._values
 
-    def get_function(self):
+    @property
+    def function(self):
         """
         Return linear combination of coefficents
         and basis functions
@@ -616,22 +632,20 @@ class RegionalParameter(Function):
         return self._sum()
 
     def _make_indicator_function(self, marker):
-        dm = self._IndSpace.dofmap()
+        dm = self._proj_space.dofmap()
         cell_dofs = [dm.cell_dofs(i) for i in
                      np.where(self._meshfunction.array() == marker)[0]]
         dofs = np.unique(np.array(cell_dofs))
 
-        f = dolfin.Function(self._IndSpace)
+        f = dolfin.Function(self._proj_space)
         f.vector()[dofs] = 1.0
         return f
 
     def _sum(self):
         coeffs = dolfin.split(self)
-        fun = coeffs[0]*self._ind_functions[0]
+        fun = coeffs[0]*self._id_functions[0]
 
-        for c, f in zip(coeffs[1:], self._ind_functions[1:]):
+        for c, f in zip(coeffs[1:], self._id_functions[1:]):
             fun += c*f
 
         return fun
-
-

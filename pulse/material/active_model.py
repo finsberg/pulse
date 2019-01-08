@@ -86,11 +86,11 @@ class ActiveModel(kinematics.Invariants):
         if isinstance(self._activation, RegionalParameter):
             # This means a regional activation
             # Could probably make this a bit more clean
-            activation = self._activation.get_function()
+            activation = self._activation.function
         else:
             activation = self._activation
 
-        return self.T_ref*activation
+        return self.T_ref * activation
 
     @property
     def activation(self):

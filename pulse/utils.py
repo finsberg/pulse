@@ -39,7 +39,7 @@ class Annotation(object):
         self._annotate = annotate
 
 
-annotate = Annotation()
+annotation = Annotation()
 
 
 def set_default_none(NamedTuple, default=None):
@@ -277,5 +277,3 @@ class Text:
         for chars in to_remove:
             text = text.replace(chars, "")
         return text
-
-        
