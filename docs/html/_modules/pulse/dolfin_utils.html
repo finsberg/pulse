@@ -153,12 +153,10 @@
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">dolfin_adjoint</span> <span class="k">import</span> <span class="p">(</span><span class="n">Function</span><span class="p">,</span> <span class="n">interpolate</span><span class="p">,</span> <span class="n">Constant</span><span class="p">,</span>
-                                <span class="n">FunctionSpace</span><span class="p">,</span>
-                                <span class="n">project</span><span class="p">,</span> <span class="n">assemble</span><span class="p">)</span>
+                                <span class="n">project</span><span class="p">,</span> <span class="n">assemble</span><span class="p">,</span> <span class="n">FunctionAssigner</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">dolfin</span> <span class="k">import</span> <span class="p">(</span><span class="n">Function</span><span class="p">,</span> <span class="n">interpolate</span><span class="p">,</span> <span class="n">Constant</span><span class="p">,</span>
-                        <span class="n">FunctionSpace</span><span class="p">,</span>
-                        <span class="n">project</span><span class="p">,</span> <span class="n">assemble</span><span class="p">)</span>
+                        <span class="n">project</span><span class="p">,</span> <span class="n">assemble</span><span class="p">,</span> <span class="n">FunctionAssigner</span><span class="p">)</span>
 
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">utils</span>
@@ -246,7 +244,7 @@
                                    <span class="n">gather_broadcast</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">get_local</span><span class="p">())</span>
                                    <span class="o">/</span> <span class="n">normarray</span><span class="p">)</span>
 
-    <span class="n">assigners</span> <span class="o">=</span> <span class="p">[</span><span class="n">dolfin</span><span class="o">.</span><span class="n">FunctionAssigner</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">S</span><span class="p">)</span>
+    <span class="n">assigners</span> <span class="o">=</span> <span class="p">[</span><span class="n">FunctionAssigner</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">S</span><span class="p">)</span>
                  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">)]</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">comp</span><span class="p">,</span> <span class="n">assigner</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">),</span> <span class="n">components</span><span class="p">,</span> <span class="n">assigners</span><span class="p">):</span>
         <span class="n">assigner</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">comp</span><span class="p">)</span>
@@ -256,7 +254,7 @@
 
 <div class="viewcode-block" id="vectorfield_to_components"><a class="viewcode-back" href="../../pulse.html#pulse.dolfin_utils.vectorfield_to_components">[docs]</a><span class="k">def</span> <span class="nf">vectorfield_to_components</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">dim</span><span class="p">):</span>
     <span class="n">components</span> <span class="o">=</span> <span class="p">[</span><span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">S</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">)]</span>
-    <span class="n">assigners</span> <span class="o">=</span> <span class="p">[</span><span class="n">dolfin</span><span class="o">.</span><span class="n">FunctionAssigner</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+    <span class="n">assigners</span> <span class="o">=</span> <span class="p">[</span><span class="n">FunctionAssigner</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
                  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">)]</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">comp</span><span class="p">,</span> <span class="n">assigner</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">),</span> <span class="n">components</span><span class="p">,</span> <span class="n">assigners</span><span class="p">):</span>
         <span class="n">assigner</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
@@ -302,16 +300,17 @@
         <span class="k">raise</span> <span class="n">ex</span></div>
 
 
-<div class="viewcode-block" id="map_displacement"><a class="viewcode-back" href="../../pulse.html#pulse.dolfin_utils.map_displacement">[docs]</a><span class="k">def</span> <span class="nf">map_displacement</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">old_space</span><span class="p">,</span> <span class="n">new_space</span><span class="p">,</span> <span class="n">approx</span><span class="p">):</span>
+<div class="viewcode-block" id="map_displacement"><a class="viewcode-back" href="../../pulse.html#pulse.dolfin_utils.map_displacement">[docs]</a><span class="k">def</span> <span class="nf">map_displacement</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">old_space</span><span class="p">,</span> <span class="n">new_space</span><span class="p">,</span> <span class="n">approx</span><span class="p">,</span>
+                     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;mapped displacement&#39;</span><span class="p">):</span>
 
     <span class="k">if</span> <span class="n">approx</span> <span class="o">==</span> <span class="s2">&quot;interpolate&quot;</span><span class="p">:</span>
         <span class="c1"># Do we need dolfin-adjoint here or is dolfin enough?</span>
         <span class="n">u_int</span> <span class="o">=</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">project</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">old_space</span><span class="p">),</span>
-                            <span class="n">new_space</span><span class="p">)</span>
+                            <span class="n">new_space</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">approx</span> <span class="o">==</span> <span class="s2">&quot;project&quot;</span><span class="p">:</span>
         <span class="c1"># Do we need dolfin-adjoint here or is dolfin enough?</span>
-        <span class="n">u_int</span> <span class="o">=</span> <span class="n">project</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">new_space</span><span class="p">)</span>
+        <span class="n">u_int</span> <span class="o">=</span> <span class="n">project</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">new_space</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
 
     <span class="k">else</span><span class="p">:</span>
         <span class="n">u_int</span> <span class="o">=</span> <span class="n">u</span>
@@ -379,7 +378,7 @@
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="n">Constant</span><span class="p">,</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Constant</span><span class="p">)):</span>
         <span class="k">return</span> <span class="n">val</span>
-    
+
     <span class="k">if</span> <span class="n">value_size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
             <span class="n">value_size</span> <span class="o">=</span> <span class="mi">1</span>
@@ -391,7 +390,7 @@
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
                 <span class="c1"># Hope for the best</span>
                 <span class="n">value_size</span> <span class="o">=</span> <span class="mi">1</span>
-                
+
     <span class="k">if</span> <span class="n">value_size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">value_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">c</span> <span class="o">=</span> <span class="n">constant</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
@@ -422,7 +421,7 @@
             <span class="c1"># Assume dimension is 3</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Assume dimension is 3&quot;</span><span class="p">)</span>
             <span class="n">dim</span> <span class="o">=</span> <span class="mi">3</span>
-                
+
     <span class="k">return</span> <span class="n">dim</span></div>
 
 
@@ -533,7 +532,7 @@
                                            <span class="n">degree</span><span class="o">=</span><span class="n">degree</span><span class="p">,</span>
                                            <span class="n">quad_scheme</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">element</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">element</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">dim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;Quadrature&quot;</span><span class="p">,</span> <span class="n">degree</span><span class="p">)</span>
@@ -702,7 +701,7 @@
 
         <span class="c1"># Create a function assigner</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">function_assigner</span> \
-            <span class="o">=</span> <span class="p">[</span><span class="n">dolfin</span><span class="o">.</span><span class="n">FunctionAssigner</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">V</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
+            <span class="o">=</span> <span class="p">[</span><span class="n">FunctionAssigner</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">V</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
 
         <span class="c1"># Store the original function space</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">basespace</span> <span class="o">=</span> <span class="n">V</span>
@@ -724,36 +723,53 @@
 
 
 <div class="viewcode-block" id="RegionalParameter"><a class="viewcode-back" href="../../pulse.html#pulse.dolfin_utils.RegionalParameter">[docs]</a><span class="k">class</span> <span class="nc">RegionalParameter</span><span class="p">(</span><span class="n">Function</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meshfunction</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A regional paramerter defined in terms of a dolfin.MeshFunction</span>
+
+<span class="sd">    Suppose you have a MeshFunction defined different regions in your mesh,</span>
+<span class="sd">    and you want to define different parameters on different regions,</span>
+<span class="sd">    then this is what you want.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meshfunction</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;RegionalParameter&quot;</span><span class="p">):</span>
 
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">meshfunction</span><span class="p">,</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">MeshFunctionSizet</span><span class="p">),</span> \
-            <span class="s2">&quot;Invalid meshfunction for regional gamma&quot;</span>
+            <span class="s2">&quot;Invalid meshfunction for RegionalParameter&quot;</span>
 
         <span class="n">mesh</span> <span class="o">=</span> <span class="n">meshfunction</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">numpy_mpi</span><span class="o">.</span><span class="n">gather_broadcast</span><span class="p">(</span><span class="n">meshfunction</span><span class="o">.</span><span class="n">array</span><span class="p">()()))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">numpy_mpi</span><span class="o">.</span><span class="n">gather_broadcast</span><span class="p">(</span><span class="n">meshfunction</span><span class="o">.</span><span class="n">array</span><span class="p">()))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nvalues</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">)</span>
 
         <span class="n">V</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;R&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_nvalues</span><span class="p">)</span>
 
-        <span class="n">Function</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">V</span><span class="p">)</span>
+        <span class="n">Function</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_meshfunction</span> <span class="o">=</span> <span class="n">meshfunction</span>
 
         <span class="c1"># Functionspace for the indicator functions</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_IndSpace</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;DG&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_proj_space</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;DG&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
         <span class="c1"># Make indicator functions</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ind_functions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_id_functions</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_ind_functions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_indicator_function</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_id_functions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_indicator_function</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
 
-<div class="viewcode-block" id="RegionalParameter.get_ind_space"><a class="viewcode-back" href="../../pulse.html#pulse.dolfin_utils.RegionalParameter.get_ind_space">[docs]</a>    <span class="k">def</span> <span class="nf">get_ind_space</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_IndSpace</span></div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">proj_space</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Space for projecting the scalars.</span>
+<span class="sd">        This is a DG 0 space.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proj_space</span>
 
-<div class="viewcode-block" id="RegionalParameter.get_values"><a class="viewcode-back" href="../../pulse.html#pulse.dolfin_utils.RegionalParameter.get_values">[docs]</a>    <span class="k">def</span> <span class="nf">get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span></div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The regional values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span>
 
-<div class="viewcode-block" id="RegionalParameter.get_function"><a class="viewcode-back" href="../../pulse.html#pulse.dolfin_utils.RegionalParameter.get_function">[docs]</a>    <span class="k">def</span> <span class="nf">get_function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return linear combination of coefficents</span>
 <span class="sd">        and basis functions</span>
@@ -763,28 +779,26 @@
 <span class="sd">        :rtype:  :py:class`dolfin.Function</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sum</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sum</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_make_indicator_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">marker</span><span class="p">):</span>
-        <span class="n">dm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_IndSpace</span><span class="o">.</span><span class="n">dofmap</span><span class="p">()</span>
+        <span class="n">dm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proj_space</span><span class="o">.</span><span class="n">dofmap</span><span class="p">()</span>
         <span class="n">cell_dofs</span> <span class="o">=</span> <span class="p">[</span><span class="n">dm</span><span class="o">.</span><span class="n">cell_dofs</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span>
                      <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meshfunction</span><span class="o">.</span><span class="n">array</span><span class="p">()</span> <span class="o">==</span> <span class="n">marker</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span>
         <span class="n">dofs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cell_dofs</span><span class="p">))</span>
 
-        <span class="n">f</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_IndSpace</span><span class="p">)</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_proj_space</span><span class="p">)</span>
         <span class="n">f</span><span class="o">.</span><span class="n">vector</span><span class="p">()[</span><span class="n">dofs</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
         <span class="k">return</span> <span class="n">f</span>
 
     <span class="k">def</span> <span class="nf">_sum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">coeffs</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="n">fun</span> <span class="o">=</span> <span class="n">coeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_ind_functions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">fun</span> <span class="o">=</span> <span class="n">coeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_id_functions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-        <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">coeffs</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ind_functions</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+        <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">coeffs</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id_functions</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
             <span class="n">fun</span> <span class="o">+=</span> <span class="n">c</span><span class="o">*</span><span class="n">f</span>
 
         <span class="k">return</span> <span class="n">fun</span></div>
-
-
 </pre></div>
 
            </div>
@@ -797,7 +811,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Henrik Finsberg.
+        &copy; Copyright 2018, Henrik Finsberg
 
     </p>
   </div>
@@ -816,21 +830,14 @@
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../',
-            VERSION:'1.0',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
 
   
 

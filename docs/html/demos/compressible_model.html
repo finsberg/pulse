@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pulse" href="../modules.html" />
+    <link rel="next" title="Custom material model" href="custom_material.html" />
     <link rel="prev" title="Problem 3" href="problem3.html" /> 
 
   
@@ -82,12 +82,18 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="demos.html">Demos</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="unit_cube_demo.html">Contracting cube</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simple_ellipsoid.html">Simple Ellipsoid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="benchmark.html">Cardiac mechanics benchmark</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Compressible model</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#code">Code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#plot">Plot</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="custom_material.html">Custom material model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="from_xml.html">Data from xml</a></li>
+<li class="toctree-l2"><a class="reference internal" href="klotz_curve.html">Klotz curve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unloading.html">Finding the unloaded geometry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="creating_geometries.html">Creating idealized cardiac geometries with mshr</a></li>
 </ul>
 </li>
 </ul>
@@ -325,7 +331,7 @@ use <span class="math notranslate nohighlight">\(\mathbb{P}1\)</span> elements f
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../modules.html" class="btn btn-neutral float-right" title="pulse" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="custom_material.html" class="btn btn-neutral float-right" title="Custom material model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="problem3.html" class="btn btn-neutral" title="Problem 3" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -337,7 +343,7 @@ use <span class="math notranslate nohighlight">\(\mathbb{P}1\)</span> elements f
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Henrik Finsberg.
+        &copy; Copyright 2018, Henrik Finsberg
 
     </p>
   </div>
@@ -356,21 +362,14 @@ use <span class="math notranslate nohighlight">\(\mathbb{P}1\)</span> elements f
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'1.0',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../_static/jquery.js"></script>
-      <script type="text/javascript" src="../_static/underscore.js"></script>
-      <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
 
   
 

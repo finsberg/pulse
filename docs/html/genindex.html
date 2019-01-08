@@ -200,6 +200,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pulse.material.html#pulse.material.active_stress.ActiveStress">ActiveStress (class in pulse.material.active_stress)</a>
 </li>
+      <li><a href="pulse.html#pulse.iterate.add_step">add_step() (in module pulse.iterate)</a>
+</li>
       <li><a href="pulse.html#pulse.utils.Annotation.annotate">annotate (pulse.utils.Annotation attribute)</a>
 </li>
       <li><a href="pulse.html#pulse.utils.Annotation">Annotation (class in pulse.utils)</a>
@@ -300,7 +302,7 @@
       </ul></li>
       <li><a href="pulse.html#pulse.io_utils.copy_h5group">copy_h5group() (in module pulse.io_utils)</a>
 </li>
-      <li><a href="pulse.html#pulse.geometry.Geometry.crl_basis_list">crl_basis_list (pulse.geometry.Geometry attribute)</a>
+      <li><a href="pulse.html#pulse.geometry.Geometry.crl_basis_list">crl_basis_list() (pulse.geometry.Geometry method)</a>
 </li>
       <li><a href="pulse.html#pulse.geometry.CRLBasis">CRLBasis (class in pulse.geometry)</a>
 </li>
@@ -404,14 +406,14 @@
         <li><a href="pulse.material.html#pulse.material.active_stress.ActiveStress.Fe">(pulse.material.active_stress.ActiveStress method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pulse.html#pulse.geometry.Geometry.ffun">ffun (pulse.geometry.Geometry attribute)</a>
 
       <ul>
         <li><a href="pulse.html#pulse.geometry.MarkerFunctions.ffun">(pulse.geometry.MarkerFunctions attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pulse.html#pulse.geometry_utils.fibers">fibers() (in module pulse.geometry_utils)</a>
 </li>
       <li><a href="pulse.html#pulse.geometry_utils.fill_coordinates_ec">fill_coordinates_ec() (in module pulse.geometry_utils)</a>
@@ -425,6 +427,8 @@
       <li><a href="pulse.html#pulse.geometry.Geometry.from_file">from_file() (pulse.geometry.Geometry class method)</a>
 </li>
       <li><a href="pulse.html#pulse.geometry_utils.full_arctangent">full_arctangent() (in module pulse.geometry_utils)</a>
+</li>
+      <li><a href="pulse.html#pulse.dolfin_utils.RegionalParameter.function">function (pulse.dolfin_utils.RegionalParameter attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -460,15 +464,11 @@
 </li>
       <li><a href="pulse.html#pulse.dolfin_utils.get_dimesion">get_dimesion() (in module pulse.dolfin_utils)</a>
 </li>
-      <li><a href="pulse.html#pulse.mechanicsproblem.MechanicsProblem.get_displacement">get_displacement() (pulse.mechanicsproblem.MechanicsProblem method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pulse.html#pulse.mechanicsproblem.MechanicsProblem.get_displacement">get_displacement() (pulse.mechanicsproblem.MechanicsProblem method)</a>
+</li>
       <li><a href="pulse.html#pulse.geometry_utils.get_fiber_markers">get_fiber_markers() (in module pulse.geometry_utils)</a>
-</li>
-      <li><a href="pulse.html#pulse.dolfin_utils.RegionalParameter.get_function">get_function() (pulse.dolfin_utils.RegionalParameter method)</a>
-</li>
-      <li><a href="pulse.html#pulse.dolfin_utils.RegionalParameter.get_ind_space">get_ind_space() (pulse.dolfin_utils.RegionalParameter method)</a>
 </li>
       <li><a href="pulse.html#pulse.iterate.get_initial_step">get_initial_step() (in module pulse.iterate)</a>
 </li>
@@ -487,8 +487,6 @@
       <li><a href="pulse.html#pulse.dolfin_utils.get_pressure">get_pressure() (in module pulse.dolfin_utils)</a>
 </li>
       <li><a href="pulse.html#pulse.dolfin_utils.get_spaces">get_spaces() (in module pulse.dolfin_utils)</a>
-</li>
-      <li><a href="pulse.html#pulse.dolfin_utils.RegionalParameter.get_values">get_values() (pulse.dolfin_utils.RegionalParameter method)</a>
 </li>
       <li><a href="pulse.html#pulse.utils.Text.green">green() (pulse.utils.Text static method)</a>
 </li>
@@ -658,7 +656,7 @@
 </li>
       <li><a href="pulse.html#pulse.geometry.Microstructure">Microstructure (class in pulse.geometry)</a>
 </li>
-      <li><a href="pulse.html#pulse.geometry.Geometry.microstructure_list">microstructure_list (pulse.geometry.Geometry attribute)</a>
+      <li><a href="pulse.html#pulse.geometry.Geometry.microstructure_list">microstructure_list() (pulse.geometry.Geometry method)</a>
 </li>
       <li><a href="pulse.html#pulse.dolfin_utils.MixedParameter">MixedParameter (class in pulse.dolfin_utils)</a>
 </li>
@@ -755,6 +753,8 @@
 </li>
       </ul></li>
       <li><a href="pulse.html#pulse.unloading_utils.print_volumes">print_volumes() (in module pulse.unloading_utils)</a>
+</li>
+      <li><a href="pulse.html#pulse.dolfin_utils.RegionalParameter.proj_space">proj_space (pulse.dolfin_utils.RegionalParameter attribute)</a>
 </li>
       <li><a href="pulse.html#pulse.geometry_utils.prolate_ellipsoidal_to_cartesian">prolate_ellipsoidal_to_cartesian() (in module pulse.geometry_utils)</a>
 </li>
@@ -986,10 +986,12 @@
         <li><a href="pulse.html#pulse.mechanicsproblem.RobinBC.value">(pulse.mechanicsproblem.RobinBC attribute)</a>
 </li>
       </ul></li>
-      <li><a href="pulse.html#pulse.dolfin_utils.vectorfield_to_components">vectorfield_to_components() (in module pulse.dolfin_utils)</a>
+      <li><a href="pulse.html#pulse.dolfin_utils.RegionalParameter.values">values (pulse.dolfin_utils.RegionalParameter attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pulse.html#pulse.dolfin_utils.vectorfield_to_components">vectorfield_to_components() (in module pulse.dolfin_utils)</a>
+</li>
       <li><a href="pulse.html#pulse.dolfin_utils.VertexDomain">VertexDomain (class in pulse.dolfin_utils)</a>
 </li>
       <li><a href="pulse.html#pulse.geometry.Geometry.vfun">vfun (pulse.geometry.Geometry attribute)</a>
@@ -1055,7 +1057,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Henrik Finsberg.
+        &copy; Copyright 2018, Henrik Finsberg
 
     </p>
   </div>
@@ -1074,21 +1076,14 @@
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'1.0',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
 
   
 
