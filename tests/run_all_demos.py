@@ -1,5 +1,4 @@
 import os
-import subprocess as sp
 
 curdir = os.path.dirname(os.path.abspath(__file__))
 demodir = os.path.join(curdir, '../demo')
@@ -14,4 +13,4 @@ for root, dirname, files in os.walk(demodir):
             print(root)
             print(f)
             os.chdir(root)
-            sp.check_call(['python3', f])
+            exec(open(f).read())
