@@ -1,4 +1,6 @@
 import os
+import matplotlib
+matplotlib.use("agg")
 
 curdir = os.path.dirname(os.path.abspath(__file__))
 demodir = os.path.join(curdir, '../demo')
