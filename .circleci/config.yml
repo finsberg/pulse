@@ -47,6 +47,13 @@ jobs:
           command: |
             python3 -m pytest -v tests
 
+      # run demos
+      - run:
+          name: run demos
+          command: |
+            python tests/run_all_demos.py
+          
+
       - save_cache:
           key: v2-dolfin-jit-cache
           paths:
