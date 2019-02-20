@@ -19,103 +19,31 @@ from .utils import make_logger
 
 logger = make_logger(__name__, parameters['log_level'])
 
-MAX_GAMMA_STEP = 0.05
-MAX_PRESSURE_STEP = 0.2
-MAX_PRESSURE_STEP_BIV = 0.05
-MAX_CRASH = 20
-MAX_ITERS = 40
+
+class Enlisted(tuple):
+    pass
 
 
-def get_diff(current, target):
-
-    # msg = ('Expected target and current to be of same type. '
-    #        'Got type(current) = {}, type(target) = {}'
-    #        ).format(type(current), type(target))
-    # assert type(current) == type(target), msg
-
-    if isinstance(target, (Function, dolfin.Function)):
-        diff = target.vector() - current.vector()
-
-    elif isinstance(target, (Constant, dolfin.Constant)):
-        diff = np.subtract(float(target), float(current))
-    elif isinstance(target, (tuple, list)):
-        diff = np.subtract([float(t) for t in target],
-                           [float(c) for c in current])
+def enlist(x):
+    if isinstance(x, (list, tuple)):
+        return x
     else:
-        try:
-            diff = np.subtract(target, current)
-        except Exception as ex:
-            logger.error(ex)
-            raise ValueError(("Unable to compute diff with type {}"
-                              "").format(type(current)))
-
-    return diff
+        return Enlisted([x])
 
 
-def get_current_control_value(control, value=None):
-
-    if has_dolfin_adjoint and value is not None:
-        return value
-
-    # else:
-    #     return control
-    if isinstance(control, (Function, dolfin.Function)):
-        return control
-
-    elif isinstance(control, (Constant, dolfin.Constant)):
-        return float(control)
-
-    elif isinstance(control, (tuple, list)):
-        return tuple(float(c) for c in control)
-
+def delist(x):
+    if isinstance(x, Enlisted):
+        assert len(x) == 1
+        return x[0]
     else:
-        raise ValueError("Unknown control type {}".format(type(control)))
-
-
-def assign_new_control(control, new_control):
-
-    # msg = ('Expected old and new control to be of same type. '
-    #        'Got type(control) = {}, type(new_control) = {}'
-    #        ).format(type(control), type(new_control))
-    # assert type(control) == type(new_control), msg
-
-    if isinstance(control, (tuple, list)):
-        for c, n in zip(control, new_control):
-            try:
-                c.assign(n)
-            except TypeError:
-                c.assign(Constant(n))
-    else:
-        try:
-            control.assign(new_control)
-        except Exception as ex:
-            logger.error(ex)
-            raise ValueError(("Unable to assign control of type {}"
-                             "").format(type(control)))
-
-
-def check_target_reached(problem, current, target):
-
-    diff = get_diff(current, target)
-
-    if isinstance(diff, dolfin.GenericVector):
-        diff.abs()
-        max_diff = diff.max()
-
-    else:
-        max_diff = np.max(abs(diff))
-
-    reached = max_diff < 1e-6
-    if reached:
-        logger.info("Check target reached: YES!")
-    else:
-        logger.info("Check target reached: NO")
-        logger.info("Maximum difference: {:.3e}".format(max_diff))
-
-    return reached
+        return x
 
 
 def copy(f, deepcopy=True, name='copied_function'):
+    """
+    Copy a function. This is to ease the integration
+    with dolfin adjoint where copied fuctions are annotated.
+    """
 
     if isinstance(f, (dolfin.Function, Function)):
         if has_dolfin_adjoint:
@@ -137,39 +65,10 @@ def copy(f, deepcopy=True, name='copied_function'):
         return f
 
 
-def get_initial_step(problem, current, target, nsteps=None):
-
-    diff = get_diff(current, target)
-
-    if isinstance(diff, dolfin.GenericVector):
-        max_diff = dolfin.norm(diff, 'linf')
-        if nsteps is None:
-            nsteps = int(np.ceil(float(max_diff)/MAX_GAMMA_STEP) + 1)
-        step = Function(current.function_space())
-        step.vector().axpy(1.0/float(nsteps), diff)
-
-    else:
-        max_diff = abs(np.max(diff))
-        if hasattr(diff, "__len__") and len(diff) == 2:
-            MAX_STEP = MAX_PRESSURE_STEP_BIV
-        else:
-            MAX_STEP = MAX_PRESSURE_STEP
-
-        if nsteps is None:
-            nsteps = int(np.ceil(float(max_diff) / MAX_STEP)) + 1
-        step = diff / float(nsteps)
-        if isinstance(current, (list, tuple)):
-            step = step.tolist()
-
-    logger.debug("Intial number of steps: {}".format(nsteps))
-
-    # if control == "gamma":
-        # return step, nsteps
-
-    return step
-
-
 def constant2float(const):
+    """
+    Convert a :class:`dolfin.Constant` to float
+    """
 
     try:
         c = float(const)
@@ -184,7 +83,108 @@ def constant2float(const):
     return c
 
 
+def get_delta(new_control, c0, c1):
+    """
+    Get extrapolation parameter used in the continuation step.
+    """
+    if isinstance(c0, (Constant, dolfin.Constant)):
+        c0 = constant2float(c0)
+        c1 = constant2float(c1)
+        new_control = constant2float(new_control)
+
+    if isinstance(new_control, (int, float)):
+        return (new_control - c0) / float(c1 - c0)
+
+    elif isinstance(new_control, (tuple, np.ndarray, list)):
+        c0 = [constant2float(c) for c in c0]
+        c1 = [constant2float(c) for c in c1]
+        new_control = [constant2float(c) for c in new_control]
+        return (new_control[0] - c0[0]) / float(c1[0] - c0[0])
+
+    elif isinstance(new_control, (dolfin.GenericVector, dolfin.Vector)):
+        new_control_arr = numpy_mpi.gather_broadcast(new_control.get_local())
+        c0_arr = numpy_mpi.gather_broadcast(c0.get_local())
+        c1_arr = numpy_mpi.gather_broadcast(c1.get_local())
+        return (new_control_arr[0] - c0_arr[0]) / float(c1_arr[0] - c0_arr[0])
+
+    elif isinstance(new_control, (dolfin.Function, Function)):
+        new_control_arr = numpy_mpi.\
+                          gather_broadcast(new_control.vector().get_local())
+        c0_arr = numpy_mpi.gather_broadcast(c0.vector().get_local())
+        c1_arr = numpy_mpi.gather_broadcast(c1.vector().get_local())
+        return (new_control_arr[0] - c0_arr[0]) / float(c1_arr[0] - c0_arr[0])
+
+
+def get_diff(current, target):
+    """
+    Get difference between current and target value
+    """
+
+    if isinstance(target, (Function, dolfin.Function)):
+        diff = target.vector() - current.vector()
+
+    elif isinstance(target, (Constant, dolfin.Constant)):
+        diff = np.subtract(constant2float(target),
+                           constant2float(current))
+    elif isinstance(target, (tuple, list)):
+        diff = np.subtract([constant2float(t) for t in target],
+                           [constant2float(c) for c in current])
+    else:
+        try:
+            diff = np.subtract(target, current)
+        except Exception as ex:
+            logger.error(ex)
+            raise ValueError(("Unable to compute diff with type {}"
+                              "").format(type(current)))
+
+    return squeeze(diff)
+
+
+def squeeze(x):
+
+    try:
+        y = np.squeeze(x)
+    except:
+        return x
+    else:
+        try:
+            shape = np.shape(y)
+        except:
+            return y
+        else:
+            if len(shape) == 0:
+                return float(y)
+            else:
+                return y
+
+
+def get_initial_step(current, target, nsteps=5):
+    """
+    Estimate the step size needed to step from current to target
+    in `nsteps`.
+    """
+
+    diff = get_diff(current, target)
+
+    if isinstance(diff, dolfin.GenericVector):
+        max_diff = dolfin.norm(diff, 'linf')
+        step = Function(current.function_space())
+        step.vector().axpy(1.0 / float(nsteps), diff)
+
+    else:
+        max_diff = abs(np.max(diff))
+        step = diff / float(nsteps)
+        
+    logger.debug(("Intial number of steps: {} with step size {}"
+                  "").format(nsteps, step))
+
+    return step
+
+
 def step_too_large(current, target, step):
+    """
+    Check if `current + step` exceeds `target`
+    """
 
     if isinstance(target, (dolfin.Function, Function)):
         diff_before = current.vector()[:] - target.vector()[:]
@@ -227,294 +227,308 @@ def step_too_large(current, target, step):
         return any(too_large)
 
 
-def change_step_size(step, factor):
-
-    if isinstance(step, (dolfin.Function, Function)):
-        new_step = dolfin.Function(step.function_space())
-        new_step.vector()[:] = factor*step.vector()[:]
-
-    else:
-        new_step = np.multiply(factor, step)
-
-    return new_step
-
-
-def print_control(control):
-
-    if isinstance(control, (Constant, dolfin.Constant)):
-        control = constant2float(control)
-    elif isinstance(control, (list, tuple)):
-        control = [constant2float(c) for c in control]
-
-    def print_arr(arr):
-
-        if len(arr) == 1:
-            logger.info("\t{:>6.2f}".format(arr[0]))
-
-        elif len(arr) == 2:
-            # This has to be (LV, RV)
-            logger.info("\t{:>6}\t{:>6}".format("LV", "RV"))
-            logger.info("\t{:>6.2f}\t{:>6.2f}".format(arr[0],
-                                                      arr[1]))
-
-        elif len(arr) == 3:
-            # This has to be (LV, Septum, RV)
-            logger.info("\t{:>6}\t{:>6}\t{:>6}".format("LV", "SEPT", "RV"))
-            logger.info("\t{:>6.2f}\t{:>6.2f}\t{:>6.2f}".format(arr[0],
-                                                                arr[1],
-                                                                arr[2]))
-        else:
-            # Print min, mean and max
-            try:
-                logger.info("\t{:>6}\t{:>6}\t{:>6}".format("Min", "Mean", "Max"))
-                logger.info("\t{:>6.2f}\t{:>6.2f}\t{:>6.2f}".format(np.min(arr),
-                                                                    np.mean(arr),
-                                                                    np.max(arr)))
-            except Exception as ex:
-                logger.info(arr)
-
-    if isinstance(control, (float, int)):
-        logger.info("\t{:>6.3f}".format(control))
-
-    elif isinstance(control, (dolfin.Function, Function)):
-        arr = numpy_mpi.gather_broadcast(control.vector().get_local())
-        logger.info("\t{:>6}\t{:>6}\t{:>6}".format("Min", "Mean", "Max"))
-        logger.info("\t{:>6.2f}\t{:>6.2f}\t{:>6.2f}".format(np.min(arr),
-                                                            np.mean(arr),
-                                                            np.max(arr)))
-    elif isinstance(control, (dolfin.GenericVector, dolfin.Vector)):
-        arr = numpy_mpi.gather_broadcast(control.get_local())
-        print_arr(arr)
-
-    elif isinstance(control, (tuple, np.ndarray, list)):
-        print_arr(control)
-
-
-def get_delta(new_control, c0, c1):
-
-    if isinstance(c0, (Constant, dolfin.Constant)):
-        c0 = constant2float(c0)
-        c1 = constant2float(c1)
-        new_control = constant2float(new_control)
-
-    if isinstance(new_control, (int, float)):
-        return (new_control - c0) / float(c1 - c0)
-
-    elif isinstance(new_control, (tuple, np.ndarray, list)):
-        c0 = [constant2float(c) for c in c0]
-        c1 = [constant2float(c) for c in c1]
-        new_control = [constant2float(c) for c in new_control]
-        return (new_control[0] - c0[0]) / float(c1[0] - c0[0])
-
-    elif isinstance(new_control, (dolfin.GenericVector, dolfin.Vector)):
-        new_control_arr = numpy_mpi.gather_broadcast(new_control.get_local())
-        c0_arr = numpy_mpi.gather_broadcast(c0.get_local())
-        c1_arr = numpy_mpi.gather_broadcast(c1.get_local())
-        return (new_control_arr[0] - c0_arr[0]) / float(c1_arr[0] - c0_arr[0])
-
-    elif isinstance(new_control, (dolfin.Function, Function)):
-        new_control_arr = numpy_mpi.\
-                          gather_broadcast(new_control.vector().get_local())
-        c0_arr = numpy_mpi.gather_broadcast(c0.vector().get_local())
-        c1_arr = numpy_mpi.gather_broadcast(c1.vector().get_local())
-        return (new_control_arr[0] - c0_arr[0]) / float(c1_arr[0] - c0_arr[0])
-
-
-def add_step(current_control, step):
-    if isinstance(current_control, (tuple, list)):
-        return [c + s for c, s in zip(current_control, step)]
-    return current_control + step
-
-
-def get_mean(f):
-    return numpy_mpi.gather_broadcast(f.vector().get_local()).mean()
-
-
-def get_max(f):
-    return numpy_mpi.gather_broadcast(f.vector().get_local()).max()
-
-
 def iterate(problem, control, target,
             continuation=True, max_adapt_iter=8,
             adapt_step=True, old_states=None, old_controls=None,
-            max_nr_crash=MAX_CRASH, max_iters=MAX_ITERS,
-            initial_number_of_steps=None):
+            max_nr_crash=20, max_iters=40,
+            initial_number_of_steps=5):
 
     """
     Using the given problem, iterate control to given target.
 
-    *Parameters*
-
-    problem (LVProblem)
+    Arguments
+    ---------
+    problem : pulse.MechanicsProblem
         The problem
-    control (dolfin.Function or dolfin.Constant)
+    control : dolfin.Function or dolfin.Constant
         The control
-    target (dolfin.Function, dolfin.Constant, tuple or float)
+    target: dolfin.Function, dolfin.Constant, tuple or float
         The target value. Typically a float if target is LVP, a tuple
         if target is (LVP, RVP) and a function if target is gamma.
-    continuation (bool)
+    continuation: bool
         Apply continuation for better guess for newton problem
         Note: Replay test seems to fail when continuation is True,
         but taylor test passes
-    max_adapt_iter (int)
+    max_adapt_iter: int
         If number of iterations is less than this number and adapt_step=True,
-        then adapt control step
-    adapt_step (bool)
+        then adapt control step. Default: 8
+    adapt_step: bool
         Adapt / increase step size when sucessful iterations are achevied.
+    old_states: list
+        List of old controls to help speed in the continuation
     """
-    logger.setLevel(parameters['log_level'])
 
-    old_controls = [] if old_controls is None else old_controls
-    old_states = [] if old_states is None else old_states
+    iterator = Iterator(problem=problem,
+                        control=control,
+                        target=target,
+                        continuation=continuation,
+                        max_adapt_iter=max_adapt_iter,
+                        adapt_step=adapt_step,
+                        old_states=old_states,
+                        old_controls=old_controls,
+                        max_nr_crash=max_nr_crash,
+                        max_iters=max_iters,
+                        initial_number_of_steps=initial_number_of_steps)
+    
+    return iterator.solve()
 
-    if isinstance(target, (float, int, np.ndarray)):
-        value_size = 1 if isinstance(target, (float, int)) else len(target)
-        target = get_constant(value_size=value_size, value_rank=0,
-                              val=target, constant=Constant)
 
-    else:
-        if not isinstance(target, (list, tuple)):
-            msg = "Unknown targt type {}".format(type(target))
-            assert isinstance(target, (dolfin.Constant, Constant,
-                                       dolfin.Function, Function)), msg
 
-    if not type(target) == type(control):
-        if isinstance(control, Function):
-            target_ = Function(control.function_space())
-            target_.assign(Constant(target))
-            target = target_
+class Iterator(object):
+    """
+    Iterator
+    """
+    _control_types = (Function, dolfin.Function,
+                      Constant, dolfin.Constant)
+    
+    def __init__(self,
+                 problem,
+                 control,
+                 target,
+                 old_states=None,
+                 old_controls=None,
+                 **params
+    ):
+        logger.setLevel(parameters['log_level'])
 
-    target_reached = check_target_reached(problem, control, target)
+        self.parameters = Iterator.default_parameters()
+        self.parameters.update(params)
 
-    step = get_initial_step(problem, control,
-                            target, initial_number_of_steps)
-    control_prev = None
-    control_next = None
-    if has_dolfin_adjoint:
-        try:
-            control_prev = copy(control, deepcopy=True)
-            control_next = copy(control, deepcopy=True)
-        except Exception as ex:
-            pass
+        self.old_controls = () if old_controls is None else old_controls
+        self.old_states = () if old_states is None else old_states
+        self.problem = problem
+        self._check_control(control)
+        self._check_target(target)
 
-    control_values = [copy(control)]
-    prev_states = [copy(problem.state)]
+        self.control_values = [copy(self.control, deepcopy=True,
+                                    name='previous control')]
+        self.prev_states = [copy(self.problem.state, deepcopy=True,
+                                 name='previous state')]
 
-    ncrashes = 0
-    niters = 0
+        self.step = get_initial_step(self.control, self.target,
+                                     self.parameters['initial_number_of_steps'])
 
-    while not target_reached:
+        
 
-        niters += 1
-        if ncrashes > max_nr_crash or niters > max_iters:
+    @staticmethod
+    def default_parameters():
+        return dict(continuation=True,
+                    max_adapt_iter=8,
+                    adapt_step=True,
+                    max_nr_crash=20,
+                    max_iters=40,
+                    initial_number_of_steps=5)
+        
+    @property
+    def step(self):
+        return self._step
 
-            problem.reinit(prev_states[0])
-            assign_new_control(control, control_values[0])
+    @step.setter
+    def step(self, step):
+        self._step = enlist(squeeze(step))
 
-            raise SolverDidNotConverge
+    def solve(self):
 
-        state_old = prev_states[-1]
-        control_old = control_prev or control_values[-1]
+        self.ncrashes = 0
+        self.niters = 0
+        while not self.target_reached():
 
-        # Check if we are close
-        if step_too_large(control_old, target, step):
-            logger.info("Change step size for final iteration")
+            self.niters += 1
+            if self.ncrashes > self.parameters['max_nr_crash'] \
+               or self.niters > self.parameters['max_iters']:
 
-            # Change step size so that target is reached in the next iteration
-            if isinstance(step, (dolfin.Function, Function)):
-                step = Function(target.function_space())
-                step.vector().axpy(1.0, target.vector())
-                step.vector().axpy(-1.0, control_old.vector())
-            elif isinstance(step, (list, np.ndarray, tuple)):
-                step = np.array([constant2float(t) - constant2float(c)
-                                 for (t, c) in zip(target, control_old)])
-            else:
-                step = target - control_old
+                self.problem.reinit(self.prev_states[0])
+                self.assign_new_control(self.control_values[0])
+                
+                raise SolverDidNotConverge
 
-        # Increment gamma
-        current_control = get_current_control_value(control, control_next)
-        if isinstance(current_control, (dolfin.Function, Function)):
-            current_control.vector()[:] += step.vector()[:]
-        else:
-            current_control = add_step(current_control, step)
-            if isinstance(current_control, (list, tuple)):
-                current_control = tuple([get_constant(c) for c in current_control])
-            else:
-                current_control = get_constant(current_control)
-        assign_new_control(control, current_control)
+            prev_state = self.prev_states[-1]
+            prev_control = self.control_values[-1]
 
-        first_step = len(prev_states) < 2
-        # Prediction step
-        # Hopefully a better guess for the newton problem
-        if not first_step and continuation:
+            # Check if we are close
+            if step_too_large(prev_control, self.target, self.step):
+                self.change_step_for_final_iteration(prev_control)
 
-            c0, c1 = control_values[-2:]
-            s0, s1 = prev_states
+            self.increment_control()
 
-            delta = get_delta(current_control, c0, c1)
+            if self.parameters['continuation']:
+                self.continuation_step()
 
-            if has_dolfin_adjoint and annotation.annotate:
-                w = dolfin.Function(problem.state.function_space())
 
-                w.vector().zero()
-                w.vector().axpy(1.0 - delta, s0.vector())
-                w.vector().axpy(delta, s1.vector())
-                problem.reinit(w, annotate=True)
-            else:
-                problem.state.vector().zero()
-                problem.state.vector().axpy(1.0 - delta, s0.vector())
-                problem.state.vector().axpy(delta, s1.vector())
+            logger.info("Try new control")
+            self.print_control()
+            try:
+                nliter, nlconv = self.problem.solve()
 
-        logger.info("Try new control")
-        print_control(control)
-        try:
-            nliter, nlconv = problem.solve()
+            except SolverDidNotConverge as ex:
+                logger.debug(ex)
+                logger.info("\nNOT CONVERGING")
+                logger.info("Reduce control step")
+                self.ncrashes += 1
+                self.assign_control(prev_control)
 
-        except SolverDidNotConverge as ex:
-            logger.debug(ex)
-            logger.info("\nNOT CONVERGING")
-            logger.info("Reduce control step")
-            ncrashes += 1
+                # Assign old state
+                logger.debug("Assign old state")
+                self.problem.state.vector().zero()
+                self.problem.reinit(prev_state)
 
-            assign_new_control(control, control_old)
-
-            # Assign old state
-            logger.debug("Assign old state")
-            problem.state.vector().zero()
-            problem.reinit(state_old)
-
-            step = change_step_size(step, 0.5)
+                self.change_step_size(0.5)
 
         else:
             ncrashes = 0
             logger.info("\nSUCCESFULL STEP:")
-            if has_dolfin_adjoint:
-                try:
-                    control_prev = copy(control, deepcopy=True)
-                    control_next = copy(control, deepcopy=True)
-                except Exception as ex:
-                    pass
 
-            target_reached = check_target_reached(problem, control, target)
-            if not target_reached:
+            if not self.target_reached():
 
-                if nliter < max_adapt_iter and adapt_step:
-                    logger.info("Adapt step size. New step size:")
-                    step = change_step_size(step, 1.5)
-                    print_control(step)
+                if nliter < self.parameters['max_adapt_iter'] and\
+                   self.parameters['adapt_step']:
+                    self.change_step_size(1.5)
+                    msg = "Adapt step size. New step size: {:.2f}".format(self.step[0])
+                    logger.info(msg)
 
-                control_values.append(copy(control, deepcopy=True,
+                self.control_values.append(copy(self.control, deepcopy=True,
                                            name='Previous control'))
 
-                if first_step:
-                    prev_states.append(copy(problem.state, deepcopy=True,
-                                            name='Previous state'))
-                else:
+                self.prev_states.append(copy(self.problem.state, deepcopy=True,
+                                             name='Previous state'))
+        return self.prev_states, self.control_values
 
-                    # Switch place of the state vectors
-                    prev_states = [prev_states[-1], prev_states[0]]
+    def change_step_size(self, factor):
+        self.step = np.multiply(self.step, factor)
 
-                    # Inplace update of last state values
-                    prev_states[-1].vector().zero()
-                    prev_states[-1].vector().axpy(1.0, problem.state.vector())
-    return prev_states, control_values
+    def print_control(self):
+        msg = 'Current control: '
+        controls = [constant2float(c) for c in self.control]
+        if len(controls) > 3:
+            msg += ('\n\tMin:{:.2f}\tMean:{:.2f}\tMax:{:.2f}'
+                    '').format(np.min(controls),
+                               np.mean(controls),
+                               np.max(controls))
+        else:
+            msg += ','.join(['{:.2f}'.format(c) for c in controls])
+
+        logger.info(msg)
+
+
+    def continuation_step(self):
+        
+        first_step = len(self.prev_states) < 2
+        if first_step:
+            return
+
+        c0, c1 = self.control_values[-2:]
+        s0, s1 = se.f.prev_states[-2:]
+
+        delta = get_delta(self.control, c0, c1)
+
+        if has_dolfin_adjoint and annotation.annotate:
+            w = dolfin.Function(self.problem.state.function_space())
+
+            w.vector().zero()
+            w.vector().axpy(1.0 - delta, s0.vector())
+            w.vector().axpy(delta, s1.vector())
+            self.problem.reinit(w, annotate=True)
+        else:
+            self.problem.state.vector().zero()
+            self.problem.state.vector().axpy(1.0 - delta, s0.vector())
+            self.problem.state.vector().axpy(delta, s1.vector())
+
+    def increment_control(self):
+        for c, s in zip(self.control, self.step):
+            c.assign(Constant(constant2float(c) + s))
+
+    def assign_control(self, new_control):
+        for c, n in zip(self.control, new_control):
+            c.assign(constant2float(n))
+        
+
+
+    def change_step_for_final_iteration(self, prev_control):
+        """Change step size so that target is 
+        reached in the next iteration
+        """
+        logger.info("Change step size for final iteration")
+        
+        
+        if isinstance(self.step, (dolfin.Function, Function)):
+            step = Function(self.target.function_space())
+            step.vector().axpy(1.0, self.target.vector())
+            step.vector().axpy(-1.0, prev_control.vector())
+        elif isinstance(step, (list, np.ndarray, tuple)):
+            step = np.array([constant2float(t) - constant2float(c)
+                             for (t, c) in zip(self.target, prev_control)])
+        else:
+            step = self.target - prev_control
+                    
+        self.step = step
+        
+    def _check_target(self, target):
+
+        target = enlist(target)
+
+        targets = []
+        for tar in target:
+            
+            try:
+                t = get_constant(target)
+            except TypeError:
+                msg = ('Unable to convert target for type {} '
+                       'to a constant').format(type(target))
+                raise TypeError(msg)
+            targets.append(t)
+        
+        self.target = tuple(targets)
+
+
+    def _check_control(self, control):
+
+        control = enlist(control)
+        
+        # Control has to be either a function or
+        # a constant
+        for c in control:
+            msg = ('Expected control parameters to be of type {}, '
+                   'got {}').format(self._control_types, type(c))
+            assert isinstance(c, self._control_types), msg
+
+        self.control = control
+
+    def assign_new_control(self, new_control):
+
+        for c, n in zip(self.control, new_control):
+            try:
+                c.assign(n)
+            except TypeError:
+                c.assign(Constant(n))
+
+    @property
+    def ncontrols(self):
+        """Number of controls
+        """
+        return len(self.control)
+
+    
+    def target_reached(self):
+        """Check if control and target are the same
+        """
+        diff = get_diff(self.control, self.target)
+
+        if isinstance(diff, dolfin.GenericVector):
+            diff.abs()
+            max_diff = diff.max()
+            
+        else:
+            
+            max_diff = np.max(abs(diff))
+            
+        reached = max_diff < 1e-6
+        if reached:
+            logger.info("Check target reached: YES!")
+        else:
+            logger.info("Check target reached: NO")
+            logger.info("Maximum difference: {:.3e}".format(max_diff))
+            
+        return reached
+        
+        
+    

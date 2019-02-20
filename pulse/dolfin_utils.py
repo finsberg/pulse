@@ -224,10 +224,16 @@ def get_cavity_volume_form(mesh, u=None, xshift=0.0):
     return vol_form
 
 
-def get_constant(val, value_size=None, value_rank=0, constant=dolfin.Constant):
+def get_constant(val, value_size=None, value_rank=0, constant=Constant):
 
     if isinstance(val, (Constant, dolfin.Constant)):
         return val
+    elif isinstance(val, (Function, dolfin.Function)):
+        arr = numpy_mpi.gather_broadcast(val.vector().get_local())
+        return constant(arr)
+    elif isinstance(val, dolfin.GenericVector):
+        arr = numpy_mpi.gather_broadcast(val.get_local())
+        return constant(arr)
 
     if value_size is None:
         if np.isscalar(val):
