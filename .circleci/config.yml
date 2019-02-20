@@ -51,7 +51,7 @@ jobs:
       - run:
           name: run demos
           command: |
-            python tests/run_all_demos.py
+            python3 tests/run_all_demos.py
           
 
       - save_cache:
