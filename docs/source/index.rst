@@ -20,6 +20,43 @@ at
 `github.com/finsberg/pulse_adjoint <https://github.com/finsberg/pulse_adjoint>`_
 which works as an extenstion to this library.
 
+Installation
+------------
+In order to install the software you need to have installed `FEniCS <https://fenicsproject.org>`_ verision
+2016.x or 2017.x. Next you can install `pulse` package using
+
+.. code::
+
+    pip install git+https://github.com/finsberg/pulse.git
+
+Alternatively, you can clone / download the repository at `<https://github.com/finsberg/pulse>`_
+and install the dependencies
+
+.. code::
+
+    pip install -r requirements.txt
+
+and finally you can instll the `pulse` package using either
+
+.. code::
+
+    pip install .
+
+or
+
+.. code::
+
+    python setup.py install
+
+
+You can also install the library using conda
+
+.. code::
+
+   conda install -c finsberg pulse
+
+
+
 
 .. toctree::
    :maxdepth: 2
@@ -41,3 +78,12 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+
+License
+=======
+LGPL version 3 or later
+
+Contributors
+============
+For questions please contact Henrik Finsberg (henriknf@simula.no)

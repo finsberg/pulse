@@ -217,6 +217,17 @@ def load_markers(h5file, mesh, ggroup, dgroup):
     return markers
 
 
+def setup_fiber_parameters():
+    fiber_params = dolfin.Parameters("Fibers")
+    fiber_params.add("fiber_space", "Quadrature_4")
+    fiber_params.add("include_sheets", False)
+
+    fiber_params.add("fiber_angle_epi", -60)
+    fiber_params.add("fiber_angle_endo", 60)
+    fiber_params.add("sheet_angle_epi", 0)
+    fiber_params.add("sheet_angle_endo", 0)
+    return fiber_params
+
 def full_arctangent(x, y):
     t = np.arctan2(x, y)
     if t < 0:
@@ -306,7 +317,7 @@ def make_unit_vector(V, VV, dofs_x, fill_coordinates, foc=None):
     return e
 
 
-def make_LV_crl_basis(mesh, foc):
+def make_crl_basis(mesh, foc):
     """
     Makes the crl  basis for the LV mesh (prolate ellipsoidal)
     with prespecified focal length.
@@ -363,14 +374,9 @@ def generate_local_basis_functions(mesh, focal_point, mesh_type="lv"):
 
 def fibers(mesh, fiber_endo = 60, fiber_epi=-60):
 
-    fiber_params = Parameters("Fibers")
-    fiber_params.add("fiber_space", "Quadrature_4")
-    fiber_params.add("include_sheets", False)
-
-    fiber_params.add("fiber_angle_epi", fiber_epi)
-    fiber_params.add("fiber_angle_endo", fiber_endo)
-    fiber_params.add("sheet_angle_epi", 0)
-    fiber_params.add("sheet_angle_endo", 0)
+    fiber_params = setup_fiber_parameters()
+    fiber_params["fiber_angle_endo"] = fiber_endo
+    fiber_params["fiber_angle_epi"] = fiber_epi
 
     f0 = generate_fibers(mesh, fiber_params)[0]
     return f0
@@ -394,16 +400,10 @@ def get_circ_field(mesh):
     return f0
 
 def get_long_field(mesh, mesh_type="biv"):
-    fiber_params = Parameters("Fibers")
-    fiber_params.add("fiber_space", "Quadrature_4")
-    # fiber_params.add("fiber_space", "Lagrange_1")
-    fiber_params.add("include_sheets", False)
 
-    # Parameter set from Bayer et al.
-    fiber_params.add("fiber_angle_epi", -90)
-    fiber_params.add("fiber_angle_endo", -90)
-    fiber_params.add("sheet_angle_epi", 0)
-    fiber_params.add("sheet_angle_endo", 0)
+    fiber_params = setup_fiber_parameters()
+    fiber_params["fiber_angle_endo"] = -90
+    fiber_params["fiber_angle_epi"] = -90
 
     if mesh_type == "biv":
         # We need to set the markers for then LV and RV facets
@@ -706,3 +706,150 @@ def save_geometry_to_h5(mesh, h5name, h5group="", markers=None,
                     logger.warning("Invalid attribute {} = {}".format(k, v))
 
     logger.info("Geometry saved to {}".format(h5name))
+
+
+def mark_strain_regions(mesh, foc, nsectors=(6, 6, 4, 1), mark_mesh=True):
+    """Mark the cells in the mesh.
+
+    For instance if you want to mark this mesh accoring to
+    the  AHA 17-segment model, then nsector = [6,6,4,1],
+    i.e 6 basal, 6 mid, 4 apical and one apex
+
+     """
+
+    fun = dolfin.MeshFunction("size_t", mesh, 3)
+    nlevels = len(nsectors)
+
+    pi = np.pi
+
+    assert nlevels <= 4
+
+    if nlevels == 4:
+        mus = [90, 60, 30, 10, 0]
+    elif nlevels == 3:
+        mus = [90, 60, 30, 0]
+    elif nlevels == 2:
+        mus = [90, 45, 0]
+    else:
+        mus = [90, 0]
+
+    thetas = [np.linspace(pi, 3*pi, s+1)[:-1].tolist() + [pi]
+              for s in nsectors]
+
+    start = 0
+    end = nsectors[0]
+    regions = np.zeros((sum(nsectors), 4))
+    for i in range(nlevels):
+        regions.T[0][start:end] = mus[i]*pi/180
+        regions.T[3][start:end] = mus[i+1]*pi/180
+        if i != len(nsectors)-1:
+            start += nsectors[i]
+            end += nsectors[i+1]
+
+    start = 0
+    for j, t in enumerate(thetas):
+        for i in range(nsectors[j]):
+            regions.T[1][i+start] = t[i]
+            regions.T[2][i+start] = t[i+1]
+        start += nsectors[j]
+
+    sfun = mark_cell_function(fun, mesh, foc, regions)
+
+    if mark_mesh:
+        # Mark the cells accordingly
+        for cell in dolfin.cells(mesh):
+            mesh.domains().set_marker((cell.index(), sfun[cell]), 3)
+
+    return sfun
+
+
+def mark_cell_function(fun, mesh, foc, regions):
+    """
+    Iterates over the mesh and stores the
+    region number in a meshfunction
+    """
+
+    for cell in dolfin.cells(mesh):
+
+        # Get coordinates to cell midpoint
+        x = cell.midpoint().x()
+        y = cell.midpoint().y()
+        z = cell.midpoint().z()
+
+        T = cartesian_to_prolate_ellipsoidal(x, y, z, foc)
+
+        fun[cell] = strain_region_number(T, regions)
+
+    return fun
+
+
+def strain_region_number(T, regions):
+    """
+    For a given point in prolate coordinates,
+    return the region it belongs to.
+
+    :param regions: Array of all coordinates for the strain 
+                    regions taken from the strain mesh.
+    :type regions: :py:class:`numpy.array`
+
+    :param T: Some value i prolate coordinates
+    :type T: :py:class:`numpy.array`
+
+    Resturn the region number that
+    T belongs to
+    """
+
+    """
+    The cricumferential direction is a bit
+    tricky because it goes from -pi to pi.
+    To overcome this we add pi so that the
+    direction goes from 0 to 2*pi
+    """
+
+    lam, mu, theta = T
+
+    theta = theta + np.pi
+
+    levels = get_level(regions, mu)
+
+    if np.shape(regions)[0] + 1 in levels:
+        return np.shape(regions)[0] + 1
+
+    sector = get_sector(regions, theta)
+
+    assert len(np.intersect1d(levels, sector)) == 1
+
+    return np.intersect1d(levels, sector)[0] + 1
+
+
+def get_level(regions, mu):
+
+    A = np.intersect1d(np.where((regions.T[3] <= mu))[0],
+                       np.where((mu <= regions.T[0]))[0])
+    if len(A) == 0:
+        return [np.shape(regions)[0] + 1]
+    else:
+        return A
+
+
+def get_sector(regions, theta):
+
+    if not(np.count_nonzero(regions.T[1] <= regions.T[2])
+           >= 0.5*np.shape(regions)[0]):
+        raise ValueError("Surfaces are flipped")
+
+    sectors = []
+    for i, r in enumerate(regions):
+
+        if r[1] == r[2]:
+            sectors.append(i)
+        else:
+            if r[1] > r[2]:
+                if theta > r[1] or r[2] > theta:
+                    sectors.append(i)
+
+            else:
+                if r[1] < theta < r[2]:
+                    sectors.append(i)
+
+    return sectors

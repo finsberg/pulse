@@ -215,10 +215,17 @@ class Geometry(object):
                             overwrite_group=overwrite_group)
         logger.debug('Saved')
                             
-        
+    @property
+    def top_dim(self):
+        """Topological Dimension
+        """
+        return self.mesh.topology().dim()
 
-    def dim(self):
-        return self.mesh.geometry.dim()
+    @property
+    def geo_dim(self):
+        """Geometric Dimension
+        """
+        return self.mesh.geometry().dim()
 
     def crl_basis_list(self):
         """Return a list of the CRL basis in the order
