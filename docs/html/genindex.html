@@ -18,32 +18,35 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" /> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -200,13 +203,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pulse.material.html#pulse.material.active_stress.ActiveStress">ActiveStress (class in pulse.material.active_stress)</a>
 </li>
-      <li><a href="pulse.html#pulse.iterate.add_step">add_step() (in module pulse.iterate)</a>
-</li>
       <li><a href="pulse.html#pulse.utils.Annotation.annotate">annotate (pulse.utils.Annotation attribute)</a>
 </li>
       <li><a href="pulse.html#pulse.utils.Annotation">Annotation (class in pulse.utils)</a>
 </li>
-      <li><a href="pulse.html#pulse.iterate.assign_new_control">assign_new_control() (in module pulse.iterate)</a>
+      <li><a href="pulse.html#pulse.iterate.Iterator.assign_control">assign_control() (pulse.iterate.Iterator method)</a>
+</li>
+      <li><a href="pulse.html#pulse.iterate.Iterator.assign_new_control">assign_new_control() (pulse.iterate.Iterator method)</a>
 </li>
       <li><a href="pulse.html#pulse.dolfin_utils.MixedParameter.assign_sub">assign_sub() (pulse.dolfin_utils.MixedParameter method)</a>
 </li>
@@ -266,7 +269,9 @@
         <li><a href="pulse.html#pulse.geometry.MarkerFunctions.cfun">(pulse.geometry.MarkerFunctions attribute)</a>
 </li>
       </ul></li>
-      <li><a href="pulse.html#pulse.iterate.change_step_size">change_step_size() (in module pulse.iterate)</a>
+      <li><a href="pulse.html#pulse.iterate.Iterator.change_step_for_final_iteration">change_step_for_final_iteration() (pulse.iterate.Iterator method)</a>
+</li>
+      <li><a href="pulse.html#pulse.iterate.Iterator.change_step_size">change_step_size() (pulse.iterate.Iterator method)</a>
 </li>
       <li><a href="pulse.html#pulse.io_utils.check_and_delete">check_and_delete() (in module pulse.io_utils)</a>
 </li>
@@ -277,8 +282,6 @@
       <li><a href="pulse.html#pulse.io_utils.check_group_exists">check_group_exists() (in module pulse.io_utils)</a>
 </li>
       <li><a href="pulse.html#pulse.io_utils.check_h5group">check_h5group() (in module pulse.io_utils)</a>
-</li>
-      <li><a href="pulse.html#pulse.iterate.check_target_reached">check_target_reached() (in module pulse.iterate)</a>
 </li>
       <li><a href="pulse.material.html#pulse.material.material_model.compressibility">compressibility() (in module pulse.material.material_model)</a>
 
@@ -291,7 +294,11 @@
       <li><a href="pulse.html#pulse.iterate.constant2float">constant2float() (in module pulse.iterate)</a>
 </li>
       <li><a href="pulse.html#pulse.unloading_utils.continuation_step">continuation_step() (in module pulse.unloading_utils)</a>
+
+      <ul>
+        <li><a href="pulse.html#pulse.iterate.Iterator.continuation_step">(pulse.iterate.Iterator method)</a>
 </li>
+      </ul></li>
       <li><a href="pulse.html#pulse.iterate.copy">copy() (in module pulse.iterate)</a>
 
       <ul>
@@ -318,9 +325,11 @@
 </li>
       <li><a href="pulse.html#pulse.mechanicsproblem.MechanicsProblem.default_bcs_parameters">default_bcs_parameters() (pulse.mechanicsproblem.MechanicsProblem static method)</a>
 </li>
-      <li><a href="pulse.material.html#pulse.material.guccione.Guccione.default_parameters">default_parameters() (pulse.material.guccione.Guccione static method)</a>
+      <li><a href="pulse.html#pulse.iterate.Iterator.default_parameters">default_parameters() (pulse.iterate.Iterator static method)</a>
 
       <ul>
+        <li><a href="pulse.material.html#pulse.material.guccione.Guccione.default_parameters">(pulse.material.guccione.Guccione static method)</a>
+</li>
         <li><a href="pulse.material.html#pulse.material.holzapfelogden.HolzapfelOgden.default_parameters">(pulse.material.holzapfelogden.HolzapfelOgden static method)</a>
 </li>
         <li><a href="pulse.material.html#pulse.material.linearelastic.LinearElastic.default_parameters">(pulse.material.linearelastic.LinearElastic static method)</a>
@@ -336,7 +345,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pulse.html#pulse.kinematics.DeformationGradient">DeformationGradient() (in module pulse.kinematics)</a>
 </li>
-      <li><a href="pulse.html#pulse.geometry.Geometry.dim">dim() (pulse.geometry.Geometry method)</a>
+      <li><a href="pulse.html#pulse.iterate.delist">delist() (in module pulse.iterate)</a>
 </li>
       <li><a href="pulse.html#pulse.geometry.Marker.dimension">dimension (pulse.geometry.Marker attribute)</a>
 </li>
@@ -366,8 +375,12 @@
       </ul></li>
       <li><a href="pulse.html#pulse.kinematics.EngineeringStrain">EngineeringStrain() (in module pulse.kinematics)</a>
 </li>
+      <li><a href="pulse.html#pulse.iterate.enlist">enlist() (in module pulse.iterate)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pulse.html#pulse.iterate.Enlisted">Enlisted (class in pulse.iterate)</a>
+</li>
       <li><a href="pulse.material.html#pulse.material.active_model.ActiveModel.eta">eta (pulse.material.active_model.ActiveModel attribute)</a>
 
       <ul>
@@ -444,6 +457,8 @@
 </li>
       <li><a href="pulse.html#pulse.geometry_utils.generate_local_basis_functions">generate_local_basis_functions() (in module pulse.geometry_utils)</a>
 </li>
+      <li><a href="pulse.html#pulse.geometry.Geometry.geo_dim">geo_dim (pulse.geometry.Geometry attribute)</a>
+</li>
       <li><a href="pulse.html#pulse.geometry.Geometry">Geometry (class in pulse.geometry)</a>
 </li>
       <li><a href="pulse.html#pulse.Patient.geometry">geometry (pulse.Patient attribute)</a>
@@ -455,8 +470,6 @@
       <li><a href="pulse.html#pulse.geometry_utils.get_circ_field">get_circ_field() (in module pulse.geometry_utils)</a>
 </li>
       <li><a href="pulse.html#pulse.dolfin_utils.get_constant">get_constant() (in module pulse.dolfin_utils)</a>
-</li>
-      <li><a href="pulse.html#pulse.iterate.get_current_control_value">get_current_control_value() (in module pulse.iterate)</a>
 </li>
       <li><a href="pulse.html#pulse.iterate.get_delta">get_delta() (in module pulse.iterate)</a>
 </li>
@@ -472,6 +485,8 @@
 </li>
       <li><a href="pulse.html#pulse.iterate.get_initial_step">get_initial_step() (in module pulse.iterate)</a>
 </li>
+      <li><a href="pulse.html#pulse.geometry_utils.get_level">get_level() (in module pulse.geometry_utils)</a>
+</li>
       <li><a href="pulse.html#pulse.geometry_utils.get_long_field">get_long_field() (in module pulse.geometry_utils)</a>
 </li>
       <li><a href="pulse.html#pulse.utils.get_lv_marker">get_lv_marker() (in module pulse.utils)</a>
@@ -480,11 +495,9 @@
 </li>
       <li><a href="pulse.material.html#pulse.material.get_material_model">get_material_model() (in module pulse.material)</a>
 </li>
-      <li><a href="pulse.html#pulse.iterate.get_max">get_max() (in module pulse.iterate)</a>
-</li>
-      <li><a href="pulse.html#pulse.iterate.get_mean">get_mean() (in module pulse.iterate)</a>
-</li>
       <li><a href="pulse.html#pulse.dolfin_utils.get_pressure">get_pressure() (in module pulse.dolfin_utils)</a>
+</li>
+      <li><a href="pulse.html#pulse.geometry_utils.get_sector">get_sector() (in module pulse.geometry_utils)</a>
 </li>
       <li><a href="pulse.html#pulse.dolfin_utils.get_spaces">get_spaces() (in module pulse.dolfin_utils)</a>
 </li>
@@ -542,9 +555,11 @@
 </li>
       <li><a href="pulse.material.html#pulse.material.active_model.ActiveModel.I8">I8() (pulse.material.active_model.ActiveModel method)</a>
 </li>
+      <li><a href="pulse.material.html#pulse.material.material_model.incompressible">incompressible() (in module pulse.material.material_model)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pulse.material.html#pulse.material.material_model.incompressible">incompressible() (in module pulse.material.material_model)</a>
+      <li><a href="pulse.html#pulse.iterate.Iterator.increment_control">increment_control() (pulse.iterate.Iterator method)</a>
 </li>
       <li><a href="pulse.html#pulse.unloading_utils.inflate_to_pressure">inflate_to_pressure() (in module pulse.unloading_utils)</a>
 </li>
@@ -569,6 +584,8 @@
       <li><a href="pulse.html#pulse.kinematics.IsochoricDeformationGradient">IsochoricDeformationGradient() (in module pulse.kinematics)</a>
 </li>
       <li><a href="pulse.html#pulse.iterate.iterate">iterate() (in module pulse.iterate)</a>
+</li>
+      <li><a href="pulse.html#pulse.iterate.Iterator">Iterator (class in pulse.iterate)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -620,15 +637,19 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pulse.html#pulse.geometry_utils.make_BiV_crl_basis">make_BiV_crl_basis() (in module pulse.geometry_utils)</a>
 </li>
-      <li><a href="pulse.html#pulse.utils.make_logger">make_logger() (in module pulse.utils)</a>
+      <li><a href="pulse.html#pulse.geometry_utils.make_crl_basis">make_crl_basis() (in module pulse.geometry_utils)</a>
 </li>
-      <li><a href="pulse.html#pulse.geometry_utils.make_LV_crl_basis">make_LV_crl_basis() (in module pulse.geometry_utils)</a>
+      <li><a href="pulse.html#pulse.utils.make_logger">make_logger() (in module pulse.utils)</a>
 </li>
       <li><a href="pulse.html#pulse.geometry_utils.make_unit_vector">make_unit_vector() (in module pulse.geometry_utils)</a>
 </li>
       <li><a href="pulse.html#pulse.dolfin_utils.map_displacement">map_displacement() (in module pulse.dolfin_utils)</a>
 </li>
       <li><a href="pulse.html#pulse.dolfin_utils.map_vector_field">map_vector_field() (in module pulse.dolfin_utils)</a>
+</li>
+      <li><a href="pulse.html#pulse.geometry_utils.mark_cell_function">mark_cell_function() (in module pulse.geometry_utils)</a>
+</li>
+      <li><a href="pulse.html#pulse.geometry_utils.mark_strain_regions">mark_strain_regions() (in module pulse.geometry_utils)</a>
 </li>
       <li><a href="pulse.html#pulse.geometry.Marker">Marker (class in pulse.geometry)</a>
 </li>
@@ -640,10 +661,10 @@
       </ul></li>
       <li><a href="pulse.html#pulse.geometry.MarkerFunctions">MarkerFunctions (class in pulse.geometry)</a>
 </li>
-      <li><a href="pulse.material.html#pulse.material.material_model.Material">Material (class in pulse.material.material_model)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pulse.material.html#pulse.material.material_model.Material">Material (class in pulse.material.material_model)</a>
+</li>
       <li><a href="pulse.material.html#pulse.material.material_model.Material.material_model">material_model (pulse.material.material_model.Material attribute)</a>
 </li>
       <li><a href="pulse.html#pulse.mechanicsproblem.MechanicsProblem">MechanicsProblem (class in pulse.mechanicsproblem)</a>
@@ -702,6 +723,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pulse.html#pulse.geometry.Geometry.nbasis">nbasis (pulse.geometry.Geometry attribute)</a>
 </li>
+      <li><a href="pulse.html#pulse.iterate.Iterator.ncontrols">ncontrols (pulse.iterate.Iterator attribute)</a>
+</li>
       <li><a href="pulse.material.html#pulse.material.neohookean.NeoHookean">NeoHookean (class in pulse.material.neohookean)</a>
 </li>
       <li><a href="pulse.html#pulse.mechanicsproblem.BoundaryConditions.neumann">neumann (pulse.mechanicsproblem.BoundaryConditions attribute)</a>
@@ -738,7 +761,7 @@
 </li>
       <li><a href="pulse.html#pulse.kinematics.PiolaTransform">PiolaTransform() (in module pulse.kinematics)</a>
 </li>
-      <li><a href="pulse.html#pulse.iterate.print_control">print_control() (in module pulse.iterate)</a>
+      <li><a href="pulse.html#pulse.iterate.Iterator.print_control">print_control() (pulse.iterate.Iterator method)</a>
 </li>
       <li><a href="pulse.html#pulse.utils.print_head">print_head() (in module pulse.utils)</a>
 
@@ -898,19 +921,27 @@
       </ul></li>
       <li><a href="pulse.html#pulse.utils.set_default_none">set_default_none() (in module pulse.utils)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pulse.html#pulse.geometry_utils.setup_fiber_parameters">setup_fiber_parameters() (in module pulse.geometry_utils)</a>
+</li>
       <li><a href="pulse.html#pulse.setup_parameters.setup_general_parameters">setup_general_parameters() (in module pulse.setup_parameters)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pulse.html#pulse.setup_parameters.setup_unloading_parameters">setup_unloading_parameters() (in module pulse.setup_parameters)</a>
 </li>
       <li><a href="pulse.html#pulse.unloading_utils.solve">solve() (in module pulse.unloading_utils)</a>
 
       <ul>
+        <li><a href="pulse.html#pulse.iterate.Iterator.solve">(pulse.iterate.Iterator method)</a>
+</li>
         <li><a href="pulse.html#pulse.mechanicsproblem.MechanicsProblem.solve">(pulse.mechanicsproblem.MechanicsProblem method)</a>
 </li>
       </ul></li>
       <li><a href="pulse.html#pulse.mechanicsproblem.SolverDidNotConverge">SolverDidNotConverge</a>
+</li>
+      <li><a href="pulse.html#pulse.iterate.squeeze">squeeze() (in module pulse.iterate)</a>
+</li>
+      <li><a href="pulse.html#pulse.iterate.Iterator.step">step (pulse.iterate.Iterator attribute)</a>
 </li>
       <li><a href="pulse.html#pulse.unloader.step">step() (in module pulse.unloader)</a>
 </li>
@@ -926,6 +957,8 @@
         <li><a href="pulse.material.html#pulse.material.stvenantkirchhoff.StVenantKirchhoff.strain_energy">(pulse.material.stvenantkirchhoff.StVenantKirchhoff method)</a>
 </li>
       </ul></li>
+      <li><a href="pulse.html#pulse.geometry_utils.strain_region_number">strain_region_number() (in module pulse.geometry_utils)</a>
+</li>
       <li><a href="pulse.material.html#pulse.material.stvenantkirchhoff.StVenantKirchhoff">StVenantKirchhoff (class in pulse.material.stvenantkirchhoff)</a>
 </li>
       <li><a href="pulse.html#pulse.dolfin_utils.subplus">subplus() (in module pulse.dolfin_utils)</a>
@@ -938,10 +971,14 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pulse.html#pulse.utils.TablePrint">TablePrint (class in pulse.utils)</a>
 </li>
+      <li><a href="pulse.html#pulse.iterate.Iterator.target_reached">target_reached() (pulse.iterate.Iterator method)</a>
+</li>
       <li><a href="pulse.html#pulse.utils.Text">Text (class in pulse.utils)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pulse.html#pulse.geometry.Geometry.top_dim">top_dim (pulse.geometry.Geometry attribute)</a>
+</li>
       <li><a href="pulse.html#pulse.mechanicsproblem.NeumannBC.traction">traction (pulse.mechanicsproblem.NeumannBC attribute)</a>
 </li>
       <li><a href="pulse.material.html#pulse.material.active_stress.ActiveStress.type">type (pulse.material.active_stress.ActiveStress attribute)</a>
@@ -1074,26 +1111,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

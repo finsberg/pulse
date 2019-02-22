@@ -17,34 +17,37 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="pulse.material package" href="pulse.material.html" />
     <link rel="prev" title="pulse" href="modules.html" /> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -360,7 +363,7 @@ the domain.</p>
 
 <dl class="function">
 <dt id="pulse.dolfin_utils.get_constant">
-<code class="descclassname">pulse.dolfin_utils.</code><code class="descname">get_constant</code><span class="sig-paren">(</span><em>val</em>, <em>value_size=None</em>, <em>value_rank=0</em>, <em>constant=&lt;class 'dolfin.functions.constant.Constant'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/dolfin_utils.html#get_constant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.dolfin_utils.get_constant" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pulse.dolfin_utils.</code><code class="descname">get_constant</code><span class="sig-paren">(</span><em>val</em>, <em>value_size=None</em>, <em>value_rank=0</em>, <em>constant=&lt;class 'dolfin_adjoint.constant.Constant'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/dolfin_utils.html#get_constant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.dolfin_utils.get_constant" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -557,11 +560,6 @@ c0, r0, l0. Basis elements that are none will not
 be included</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="pulse.geometry.Geometry.dim">
-<code class="descname">dim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry.html#Geometry.dim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry.Geometry.dim" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="attribute">
 <dt id="pulse.geometry.Geometry.ds">
 <code class="descname">ds</code><a class="headerlink" href="#pulse.geometry.Geometry.ds" title="Permalink to this definition">¶</a></dt>
@@ -603,6 +601,12 @@ self.cfun as subdomain_data</p>
 <dt id="pulse.geometry.Geometry.from_file">
 <em class="property">classmethod </em><code class="descname">from_file</code><span class="sig-paren">(</span><em>h5name</em>, <em>h5group=''</em>, <em>comm=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry.html#Geometry.from_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry.Geometry.from_file" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pulse.geometry.Geometry.geo_dim">
+<code class="descname">geo_dim</code><a class="headerlink" href="#pulse.geometry.Geometry.geo_dim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Geometric Dimension</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="pulse.geometry.Geometry.l0">
@@ -672,6 +676,12 @@ by the cell function (cfun)</p>
 <dt id="pulse.geometry.Geometry.save">
 <code class="descname">save</code><span class="sig-paren">(</span><em>h5name</em>, <em>h5group=''</em>, <em>overwrite_file=False</em>, <em>overwrite_group=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry.html#Geometry.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry.Geometry.save" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pulse.geometry.Geometry.top_dim">
+<code class="descname">top_dim</code><a class="headerlink" href="#pulse.geometry.Geometry.top_dim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Topological Dimension</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="pulse.geometry.Geometry.vfun">
@@ -855,6 +865,11 @@ This is the default markers for fiberrules.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="pulse.geometry_utils.get_level">
+<code class="descclassname">pulse.geometry_utils.</code><code class="descname">get_level</code><span class="sig-paren">(</span><em>regions</em>, <em>mu</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry_utils.html#get_level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry_utils.get_level" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="pulse.geometry_utils.get_long_field">
 <code class="descclassname">pulse.geometry_utils.</code><code class="descname">get_long_field</code><span class="sig-paren">(</span><em>mesh</em>, <em>mesh_type='biv'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry_utils.html#get_long_field"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry_utils.get_long_field" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -862,6 +877,11 @@ This is the default markers for fiberrules.</p>
 <dl class="function">
 <dt id="pulse.geometry_utils.get_markers">
 <code class="descclassname">pulse.geometry_utils.</code><code class="descname">get_markers</code><span class="sig-paren">(</span><em>mesh_type='lv'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry_utils.html#get_markers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry_utils.get_markers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pulse.geometry_utils.get_sector">
+<code class="descclassname">pulse.geometry_utils.</code><code class="descname">get_sector</code><span class="sig-paren">(</span><em>regions</em>, <em>theta</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry_utils.html#get_sector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry_utils.get_sector" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -917,8 +937,8 @@ be included</p>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="pulse.geometry_utils.make_LV_crl_basis">
-<code class="descclassname">pulse.geometry_utils.</code><code class="descname">make_LV_crl_basis</code><span class="sig-paren">(</span><em>mesh</em>, <em>foc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry_utils.html#make_LV_crl_basis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry_utils.make_LV_crl_basis" title="Permalink to this definition">¶</a></dt>
+<dt id="pulse.geometry_utils.make_crl_basis">
+<code class="descclassname">pulse.geometry_utils.</code><code class="descname">make_crl_basis</code><span class="sig-paren">(</span><em>mesh</em>, <em>foc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry_utils.html#make_crl_basis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry_utils.make_crl_basis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Makes the crl  basis for the LV mesh (prolate ellipsoidal)
 with prespecified focal length.</p>
 </dd></dl>
@@ -927,6 +947,22 @@ with prespecified focal length.</p>
 <dt id="pulse.geometry_utils.make_unit_vector">
 <code class="descclassname">pulse.geometry_utils.</code><code class="descname">make_unit_vector</code><span class="sig-paren">(</span><em>V</em>, <em>VV</em>, <em>dofs_x</em>, <em>fill_coordinates</em>, <em>foc=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry_utils.html#make_unit_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry_utils.make_unit_vector" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="function">
+<dt id="pulse.geometry_utils.mark_cell_function">
+<code class="descclassname">pulse.geometry_utils.</code><code class="descname">mark_cell_function</code><span class="sig-paren">(</span><em>fun</em>, <em>mesh</em>, <em>foc</em>, <em>regions</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry_utils.html#mark_cell_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry_utils.mark_cell_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterates over the mesh and stores the
+region number in a meshfunction</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pulse.geometry_utils.mark_strain_regions">
+<code class="descclassname">pulse.geometry_utils.</code><code class="descname">mark_strain_regions</code><span class="sig-paren">(</span><em>mesh</em>, <em>foc</em>, <em>nsectors=(6</em>, <em>6</em>, <em>4</em>, <em>1)</em>, <em>mark_mesh=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry_utils.html#mark_strain_regions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry_utils.mark_strain_regions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mark the cells in the mesh.</p>
+<p>For instance if you want to mark this mesh accoring to
+the  AHA 17-segment model, then nsector = [6,6,4,1],
+i.e 6 basal, 6 mid, 4 apical and one apex</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="pulse.geometry_utils.move">
@@ -967,6 +1003,33 @@ the top folder.</li>
 </table>
 </dd></dl>
 
+<dl class="function">
+<dt id="pulse.geometry_utils.setup_fiber_parameters">
+<code class="descclassname">pulse.geometry_utils.</code><code class="descname">setup_fiber_parameters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry_utils.html#setup_fiber_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry_utils.setup_fiber_parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pulse.geometry_utils.strain_region_number">
+<code class="descclassname">pulse.geometry_utils.</code><code class="descname">strain_region_number</code><span class="sig-paren">(</span><em>T</em>, <em>regions</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry_utils.html#strain_region_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry_utils.strain_region_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>For a given point in prolate coordinates,
+return the region it belongs to.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>regions</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.array</span></code>) – Array of all coordinates for the strain
+regions taken from the strain mesh.</li>
+<li><strong>T</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.array</span></code>) – Some value i prolate coordinates</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Resturn the region number that
+T belongs to</p>
+</dd></dl>
+
 </div>
 <div class="section" id="module-pulse.io_utils">
 <span id="pulse-io-utils-module"></span><h2>pulse.io_utils module<a class="headerlink" href="#module-pulse.io_utils" title="Permalink to this headline">¶</a></h2>
@@ -1003,100 +1066,161 @@ the top folder.</li>
 </div>
 <div class="section" id="module-pulse.iterate">
 <span id="pulse-iterate-module"></span><h2>pulse.iterate module<a class="headerlink" href="#module-pulse.iterate" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="pulse.iterate.add_step">
-<code class="descclassname">pulse.iterate.</code><code class="descname">add_step</code><span class="sig-paren">(</span><em>current_control</em>, <em>step</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#add_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.add_step" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="pulse.iterate.Enlisted">
+<em class="property">class </em><code class="descclassname">pulse.iterate.</code><code class="descname">Enlisted</code><a class="reference internal" href="_modules/pulse/iterate.html#Enlisted"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.Enlisted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pulse.iterate.Iterator">
+<em class="property">class </em><code class="descclassname">pulse.iterate.</code><code class="descname">Iterator</code><span class="sig-paren">(</span><em>problem</em>, <em>control</em>, <em>target</em>, <em>old_states=None</em>, <em>old_controls=None</em>, <em>**params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#Iterator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.Iterator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="pulse.iterate.Iterator.assign_control">
+<code class="descname">assign_control</code><span class="sig-paren">(</span><em>new_control</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#Iterator.assign_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.Iterator.assign_control" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
-<dt id="pulse.iterate.assign_new_control">
-<code class="descclassname">pulse.iterate.</code><code class="descname">assign_new_control</code><span class="sig-paren">(</span><em>control</em>, <em>new_control</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#assign_new_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.assign_new_control" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="pulse.iterate.Iterator.assign_new_control">
+<code class="descname">assign_new_control</code><span class="sig-paren">(</span><em>new_control</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#Iterator.assign_new_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.Iterator.assign_new_control" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
-<dt id="pulse.iterate.change_step_size">
-<code class="descclassname">pulse.iterate.</code><code class="descname">change_step_size</code><span class="sig-paren">(</span><em>step</em>, <em>factor</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#change_step_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.change_step_size" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="pulse.iterate.Iterator.change_step_for_final_iteration">
+<code class="descname">change_step_for_final_iteration</code><span class="sig-paren">(</span><em>prev_control</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#Iterator.change_step_for_final_iteration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.Iterator.change_step_for_final_iteration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change step size so that target is
+reached in the next iteration</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pulse.iterate.Iterator.change_step_size">
+<code class="descname">change_step_size</code><span class="sig-paren">(</span><em>factor</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#Iterator.change_step_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.Iterator.change_step_size" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
-<dt id="pulse.iterate.check_target_reached">
-<code class="descclassname">pulse.iterate.</code><code class="descname">check_target_reached</code><span class="sig-paren">(</span><em>problem</em>, <em>current</em>, <em>target</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#check_target_reached"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.check_target_reached" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="pulse.iterate.Iterator.continuation_step">
+<code class="descname">continuation_step</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#Iterator.continuation_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.Iterator.continuation_step" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="pulse.iterate.Iterator.default_parameters">
+<em class="property">static </em><code class="descname">default_parameters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#Iterator.default_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.Iterator.default_parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pulse.iterate.Iterator.increment_control">
+<code class="descname">increment_control</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#Iterator.increment_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.Iterator.increment_control" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pulse.iterate.Iterator.ncontrols">
+<code class="descname">ncontrols</code><a class="headerlink" href="#pulse.iterate.Iterator.ncontrols" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of controls</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pulse.iterate.Iterator.print_control">
+<code class="descname">print_control</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#Iterator.print_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.Iterator.print_control" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pulse.iterate.Iterator.solve">
+<code class="descname">solve</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#Iterator.solve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.Iterator.solve" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pulse.iterate.Iterator.step">
+<code class="descname">step</code><a class="headerlink" href="#pulse.iterate.Iterator.step" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pulse.iterate.Iterator.target_reached">
+<code class="descname">target_reached</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#Iterator.target_reached"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.Iterator.target_reached" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if control and target are the same</p>
+</dd></dl>
+
+</dd></dl>
 
 <dl class="function">
 <dt id="pulse.iterate.constant2float">
 <code class="descclassname">pulse.iterate.</code><code class="descname">constant2float</code><span class="sig-paren">(</span><em>const</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#constant2float"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.constant2float" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Convert a <code class="xref py py-class docutils literal notranslate"><span class="pre">dolfin.Constant</span></code> to float</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="pulse.iterate.copy">
 <code class="descclassname">pulse.iterate.</code><code class="descname">copy</code><span class="sig-paren">(</span><em>f</em>, <em>deepcopy=True</em>, <em>name='copied_function'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy a function. This is to ease the integration
+with dolfin adjoint where copied fuctions are annotated.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pulse.iterate.delist">
+<code class="descclassname">pulse.iterate.</code><code class="descname">delist</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#delist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.delist" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="pulse.iterate.get_current_control_value">
-<code class="descclassname">pulse.iterate.</code><code class="descname">get_current_control_value</code><span class="sig-paren">(</span><em>control</em>, <em>value=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#get_current_control_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.get_current_control_value" title="Permalink to this definition">¶</a></dt>
+<dt id="pulse.iterate.enlist">
+<code class="descclassname">pulse.iterate.</code><code class="descname">enlist</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#enlist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.enlist" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="pulse.iterate.get_delta">
 <code class="descclassname">pulse.iterate.</code><code class="descname">get_delta</code><span class="sig-paren">(</span><em>new_control</em>, <em>c0</em>, <em>c1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#get_delta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.get_delta" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get extrapolation parameter used in the continuation step.</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="pulse.iterate.get_diff">
 <code class="descclassname">pulse.iterate.</code><code class="descname">get_diff</code><span class="sig-paren">(</span><em>current</em>, <em>target</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#get_diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.get_diff" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="pulse.iterate.get_initial_step">
-<code class="descclassname">pulse.iterate.</code><code class="descname">get_initial_step</code><span class="sig-paren">(</span><em>problem</em>, <em>current</em>, <em>target</em>, <em>nsteps=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#get_initial_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.get_initial_step" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="pulse.iterate.get_max">
-<code class="descclassname">pulse.iterate.</code><code class="descname">get_max</code><span class="sig-paren">(</span><em>f</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#get_max"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.get_max" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="pulse.iterate.get_mean">
-<code class="descclassname">pulse.iterate.</code><code class="descname">get_mean</code><span class="sig-paren">(</span><em>f</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#get_mean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.get_mean" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="pulse.iterate.iterate">
-<code class="descclassname">pulse.iterate.</code><code class="descname">iterate</code><span class="sig-paren">(</span><em>problem</em>, <em>control</em>, <em>target</em>, <em>continuation=True</em>, <em>max_adapt_iter=8</em>, <em>adapt_step=True</em>, <em>old_states=None</em>, <em>old_controls=None</em>, <em>max_nr_crash=20</em>, <em>max_iters=40</em>, <em>initial_number_of_steps=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#iterate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.iterate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Using the given problem, iterate control to given target.</p>
-<p><em>Parameters</em></p>
-<dl class="docutils">
-<dt>problem (LVProblem)</dt>
-<dd>The problem</dd>
-<dt>control (dolfin.Function or dolfin.Constant)</dt>
-<dd>The control</dd>
-<dt>target (dolfin.Function, dolfin.Constant, tuple or float)</dt>
-<dd>The target value. Typically a float if target is LVP, a tuple
-if target is (LVP, RVP) and a function if target is gamma.</dd>
-<dt>continuation (bool)</dt>
-<dd>Apply continuation for better guess for newton problem
-Note: Replay test seems to fail when continuation is True,
-but taylor test passes</dd>
-<dt>max_adapt_iter (int)</dt>
-<dd>If number of iterations is less than this number and adapt_step=True,
-then adapt control step</dd>
-<dt>adapt_step (bool)</dt>
-<dd>Adapt / increase step size when sucessful iterations are achevied.</dd>
-</dl>
+<dd><p>Get difference between current and target value</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="pulse.iterate.print_control">
-<code class="descclassname">pulse.iterate.</code><code class="descname">print_control</code><span class="sig-paren">(</span><em>control</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#print_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.print_control" title="Permalink to this definition">¶</a></dt>
+<dt id="pulse.iterate.get_initial_step">
+<code class="descclassname">pulse.iterate.</code><code class="descname">get_initial_step</code><span class="sig-paren">(</span><em>current</em>, <em>target</em>, <em>nsteps=5</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#get_initial_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.get_initial_step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimate the step size needed to step from current to target
+in <cite>nsteps</cite>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pulse.iterate.iterate">
+<code class="descclassname">pulse.iterate.</code><code class="descname">iterate</code><span class="sig-paren">(</span><em>problem</em>, <em>control</em>, <em>target</em>, <em>continuation=True</em>, <em>max_adapt_iter=8</em>, <em>adapt_step=True</em>, <em>old_states=None</em>, <em>old_controls=None</em>, <em>max_nr_crash=20</em>, <em>max_iters=40</em>, <em>initial_number_of_steps=5</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#iterate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.iterate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Using the given problem, iterate control to given target.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>problem</strong> (<em>pulse.MechanicsProblem</em>) – The problem</li>
+<li><strong>control</strong> (<em>dolfin.Function</em><em> or </em><em>dolfin.Constant</em>) – The control</li>
+<li><strong>target</strong> (<em>dolfin.Function</em><em>, </em><em>dolfin.Constant</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – The target value. Typically a float if target is LVP, a tuple
+if target is (LVP, RVP) and a function if target is gamma.</li>
+<li><strong>continuation</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Apply continuation for better guess for newton problem
+Note: Replay test seems to fail when continuation is True,
+but taylor test passes</li>
+<li><strong>max_adapt_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – If number of iterations is less than this number and adapt_step=True,
+then adapt control step. Default: 8</li>
+<li><strong>adapt_step</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Adapt / increase step size when sucessful iterations are achevied.</li>
+<li><strong>old_states</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List of old controls to help speed in the continuation</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pulse.iterate.squeeze">
+<code class="descclassname">pulse.iterate.</code><code class="descname">squeeze</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#squeeze"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.squeeze" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="pulse.iterate.step_too_large">
 <code class="descclassname">pulse.iterate.</code><code class="descname">step_too_large</code><span class="sig-paren">(</span><em>current</em>, <em>target</em>, <em>step</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#step_too_large"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.step_too_large" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Check if <cite>current + step</cite> exceeds <cite>target</cite></p>
+</dd></dl>
 
 </div>
 <div class="section" id="module-pulse.kinematics">
@@ -1781,7 +1905,7 @@ withing the HDF file. Default: ‘’</li>
         <a href="pulse.material.html" class="btn btn-neutral float-right" title="pulse.material package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="modules.html" class="btn btn-neutral" title="pulse" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="modules.html" class="btn btn-neutral float-left" title="pulse" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -1807,26 +1931,16 @@ withing the HDF file. Default: ‘’</li>
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>
