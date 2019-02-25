@@ -56,6 +56,12 @@ def copy(f, deepcopy=True, name='copied_function'):
         return Constant(f, name=name)
     elif isinstance(f, (float, int)):
         return f
+    elif isinstance(f, Enlisted):
+        l = []
+        for fi in f:
+            l.append(copy(fi))
+        return enlist(l)
+        
     elif isinstance(f, (list, tuple)):
         l = []
         for fi in f:
@@ -69,7 +75,7 @@ def constant2float(const):
     """
     Convert a :class:`dolfin.Constant` to float
     """
-
+    const = get_constant(const)
     try:
         c = float(const)
     except TypeError:
@@ -187,44 +193,43 @@ def step_too_large(current, target, step):
     """
 
     if isinstance(target, (dolfin.Function, Function)):
-        diff_before = current.vector()[:] - target.vector()[:]
-        diff_before_arr = numpy_mpi.gather_broadcast(diff_before.get_local())
+        target = numpy_mpi.gather_broadcast(target.vector().get_local())
+    elif isinstance(target, (Constant, dolfin.Constant)):
+        target = constant2float(target)
 
-        diff_after = current.vector()[:] + \
-            step.vector()[:] - target.vector()[:]
-        diff_after_arr = numpy_mpi.gather_broadcast(diff_after.get_local())
+    if isinstance(current, (dolfin.Function, Function)):
+        current = numpy_mpi.gather_broadcast(current.vector().get_local())
+    elif isinstance(current, (Constant, dolfin.Constant)):
+        current = constant2float(current)
 
-        if dolfin.norm(diff_after, 'linf') < dolfin.DOLFIN_EPS:
-            # We will reach the target in next iteration
-            return False
+    if isinstance(step, (dolfin.Function, Function)):
+        step = numpy_mpi.gather_broadcast(step.vector().get_local())
+    elif isinstance(step, (Constant, dolfin.Constant)):
+        step = constant2float(step)
+        
 
-        return not all(np.sign(diff_before_arr) ==
-                       np.sign(diff_after_arr))
-
+    if isinstance(target, (float, int)):
+        comp = op.gt if current < target else op.lt
+        return comp(current + step, target)
     else:
+        assert hasattr(target, "__len__")
 
-        if isinstance(target, (Constant, dolfin.Constant)):
-            target = constant2float(target)
-            step = constant2float(step)
-            current = constant2float(current)
+        too_large = []
+        for (c, t, s) in zip(current, target, step):
 
-        if isinstance(target, (float, int)):
-            comp = op.gt if current < target else op.lt
-            return comp(current + step, target)
-        else:
-            assert hasattr(target, "__len__")
+            try:
+                too_large.append(step_too_large(c, t, s))
+            except:
+                from IPython import embed; embed()
+                exit()
+            # t = constant2float(t)
+            # c = constant2float(c)
+            # s = constant2float(s)
 
-            too_large = []
-            for (c, t, s) in zip(current, target, step):
+            # comp = op.gt if c < t else op.lt
+            # too_large.append(comp(c+s, t))
 
-                t = constant2float(t)
-                c = constant2float(c)
-                s = constant2float(s)
-
-                comp = op.gt if c < t else op.lt
-                too_large.append(comp(c+s, t))
-
-        return any(too_large)
+    return any(too_large)
 
 
 def iterate(problem, control, target,
@@ -300,7 +305,7 @@ class Iterator(object):
         self._check_control(control)
         self._check_target(target)
 
-        self.control_values = [copy(self.control, deepcopy=True,
+        self.control_values = [copy(delist(self.control), deepcopy=True,
                                     name='previous control')]
         self.prev_states = [copy(self.problem.state, deepcopy=True,
                                  name='previous state')]
@@ -343,7 +348,7 @@ class Iterator(object):
                 raise SolverDidNotConverge
 
             prev_state = self.prev_states[-1]
-            prev_control = self.control_values[-1]
+            prev_control = enlist(self.control_values[-1])
 
             # Check if we are close
             if step_too_large(prev_control, self.target, self.step):
@@ -386,7 +391,7 @@ class Iterator(object):
                     msg = "Adapt step size. New step size: {:.2f}".format(self.step[0])
                     logger.info(msg)
 
-                self.control_values.append(copy(self.control, deepcopy=True,
+                self.control_values.append(copy(delist(self.control), deepcopy=True,
                                            name='Previous control'))
 
                 self.prev_states.append(copy(self.problem.state, deepcopy=True,
@@ -394,19 +399,32 @@ class Iterator(object):
         return self.prev_states, self.control_values
 
     def change_step_size(self, factor):
-        self.step = np.multiply(self.step, factor)
+        self.step = factor * delist(self.step)
 
     def print_control(self):
         msg = 'Current control: '
-        controls = [constant2float(c) for c in self.control]
-        if len(controls) > 3:
-            msg += ('\n\tMin:{:.2f}\tMean:{:.2f}\tMax:{:.2f}'
-                    '').format(np.min(controls),
-                               np.mean(controls),
-                               np.max(controls))
-        else:
-            msg += ','.join(['{:.2f}'.format(c) for c in controls])
+        
 
+        def print_control(cs, msg):
+            controls = [constant2float(c) for c in cs]
+            
+            if len(controls) > 3:
+                msg += ('\n\tMin:{:.2f}\tMean:{:.2f}\tMax:{:.2f}'
+                        '').format(np.min(controls),
+                                   np.mean(controls),
+                                   np.max(controls))
+            else:
+                cs = []
+                for c in controls:
+                    if hasattr(c, '__len__'):
+                        print_control(c, msg)
+                    else:
+                        cs.append(c)
+                if cs:
+                    msg += ','.join(['{:.2f}'.format(c) for c in cs])
+            return msg
+
+        msg = print_control(self.control, msg)
         logger.info(msg)
 
 
@@ -435,10 +453,17 @@ class Iterator(object):
 
     def increment_control(self):
         for c, s in zip(self.control, self.step):
-            c.assign(Constant(constant2float(c) + s))
+            if isinstance(c, (dolfin.Function, Function)):
+                c_arr = numpy_mpi.gather_broadcast(c.vector().get_local())
+                c_tmp = Function(c.function_space())
+                c_tmp.vector()[:] = c_arr + s
+                c.assign(c_tmp)
+            else:
+                c_arr = c
+                c.assign(Constant(constant2float(c) + s))
 
     def assign_control(self, new_control):
-        for c, n in zip(self.control, new_control):
+        for c, n in zip(self.control, enlist(new_control)):
             c.assign(constant2float(n))
         
 
@@ -456,7 +481,7 @@ class Iterator(object):
             step.vector().axpy(-1.0, prev_control.vector())
         elif isinstance(step, (list, np.ndarray, tuple)):
             step = np.array([constant2float(t) - constant2float(c)
-                             for (t, c) in zip(self.target, prev_control)])
+                             for (t, c) in zip(self.target, enlist(prev_control))])
         else:
             step = self.target - prev_control
                     
@@ -468,9 +493,9 @@ class Iterator(object):
 
         targets = []
         for tar in target:
-            
+
             try:
-                t = get_constant(target)
+                t = get_constant(tar)
             except TypeError:
                 msg = ('Unable to convert target for type {} '
                        'to a constant').format(type(target))

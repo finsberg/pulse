@@ -246,7 +246,6 @@ def get_constant(val, value_size=None, value_rank=0, constant=Constant):
                 logger.debug(ex)
                 # Hope for the best
                 value_size = 1
-
     if value_size == 1:
         if value_rank == 0:
             c = constant(val)
@@ -254,6 +253,7 @@ def get_constant(val, value_size=None, value_rank=0, constant=Constant):
             c = constant([val])
     else:
         c = constant([val]*value_size)
+
     return c
 
 
