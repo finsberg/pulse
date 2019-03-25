@@ -141,7 +141,13 @@ def solve(target_pressure, problem, pressure, ntries=5, n=2, annotate=False):
     level = logger_it.level
     logger_it.setLevel(dolfin.WARNING)
 
-    iterate(problem, pressure, target_pressure)
+    try:
+        iterate(problem, pressure, target_pressure)
+
+    except:
+        from IPython import embed; embed()
+        exit()
+
 
     if annotate and 'adjoint' in dolfin.parameters:
         # Only record the last solve, otherwise it becomes too

@@ -51,7 +51,7 @@ def dirichlet_fix_base_directional(W, ffun, marker, direction=0):
 
 
 def cardiac_boundary_conditions(geometry, pericardium_spring=0.0,
-                                base_spring=0.0, base_bc='fix_x'):
+                                base_spring=0.0, base_bc='fix_x', **kwargs):
 
     msg = ('Cardiac boundary conditions can only be applied to a '
            'HeartGeometry got {}'.format(type(geometry)))
@@ -63,7 +63,7 @@ def cardiac_boundary_conditions(geometry, pericardium_spring=0.0,
                             marker=lv_marker, name='lv')
     neumann_bc = [lv_pressure]
 
-    if 'ENDO_RV' in geometry.markers:
+    if geometry.is_biv:
 
         rv_pressure = NeumannBC(traction=Constant(0.0, name='lv_pressure'),
                                 marker=geometry.markers['ENDO_RV'][0],
@@ -136,9 +136,10 @@ class MechanicsProblem(object):
         else:
             self.bcs = bcs
 
+            # TODO: FIX THIS or require this
             # Just store this as well in case both is provided
+            self.bcs_parameters = MechanicsProblem.default_bcs_parameters()
             if bcs_parameters is not None:
-                self.bcs_parameters = MechanicsProblem.default_bcs_parameters()
                 self.bcs_parameters.update(**bcs_parameters)
 
         # Make sure that the material has microstructure information

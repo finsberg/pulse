@@ -39,6 +39,13 @@ MarkerFunctions = namedtuple('MarkerFunctions', ['vfun', 'efun',
 set_default_none(MarkerFunctions)
 
 
+def get_attribute(obj, key1, key2, default=None):
+    f = getattr(obj, key1, None)
+    if f is None:
+        f = getattr(obj,key2, default)
+    return f
+
+
 class Geometry(object):
     """
     Base class for geometry
@@ -185,23 +192,33 @@ class Geometry(object):
         geo = load_geometry_from_h5(h5name, h5group,
                                     include_sheets=True, comm=comm)
 
+        f0 = get_attribute(geo, 'f0', 'fiber', None)
+        s0 = get_attribute(geo, 's0', 'sheet', None)
+        n0 = get_attribute(geo, 'n0', 'sheet_normal', None)
+
+        c0 = get_attribute(geo, 'c0', 'circumferential', None)
+        r0 = get_attribute(geo, 'r0', 'radial', None)
+        l0 = get_attribute(geo, 'l0', 'longitudinal', None)
+
+        vfun = getattr(geo, 'vfun', None)
+        ffun = getattr(geo, 'ffun', None)
+        cfun = get_attribute(geo, 'cfun', 'sfun', None)
+
         kwargs = {
             'mesh': geo.mesh,
             'markers': geo.markers,
-            'marker_functions': MarkerFunctions(vfun=geo.vfun,
-                                                ffun=geo.ffun,
-                                                cfun=geo.cfun),
-            'microstructure': Microstructure(f0=geo.f0,
-                                             s0=geo.s0,
-                                             n0=geo.n0),
-            'crl_basis': CRLBasis(c0=geo.circumferential,
-                                  r0=geo.radial,
-                                  l0=geo.longitudinal)
+            'marker_functions': MarkerFunctions(vfun=vfun,
+                                                ffun=ffun,
+                                                cfun=cfun),
+            'microstructure': Microstructure(f0=f0, s0=s0, n0=n0),
+            'crl_basis': CRLBasis(c0=c0, r0=r0, l0=l0)
         }
 
         return kwargs
 
-    def save(self, h5name, h5group="", overwrite_file=False, overwrite_group=True):
+    def save(self, h5name, h5group="",
+             other_functions=None, other_attributes=None,
+             overwrite_file=False, overwrite_group=True):
 
         h5name = os.path.splitext(h5name)[0] + '.h5'
         logger.debug('Save to {}...'.format(h5name))
@@ -211,6 +228,7 @@ class Geometry(object):
                             markers=self.markers or None,
                             fields=self.microstructure_list() or None,
                             local_basis=self.crl_basis_list() or None,
+                            meshfunctions=self.meshfunction_list(),
                             overwrite_file=overwrite_file,
                             overwrite_group=overwrite_group)
         logger.debug('Saved')
@@ -319,6 +337,16 @@ class Geometry(object):
                 fields.append(e)
         return fields
 
+    def meshfunction_list(self):
+        meshfunctions = {}
+        for dim, l in enumerate(['vfun', 'efun', 'ffun', 'cfun']):
+            mf = getattr(self.marker_functions, l)
+            if mf is None:
+                mf = dolfin.MeshFunction("size_t", self.mesh, dim,
+                                         self.mesh.domains())
+            meshfunctions[dim] = mf
+        return meshfunctions
+                
     @property
     def vfun(self):
         """Vertex Function
@@ -387,7 +415,11 @@ class HeartGeometry(Geometry):
 
     @property
     def is_biv(self):
-        return 'ENDO_RV' in self.markers
+        if 'ENDO_RV' in self.markers:
+            return self.markers['ENDO_RV'] in \
+                set(numpy_mpi.gather_broadcast(self.ffun.array()))
+            
+        return False
 
     def cavity_volume(self, chamber="lv", u=None):
 

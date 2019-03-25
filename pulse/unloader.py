@@ -18,7 +18,7 @@ import dolfin
 
 from . import unloading_utils as utils
 from . import numpy_mpi
-from .mechanicsproblem import MechanicsProblem
+from .mechanicsproblem import MechanicsProblem, cardiac_boundary_conditions
 
 from .utils import make_logger
 
@@ -347,16 +347,22 @@ class FixedPointUnloader(MeshUnloader):
             # Create new reference geomtry
             logger.debug("Create new reference geometry")
             new_geometry = self.problem.geometry.copy(u=self.U, factor=-1.0)
-
             utils.print_volumes(new_geometry, txt='original')
             if save:
                 self.save(new_geometry.mesh,
                           "reference_geometry/mesh", str(it))
 
             material = self.problem.material.copy(geometry=new_geometry)
+            # TDOO: Make a copy function for bcs as well
+            # use cardiac_boundary_conditions function for mechanicsproblem
+            # in make_solver_paramerters
+            bcs = cardiac_boundary_conditions(geometry=new_geometry,
+                                              **self.parameters)
             problem = MechanicsProblem(geometry=new_geometry,
                                        material=material,
-                                       bcs_parameters=self.problem.bcs_parameters)
+                                       bcs=bcs)
+                                       # bcs=self.problem.bcs)
+                                       # bcs_parameters=self.problem.bcs_parameters)
 
             # Solve
             u = utils.inflate_to_pressure(self.pressure, problem,

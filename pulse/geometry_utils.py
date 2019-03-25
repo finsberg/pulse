@@ -164,12 +164,9 @@ def load_geometry_from_h5(h5name, h5group="",
 
             if h5file.has_dataset(dgroup):
                 io_utils.read_h5file(h5file, mf, dgroup)
-
-
             setattr(geo, attr, mf)
 
         load_local_basis(h5file, lgroup, mesh, geo)
-
         load_microstructure(h5file, fgroup, mesh, geo, include_sheets)
 
         # Load the boundary markers
@@ -372,7 +369,7 @@ def generate_local_basis_functions(mesh, focal_point, mesh_type="lv"):
     return c0, r0, l0
 
 
-def fibers(mesh, fiber_endo = 60, fiber_epi=-60):
+def fibers(mesh, fiber_endo=60, fiber_epi=-60):
 
     fiber_params = setup_fiber_parameters()
     fiber_params["fiber_angle_endo"] = fiber_endo
@@ -432,7 +429,34 @@ def get_long_field(mesh, mesh_type="biv"):
     return f0
 
 
-def generate_fibers(mesh, fiber_params):
+def generate_fibers(mesh, fiber_params, ffun=None):
+    """
+    Generate fibers on mesh based on provided parameters.
+    It is not recomemmended to use this function.
+    Use the `ldrb` package directly instead. This function is
+    mainly used to ensure version compatability.
+    """
+
+    try:
+        from ldrb import dolfin_ldrb
+    except ImportError:
+        msg = ('"ldrb" package not found. Please go to '
+               'https://github.com/finsberg/ldrb to see how you can get it!')
+        print(msg)
+        raise ImportError(msg)
+
+    if isinstance(fiber_params, dolfin.Parameters):
+        p = fiber_params.to_dict()
+    else:
+        p = fiber_params
+        
+    angles = dict(alpha_endo_lv=p.get('fiber_angle_endo', None),
+                  alpha_epi_lv=p.get('fiber_angle_epi', None))
+
+    return dolfin_ldrb(mesh, ffun=ffun, **angles)
+
+
+def generate_fibers_old(mesh, fiber_params):
 
     try:
         from fiberrules import dolfin_fiberrules
@@ -499,6 +523,7 @@ def generate_fibers(mesh, fiber_params):
         fields.append(microstructures[2])
 
     return fields
+
 
 def load_local_basis(h5file, lgroup, mesh, geo):
 
@@ -577,7 +602,8 @@ def load_microstructure(h5file, fgroup, mesh, geo, include_sheets=True):
 
 
 def save_geometry_to_h5(mesh, h5name, h5group="", markers=None,
-                        fields=None, local_basis=None, comm=None,
+                        fields=None, local_basis=None, meshfunctions=None,
+                        comm=None,
                         other_functions=None, other_attributes=None,
                         overwrite_file=False, overwrite_group=True):
     """
@@ -598,6 +624,9 @@ def save_geometry_to_h5(mesh, h5name, h5group="", markers=None,
         A list of functions for the microstructure
     local_basis : list
         A list of functions for the crl basis
+    meshfunctions : dict
+        A dictionary with keys being the dimensions the the values
+        beeing the meshfunctions.
     comm : :class:`dolfin.MPI`
         MPI communicator
     other_functions : dict
@@ -633,7 +662,12 @@ def save_geometry_to_h5(mesh, h5name, h5group="", markers=None,
         h5file.write(mesh, mgroup)
 
         for dim in range(4):
-            mf = dolfin.MeshFunction("size_t", mesh, dim, mesh.domains())
+
+            if meshfunctions is not None and dim in meshfunctions:
+                mf = meshfunctions[dim]
+            else:
+                mf = dolfin.MeshFunction("size_t", mesh, dim, mesh.domains())
+
             save_mf = dolfin.MPI.max(comm, len(set(mf.array()))) > 1
 
             if save_mf:
