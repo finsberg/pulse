@@ -25,7 +25,7 @@ class Enlisted(tuple):
 
 
 def enlist(x):
-    if isinstance(x, (list, tuple)):
+    if isinstance(x, (list, tuple, np.ndarray)):
         return x
     else:
         return Enlisted([x])
@@ -229,7 +229,7 @@ def step_too_large(current, target, step):
             # comp = op.gt if c < t else op.lt
             # too_large.append(comp(c+s, t))
 
-    return any(too_large)
+    return np.any(too_large)
 
 
 def iterate(problem, control, target,
@@ -313,7 +313,6 @@ class Iterator(object):
         self.step = get_initial_step(self.control, self.target,
                                      self.parameters['initial_number_of_steps'])
 
-        
 
     @staticmethod
     def default_parameters():
