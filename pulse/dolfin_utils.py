@@ -515,7 +515,7 @@ class BaseExpression(dolfin.Expression):
             value[0] = 0
 
 
-class MixedParameter(Function):
+class MixedParameter(dolfin.Function):
     def __init__(self, fun, n, name="material_parameters"):
         """
         Initialize Mixed parameter.
@@ -578,9 +578,8 @@ class MixedParameter(Function):
         self.function_assigner[i].assign(self.split()[i], f_)
 
 
-class RegionalParameter(Function):
-    """
-    A regional paramerter defined in terms of a dolfin.MeshFunction
+class RegionalParameter(dolfin.Function):
+    """A regional paramerter defined in terms of a dolfin.MeshFunction
 
     Suppose you have a MeshFunction defined different regions in your mesh,
     and you want to define different parameters on different regions,
@@ -590,20 +589,22 @@ class RegionalParameter(Function):
 
         assert isinstance(meshfunction, dolfin.MeshFunctionSizet), \
             "Invalid meshfunction for RegionalParameter"
-
+        
         mesh = meshfunction.mesh()
 
         self._values = set(numpy_mpi.gather_broadcast(meshfunction.array()))
         self._nvalues = len(self._values)
-
-        V = dolfin.VectorFunctionSpace(mesh, "R", 0, dim=self._nvalues)
-
-        Function.__init__(self, V, name=name)
+        
+        
+        V  = dolfin.VectorFunctionSpace(mesh, "R", 0, dim=self._nvalues)
+        
+        dolfin.Function.__init__(self, V, name=name)
         self._meshfunction = meshfunction
 
         # Functionspace for the indicator functions
         self._proj_space = dolfin.FunctionSpace(mesh, "DG", 0)
 
+       
         # Make indicator functions
         self._id_functions = []
         for v in self._values:
@@ -616,14 +617,13 @@ class RegionalParameter(Function):
         This is a DG 0 space.
         """
         return self._proj_space
-
-    @property
-    def values(self):
+    
+    def get_values(self):
         """
         The regional values
         """
         return self._values
-
+    
     @property
     def function(self):
         """
@@ -633,18 +633,18 @@ class RegionalParameter(Function):
         :returns: A function with parameter values at each segment
                   specified by the meshfunction
         :rtype:  :py:class`dolfin.Function
-
         """
         return self._sum()
+
 
     def _make_indicator_function(self, marker):
         dm = self._proj_space.dofmap()
         cell_dofs = [dm.cell_dofs(i) for i in
                      np.where(self._meshfunction.array() == marker)[0]]
         dofs = np.unique(np.array(cell_dofs))
-
+        
         f = dolfin.Function(self._proj_space)
-        f.vector()[dofs] = 1.0
+        f.vector()[dofs] = 1.0    
         return f
 
     def _sum(self):

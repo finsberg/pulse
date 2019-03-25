@@ -140,12 +140,9 @@ class Material(object):
 
                 ind_space = v.proj_space
                 setattr(self, k, Function(ind_space, name=k))
-
                 mat = getattr(self, k)
-
                 matfun = v.function
-
-                mat.assign(project(matfun, ind_space))
+                mat.assign(dolfin.project(matfun, ind_space))
 
             else:
 
