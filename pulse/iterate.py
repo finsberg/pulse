@@ -47,7 +47,10 @@ def copy(f, deepcopy=True, name='copied_function'):
 
     if isinstance(f, (dolfin.Function, Function)):
         if has_dolfin_adjoint:
-            return f.copy(deepcopy=deepcopy, name=name)
+            try:
+                return f.copy(deepcopy=deepcopy, name=name)
+            except TypeError:
+                return f.copy(deepcopy=deepcopy)
         else:
             return f.copy(deepcopy=deepcopy)
     elif isinstance(f, dolfin.Constant):
