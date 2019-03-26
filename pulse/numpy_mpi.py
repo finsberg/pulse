@@ -118,9 +118,16 @@ def distribution(number):
     return cpp_module.distribution(mpi_comm_world(), number)
 
 def gather_broadcast(arr):
+    try:
+        dtype = arr.dtype
+    except AttributeError:
+        dtype = np.float
+
     arr = gather(arr, flatten = True)
     arr = broadcast(arr, 0)
-    return arr
+
+    return arr.astype(dtype)
+
 
 def assign_to_vector(v, a):
     """

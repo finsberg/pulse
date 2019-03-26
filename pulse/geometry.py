@@ -416,7 +416,7 @@ class HeartGeometry(Geometry):
     @property
     def is_biv(self):
         if 'ENDO_RV' in self.markers:
-            return self.markers['ENDO_RV'] in \
+            return self.markers['ENDO_RV'][0] in \
                 set(numpy_mpi.gather_broadcast(self.ffun.array()))
             
         return False
