@@ -209,7 +209,6 @@ def step_too_large(current, target, step):
         step = numpy_mpi.gather_broadcast(step.vector().get_local())
     elif isinstance(step, (Constant, dolfin.Constant)):
         step = constant2float(step)
-        
 
     if isinstance(target, (float, int)):
         comp = op.gt if current < target else op.lt
@@ -219,7 +218,7 @@ def step_too_large(current, target, step):
 
         too_large = []
         for (c, t, s) in zip(current, target, step):
-
+            
             try:
                 too_large.append(step_too_large(c, t, s))
             except:
@@ -298,7 +297,6 @@ class Iterator(object):
                  **params
     ):
         logger.setLevel(parameters['log_level'])
-
         self.parameters = Iterator.default_parameters()
         self.parameters.update(params)
 
@@ -315,7 +313,6 @@ class Iterator(object):
 
         self.step = get_initial_step(self.control, self.target,
                                      self.parameters['initial_number_of_steps'])
-
 
     @staticmethod
     def default_parameters():
@@ -353,7 +350,9 @@ class Iterator(object):
             prev_control = enlist(self.control_values[-1])
 
             # Check if we are close
-            if step_too_large(prev_control, self.target, self.step):
+            if step_too_large(delist(prev_control),
+                              delist(self.target),
+                              delist(self.step)):
                 self.change_step_for_final_iteration(prev_control)
 
             self.increment_control()
@@ -504,7 +503,7 @@ class Iterator(object):
                 raise TypeError(msg)
             targets.append(t)
         
-        self.target = tuple(targets)
+        self.target = Enlisted(targets)
 
 
     def _check_control(self, control):
