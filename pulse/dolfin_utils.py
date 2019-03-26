@@ -577,7 +577,6 @@ class MixedParameter(dolfin.Function):
         f_.assign(f)
         self.function_assigner[i].assign(self.split()[i], f_)
 
-
 class RegionalParameter(dolfin.Function):
     """A regional paramerter defined in terms of a dolfin.MeshFunction
 
@@ -585,10 +584,10 @@ class RegionalParameter(dolfin.Function):
     and you want to define different parameters on different regions,
     then this is what you want.
     """
-    def __init__(self, meshfunction, name="RegionalParameter"):
+    def __init__(self, meshfunction):
 
         assert isinstance(meshfunction, dolfin.MeshFunctionSizet), \
-            "Invalid meshfunction for RegionalParameter"
+            "Invalid meshfunction for regional gamma"
         
         mesh = meshfunction.mesh()
 
@@ -598,30 +597,18 @@ class RegionalParameter(dolfin.Function):
         
         V  = dolfin.VectorFunctionSpace(mesh, "R", 0, dim=self._nvalues)
         
-        dolfin.Function.__init__(self, V, name=name)
+        dolfin.Function.__init__(self, V)
         self._meshfunction = meshfunction
 
         # Functionspace for the indicator functions
         self._proj_space = dolfin.FunctionSpace(mesh, "DG", 0)
 
-       
         # Make indicator functions
-        self._id_functions = []
+        self._ind_functions = []
         for v in self._values:
-            self._id_functions.append(self._make_indicator_function(v))
-
-    @property
-    def proj_space(self):
-        """
-        Space for projecting the scalars.
-        This is a DG 0 space.
-        """
-        return self._proj_space
+            self._ind_functions.append(self._make_indicator_function(v))
     
     def get_values(self):
-        """
-        The regional values
-        """
         return self._values
     
     @property
@@ -632,10 +619,18 @@ class RegionalParameter(dolfin.Function):
 
         :returns: A function with parameter values at each segment
                   specified by the meshfunction
-        :rtype:  :py:class`dolfin.Function
+        :rtype:  :py:class`dolfin.Function             
+             
         """
         return self._sum()
 
+    @property
+    def proj_space(self):
+        """
+        Space for projecting the scalars.
+        This is a DG 0 space.
+        """
+        return self._proj_space
 
     def _make_indicator_function(self, marker):
         dm = self._proj_space.dofmap()
@@ -644,14 +639,14 @@ class RegionalParameter(dolfin.Function):
         dofs = np.unique(np.array(cell_dofs))
         
         f = dolfin.Function(self._proj_space)
-        f.vector()[dofs] = 1.0    
+        f.vector()[dofs] = 1.0
         return f
 
     def _sum(self):
         coeffs = dolfin.split(self)
-        fun = coeffs[0]*self._id_functions[0]
+        fun = coeffs[0]*self._ind_functions[0]
 
-        for c, f in zip(coeffs[1:], self._id_functions[1:]):
+        for c, f in zip(coeffs[1:], self._ind_functions[1:]):
             fun += c*f
 
         return fun
