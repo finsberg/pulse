@@ -33,8 +33,10 @@ def enlist(x):
 
 def delist(x):
     if isinstance(x, Enlisted):
-        assert len(x) == 1
-        return x[0]
+        if len(x) == 1:
+            return x[0]
+        else:
+            return x
     else:
         return x
 
@@ -218,19 +220,8 @@ def step_too_large(current, target, step):
 
         too_large = []
         for (c, t, s) in zip(current, target, step):
+            too_large.append(step_too_large(c, t, s))
             
-            try:
-                too_large.append(step_too_large(c, t, s))
-            except:
-                from IPython import embed; embed()
-                exit()
-            # t = constant2float(t)
-            # c = constant2float(c)
-            # s = constant2float(s)
-
-            # comp = op.gt if c < t else op.lt
-            # too_large.append(comp(c+s, t))
-
     return np.any(too_large)
 
 
@@ -342,7 +333,7 @@ class Iterator(object):
                or self.niters > self.parameters['max_iters']:
 
                 self.problem.reinit(self.prev_states[0])
-                self.assign_new_control(self.control_values[0])
+                self.assign_control(enlist(self.control_values[0]))
                 
                 raise SolverDidNotConverge
 
@@ -371,8 +362,11 @@ class Iterator(object):
                 logger.info("\nNOT CONVERGING")
                 logger.info("Reduce control step")
                 self.ncrashes += 1
-                self.assign_control(prev_control)
-
+                try:
+                    self.assign_control(prev_control)
+                except:
+                    from IPython import embed; embed()
+                    exit()
                 # Assign old state
                 logger.debug("Assign old state")
                 self.problem.state.vector().zero()
@@ -436,7 +430,7 @@ class Iterator(object):
             return
 
         c0, c1 = self.control_values[-2:]
-        s0, s1 = se.f.prev_states[-2:]
+        s0, s1 = self.prev_states[-2:]
 
         delta = get_delta(self.control, c0, c1)
 
@@ -464,11 +458,15 @@ class Iterator(object):
                 c.assign(Constant(constant2float(c) + s))
 
     def assign_control(self, new_control):
-        for c, n in zip(self.control, enlist(new_control)):
-            c.assign(constant2float(n))
-        
-
-
+        """
+        Assign a new value to the control
+        """
+        for c, n in zip(self.control, new_control):
+            try:
+                c.assign(n)
+            except TypeError:
+                c.assign(Constant(n))
+                
     def change_step_for_final_iteration(self, prev_control):
         """Change step size so that target is 
         reached in the next iteration
@@ -518,14 +516,6 @@ class Iterator(object):
             assert isinstance(c, self._control_types), msg
 
         self.control = control
-
-    def assign_new_control(self, new_control):
-
-        for c, n in zip(self.control, new_control):
-            try:
-                c.assign(n)
-            except TypeError:
-                c.assign(Constant(n))
 
     @property
     def ncontrols(self):
