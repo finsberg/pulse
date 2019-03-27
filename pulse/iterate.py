@@ -24,9 +24,14 @@ class Enlisted(tuple):
     pass
 
 
-def enlist(x):
-    if isinstance(x, (list, tuple, np.ndarray)):
+def enlist(x, force_enlist=False):
+    if isinstance(x, Enlisted):
         return x
+    elif isinstance(x, (list, tuple, np.ndarray)):
+        if force_enlist:
+            return Enlisted([x])
+        else:
+            return Enlisted(x)
     else:
         return Enlisted([x])
 
@@ -176,7 +181,6 @@ def get_initial_step(current, target, nsteps=5):
     """
 
     diff = get_diff(current, target)
-
     if isinstance(diff, dolfin.GenericVector):
         max_diff = dolfin.norm(diff, 'linf')
         step = Function(current.function_space())
@@ -188,7 +192,6 @@ def get_initial_step(current, target, nsteps=5):
         
     logger.debug(("Intial number of steps: {} with step size {}"
                   "").format(nsteps, step))
-
     return step
 
 
@@ -256,19 +259,20 @@ def iterate(problem, control, target,
         List of old controls to help speed in the continuation
     """
 
-    iterator = Iterator(problem=problem,
-                        control=control,
-                        target=target,
-                        continuation=continuation,
-                        max_adapt_iter=max_adapt_iter,
-                        adapt_step=adapt_step,
-                        old_states=old_states,
-                        old_controls=old_controls,
-                        max_nr_crash=max_nr_crash,
-                        max_iters=max_iters,
-                        initial_number_of_steps=initial_number_of_steps)
-    
-    return iterator.solve()
+    with Iterator(problem=problem,
+                  control=control,
+                  target=target,
+                  continuation=continuation,
+                  max_adapt_iter=max_adapt_iter,
+                  adapt_step=adapt_step,
+                  old_states=old_states,
+                  old_controls=old_controls,
+                  max_nr_crash=max_nr_crash,
+                  max_iters=max_iters,
+                  initial_number_of_steps=initial_number_of_steps) as iterator:
+        res = iterator.solve()
+
+    return res
 
 
 
@@ -305,6 +309,12 @@ class Iterator(object):
         self.step = get_initial_step(self.control, self.target,
                                      self.parameters['initial_number_of_steps'])
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        pass
+
     @staticmethod
     def default_parameters():
         return dict(continuation=True,
@@ -313,14 +323,28 @@ class Iterator(object):
                     max_nr_crash=20,
                     max_iters=40,
                     initial_number_of_steps=5)
-        
+
     @property
     def step(self):
         return self._step
 
     @step.setter
     def step(self, step):
-        self._step = enlist(squeeze(step))
+        s = squeeze(step)
+        if hasattr(s, '__len__') and len(s) != len(self.control):
+            if len(self.control) == 1:
+                # Then probably the control is a function with
+                # dimension higher than one and we have squeezed to much
+                s = enlist(s, force_enlist=True)
+            else:
+                msg = ('Step is of lenght {} while the lenght '
+                       'of the control is {}').format(len(s),
+                                                      len(self.control))
+                raise ValueError(msg)
+        else:
+            s = enlist(s)
+
+        self._step = s
 
     def solve(self):
 
@@ -362,11 +386,7 @@ class Iterator(object):
                 logger.info("\nNOT CONVERGING")
                 logger.info("Reduce control step")
                 self.ncrashes += 1
-                try:
-                    self.assign_control(prev_control)
-                except:
-                    from IPython import embed; embed()
-                    exit()
+                self.assign_control(prev_control)
                 # Assign old state
                 logger.debug("Assign old state")
                 self.problem.state.vector().zero()
@@ -398,8 +418,6 @@ class Iterator(object):
 
     def print_control(self):
         msg = 'Current control: '
-        
-
         def print_control(cs, msg):
             controls = [constant2float(c) for c in cs]
             
@@ -412,16 +430,15 @@ class Iterator(object):
                 cs = []
                 for c in controls:
                     if hasattr(c, '__len__'):
-                        print_control(c, msg)
+                        msg += print_control(c, msg)
                     else:
                         cs.append(c)
                 if cs:
-                    msg += ','.join(['{:.2f}'.format(c) for c in cs])
+                    msg += ','.join(['{:.3f}'.format(c) for c in controls])
             return msg
 
         msg = print_control(self.control, msg)
         logger.info(msg)
-
 
     def continuation_step(self):
         
@@ -447,6 +464,7 @@ class Iterator(object):
             self.problem.state.vector().axpy(delta, s1.vector())
 
     def increment_control(self):
+
         for c, s in zip(self.control, self.step):
             if isinstance(c, (dolfin.Function, Function)):
                 c_arr = numpy_mpi.gather_broadcast(c.vector().get_local())
@@ -474,11 +492,11 @@ class Iterator(object):
         logger.info("Change step size for final iteration")
         
         
-        if isinstance(self.step, (dolfin.Function, Function)):
+        if isinstance(self.target, (dolfin.Function, Function)):
             step = Function(self.target.function_space())
             step.vector().axpy(1.0, self.target.vector())
             step.vector().axpy(-1.0, prev_control.vector())
-        elif isinstance(step, (list, np.ndarray, tuple)):
+        elif isinstance(self.target, (list, np.ndarray, tuple)):
             step = np.array([constant2float(t) - constant2float(c)
                              for (t, c) in zip(self.target, enlist(prev_control))])
         else:
@@ -502,6 +520,7 @@ class Iterator(object):
             targets.append(t)
         
         self.target = Enlisted(targets)
+        logger.info('Target: {}'.format([constant2float(t) for t in self.target]))
 
 
     def _check_control(self, control):
@@ -516,6 +535,7 @@ class Iterator(object):
             assert isinstance(c, self._control_types), msg
 
         self.control = control
+        logger.info('Control: {}'.format([constant2float(c) for c in self.control]))
 
     @property
     def ncontrols(self):
