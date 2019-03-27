@@ -115,7 +115,9 @@ class MechanicsProblem(object):
     """
     Base class for mechanics problem
     """
-    def __init__(self, geometry, material, bcs=None, bcs_parameters=None):
+    def __init__(self, geometry, material,
+                 bcs=None, bcs_parameters=None,
+                 solver_parameters=None):
 
         logger.debug('Initialize mechanics problem')
         self.geometry = geometry
@@ -148,6 +150,9 @@ class MechanicsProblem(object):
 
         self._init_spaces()
         self._init_forms()
+        self.solver_parameters = MechanicsProblem.defaul_solver_parameters()
+        if solver_parameters is not None:
+            self.solver_parameters.update(solver_parameters)
 
     @staticmethod
     def default_bcs_parameters():
@@ -255,6 +260,9 @@ class MechanicsProblem(object):
 
         self._init_forms()
 
+    @staticmethod
+    def defaul_solver_parameters():
+        return dolfin.NonlinearVariationalSolver.default_parameters().to_dict()
     def solve(self):
         r"""
         Solve the variational problem
@@ -289,6 +297,8 @@ class MechanicsProblem(object):
                                           self._jacobian)
 
         solver = NonlinearVariationalSolver(problem)
+        solver.parameters.update(self.solver_parameters)
+        
 
         try:
             logger.debug('Try to solve')
