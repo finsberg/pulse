@@ -350,21 +350,18 @@ class Iterator(object):
 
     @step.setter
     def step(self, step):
-        s = squeeze(step)
-        if hasattr(s, '__len__') and len(s) != len(self.control):
-            if len(self.control) == 1:
-                # Then probably the control is a function with
-                # dimension higher than one and we have squeezed to much
-                s = enlist(s, force_enlist=True)
-            else:
-                msg = ('Step is of lenght {} while the lenght '
-                       'of the control is {}').format(len(s),
-                                                      len(self.control))
-                raise ValueError(msg)
-        else:
-            s = enlist(s)
 
-        self._step = s
+        if isinstance(step, (dolfin.Function, Function)):
+            s = step
+        else:
+            s = squeeze(step)
+
+            if isinstance(delist(self.control), (dolfin.Function, Function)):
+                s_ = dolfin.Function(delist(self.control).function_space())
+                numpy_mpi.assign_to_vector(s_.vector(), s)
+                s = s_
+
+        self._step = enlist(s)
 
     def solve(self):
 
@@ -435,10 +432,15 @@ class Iterator(object):
         return self.prev_states, self.control_values
 
     def change_step_size(self, factor):
-        try:
-            self.step = factor * delist(self.step)
-        except TypeError:
-            self.step = np.multiply(factor, delist(self.step))
+
+        if isinstance(delist(self.step), (dolfin.Function, Function)):
+            s = delist(self.step)
+            s.vector()[:] *= factor
+        else:
+            try:
+                self.step = factor * delist(self.step)
+            except TypeError:
+                self.step = np.multiply(factor, delist(self.step))
 
     def print_control(self, msg='Current control: '):
         
@@ -481,8 +483,9 @@ class Iterator(object):
         for c, s in zip(self.control, self.step):
             if isinstance(c, (dolfin.Function, Function)):
                 c_arr = numpy_mpi.gather_broadcast(c.vector().get_local())
+                s_arr = numpy_mpi.gather_broadcast(s.vector().get_local())
                 c_tmp = Function(c.function_space())
-                numpy_mpi.assign_to_vector(c_tmp.vector(), c_arr + s)
+                numpy_mpi.assign_to_vector(c_tmp.vector(), np.add(c_arr, s_arr))
                 c.assign(c_tmp)
             else:
                 c_arr = c
@@ -505,16 +508,16 @@ class Iterator(object):
         logger.info("Change step size for final iteration")
         
         
-        if isinstance(self.target, (dolfin.Function, Function)):
-            step = Function(self.target.function_space())
-            step.vector().axpy(1.0, self.target.vector())
-            step.vector().axpy(-1.0, prev_control.vector())
-        elif isinstance(self.target, (list, np.ndarray, tuple)):
-            step = np.array([constant2float(t) - constant2float(c)
-                             for (t, c) in zip(self.target, enlist(prev_control))])
+        if isinstance(delist(self.target), (dolfin.Function, Function)):
+            step = Function(delist(self.target).function_space())
+            step.vector().axpy(1.0, delist(self.target).vector())
+            step.vector().axpy(-1.0, delist(prev_control).vector())
         else:
-            step = self.target - prev_control
-                    
+            if isinstance(self.target, (list, np.ndarray, tuple)):
+                step = np.array([constant2float(t) - constant2float(c)
+                                 for (t, c) in zip(self.target, prev_control)])
+            else:
+                step = self.target - prev_control
         self.step = step
         
     def _check_target(self, target):
@@ -531,8 +534,13 @@ class Iterator(object):
                        'to a constant').format(type(target))
                 raise TypeError(msg)
             targets.append(t)
-        
-        self.target = Enlisted(targets)
+
+        if isinstance(delist(self.control), (dolfin.Function, Function)):
+            t = dolfin.Function(delist(self.control).function_space())
+            numpy_mpi.assign_to_vector(t.vector(), np.array(delist(target)))
+            self.target = enlist(t)
+        else:
+            self.target = Enlisted(targets)
         logger.debug('Target: {}'.format([constant2float(t) for t in self.target]))
 
 
