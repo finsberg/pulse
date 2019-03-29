@@ -633,11 +633,8 @@ class RegionalParameter(dolfin.Function):
         return self._proj_space
 
     def _make_indicator_function(self, marker):
-        dm = self._proj_space.dofmap()
-        cell_dofs = [dm.cell_dofs(i) for i in
-                     np.where(self._meshfunction.array() == marker)[0]]
-        dofs = np.unique(np.array(cell_dofs))
-        
+
+        dofs = self._meshfunction.where_equal(marker)
         f = dolfin.Function(self._proj_space)
         f.vector()[dofs] = 1.0
         return f
