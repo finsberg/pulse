@@ -482,7 +482,7 @@ class Iterator(object):
             if isinstance(c, (dolfin.Function, Function)):
                 c_arr = numpy_mpi.gather_broadcast(c.vector().get_local())
                 c_tmp = Function(c.function_space())
-                c_tmp.vector()[:] = c_arr + s
+                numpy_mpi.assign_to_vector(c_tmp.vector(), c_arr + s)
                 c.assign(c_tmp)
             else:
                 c_arr = c
