@@ -46,6 +46,26 @@ def delist(x):
         return x
 
 
+def print_control(cs, msg=""):
+    controls = [constant2float(c) for c in cs]
+
+    if len(controls) > 3:
+        msg += ('\n\tMin:{:.2f}\tMean:{:.2f}\tMax:{:.2f}'
+                '').format(np.min(controls),
+                           np.mean(controls),
+                           np.max(controls))
+    else:
+        cs = []
+        for c in controls:
+            if hasattr(c, '__len__'):
+                msg += print_control(c, msg)
+            else:
+                cs.append(c)
+        if cs:
+            msg += ','.join(['{:.3f}'.format(c) for c in controls])
+    return msg
+
+
 def copy(f, deepcopy=True, name='copied_function'):
     """
     Copy a function. This is to ease the integration
@@ -375,7 +395,6 @@ class Iterator(object):
             if self.parameters['continuation']:
                 self.continuation_step()
 
-
             logger.info("Try new control")
             self.print_control()
             try:
@@ -394,54 +413,48 @@ class Iterator(object):
 
                 self.change_step_size(0.5)
 
-        else:
-            ncrashes = 0
-            logger.info("\nSUCCESFULL STEP:")
+            else:
+                # Reset the number of crashes
+                self.ncrashes = 0
+                logger.info("\nSUCCESFULL STEP:")
 
-            if not self.target_reached():
+                if not self.target_reached():
 
-                if nliter < self.parameters['max_adapt_iter'] and\
-                   self.parameters['adapt_step']:
-                    self.change_step_size(1.5)
-                    msg = "Adapt step size. New step size: {:.2f}".format(self.step[0])
-                    logger.info(msg)
+                    if nliter < self.parameters['max_adapt_iter'] and \
+                       self.parameters['adapt_step']:
+                        self.change_step_size(1.5)
+                        self.print_step("Adapt step size. New step size: ")
 
-                self.control_values.append(copy(delist(self.control), deepcopy=True,
-                                           name='Previous control'))
+                self.control_values.append(copy(delist(self.control),
+                                                deepcopy=True,
+                                                name='Previous control'))
 
-                self.prev_states.append(copy(self.problem.state, deepcopy=True,
+                self.prev_states.append(copy(self.problem.state,
+                                             deepcopy=True,
                                              name='Previous state'))
         return self.prev_states, self.control_values
 
     def change_step_size(self, factor):
-        self.step = factor * delist(self.step)
+        try:
+            self.step = factor * delist(self.step)
+        except TypeError:
+            self.step = np.multiply(factor, delist(self.step))
 
-    def print_control(self):
-        msg = 'Current control: '
-        def print_control(cs, msg):
-            controls = [constant2float(c) for c in cs]
-            
-            if len(controls) > 3:
-                msg += ('\n\tMin:{:.2f}\tMean:{:.2f}\tMax:{:.2f}'
-                        '').format(np.min(controls),
-                                   np.mean(controls),
-                                   np.max(controls))
-            else:
-                cs = []
-                for c in controls:
-                    if hasattr(c, '__len__'):
-                        msg += print_control(c, msg)
-                    else:
-                        cs.append(c)
-                if cs:
-                    msg += ','.join(['{:.3f}'.format(c) for c in controls])
-            return msg
-
+    def print_control(self, msg='Current control: '):
+        
         msg = print_control(self.control, msg)
         logger.info(msg)
 
+    def print_step(self, msg='Step size: '):
+        try:
+            print_control(delist(self.step), msg)
+        except TypeError:
+            print_control(self.step, msg)
+
+            
+
     def continuation_step(self):
-        
+
         first_step = len(self.prev_states) < 2
         if first_step:
             return
@@ -449,7 +462,7 @@ class Iterator(object):
         c0, c1 = self.control_values[-2:]
         s0, s1 = self.prev_states[-2:]
 
-        delta = get_delta(self.control, c0, c1)
+        delta = get_delta(delist(self.control), c0, c1)
 
         if has_dolfin_adjoint and annotation.annotate:
             w = dolfin.Function(self.problem.state.function_space())
@@ -520,7 +533,7 @@ class Iterator(object):
             targets.append(t)
         
         self.target = Enlisted(targets)
-        logger.info('Target: {}'.format([constant2float(t) for t in self.target]))
+        logger.debug('Target: {}'.format([constant2float(t) for t in self.target]))
 
 
     def _check_control(self, control):
@@ -535,7 +548,7 @@ class Iterator(object):
             assert isinstance(c, self._control_types), msg
 
         self.control = control
-        logger.info('Control: {}'.format([constant2float(c) for c in self.control]))
+        logger.debug('Control: {}'.format([constant2float(c) for c in self.control]))
 
     @property
     def ncontrols(self):
