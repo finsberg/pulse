@@ -45,6 +45,25 @@ def delist(x):
     else:
         return x
 
+def print_control(cs, msg=""):
+    controls = [constant2float(c) for c in cs]
+
+    if len(controls) > 3:
+        msg += ('\n\tMin:{:.2f}\tMean:{:.2f}\tMax:{:.2f}'
+                '').format(np.min(controls),
+                           np.mean(controls),
+                           np.max(controls))
+    else:
+        cs = []
+        for c in controls:
+            if hasattr(c, '__len__'):
+                msg += print_control(c, msg)
+            else:
+                cs.append(c)
+        if cs:
+            msg += ','.join(['{:.3f}'.format(c) for c in controls])
+    return msg
+
 
 def copy(f, deepcopy=True, name='copied_function'):
     """
@@ -81,20 +100,27 @@ def copy(f, deepcopy=True, name='copied_function'):
         return f
 
 
-def constant2float(const):
+def constant2float(val):
     """
     Convert a :class:`dolfin.Constant` to float
     """
-    const = get_constant(const)
+
+    if isinstance(val, (dolfin.Function, Function)):
+        return numpy_mpi.gather_broadcast(val.vector().get_local())
+
+    if isinstance(val, (int, float, np.ndarray)):
+        return val
+
+    const = get_constant(val)
     try:
         c = float(const)
     except TypeError:
         try:
-            c = np.zeros(len(const))
+            c = np.zeros(len(val))
             const.eval(c, c)
         except Exception as ex:
             logger.warning(ex, exc_info=True)
-            return const
+            return val
 
     return c
 
@@ -116,7 +142,7 @@ def get_delta(new_control, c0, c1):
         c1 = [constant2float(c) for c in c1]
         new_control = [constant2float(c) for c in new_control]
         return (new_control[0] - c0[0]) / float(c1[0] - c0[0])
-
+    
     elif isinstance(new_control, (dolfin.GenericVector, dolfin.Vector)):
         new_control_arr = numpy_mpi.gather_broadcast(new_control.get_local())
         c0_arr = numpy_mpi.gather_broadcast(c0.get_local())
@@ -220,11 +246,10 @@ def step_too_large(current, target, step):
         return comp(current + step, target)
     else:
         assert hasattr(target, "__len__")
-
         too_large = []
         for (c, t, s) in zip(current, target, step):
             too_large.append(step_too_large(c, t, s))
-            
+
     return np.any(too_large)
 
 
@@ -375,7 +400,6 @@ class Iterator(object):
             if self.parameters['continuation']:
                 self.continuation_step()
 
-
             logger.info("Try new control")
             self.print_control()
             try:
@@ -391,53 +415,34 @@ class Iterator(object):
                 logger.debug("Assign old state")
                 self.problem.state.vector().zero()
                 self.problem.reinit(prev_state)
-
                 self.change_step_size(0.5)
 
-        else:
-            ncrashes = 0
-            logger.info("\nSUCCESFULL STEP:")
+            else:
+                ncrashes = 0
+                logger.info("\nSUCCESFULL STEP:")
 
-            if not self.target_reached():
+                if not self.target_reached():
 
-                if nliter < self.parameters['max_adapt_iter'] and\
-                   self.parameters['adapt_step']:
-                    self.change_step_size(1.5)
-                    msg = "Adapt step size. New step size: {:.2f}".format(self.step[0])
-                    logger.info(msg)
+                    if nliter < self.parameters['max_adapt_iter'] and\
+                       self.parameters['adapt_step']:
+                        self.change_step_size(1.5)
+                        msg = print_control(self.step,
+                                            "Adapt step size. New step size: ")
+                        logger.info(msg)
 
-                self.control_values.append(copy(delist(self.control), deepcopy=True,
-                                           name='Previous control'))
+                    self.control_values.append(copy(delist(self.control),
+                                                    deepcopy=True,
+                                               name='Previous control'))
 
-                self.prev_states.append(copy(self.problem.state, deepcopy=True,
-                                             name='Previous state'))
+                    self.prev_states.append(copy(self.problem.state, deepcopy=True,
+                                                 name='Previous state'))
         return self.prev_states, self.control_values
 
     def change_step_size(self, factor):
         self.step = factor * delist(self.step)
 
     def print_control(self):
-        msg = 'Current control: '
-        def print_control(cs, msg):
-            controls = [constant2float(c) for c in cs]
-            
-            if len(controls) > 3:
-                msg += ('\n\tMin:{:.2f}\tMean:{:.2f}\tMax:{:.2f}'
-                        '').format(np.min(controls),
-                                   np.mean(controls),
-                                   np.max(controls))
-            else:
-                cs = []
-                for c in controls:
-                    if hasattr(c, '__len__'):
-                        msg += print_control(c, msg)
-                    else:
-                        cs.append(c)
-                if cs:
-                    msg += ','.join(['{:.3f}'.format(c) for c in controls])
-            return msg
-
-        msg = print_control(self.control, msg)
+        msg = print_control(self.control, 'Current control: ')
         logger.info(msg)
 
     def continuation_step(self):
@@ -449,7 +454,7 @@ class Iterator(object):
         c0, c1 = self.control_values[-2:]
         s0, s1 = self.prev_states[-2:]
 
-        delta = get_delta(self.control, c0, c1)
+        delta = get_delta(delist(self.control), c0, c1)
 
         if has_dolfin_adjoint and annotation.annotate:
             w = dolfin.Function(self.problem.state.function_space())
@@ -490,17 +495,25 @@ class Iterator(object):
         reached in the next iteration
         """
         logger.info("Change step size for final iteration")
-        
-        
-        if isinstance(self.target, (dolfin.Function, Function)):
-            step = Function(self.target.function_space())
+
+        target = delist(self.target)
+        prev_control = delist(prev_control)
+        if isinstance(target, (dolfin.Function, Function)):
+            step = Function(target.function_space())
             step.vector().axpy(1.0, self.target.vector())
             step.vector().axpy(-1.0, prev_control.vector())
-        elif isinstance(self.target, (list, np.ndarray, tuple)):
+        elif isinstance(target, (list, np.ndarray, tuple)):
+            if isinstance(prev_control, (dolfin.Function, Function)):
+                prev_control = constant2float(prev_control)
             step = np.array([constant2float(t) - constant2float(c)
-                             for (t, c) in zip(self.target, enlist(prev_control))])
+                             for (t, c) in zip(enlist(target),
+                                               enlist(prev_control))])
+        elif isinstance(target, (dolfin.Constant, Constant)):
+            step = constant2float(target) - constant2float(prev_control)
+            
         else:
-            step = self.target - prev_control
+
+            step = target - prev_control
                     
         self.step = step
         
