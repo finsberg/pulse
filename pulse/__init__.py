@@ -59,7 +59,7 @@ from .kinematics import (SecondOrderIdentity,
                          PiolaTransform,
                          InversePiolaTransform)
 
-__version__ = '0.1'
+__version__ = '0.1.1'
 __author__ = 'Henrik Finsberg'
 __credits__ = ['Henrik Finsberg']
 __license__ = 'LGPL-3'

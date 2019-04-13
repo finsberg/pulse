@@ -7,7 +7,7 @@ from setuptools import setup, find_packages, Command
 
 # Version number
 major = 0
-minor = 1
+minor = 1.1
 
 on_rtd = os.environ.get('READTHEDOCS') == 'True'
 
