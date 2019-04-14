@@ -1,6 +1,6 @@
 {% set name = "pulse" %}
 {% set version = "0.1.1" %}
-{% set sha256 = "72bd4130be4137ffc5650a39227805019e3806261cbdc016a1a4f3b45d8f1e18" %}
+{% set sha256 = "bc58f5ac3c167a2d92c0c2875b8ac1b7a240d527218512b0fcf38fda0333eb0e" %}
 
 package:
   name: {{ name|lower }}
@@ -13,13 +13,12 @@ source:
 build:
   number: 0
   script: python setup.py install
-  # skip: True
+  noarch: python
 
 requirements:
   build:
-    - python<3.7
+    - python 3.6.4=0
   run:
-    - python
     - h5py>=2.8.0
     - blas=1.1 openblas
     - boost 1.65.1
@@ -70,8 +69,6 @@ requirements:
     - xz 5.2.3=0
     - zlib 1.2.11=0
     - fenics 2017.2
-
-
 test:
   imports:
     - pulse
