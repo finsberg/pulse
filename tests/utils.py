@@ -8,17 +8,30 @@ except ImportError:
 from pulse.material import HolzapfelOgden, NeoHookean
 from pulse.dolfin_utils import RegionalParameter, get_constant
 from pulse.utils import get_lv_marker
+from pulse.geometry import HeartGeometry
+from pulse.example_meshes import mesh_paths
 from pulse.mechanicsproblem import (MechanicsProblem,
                                     cardiac_boundary_conditions)
 
 
-def make_mechanics_problem(geometry):
+def make_lv_mechanics_problem(space="R_0"):
+
+    geometry = HeartGeometry.from_file(mesh_paths['simple_ellipsoid'])
+    return make_mechanics_problem(geometry, space)
+
+
+def  make_mechanics_problem(geometry, space="R_0"):
 
     # Material = NeoHookean
     Material = HolzapfelOgden
 
-    # activation = Constant(0.0)
-    activation = Function(dolfin.FunctionSpace(geometry.mesh, "R", 0))
+    if space == 'regional':
+        activation = RegionalParameter(geometry.cfun)
+    else:
+        family, degree = space.split('_')
+        activation = Function(dolfin.FunctionSpace(geometry.mesh,
+                                                   family, int(degree)))
+
     matparams = Material.default_parameters()
     # mu = RegionalParameter(geometry.cfun)
     # mu_val = get_constant(mu.value_size(), value_rank=0, val=matparams["mu"])

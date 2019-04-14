@@ -109,27 +109,53 @@ def get_delta(new_control, c0, c1):
         new_control = constant2float(new_control)
 
     if isinstance(new_control, (int, float)):
-        return (new_control - c0) / float(c1 - c0)
+        delta = (new_control - c0) / float(c1 - c0)
 
     elif isinstance(new_control, (tuple, np.ndarray, list)):
         c0 = [constant2float(c) for c in c0]
         c1 = [constant2float(c) for c in c1]
         new_control = [constant2float(c) for c in new_control]
-        return (new_control[0] - c0[0]) / float(c1[0] - c0[0])
+        delta = (new_control[0] - c0[0]) / float(c1[0] - c0[0])
 
     elif isinstance(new_control, (dolfin.GenericVector, dolfin.Vector)):
         new_control_arr = numpy_mpi.gather_broadcast(new_control.get_local())
         c0_arr = numpy_mpi.gather_broadcast(c0.get_local())
         c1_arr = numpy_mpi.gather_broadcast(c1.get_local())
-        return (new_control_arr[0] - c0_arr[0]) / float(c1_arr[0] - c0_arr[0])
+        delta = (new_control_arr[0] - c0_arr[0]) / float(c1_arr[0] - c0_arr[0])
 
     elif isinstance(new_control, (dolfin.Function, Function)):
         new_control_arr = numpy_mpi.\
                           gather_broadcast(new_control.vector().get_local())
         c0_arr = numpy_mpi.gather_broadcast(c0.vector().get_local())
         c1_arr = numpy_mpi.gather_broadcast(c1.vector().get_local())
-        return (new_control_arr[0] - c0_arr[0]) / float(c1_arr[0] - c0_arr[0])
+        delta = (new_control_arr[0] - c0_arr[0]) / float(c1_arr[0] - c0_arr[0])
 
+    else:
+        msg = ('Unexpected type for new_crontrol in get_delta'
+               'Got {}').format(type(delta))
+        raise TypeError(msg)
+    
+    return squeeze(delta)
+
+def print_control(cs, msg):
+
+    controls = [constant2float(c) for c in cs]
+    
+    if len(controls) > 3:
+        msg += ('\n\tMin:{:.2f}\tMean:{:.2f}\tMax:{:.2f}'
+                '').format(np.min(controls),
+                           np.mean(controls),
+                           np.max(controls))
+    else:
+        cs = []
+        for c in controls:
+            if hasattr(c, '__len__'):
+                msg += print_control(c, msg)
+            else:
+                cs.append(c)
+        if cs:
+            msg += ','.join(['{:.3f}'.format(c) for c in controls])
+    return msg
 
 def get_diff(current, target):
     """
@@ -224,7 +250,8 @@ def step_too_large(current, target, step):
         too_large = []
         for (c, t, s) in zip(current, target, step):
             too_large.append(step_too_large(c, t, s))
-            
+
+    print(too_large)
     return np.any(too_large)
 
 
@@ -368,13 +395,12 @@ class Iterator(object):
             if step_too_large(delist(prev_control),
                               delist(self.target),
                               delist(self.step)):
-                self.change_step_for_final_iteration(prev_control)
+                self.change_step_for_final_iteration(delist(prev_control))
 
             self.increment_control()
 
             if self.parameters['continuation']:
                 self.continuation_step()
-
 
             logger.info("Try new control")
             self.print_control()
@@ -394,22 +420,24 @@ class Iterator(object):
 
                 self.change_step_size(0.5)
 
-        else:
-            ncrashes = 0
-            logger.info("\nSUCCESFULL STEP:")
+            else:
+                ncrashes = 0
+                logger.info("\nSUCCESFULL STEP:")
 
-            if not self.target_reached():
+                if not self.target_reached():
+                    if nliter < self.parameters['max_adapt_iter'] and\
+                       self.parameters['adapt_step']:
+                        self.change_step_size(1.5)
+                        msg = "Adapt step size. New step size: {}".format(self.step)
+                        # print_control(enlist(self.step), msg)
+                        logger.info(msg)
 
-                if nliter < self.parameters['max_adapt_iter'] and\
-                   self.parameters['adapt_step']:
-                    self.change_step_size(1.5)
-                    msg = "Adapt step size. New step size: {:.2f}".format(self.step[0])
-                    logger.info(msg)
+                self.control_values.append(delist(copy(self.control,
+                                                  deepcopy=True,
+                                                  name='Previous control')))
 
-                self.control_values.append(copy(delist(self.control), deepcopy=True,
-                                           name='Previous control'))
-
-                self.prev_states.append(copy(self.problem.state, deepcopy=True,
+                self.prev_states.append(copy(self.problem.state,
+                                             deepcopy=True,
                                              name='Previous state'))
         return self.prev_states, self.control_values
 
@@ -418,25 +446,6 @@ class Iterator(object):
 
     def print_control(self):
         msg = 'Current control: '
-        def print_control(cs, msg):
-            controls = [constant2float(c) for c in cs]
-            
-            if len(controls) > 3:
-                msg += ('\n\tMin:{:.2f}\tMean:{:.2f}\tMax:{:.2f}'
-                        '').format(np.min(controls),
-                                   np.mean(controls),
-                                   np.max(controls))
-            else:
-                cs = []
-                for c in controls:
-                    if hasattr(c, '__len__'):
-                        msg += print_control(c, msg)
-                    else:
-                        cs.append(c)
-                if cs:
-                    msg += ','.join(['{:.3f}'.format(c) for c in controls])
-            return msg
-
         msg = print_control(self.control, msg)
         logger.info(msg)
 
@@ -449,9 +458,9 @@ class Iterator(object):
         c0, c1 = self.control_values[-2:]
         s0, s1 = self.prev_states[-2:]
 
-        delta = get_delta(self.control, c0, c1)
+        delta = get_delta(delist(self.control), c0, c1)
 
-        if has_dolfin_adjoint and annotation.annotate:
+        if has_dolfin_adjoint:
             w = dolfin.Function(self.problem.state.function_space())
 
             w.vector().zero()
@@ -490,17 +499,26 @@ class Iterator(object):
         reached in the next iteration
         """
         logger.info("Change step size for final iteration")
-        
-        
-        if isinstance(self.target, (dolfin.Function, Function)):
-            step = Function(self.target.function_space())
-            step.vector().axpy(1.0, self.target.vector())
+
+        target = delist(self.target)
+        prev_control = delist(prev_control)
+
+        if isinstance(target, (dolfin.Function, Function)):
+            step = Function(target.function_space())
+            step.vector().axpy(1.0, target.vector())
             step.vector().axpy(-1.0, prev_control.vector())
-        elif isinstance(self.target, (list, np.ndarray, tuple)):
+        elif isinstance(target, (list, np.ndarray, tuple)):
+            if isinstance(prev_control, (dolfin.Function, Function)):
+                prev = numpy_mpi.gather_broadcast(prev_control.vector().get_local())
+            else:
+                prev = prev_control
+            
             step = np.array([constant2float(t) - constant2float(c)
-                             for (t, c) in zip(self.target, enlist(prev_control))])
+                             for (t, c) in zip(target, prev)])
+        elif isinstance(target, (dolfin.Constant, Constant)):
+            step = constant2float(target) - constant2float(prev_control)
         else:
-            step = self.target - prev_control
+            step = target - prev_control
                     
         self.step = step
         

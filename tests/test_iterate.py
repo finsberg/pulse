@@ -1,8 +1,6 @@
 import pytest
 import itertools
-
-from pulse.example_meshes import mesh_paths
-from pulse.geometry import HeartGeometry
+import numpy as np
 from pulse.iterate import iterate
 
 try:
@@ -21,35 +19,30 @@ if has_dolfin_adjoint:
 else:
     annotates = (False, False)
 
+from utils import make_lv_mechanics_problem
+
 cases = itertools.product((False, True), annotates)
 
 
 @pytest.fixture
 def problem():
-
-    geometry = HeartGeometry.from_file(mesh_paths['simple_ellipsoid'])
-    from utils import make_mechanics_problem
-    problem = make_mechanics_problem(geometry)
-
+    problem = make_lv_mechanics_problem('R_0')
     return problem
 
 
-@pytest.mark.parametrize('continuation, annotate', cases)
-def test_iterate_pressure(problem, continuation, annotate):
+def test_iterate_pressure(problem):
 
     target_pressure = 1.0
     plv = [p.traction for p in problem.bcs.neumann if p.name == 'lv']
     pressure = plv[0]
 
     if has_dolfin_adjoint:
-        dolfin.parameters["adjoint"]["stop_annotating"] = not annotate
+        dolfin.parameters["adjoint"]["stop_annotating"] = False
         dolfin_adjoint.adj_reset()
 
-    iterate(problem, pressure,
-            target_pressure,
-            continuation=continuation)
+    iterate(problem, pressure, target_pressure)
 
-    if annotate:
+    if has_dolfin_adjoint:
         # Check the recording
         assert dolfin_adjoint.replay_dolfin(tol=1e-12)
 
@@ -59,31 +52,81 @@ def test_iterate_pressure(problem, continuation, annotate):
     assert dolfin.norm(problem.state.vector()) > 0
 
 
-@pytest.mark.parametrize('continuation, annotate', cases)
-def test_iterate_gamma(problem, continuation, annotate):
+def test_iterate_gamma(problem):
 
     target_gamma = 0.1
     gamma = problem.material.activation
 
     if has_dolfin_adjoint:
-        dolfin.parameters["adjoint"]["stop_annotating"] = not annotate
+        dolfin.parameters["adjoint"]["stop_annotating"] = False
+        dolfin_adjoint.adj_reset()
+
+    iterate(problem, gamma, target_gamma)
+
+    assert all(gamma.vector().get_local() == target_gamma)
+    assert dolfin.norm(problem.state.vector()) > 0
+
+    if has_dolfin_adjoint:
+        assert dolfin_adjoint.replay_dolfin(tol=1e-12)
+
+
+def test_iterate_gamma_regional():
+    problem = make_lv_mechanics_problem('regional')
+    target_gamma = problem.material.activation.vector().get_local()
+    for i in range(len(target_gamma)):
+        target_gamma[i] = 0.1 - i*0.001
+    print(target_gamma)
+
+    gamma = problem.material.activation
+
+    if has_dolfin_adjoint:
+        dolfin.parameters["adjoint"]["stop_annotating"] = False
+        dolfin_adjoint.adj_reset()
+
+    iterate(problem, gamma, target_gamma)
+
+    print(gamma.vector().get_local())
+    assert np.all(gamma.vector().get_local() - target_gamma < 1e-12)
+    assert dolfin.norm(problem.state.vector()) > 0
+
+    if has_dolfin_adjoint:
+        assert dolfin_adjoint.replay_dolfin(tol=1e-12)
+
+
+@pytest.mark.parametrize('continuation', [True, False])
+def test_iterate_gamma_cg1(continuation):
+
+    problem = make_lv_mechanics_problem('CG_1')
+    V = problem.material.activation.function_space()
+    target_gamma \
+        = dolfin.interpolate(dolfin.Expression('0.1 * x[0]',
+                                               degree=1), V)
+    gamma = problem.material.activation
+
+    if has_dolfin_adjoint:
+        dolfin.parameters["adjoint"]["stop_annotating"] = False
         dolfin_adjoint.adj_reset()
 
     iterate(problem, gamma,
             target_gamma,
             continuation=continuation)
 
-    assert all(gamma.vector().get_local() == target_gamma)
+    assert np.all(gamma.vector().get_local()
+                  - target_gamma.vector().get_local() < 1e-12)
     assert dolfin.norm(problem.state.vector()) > 0
 
-    if annotate:
-        # dolfin_adjoint.adj_html("active_forward.html", "forward")
-        # dolfin_adjoint.adj_html("active_adjoint.html", "adjoint")
-        # Check the recording
+    if has_dolfin_adjoint:
         assert dolfin_adjoint.replay_dolfin(tol=1e-12)
 
 
 if __name__ == "__main__":
+
+    prob = problem()
+    # test_iterate_pressure(prob)
+    # test_iterate_gamma(prob)
+    test_iterate_gamma_regional()
+    # test_iterate_gamma_cg1(True)
+    exit()
 
     for c, a in cases:
         print("Continuation = {}, annotate = {}".format(c, a))
