@@ -253,8 +253,11 @@ class MechanicsProblem(object):
         """
 
         if has_dolfin_adjoint:
-            self.state.assign(state, annotate=annotate)
-
+            try:
+                self.state.assign(state, annotate=annotate)
+            except Exception as ex:
+                print(ex)
+                self.state.assign(state)
         else:
             self.state.assign(state)
 
