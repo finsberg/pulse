@@ -230,16 +230,19 @@ def step_too_large(current, target, step):
         target = numpy_mpi.gather_broadcast(target.vector().get_local())
     elif isinstance(target, (Constant, dolfin.Constant)):
         target = constant2float(target)
+    target = squeeze(target)
 
     if isinstance(current, (dolfin.Function, Function)):
         current = numpy_mpi.gather_broadcast(current.vector().get_local())
     elif isinstance(current, (Constant, dolfin.Constant)):
         current = constant2float(current)
+    current = squeeze(current)
 
     if isinstance(step, (dolfin.Function, Function)):
         step = numpy_mpi.gather_broadcast(step.vector().get_local())
     elif isinstance(step, (Constant, dolfin.Constant)):
         step = constant2float(step)
+    step = squeeze(step)
 
     if isinstance(target, (float, int)):
         comp = op.gt if current < target else op.lt
@@ -251,7 +254,6 @@ def step_too_large(current, target, step):
         for (c, t, s) in zip(current, target, step):
             too_large.append(step_too_large(c, t, s))
 
-    print(too_large)
     return np.any(too_large)
 
 
@@ -442,7 +444,11 @@ class Iterator(object):
         return self.prev_states, self.control_values
 
     def change_step_size(self, factor):
-        self.step = factor * delist(self.step)
+        step = delist(self.step)
+        if isinstance(step, (list, tuple)):
+            self.step = [factor * s for s in step]
+        else:
+            self.step = factor * step
 
     def print_control(self):
         msg = 'Current control: '
