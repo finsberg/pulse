@@ -134,8 +134,15 @@ def get_delta(new_control, c0, c1):
         msg = ('Unexpected type for new_crontrol in get_delta'
                'Got {}').format(type(delta))
         raise TypeError(msg)
-    
+
     return squeeze(delta)
+
+
+def np2str(c, fmt="{:.3f}"):
+    if isinstance(c, (np.ndarray, list, tuple)):
+        return ', '.join(['{:.3f}'.format(ci) for ci in c])
+    return '{:.3f}'.format(c)
+
 
 def print_control(cs, msg):
 
@@ -154,7 +161,7 @@ def print_control(cs, msg):
             else:
                 cs.append(c)
         if cs:
-            msg += ','.join(['{:.3f}'.format(c) for c in controls])
+            msg += ','.join([np2str(c) for c in controls])
     return msg
 
 def get_diff(current, target):
@@ -430,7 +437,7 @@ class Iterator(object):
                     if nliter < self.parameters['max_adapt_iter'] and\
                        self.parameters['adapt_step']:
                         self.change_step_size(1.5)
-                        msg = "Adapt step size. New step size: {}".format(self.step)
+                        msg = "Adapt step size. New step size: {}".format(np2str(self.step))
                         # print_control(enlist(self.step), msg)
                         logger.info(msg)
 
