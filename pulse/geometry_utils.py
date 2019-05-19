@@ -742,7 +742,7 @@ def save_geometry_to_h5(mesh, h5name, h5group="", markers=None,
     logger.info("Geometry saved to {}".format(h5name))
 
 
-def mark_strain_regions(mesh, foc, nsectors=(6, 6, 4, 1), mark_mesh=True):
+def mark_strain_regions(mesh, foc=None, nsectors=(6, 6, 4, 1), mark_mesh=True):
     """Mark the cells in the mesh.
 
     For instance if you want to mark this mesh accoring to
@@ -802,6 +802,9 @@ def mark_cell_function(fun, mesh, foc, regions):
     Iterates over the mesh and stores the
     region number in a meshfunction
     """
+
+    if foc is None:
+        foc = estimate_focal_point(mesh)
 
     for cell in dolfin.cells(mesh):
 
@@ -887,3 +890,36 @@ def get_sector(regions, theta):
                     sectors.append(i)
 
     return sectors
+
+
+def estimate_focal_point(mesh):
+    """Copmute the focal point based on approximating the 
+    endocardial surfaces as a ellipsoidal cap.
+    
+    .. math::
+
+           focal = \sqrt{ l^2 - s^2}
+
+
+    Arguments
+    ---------
+    mesh: `dolfin.mesh`
+        The mesh
+
+    Returns
+    -------
+    focal_point: float
+        The focal point
+
+    """
+
+    max_coord = np.max(mesh.coordinates(), 0)
+    min_coord = np.min(mesh.coordinates(), 0)
+
+    axis = np.abs(max_coord - min_coord)
+    long_axis = np.max(axis)
+    short_axis = np.min(axis)
+
+    focal = np.sqrt(long_axis**2 - short_axis**2)
+
+    return focal
