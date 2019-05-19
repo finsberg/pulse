@@ -20,7 +20,7 @@ URL = 'https://github.com/finsberg/pulse'
 EMAIL = 'henriknf@simula.no'
 AUTHOR = 'Henrik Finsberg'
 REQUIRES_PYTHON = '>=3.5.0'
-VERSION = '0.1.2'
+VERSION = '0.1.3'
 
 # What packages are required for this module to be executed?
 REQUIRED = [
@@ -120,10 +120,10 @@ setup(
     classifiers=[
         # Trove classifiers
         # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
-        'License :: OSI Approved :: LGPL version 3 or later',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: Implementation :: CPython',
+        # 'License :: OSI Approved :: LGPL version 3 or later',
+        # 'Programming Language :: Python',
+        # 'Programming Language :: Python :: 3',
+        # 'Programming Language :: Python :: Implementation :: CPython',
     ],
     # $ setup.py publish support.
     cmdclass={

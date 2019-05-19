@@ -119,6 +119,45 @@ def test_iterate_gamma_cg1(continuation):
         assert dolfin_adjoint.replay_dolfin(tol=1e-12)
 
 
+def test_iterate_gamma_pressure(problem):
+    target_pressure = 1.0
+    plv = [p.traction for p in problem.bcs.neumann if p.name == 'lv']
+    pressure = plv[0]
+
+    target_gamma = 0.1
+    gamma = problem.material.activation
+
+    if has_dolfin_adjoint:
+        dolfin.parameters["adjoint"]["stop_annotating"] = False
+        dolfin_adjoint.adj_reset()
+
+    iterate(problem, (pressure, gamma), (target_pressure, target_gamma))
+
+    assert all(gamma.vector().get_local() == target_gamma)
+    assert float(plv[0]) == target_pressure
+    assert dolfin.norm(problem.state.vector()) > 0
+    
+
+    if has_dolfin_adjoint:
+        assert dolfin_adjoint.replay_dolfin(tol=1e-12)
+
+def test_iterate_regional_gamma_pressure():
+
+    problem = make_lv_mechanics_problem('regional')
+    target_gamma = problem.material.activation.vector().get_local()
+    for i in range(len(target_gamma)):
+        target_gamma[i] = 0.1 - i*0.001
+    gamma = problem.material.activation
+
+    target_pressure = 1.0
+    plv = [p.traction for p in problem.bcs.neumann if p.name == 'lv']
+    pressure = plv[0]
+
+    with pytest.raises(ValueError):
+        iterate(problem, (pressure, gamma), (target_pressure, target_gamma))
+
+
+
 if __name__ == "__main__":
 
     prob = problem()
@@ -126,6 +165,8 @@ if __name__ == "__main__":
     # test_iterate_gamma(prob)
     test_iterate_gamma_regional()
     # test_iterate_gamma_cg1(True)
+    # test_iterate_gamma_pressure(prob)
+    # test_iterate_regional_gamma_pressure()
     exit()
 
     for c, a in cases:

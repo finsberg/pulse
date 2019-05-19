@@ -138,7 +138,8 @@ def get_delta(new_control, c0, c1):
     return squeeze(delta)
 
 
-def np2str(c, fmt="{:.3f}"):
+def np2str(c_, fmt="{:.3f}"):
+    c = delist(c_)
     if isinstance(c, (np.ndarray, list, tuple)):
         return ', '.join(['{:.3f}'.format(ci) for ci in c])
     return '{:.3f}'.format(c)
@@ -168,7 +169,6 @@ def get_diff(current, target):
     """
     Get difference between current and target value
     """
-
     if isinstance(target, (Function, dolfin.Function)):
         diff = target.vector() - current.vector()
 
@@ -327,6 +327,7 @@ class Iterator(object):
                  old_controls=None,
                  **params
     ):
+        
         logger.setLevel(parameters['log_level'])
         self.parameters = Iterator.default_parameters()
         self.parameters.update(params)
@@ -551,6 +552,13 @@ class Iterator(object):
             targets.append(t)
         
         self.target = Enlisted(targets)
+        t0 = self.target[0]
+        msg = ('Unsuppoert shape of control and target. '
+               "Can only hadnle single arrays or multiple scalars.")
+        for t in self.target[1:]:
+            if t0.value_shape().size > 0 or \
+               t.value_shape().size > 0:
+                raise(ValueError(msg))
         logger.info('Target: {}'.format([constant2float(t) for t in self.target]))
 
 
