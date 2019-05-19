@@ -95,8 +95,6 @@ class MeshUnloader(object):
         self.h5name = h5name
         self.h5group = h5group
 
-        self.u_file = dolfin.File('u.pvd')
-        self.u_file << self.U
         if os.path.isfile(h5name) and overwrite:
             if dolfin.mpi_comm_world().rank == 0:
                 os.remove(h5name)
@@ -336,7 +334,6 @@ class FixedPointUnloader(MeshUnloader):
 
             u_arr = numpy_mpi.gather_broadcast(u.vector().get_local())
             numpy_mpi.assign_to_vector(self.U.vector(), u_arr)
-            self.u_file << self.U
 
             # The displacent field that we will move the mesh according to
             if save:
@@ -364,7 +361,7 @@ class FixedPointUnloader(MeshUnloader):
             u = utils.inflate_to_pressure(self.pressure, problem,
                                           self.parameters["solve_tries"],
                                           self.n, annotate=False)
-            self.u_file << u
+
             utils.print_volumes(new_geometry, txt='inflated', u=u)
 
             # Move the mesh accoring to the new displacement
