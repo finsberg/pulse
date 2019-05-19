@@ -186,12 +186,12 @@ ventricular ellipsoid and a bi-ventricular ellipsoid.</p>
 <h2>Left ventricular ellipsoid<a class="headerlink" href="#left-ventricular-ellipsoid" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="code">
 <h3>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h3>
-<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">dolfin</span> <span class="k">as</span> <span class="nn">df</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">dolfin</span> <span class="kn">as</span> <span class="nn">df</span>
 <span class="kn">import</span> <span class="nn">mshr</span>
 
-<span class="kn">from</span> <span class="nn">pulse.geometry_utils</span> <span class="k">import</span> <span class="n">generate_fibers</span>
-<span class="kn">from</span> <span class="nn">pulse.geometry</span> <span class="k">import</span> <span class="n">Microstructure</span><span class="p">,</span> <span class="n">Geometry</span><span class="p">,</span> <span class="n">MarkerFunctions</span>
+<span class="kn">from</span> <span class="nn">pulse.geometry_utils</span> <span class="kn">import</span> <span class="n">generate_fibers</span>
+<span class="kn">from</span> <span class="nn">pulse.geometry</span> <span class="kn">import</span> <span class="n">Microstructure</span><span class="p">,</span> <span class="n">Geometry</span><span class="p">,</span> <span class="n">MarkerFunctions</span>
 
 
 <span class="n">base_x</span> <span class="o">=</span> <span class="mf">0.0</span>
@@ -279,7 +279,7 @@ ventricular ellipsoid and a bi-ventricular ellipsoid.</p>
 <span class="n">fiber_params</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">Parameters</span><span class="p">(</span><span class="s2">&quot;Fibers&quot;</span><span class="p">)</span>
 <span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;fiber_space&quot;</span><span class="p">,</span> <span class="s2">&quot;CG_1&quot;</span><span class="p">)</span>
 <span class="c1"># fiber_params.add(&quot;fiber_space&quot;, &quot;Quadrature_4&quot;)</span>
-<span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;include_sheets&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+<span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;include_sheets&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
 <span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;fiber_angle_epi&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">60</span><span class="p">)</span>
 <span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;fiber_angle_endo&quot;</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
 
@@ -327,12 +327,12 @@ ventricular ellipsoid and a bi-ventricular ellipsoid.</p>
 <h2>Bi-ventricular ellipsoid<a class="headerlink" href="#bi-ventricular-ellipsoid" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id1">
 <h3>Code<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">dolfin</span> <span class="k">as</span> <span class="nn">df</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">dolfin</span> <span class="kn">as</span> <span class="nn">df</span>
 <span class="kn">import</span> <span class="nn">mshr</span>
 
-<span class="kn">from</span> <span class="nn">pulse.geometry_utils</span> <span class="k">import</span> <span class="n">generate_fibers</span>
-<span class="kn">from</span> <span class="nn">pulse.geometry</span> <span class="k">import</span> <span class="n">Microstructure</span><span class="p">,</span> <span class="n">Geometry</span><span class="p">,</span> <span class="n">MarkerFunctions</span>
+<span class="kn">from</span> <span class="nn">pulse.geometry_utils</span> <span class="kn">import</span> <span class="n">generate_fibers</span>
+<span class="kn">from</span> <span class="nn">pulse.geometry</span> <span class="kn">import</span> <span class="n">Microstructure</span><span class="p">,</span> <span class="n">Geometry</span><span class="p">,</span> <span class="n">MarkerFunctions</span>
 
 <span class="n">base_x</span> <span class="o">=</span> <span class="mf">0.0</span>
 
@@ -457,7 +457,7 @@ ventricular ellipsoid and a bi-ventricular ellipsoid.</p>
 <span class="n">fiber_params</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">Parameters</span><span class="p">(</span><span class="s2">&quot;Fibers&quot;</span><span class="p">)</span>
 <span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;fiber_space&quot;</span><span class="p">,</span> <span class="s2">&quot;CG_1&quot;</span><span class="p">)</span>
 <span class="c1"># fiber_params.add(&quot;fiber_space&quot;, &quot;Quadrature_4&quot;)</span>
-<span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;include_sheets&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+<span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;include_sheets&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
 <span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;fiber_angle_epi&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">60</span><span class="p">)</span>
 <span class="n">fiber_params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;fiber_angle_endo&quot;</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
 

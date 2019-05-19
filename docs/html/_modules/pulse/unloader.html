@@ -171,7 +171,7 @@
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">unloading_utils</span> <span class="k">as</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">numpy_mpi</span>
-<span class="kn">from</span> <span class="nn">.mechanicsproblem</span> <span class="k">import</span> <span class="n">MechanicsProblem</span>
+<span class="kn">from</span> <span class="nn">.mechanicsproblem</span> <span class="k">import</span> <span class="n">MechanicsProblem</span><span class="p">,</span> <span class="n">cardiac_boundary_conditions</span>
 
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">make_logger</span>
 
@@ -500,16 +500,22 @@
             <span class="c1"># Create new reference geomtry</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Create new reference geometry&quot;</span><span class="p">)</span>
             <span class="n">new_geometry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">u</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">,</span> <span class="n">factor</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">)</span>
-
             <span class="n">utils</span><span class="o">.</span><span class="n">print_volumes</span><span class="p">(</span><span class="n">new_geometry</span><span class="p">,</span> <span class="n">txt</span><span class="o">=</span><span class="s1">&#39;original&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">save</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">new_geometry</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span>
                           <span class="s2">&quot;reference_geometry/mesh&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">it</span><span class="p">))</span>
 
             <span class="n">material</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">new_geometry</span><span class="p">)</span>
+            <span class="c1"># TDOO: Make a copy function for bcs as well</span>
+            <span class="c1"># use cardiac_boundary_conditions function for mechanicsproblem</span>
+            <span class="c1"># in make_solver_paramerters</span>
+            <span class="n">bcs</span> <span class="o">=</span> <span class="n">cardiac_boundary_conditions</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">new_geometry</span><span class="p">,</span>
+                                              <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
             <span class="n">problem</span> <span class="o">=</span> <span class="n">MechanicsProblem</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">new_geometry</span><span class="p">,</span>
                                        <span class="n">material</span><span class="o">=</span><span class="n">material</span><span class="p">,</span>
-                                       <span class="n">bcs_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">bcs_parameters</span><span class="p">)</span>
+                                       <span class="n">bcs</span><span class="o">=</span><span class="n">bcs</span><span class="p">)</span>
+                                       <span class="c1"># bcs=self.problem.bcs)</span>
+                                       <span class="c1"># bcs_parameters=self.problem.bcs_parameters)</span>
 
             <span class="c1"># Solve</span>
             <span class="n">u</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">inflate_to_pressure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pressure</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span>

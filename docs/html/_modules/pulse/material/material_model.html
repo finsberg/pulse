@@ -295,12 +295,9 @@
 
                 <span class="n">ind_space</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">proj_space</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">Function</span><span class="p">(</span><span class="n">ind_space</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">k</span><span class="p">))</span>
-
                 <span class="n">mat</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
-
                 <span class="n">matfun</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">function</span>
-
-                <span class="n">mat</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">project</span><span class="p">(</span><span class="n">matfun</span><span class="p">,</span> <span class="n">ind_space</span><span class="p">))</span>
+                <span class="n">mat</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">dolfin</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">matfun</span><span class="p">,</span> <span class="n">ind_space</span><span class="p">))</span>
 
             <span class="k">else</span><span class="p">:</span>
 

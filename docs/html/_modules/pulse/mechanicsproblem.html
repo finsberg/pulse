@@ -204,7 +204,7 @@
 
 
 <div class="viewcode-block" id="cardiac_boundary_conditions"><a class="viewcode-back" href="../../pulse.html#pulse.mechanicsproblem.cardiac_boundary_conditions">[docs]</a><span class="k">def</span> <span class="nf">cardiac_boundary_conditions</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">pericardium_spring</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
-                                <span class="n">base_spring</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">base_bc</span><span class="o">=</span><span class="s1">&#39;fix_x&#39;</span><span class="p">):</span>
+                                <span class="n">base_spring</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">base_bc</span><span class="o">=</span><span class="s1">&#39;fix_x&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
     <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Cardiac boundary conditions can only be applied to a &#39;</span>
            <span class="s1">&#39;HeartGeometry got </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">geometry</span><span class="p">)))</span>
@@ -216,7 +216,7 @@
                             <span class="n">marker</span><span class="o">=</span><span class="n">lv_marker</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;lv&#39;</span><span class="p">)</span>
     <span class="n">neumann_bc</span> <span class="o">=</span> <span class="p">[</span><span class="n">lv_pressure</span><span class="p">]</span>
 
-    <span class="k">if</span> <span class="s1">&#39;ENDO_RV&#39;</span> <span class="ow">in</span> <span class="n">geometry</span><span class="o">.</span><span class="n">markers</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">geometry</span><span class="o">.</span><span class="n">is_biv</span><span class="p">:</span>
 
         <span class="n">rv_pressure</span> <span class="o">=</span> <span class="n">NeumannBC</span><span class="p">(</span><span class="n">traction</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;lv_pressure&#39;</span><span class="p">),</span>
                                 <span class="n">marker</span><span class="o">=</span><span class="n">geometry</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="s1">&#39;ENDO_RV&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
@@ -268,7 +268,9 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for mechanics problem</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometry</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">bcs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bcs_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometry</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span>
+                 <span class="n">bcs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bcs_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Initialize mechanics problem&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span> <span class="o">=</span> <span class="n">geometry</span>
@@ -289,9 +291,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bcs</span> <span class="o">=</span> <span class="n">bcs</span>
 
+            <span class="c1"># TODO: FIX THIS or require this</span>
             <span class="c1"># Just store this as well in case both is provided</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bcs_parameters</span> <span class="o">=</span> <span class="n">MechanicsProblem</span><span class="o">.</span><span class="n">default_bcs_parameters</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">bcs_parameters</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">bcs_parameters</span> <span class="o">=</span> <span class="n">MechanicsProblem</span><span class="o">.</span><span class="n">default_bcs_parameters</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">bcs_parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">bcs_parameters</span><span class="p">)</span>
 
         <span class="c1"># Make sure that the material has microstructure information</span>
@@ -300,6 +303,9 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_spaces</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_forms</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span> <span class="o">=</span> <span class="n">MechanicsProblem</span><span class="o">.</span><span class="n">defaul_solver_parameters</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">solver_parameters</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">solver_parameters</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MechanicsProblem.default_bcs_parameters"><a class="viewcode-back" href="../../pulse.html#pulse.mechanicsproblem.MechanicsProblem.default_bcs_parameters">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">default_bcs_parameters</span><span class="p">():</span>
@@ -400,13 +406,19 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">has_dolfin_adjoint</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">annotate</span><span class="o">=</span><span class="n">annotate</span><span class="p">)</span>
-
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">annotate</span><span class="o">=</span><span class="n">annotate</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_forms</span><span class="p">()</span></div>
 
+<div class="viewcode-block" id="MechanicsProblem.defaul_solver_parameters"><a class="viewcode-back" href="../../pulse.html#pulse.mechanicsproblem.MechanicsProblem.defaul_solver_parameters">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">defaul_solver_parameters</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">NonlinearVariationalSolver</span><span class="o">.</span><span class="n">default_parameters</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span></div>
 <div class="viewcode-block" id="MechanicsProblem.solve"><a class="viewcode-back" href="../../pulse.html#pulse.mechanicsproblem.MechanicsProblem.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Solve the variational problem</span>
@@ -441,6 +453,8 @@
                                           <span class="bp">self</span><span class="o">.</span><span class="n">_jacobian</span><span class="p">)</span>
 
         <span class="n">solver</span> <span class="o">=</span> <span class="n">NonlinearVariationalSolver</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+        <span class="n">solver</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="p">)</span>
+        
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Try to solve&#39;</span><span class="p">)</span>

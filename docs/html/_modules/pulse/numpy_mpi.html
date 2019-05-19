@@ -271,9 +271,16 @@
     <span class="k">return</span> <span class="n">cpp_module</span><span class="o">.</span><span class="n">distribution</span><span class="p">(</span><span class="n">mpi_comm_world</span><span class="p">(),</span> <span class="n">number</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="gather_broadcast"><a class="viewcode-back" href="../../pulse.html#pulse.numpy_mpi.gather_broadcast">[docs]</a><span class="k">def</span> <span class="nf">gather_broadcast</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span>
+
     <span class="n">arr</span> <span class="o">=</span> <span class="n">gather</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">flatten</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
     <span class="n">arr</span> <span class="o">=</span> <span class="n">broadcast</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">arr</span></div>
+
+    <span class="k">return</span> <span class="n">arr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="assign_to_vector"><a class="viewcode-back" href="../../pulse.html#pulse.numpy_mpi.assign_to_vector">[docs]</a><span class="k">def</span> <span class="nf">assign_to_vector</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>

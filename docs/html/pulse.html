@@ -237,23 +237,19 @@ will be given a zero value.</p>
 <dl class="class">
 <dt id="pulse.dolfin_utils.MixedParameter">
 <em class="property">class </em><code class="descclassname">pulse.dolfin_utils.</code><code class="descname">MixedParameter</code><span class="sig-paren">(</span><em>fun</em>, <em>n</em>, <em>name='material_parameters'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/dolfin_utils.html#MixedParameter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.dolfin_utils.MixedParameter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dolfin_adjoint.function.Function</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dolfin.functions.function.Function</span></code></p>
 <dl class="method">
 <dt id="pulse.dolfin_utils.MixedParameter.assign_sub">
 <code class="descname">assign_sub</code><span class="sig-paren">(</span><em>f</em>, <em>i</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/dolfin_utils.html#MixedParameter.assign_sub"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.dolfin_utils.MixedParameter.assign_sub" title="Permalink to this definition">¶</a></dt>
 <dd><p>Assign subfunction</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>f</strong> – The function you want to assign</li>
-<li><strong>i</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – The subspace number</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> – The function you want to assign</p></li>
+<li><p><strong>i</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – The subspace number</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -265,33 +261,29 @@ will be given a zero value.</p>
 FunctionSpace is defined for quadrature spaces.
 This functions checks your dolfin version and returns the correct
 quadrature space</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>mesh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dolfin.Mesh</span></code>) – The mesh</li>
-<li><strong>degree</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – The degree of the element</li>
-<li><strong>dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – For a mesh of topological dimension 3,
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mesh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dolfin.Mesh</span></code>) – The mesh</p></li>
+<li><p><strong>degree</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – The degree of the element</p></li>
+<li><p><strong>dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – For a mesh of topological dimension 3,
 dim = 1 would be a scalar function, and
-dim = 3 would be a vector function.</li>
+dim = 3 would be a vector function.</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The quadrature space</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal notranslate"><span class="pre">dolfin.FunctionSpace</span></code></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The quadrature space</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dolfin.FunctionSpace</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="class">
 <dt id="pulse.dolfin_utils.RegionalParameter">
-<em class="property">class </em><code class="descclassname">pulse.dolfin_utils.</code><code class="descname">RegionalParameter</code><span class="sig-paren">(</span><em>meshfunction</em>, <em>name='RegionalParameter'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/dolfin_utils.html#RegionalParameter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.dolfin_utils.RegionalParameter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dolfin_adjoint.function.Function</span></code></p>
+<em class="property">class </em><code class="descclassname">pulse.dolfin_utils.</code><code class="descname">RegionalParameter</code><span class="sig-paren">(</span><em>meshfunction</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/dolfin_utils.html#RegionalParameter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.dolfin_utils.RegionalParameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dolfin.functions.function.Function</span></code></p>
 <p>A regional paramerter defined in terms of a dolfin.MeshFunction</p>
 <p>Suppose you have a MeshFunction defined different regions in your mesh,
 and you want to define different parameters on different regions,
@@ -301,30 +293,27 @@ then this is what you want.</p>
 <code class="descname">function</code><a class="headerlink" href="#pulse.dolfin_utils.RegionalParameter.function" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return linear combination of coefficents
 and basis functions</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A function with parameter values at each segment
-specified by the meshfunction</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">:py:class`dolfin.Function</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A function with parameter values at each segment
+specified by the meshfunction</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>:py:class`dolfin.Function</p>
+</dd>
+</dl>
 </dd></dl>
+
+<dl class="method">
+<dt id="pulse.dolfin_utils.RegionalParameter.get_values">
+<code class="descname">get_values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/dolfin_utils.html#RegionalParameter.get_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.dolfin_utils.RegionalParameter.get_values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="attribute">
 <dt id="pulse.dolfin_utils.RegionalParameter.proj_space">
 <code class="descname">proj_space</code><a class="headerlink" href="#pulse.dolfin_utils.RegionalParameter.proj_space" title="Permalink to this definition">¶</a></dt>
 <dd><p>Space for projecting the scalars.
 This is a DG 0 space.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pulse.dolfin_utils.RegionalParameter.values">
-<code class="descname">values</code><a class="headerlink" href="#pulse.dolfin_utils.RegionalParameter.values" title="Permalink to this definition">¶</a></dt>
-<dd><p>The regional values</p>
 </dd></dl>
 
 </dd></dl>
@@ -363,7 +352,7 @@ the domain.</p>
 
 <dl class="function">
 <dt id="pulse.dolfin_utils.get_constant">
-<code class="descclassname">pulse.dolfin_utils.</code><code class="descname">get_constant</code><span class="sig-paren">(</span><em>val</em>, <em>value_size=None</em>, <em>value_rank=0</em>, <em>constant=&lt;class 'dolfin_adjoint.constant.Constant'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/dolfin_utils.html#get_constant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.dolfin_utils.get_constant" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pulse.dolfin_utils.</code><code class="descname">get_constant</code><span class="sig-paren">(</span><em>val</em>, <em>value_size=None</em>, <em>value_rank=0</em>, <em>constant=&lt;class 'dolfin.functions.constant.Constant'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/dolfin_utils.html#get_constant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.dolfin_utils.get_constant" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -382,18 +371,17 @@ the domain.</p>
 <code class="descclassname">pulse.dolfin_utils.</code><code class="descname">get_spaces</code><span class="sig-paren">(</span><em>mesh</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/dolfin_utils.html#get_spaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.dolfin_utils.get_spaces" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an object of dolfin FunctionSpace, to
 be used in the optimization pipeline</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mesh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dolfin.Mesh</span></code>) – The mesh</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">An object of functionspaces</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)">object</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mesh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dolfin.Mesh</span></code>) – The mesh</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An object of functionspaces</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)">object</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -410,17 +398,15 @@ be used in the optimization pipeline</p>
 <dd><p>Return the sum of a list, when the convetiional
 method (like <cite>sum</cite>) it not working.
 For example if you have a list of dolfin functions.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>l</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – a list of objects</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The sum of the list. The type depends on
-the type of elemets in the list</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>l</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – a list of objects</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The sum of the list. The type depends on
+the type of elemets in the list</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -501,24 +487,20 @@ given in the mesh</p>
 <em class="property">class </em><code class="descclassname">pulse.geometry.</code><code class="descname">Geometry</code><span class="sig-paren">(</span><em>mesh</em>, <em>markers=None</em>, <em>marker_functions=None</em>, <em>microstructure=None</em>, <em>crl_basis=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry.html#Geometry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry.Geometry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Base class for geometry</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>mesh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dolfin.mesh</span></code>) – The mesh</li>
-<li><strong>markers</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – A dictionary with markers for the mesh (optional)</li>
-<li><strong>marker_functions</strong> (<a class="reference internal" href="#pulse.geometry.MarkerFunctions" title="pulse.geometry.MarkerFunctions"><code class="xref py py-class docutils literal notranslate"><span class="pre">pulse.geometry.MarkerFunctions</span></code></a>) – A Markerfunction object with Meshfunctions for
-the mesh</li>
-<li><strong>microstructure</strong> (<a class="reference internal" href="#pulse.geometry.Microstructure" title="pulse.geometry.Microstructure"><code class="xref py py-class docutils literal notranslate"><span class="pre">pulse.geometry.Microstructure</span></code></a>) – A Markerfunction object with functions for the
-fiber, sheet and sheet normal (optional)</li>
-<li><strong>crl_basis</strong> (<a class="reference internal" href="#pulse.geometry.CRLBasis" title="pulse.geometry.CRLBasis"><code class="xref py py-class docutils literal notranslate"><span class="pre">pulse.geometry.CRLBasis</span></code></a>) – A CRLBasis objedt with funcions for the circumferential,
-radial and longitudinal vectors. (optional)</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mesh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dolfin.mesh</span></code>) – The mesh</p></li>
+<li><p><strong>markers</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – A dictionary with markers for the mesh (optional)</p></li>
+<li><p><strong>marker_functions</strong> (<a class="reference internal" href="#pulse.geometry.MarkerFunctions" title="pulse.geometry.MarkerFunctions"><code class="xref py py-class docutils literal notranslate"><span class="pre">pulse.geometry.MarkerFunctions</span></code></a>) – A Markerfunction object with Meshfunctions for
+the mesh</p></li>
+<li><p><strong>microstructure</strong> (<a class="reference internal" href="#pulse.geometry.Microstructure" title="pulse.geometry.Microstructure"><code class="xref py py-class docutils literal notranslate"><span class="pre">pulse.geometry.Microstructure</span></code></a>) – A Markerfunction object with functions for the
+fiber, sheet and sheet normal (optional)</p></li>
+<li><p><strong>crl_basis</strong> (<a class="reference internal" href="#pulse.geometry.CRLBasis" title="pulse.geometry.CRLBasis"><code class="xref py py-class docutils literal notranslate"><span class="pre">pulse.geometry.CRLBasis</span></code></a>) – A CRLBasis objedt with funcions for the circumferential,
+radial and longitudinal vectors. (optional)</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p>Geometry can be intanciated directly</p>
 <p class="rubric">Example</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dolfin</span>
@@ -619,6 +601,11 @@ self.cfun as subdomain_data</p>
 <em class="property">static </em><code class="descname">load_from_file</code><span class="sig-paren">(</span><em>h5name</em>, <em>h5group</em>, <em>comm</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry.html#Geometry.load_from_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry.Geometry.load_from_file" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="method">
+<dt id="pulse.geometry.Geometry.meshfunction_list">
+<code class="descname">meshfunction_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry.html#Geometry.meshfunction_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry.Geometry.meshfunction_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="attribute">
 <dt id="pulse.geometry.Geometry.meshvol">
 <code class="descname">meshvol</code><a class="headerlink" href="#pulse.geometry.Geometry.meshvol" title="Permalink to this definition">¶</a></dt>
@@ -674,7 +661,7 @@ by the cell function (cfun)</p>
 
 <dl class="method">
 <dt id="pulse.geometry.Geometry.save">
-<code class="descname">save</code><span class="sig-paren">(</span><em>h5name</em>, <em>h5group=''</em>, <em>overwrite_file=False</em>, <em>overwrite_group=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry.html#Geometry.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry.Geometry.save" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save</code><span class="sig-paren">(</span><em>h5name</em>, <em>h5group=''</em>, <em>other_functions=None</em>, <em>other_attributes=None</em>, <em>overwrite_file=False</em>, <em>overwrite_group=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry.html#Geometry.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry.Geometry.save" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -797,6 +784,11 @@ by the cell function (cfun)</p>
 
 </dd></dl>
 
+<dl class="function">
+<dt id="pulse.geometry.get_attribute">
+<code class="descclassname">pulse.geometry.</code><code class="descname">get_attribute</code><span class="sig-paren">(</span><em>obj</em>, <em>key1</em>, <em>key2</em>, <em>default=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry.html#get_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry.get_attribute" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 <div class="section" id="module-pulse.geometry_utils">
 <span id="pulse-geometry-utils-module"></span><h2>pulse.geometry_utils module<a class="headerlink" href="#module-pulse.geometry_utils" title="Permalink to this headline">¶</a></h2>
@@ -809,6 +801,26 @@ by the cell function (cfun)</p>
 <dt id="pulse.geometry_utils.cartesian_to_prolate_ellipsoidal">
 <code class="descclassname">pulse.geometry_utils.</code><code class="descname">cartesian_to_prolate_ellipsoidal</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>a</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry_utils.html#cartesian_to_prolate_ellipsoidal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry_utils.cartesian_to_prolate_ellipsoidal" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="function">
+<dt id="pulse.geometry_utils.estimate_focal_point">
+<code class="descclassname">pulse.geometry_utils.</code><code class="descname">estimate_focal_point</code><span class="sig-paren">(</span><em>mesh</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry_utils.html#estimate_focal_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry_utils.estimate_focal_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copmute the focal point based on approximating the
+endocardial surfaces as a ellipsoidal cap.</p>
+<div class="math notranslate nohighlight">
+\[focal = \sqrt{ l^2 - s^2}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mesh</strong> (<cite>dolfin.mesh</cite>) – The mesh</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>focal_point</strong> – The focal point</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="pulse.geometry_utils.fibers">
@@ -832,7 +844,16 @@ by the cell function (cfun)</p>
 
 <dl class="function">
 <dt id="pulse.geometry_utils.generate_fibers">
-<code class="descclassname">pulse.geometry_utils.</code><code class="descname">generate_fibers</code><span class="sig-paren">(</span><em>mesh</em>, <em>fiber_params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry_utils.html#generate_fibers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry_utils.generate_fibers" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pulse.geometry_utils.</code><code class="descname">generate_fibers</code><span class="sig-paren">(</span><em>mesh</em>, <em>fiber_params</em>, <em>ffun=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry_utils.html#generate_fibers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry_utils.generate_fibers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate fibers on mesh based on provided parameters.
+It is not recomemmended to use this function.
+Use the <cite>ldrb</cite> package directly instead. This function is
+mainly used to ensure version compatability.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pulse.geometry_utils.generate_fibers_old">
+<code class="descclassname">pulse.geometry_utils.</code><code class="descname">generate_fibers_old</code><span class="sig-paren">(</span><em>mesh</em>, <em>fiber_params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry_utils.html#generate_fibers_old"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry_utils.generate_fibers_old" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -850,18 +871,17 @@ by the cell function (cfun)</p>
 <code class="descclassname">pulse.geometry_utils.</code><code class="descname">get_fiber_markers</code><span class="sig-paren">(</span><em>mesh_type='lv'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry_utils.html#get_fiber_markers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry_utils.get_fiber_markers" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the markers for the mesh.
 This is the default markers for fiberrules.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mesh_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – type of mesh, ‘lv’ or ‘biv’</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The markers</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mesh_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – type of mesh, ‘lv’ or ‘biv’</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The markers</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -893,27 +913,23 @@ If the file contains muliple fiber fields
 you can spefify the angles, and if the file
 contais sheets and cross-sheets this can also
 be included</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>h5name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Name of the h5file</li>
-<li><strong>h5group</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The group within the file</li>
-<li><strong>fendo</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Helix fiber angle (endocardium) (if available)</li>
-<li><strong>fepi</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Helix fiber angle (epicardium) (if available)</li>
-<li><strong>include_sheets</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Include sheets and cross-sheets</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>h5name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Name of the h5file</p></li>
+<li><p><strong>h5group</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The group within the file</p></li>
+<li><p><strong>fendo</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Helix fiber angle (endocardium) (if available)</p></li>
+<li><p><strong>fepi</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Helix fiber angle (epicardium) (if available)</p></li>
+<li><p><strong>include_sheets</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Include sheets and cross-sheets</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">An object with geometry data</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)">object</a></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An object with geometry data</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)">object</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -957,7 +973,7 @@ region number in a meshfunction</p>
 
 <dl class="function">
 <dt id="pulse.geometry_utils.mark_strain_regions">
-<code class="descclassname">pulse.geometry_utils.</code><code class="descname">mark_strain_regions</code><span class="sig-paren">(</span><em>mesh</em>, <em>foc</em>, <em>nsectors=(6</em>, <em>6</em>, <em>4</em>, <em>1)</em>, <em>mark_mesh=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry_utils.html#mark_strain_regions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry_utils.mark_strain_regions" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pulse.geometry_utils.</code><code class="descname">mark_strain_regions</code><span class="sig-paren">(</span><em>mesh</em>, <em>foc=None</em>, <em>nsectors=(6</em>, <em>6</em>, <em>4</em>, <em>1)</em>, <em>mark_mesh=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry_utils.html#mark_strain_regions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry_utils.mark_strain_regions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mark the cells in the mesh.</p>
 <p>For instance if you want to mark this mesh accoring to
 the  AHA 17-segment model, then nsector = [6,6,4,1],
@@ -977,30 +993,28 @@ i.e 6 basal, 6 mid, 4 apical and one apex</p>
 
 <dl class="function">
 <dt id="pulse.geometry_utils.save_geometry_to_h5">
-<code class="descclassname">pulse.geometry_utils.</code><code class="descname">save_geometry_to_h5</code><span class="sig-paren">(</span><em>mesh</em>, <em>h5name</em>, <em>h5group=''</em>, <em>markers=None</em>, <em>fields=None</em>, <em>local_basis=None</em>, <em>comm=None</em>, <em>other_functions=None</em>, <em>other_attributes=None</em>, <em>overwrite_file=False</em>, <em>overwrite_group=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry_utils.html#save_geometry_to_h5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry_utils.save_geometry_to_h5" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pulse.geometry_utils.</code><code class="descname">save_geometry_to_h5</code><span class="sig-paren">(</span><em>mesh</em>, <em>h5name</em>, <em>h5group=''</em>, <em>markers=None</em>, <em>fields=None</em>, <em>local_basis=None</em>, <em>meshfunctions=None</em>, <em>comm=None</em>, <em>other_functions=None</em>, <em>other_attributes=None</em>, <em>overwrite_file=False</em>, <em>overwrite_group=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry_utils.html#save_geometry_to_h5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry_utils.save_geometry_to_h5" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save geometry and other geometrical functions to a HDF file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>mesh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dolfin.mesh</span></code>) – The mesh</li>
-<li><strong>h5name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to the file</li>
-<li><strong>h5group</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Folder within the file. Default is “” which means in
-the top folder.</li>
-<li><strong>markers</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – A dictionary with markers. See <cite>get_markers</cite>.</li>
-<li><strong>fields</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – A list of functions for the microstructure</li>
-<li><strong>local_basis</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – A list of functions for the crl basis</li>
-<li><strong>comm</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dolfin.MPI</span></code>) – MPI communicator</li>
-<li><strong>other_functions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Dictionary with other functions you want to save</li>
-<li><strong>other_attributes</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Dictionary with other attributes you want to save</li>
-<li><strong>overwrite_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If true, and the file exists, the file will be overwritten (default: False)</li>
-<li><strong>overwrite_group</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If true and h5group exist, the group will be overwritten.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mesh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dolfin.mesh</span></code>) – The mesh</p></li>
+<li><p><strong>h5name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to the file</p></li>
+<li><p><strong>h5group</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Folder within the file. Default is “” which means in
+the top folder.</p></li>
+<li><p><strong>markers</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – A dictionary with markers. See <cite>get_markers</cite>.</p></li>
+<li><p><strong>fields</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – A list of functions for the microstructure</p></li>
+<li><p><strong>local_basis</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – A list of functions for the crl basis</p></li>
+<li><p><strong>meshfunctions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – A dictionary with keys being the dimensions the the values
+beeing the meshfunctions.</p></li>
+<li><p><strong>comm</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dolfin.MPI</span></code>) – MPI communicator</p></li>
+<li><p><strong>other_functions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Dictionary with other functions you want to save</p></li>
+<li><p><strong>other_attributes</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Dictionary with other attributes you want to save</p></li>
+<li><p><strong>overwrite_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If true, and the file exists, the file will be overwritten (default: False)</p></li>
+<li><p><strong>overwrite_group</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If true and h5group exist, the group will be overwritten.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -1013,19 +1027,15 @@ the top folder.</li>
 <code class="descclassname">pulse.geometry_utils.</code><code class="descname">strain_region_number</code><span class="sig-paren">(</span><em>T</em>, <em>regions</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry_utils.html#strain_region_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.geometry_utils.strain_region_number" title="Permalink to this definition">¶</a></dt>
 <dd><p>For a given point in prolate coordinates,
 return the region it belongs to.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>regions</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.array</span></code>) – Array of all coordinates for the strain
-regions taken from the strain mesh.</li>
-<li><strong>T</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.array</span></code>) – Some value i prolate coordinates</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>regions</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.array</span></code>) – Array of all coordinates for the strain
+regions taken from the strain mesh.</p></li>
+<li><p><strong>T</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.array</span></code>) – Some value i prolate coordinates</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p>Resturn the region number that
 T belongs to</p>
 </dd></dl>
@@ -1079,12 +1089,8 @@ T belongs to</p>
 <dl class="method">
 <dt id="pulse.iterate.Iterator.assign_control">
 <code class="descname">assign_control</code><span class="sig-paren">(</span><em>new_control</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#Iterator.assign_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.Iterator.assign_control" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="pulse.iterate.Iterator.assign_new_control">
-<code class="descname">assign_new_control</code><span class="sig-paren">(</span><em>new_control</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#Iterator.assign_new_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.Iterator.assign_new_control" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Assign a new value to the control</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pulse.iterate.Iterator.change_step_for_final_iteration">
@@ -1162,7 +1168,7 @@ with dolfin adjoint where copied fuctions are annotated.</p>
 
 <dl class="function">
 <dt id="pulse.iterate.enlist">
-<code class="descclassname">pulse.iterate.</code><code class="descname">enlist</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#enlist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.enlist" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pulse.iterate.</code><code class="descname">enlist</code><span class="sig-paren">(</span><em>x</em>, <em>force_enlist=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#enlist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.enlist" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -1188,28 +1194,34 @@ in <cite>nsteps</cite>.</p>
 <dt id="pulse.iterate.iterate">
 <code class="descclassname">pulse.iterate.</code><code class="descname">iterate</code><span class="sig-paren">(</span><em>problem</em>, <em>control</em>, <em>target</em>, <em>continuation=True</em>, <em>max_adapt_iter=8</em>, <em>adapt_step=True</em>, <em>old_states=None</em>, <em>old_controls=None</em>, <em>max_nr_crash=20</em>, <em>max_iters=40</em>, <em>initial_number_of_steps=5</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#iterate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.iterate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Using the given problem, iterate control to given target.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>problem</strong> (<em>pulse.MechanicsProblem</em>) – The problem</li>
-<li><strong>control</strong> (<em>dolfin.Function</em><em> or </em><em>dolfin.Constant</em>) – The control</li>
-<li><strong>target</strong> (<em>dolfin.Function</em><em>, </em><em>dolfin.Constant</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – The target value. Typically a float if target is LVP, a tuple
-if target is (LVP, RVP) and a function if target is gamma.</li>
-<li><strong>continuation</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Apply continuation for better guess for newton problem
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>problem</strong> (<em>pulse.MechanicsProblem</em>) – The problem</p></li>
+<li><p><strong>control</strong> (<em>dolfin.Function</em><em> or </em><em>dolfin.Constant</em>) – The control</p></li>
+<li><p><strong>target</strong> (<em>dolfin.Function</em><em>, </em><em>dolfin.Constant</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – The target value. Typically a float if target is LVP, a tuple
+if target is (LVP, RVP) and a function if target is gamma.</p></li>
+<li><p><strong>continuation</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Apply continuation for better guess for newton problem
 Note: Replay test seems to fail when continuation is True,
-but taylor test passes</li>
-<li><strong>max_adapt_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – If number of iterations is less than this number and adapt_step=True,
-then adapt control step. Default: 8</li>
-<li><strong>adapt_step</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Adapt / increase step size when sucessful iterations are achevied.</li>
-<li><strong>old_states</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List of old controls to help speed in the continuation</li>
+but taylor test passes</p></li>
+<li><p><strong>max_adapt_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – If number of iterations is less than this number and adapt_step=True,
+then adapt control step. Default: 8</p></li>
+<li><p><strong>adapt_step</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Adapt / increase step size when sucessful iterations are achevied.</p></li>
+<li><p><strong>old_states</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List of old controls to help speed in the continuation</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
+
+<dl class="function">
+<dt id="pulse.iterate.np2str">
+<code class="descclassname">pulse.iterate.</code><code class="descname">np2str</code><span class="sig-paren">(</span><em>c_</em>, <em>fmt='{:.3f}'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#np2str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.np2str" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pulse.iterate.print_control">
+<code class="descclassname">pulse.iterate.</code><code class="descname">print_control</code><span class="sig-paren">(</span><em>cs</em>, <em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#print_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.iterate.print_control" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="function">
 <dt id="pulse.iterate.squeeze">
@@ -1335,9 +1347,14 @@ then adapt control step. Default: 8</li>
 
 <dl class="class">
 <dt id="pulse.mechanicsproblem.MechanicsProblem">
-<em class="property">class </em><code class="descclassname">pulse.mechanicsproblem.</code><code class="descname">MechanicsProblem</code><span class="sig-paren">(</span><em>geometry</em>, <em>material</em>, <em>bcs=None</em>, <em>bcs_parameters=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/mechanicsproblem.html#MechanicsProblem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.mechanicsproblem.MechanicsProblem" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pulse.mechanicsproblem.</code><code class="descname">MechanicsProblem</code><span class="sig-paren">(</span><em>geometry</em>, <em>material</em>, <em>bcs=None</em>, <em>bcs_parameters=None</em>, <em>solver_parameters=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/mechanicsproblem.html#MechanicsProblem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.mechanicsproblem.MechanicsProblem" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Base class for mechanics problem</p>
+<dl class="staticmethod">
+<dt id="pulse.mechanicsproblem.MechanicsProblem.defaul_solver_parameters">
+<em class="property">static </em><code class="descname">defaul_solver_parameters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/mechanicsproblem.html#MechanicsProblem.defaul_solver_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.mechanicsproblem.MechanicsProblem.defaul_solver_parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="staticmethod">
 <dt id="pulse.mechanicsproblem.MechanicsProblem.default_bcs_parameters">
 <em class="property">static </em><code class="descname">default_bcs_parameters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/mechanicsproblem.html#MechanicsProblem.default_bcs_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.mechanicsproblem.MechanicsProblem.default_bcs_parameters" title="Permalink to this definition">¶</a></dt>
@@ -1414,7 +1431,7 @@ then adapt control step. Default: 8</li>
 
 <dl class="function">
 <dt id="pulse.mechanicsproblem.cardiac_boundary_conditions">
-<code class="descclassname">pulse.mechanicsproblem.</code><code class="descname">cardiac_boundary_conditions</code><span class="sig-paren">(</span><em>geometry</em>, <em>pericardium_spring=0.0</em>, <em>base_spring=0.0</em>, <em>base_bc='fix_x'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/mechanicsproblem.html#cardiac_boundary_conditions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.mechanicsproblem.cardiac_boundary_conditions" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pulse.mechanicsproblem.</code><code class="descname">cardiac_boundary_conditions</code><span class="sig-paren">(</span><em>geometry</em>, <em>pericardium_spring=0.0</em>, <em>base_spring=0.0</em>, <em>base_bc='fix_x'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/mechanicsproblem.html#cardiac_boundary_conditions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.mechanicsproblem.cardiac_boundary_conditions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -1496,19 +1513,18 @@ geometry</p>
 with the given pressure.</p>
 <p>Find the reference configuration corresponding
 to zero pressure using a backward displacement method,
-described in <a class="footnote-reference" href="#id2" id="id1">[2]</a>.
+described in <a class="footnote-reference brackets" href="#id2" id="id1">2</a>.
 This method assumes that material properties are given.
 Make sure to change this in utils.py</p>
 <p>This also runs in parallel.</p>
 <p class="rubric">References</p>
-<table class="docutils footnote" frame="void" id="id2" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id1">[2]</a></td><td>Bols, Joris, et al. “A computational method to assess the in
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets"><a class="fn-backref" href="#id1">2</a></span></dt>
+<dd><p>Bols, Joris, et al. “A computational method to assess the in
 vivo stresses and unloaded configuration of patient-specific blood
-vessels.” Journal of computational and Applied mathematics 246 (2013): 10-17.</td></tr>
-</tbody>
-</table>
+vessels.” Journal of computational and Applied mathematics 246 (2013): 10-17.</p>
+</dd>
+</dl>
 <dl class="method">
 <dt id="pulse.unloader.FixedPointUnloader.unload_step">
 <code class="descname">unload_step</code><span class="sig-paren">(</span><em>u</em>, <em>residual</em>, <em>save=False</em>, <em>it=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/unloader.html#FixedPointUnloader.unload_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.unloader.FixedPointUnloader.unload_step" title="Permalink to this definition">¶</a></dt>
@@ -1545,20 +1561,16 @@ the displacement field.</p>
 <dt id="pulse.unloader.MeshUnloader.save">
 <code class="descname">save</code><span class="sig-paren">(</span><em>obj</em>, <em>name</em>, <em>h5group=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/unloader.html#MeshUnloader.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.unloader.MeshUnloader.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save object to and HDF file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>obj</strong> (<em>dolfin.Mesh</em><em> or </em><em>dolfin.Function</em>) – The object you want to save</li>
-<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Name of the object</li>
-<li><strong>h5group</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The folder you want to save the object
-withing the HDF file. Default: ‘’</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> (<em>dolfin.Mesh</em><em> or </em><em>dolfin.Function</em>) – The object you want to save</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Name of the object</p></li>
+<li><p><strong>h5group</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The folder you want to save the object
+withing the HDF file. Default: ‘’</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -1585,56 +1597,51 @@ to zero pressure by first inflating the original
 geometry to the target pressure and subtacting
 the displacement times some factor <cite>k</cite>.
 Use a 1D minimization algorithm from scipy to find <cite>k</cite>.
-The method is described in <a class="footnote-reference" href="#id4" id="id3">[1]</a>
+The method is described in <a class="footnote-reference brackets" href="#id4" id="id3">1</a>
 This method assumes that material properties are given.
 Make sure to change this in utils.py</p>
 <p>This also runs in parallel.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>geometry</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><em>object</em></a>) – An obeject with attributes <cite>mesh</cite>, <cite>fiber</cite>
-and <cite>markers</cite>.</li>
-<li><strong>pressure</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a>) – The target pressure. If LV only provide a
-float, if BiV proble a tuple of the form (p_LV, p_RV).</li>
-<li><strong>material_parameters</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em>) – A dictionary with material parameters</li>
-<li><strong>h5name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – Path to where you want to save the output
-Default: test.h5</li>
-<li><strong>options</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em><em>, </em><em>optional</em>) – <p>A dictionary of solver options. All methods accept the following
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>geometry</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><em>object</em></a>) – An obeject with attributes <cite>mesh</cite>, <cite>fiber</cite>
+and <cite>markers</cite>.</p></li>
+<li><p><strong>pressure</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a>) – The target pressure. If LV only provide a
+float, if BiV proble a tuple of the form (p_LV, p_RV).</p></li>
+<li><p><strong>material_parameters</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em>) – A dictionary with material parameters</p></li>
+<li><p><strong>h5name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – Path to where you want to save the output
+Default: test.h5</p></li>
+<li><p><strong>options</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em><em>, </em><em>optional</em>) – <p>A dictionary of solver options. All methods accept the following
 generic options:</p>
 <blockquote>
-<div><dl class="docutils">
-<dt>maxiter <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
-<dd>Maximum number of iterations to perform.</dd>
-<dt>tol <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd>Tolerance of termination</dd>
-<dt>solve_tries <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
-<dd>Number of attemtps the solver should use to
-increase the pressure (after pressure reduction)</dd>
+<div><dl class="simple">
+<dt>maxiter<span class="classifier">int</span></dt><dd><p>Maximum number of iterations to perform.</p>
+</dd>
+<dt>tol<span class="classifier">float</span></dt><dd><p>Tolerance of termination</p>
+</dd>
+<dt>solve_tries<span class="classifier">int</span></dt><dd><p>Number of attemtps the solver should use to
+increase the pressure (after pressure reduction)</p>
+</dd>
 </dl>
 </div></blockquote>
-</li>
-<li><strong>h5group</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Subfolder within the HDF file where you save the results</li>
-<li><strong>remove_old</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If the file with the same h5name exist, delete it before starting</li>
-<li><strong>params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – These are parameters that is parsed to pulse_adjoint that
+</p></li>
+<li><p><strong>h5group</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Subfolder within the HDF file where you save the results</p></li>
+<li><p><strong>remove_old</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If the file with the same h5name exist, delete it before starting</p></li>
+<li><p><strong>params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – These are parameters that is parsed to pulse_adjoint that
 make the parameters for the solver.
-See pulse_adjoint.setup_parametere.setup_adjoint_contraction_parameters</li>
+See pulse_adjoint.setup_parametere.setup_adjoint_contraction_parameters</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p class="rubric">References</p>
-<table class="docutils footnote" frame="void" id="id4" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id3">[1]</a></td><td>Raghavan, M. L., Baoshun Ma, and Mark F. Fillinger.
+<dl class="footnote brackets">
+<dt class="label" id="id4"><span class="brackets"><a class="fn-backref" href="#id3">1</a></span></dt>
+<dd><p>Raghavan, M. L., Baoshun Ma, and Mark F. Fillinger.
 “Non-invasive determination of zero-pressure geometry of
 arterial aneurysms.” Annals of biomedical engineering 34.9
-(2006): 1414-1419.</td></tr>
-</tbody>
-</table>
+(2006): 1414-1419.</p>
+</dd>
+</dl>
 <dl class="method">
 <dt id="pulse.unloader.RaghavanUnloader.unload_step">
 <code class="descname">unload_step</code><span class="sig-paren">(</span><em>u</em>, <em>residual</em>, <em>save=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/unloader.html#RaghavanUnloader.unload_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.unloader.RaghavanUnloader.unload_step" title="Permalink to this definition">¶</a></dt>
@@ -1695,20 +1702,16 @@ arterial aneurysms.” Annals of biomedical engineering 34.9
 <dt id="pulse.unloading_utils.save">
 <code class="descclassname">pulse.unloading_utils.</code><code class="descname">save</code><span class="sig-paren">(</span><em>obj</em>, <em>h5name</em>, <em>name</em>, <em>h5group=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/unloading_utils.html#save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.unloading_utils.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save object to and HDF file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>obj</strong> (<em>dolfin.Mesh</em><em> or </em><em>dolfin.Function</em>) – The object you want to save</li>
-<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Name of the object</li>
-<li><strong>h5group</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The folder you want to save the object
-withing the HDF file. Default: ‘’</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> (<em>dolfin.Mesh</em><em> or </em><em>dolfin.Function</em>) – The object you want to save</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Name of the object</p></li>
+<li><p><strong>h5group</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The folder you want to save the object
+withing the HDF file. Default: ‘’</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">

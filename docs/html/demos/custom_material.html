@@ -177,7 +177,7 @@ To illustrate this we will implement a model for a
 Mooney-Rivelin material.</p>
 <div class="section" id="code">
 <h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
-<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">dolfin</span>
 
 <span class="kn">import</span> <span class="nn">pulse</span>
@@ -297,7 +297,7 @@ Mooney-Rivelin material.</p>
 <span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
 
 <span class="c1"># Get displacement and hydrostatic pressure</span>
-<span class="n">u</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">deepcopy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">u</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">deepcopy</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
 <span class="c1"># Plot</span>
 <span class="n">u_int</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">u</span><span class="p">,</span>

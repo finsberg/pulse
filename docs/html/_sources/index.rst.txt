@@ -23,30 +23,17 @@ which works as an extenstion to this library.
 Installation
 ------------
 In order to install the software you need to have installed `FEniCS <https://fenicsproject.org>`_ verision
-2016.x or 2017.x. Next you can install `pulse` package using
+2016.x or 2017.x.  The `pulse` package can be installed with `pip`
+
+.. code::
+
+    pip install fenics-pulse
+
+or if you need the most recent version you can install the source
 
 .. code::
 
     pip install git+https://github.com/finsberg/pulse.git
-
-Alternatively, you can clone / download the repository at `<https://github.com/finsberg/pulse>`_
-and install the dependencies
-
-.. code::
-
-    pip install -r requirements.txt
-
-and finally you can instll the `pulse` package using either
-
-.. code::
-
-    pip install .
-
-or
-
-.. code::
-
-    python setup.py install
 
 
 You can also install the library using conda
@@ -54,6 +41,11 @@ You can also install the library using conda
 .. code::
 
    conda install -c finsberg pulse
+
+
+Source code
+-----------
+Source code is avaible at GitHub https://github.com/finsberg/pulse
 
 
 

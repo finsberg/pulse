@@ -180,10 +180,10 @@
             
   <div class="section" id="problem-2">
 <h1>Problem 2<a class="headerlink" href="#problem-2" title="Permalink to this headline">¶</a></h1>
-<p>This code implements problem 2 in <a class="reference internal" href="benchmark.html#land2015" id="id1">[Land2015]</a>.</p>
+<p>This code implements problem 2 in <a class="reference internal" href="benchmark.html#land2015" id="id1"><span>[Land2015]</span></a>.</p>
 <div class="section" id="code">
 <h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
-<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">dolfin</span>
 <span class="kn">import</span> <span class="nn">pulse</span>
 
@@ -223,7 +223,7 @@
 <span class="n">pulse</span><span class="o">.</span><span class="n">iterate</span><span class="o">.</span><span class="n">iterate</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">lvp</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">)</span>
 
 <span class="c1"># Get displacement and hydrostatic pressure</span>
-<span class="n">u</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">deepcopy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">u</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">deepcopy</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
 
 <span class="n">endo_apex_marker</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="s1">&#39;ENDOPT&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
@@ -231,7 +231,7 @@
 <span class="n">endo_apex</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">coordinates</span><span class="p">()[</span><span class="n">endo_apex_idx</span><span class="p">,</span> <span class="p">:]</span>
 <span class="n">endo_apex_pos</span> <span class="o">=</span> <span class="n">endo_apex</span> <span class="o">+</span> <span class="n">u</span><span class="p">(</span><span class="n">endo_apex</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">((</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">Get longitudinal position of endocardial apex: </span><span class="si">{:.4f}</span><span class="s1"> mm&#39;</span>
+<span class="k">print</span><span class="p">((</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">Get longitudinal position of endocardial apex: {:.4f} mm&#39;</span>
        <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">endo_apex_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
 
 
@@ -240,7 +240,7 @@
 <span class="n">epi_apex</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">coordinates</span><span class="p">()[</span><span class="n">epi_apex_idx</span><span class="p">,</span> <span class="p">:]</span>
 <span class="n">epi_apex_pos</span> <span class="o">=</span> <span class="n">epi_apex</span> <span class="o">+</span> <span class="n">u</span><span class="p">(</span><span class="n">epi_apex</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">((</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">Get longitudinal position of epicardial apex: </span><span class="si">{:.4f}</span><span class="s1"> mm&#39;</span>
+<span class="k">print</span><span class="p">((</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">Get longitudinal position of epicardial apex: {:.4f} mm&#39;</span>
        <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">epi_apex_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
 
 <span class="n">V</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="n">geometry</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -262,8 +262,8 @@
 </div>
 <div class="section" id="output">
 <h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
-<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Get</span> <span class="n">longitudinal</span> <span class="n">position</span> <span class="n">of</span> <span class="n">endocardial</span> <span class="n">apex</span><span class="p">:</span> <span class="mf">22.0165</span> <span class="n">mm</span>
-<span class="n">Get</span> <span class="n">longitudinal</span> <span class="n">position</span> <span class="n">of</span> <span class="n">epicardial</span> <span class="n">apex</span><span class="p">:</span> <span class="mf">24.2441</span> <span class="n">mm</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Get longitudinal position of endocardial apex: <span class="m">22</span>.0165 mm
+Get longitudinal position of epicardial apex: <span class="m">24</span>.2441 mm
 </pre></div>
 </div>
 </div>

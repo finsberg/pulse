@@ -370,26 +370,22 @@ If</p>
 acitvation.
 Note that the three basis vectors are assumed to be
 orthogonal</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>Ta</strong> (<em>dolfin.Function</em><em> or </em><em>dolfin.Constant</em>) – A full tensor function representng the active stress tensor
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Ta</strong> (<em>dolfin.Function</em><em> or </em><em>dolfin.Constant</em>) – A full tensor function representng the active stress tensor
 of the active stress in the reference configuration
-(firt Pioala).</li>
-<li><strong>C</strong> (<em>ufl.Form</em>) – The right Cauchy-Green deformation tensor</li>
-<li><strong>f0</strong> (<em>dolfin.Function</em>) – A vector function representng the direction of the
-first component</li>
-<li><strong>s0</strong> (<em>dolfin.Function</em>) – A vector function representng the direction of the
-second component</li>
-<li><strong>n0</strong> (<em>dolfin.Function</em>) – A vector function representng the direction of the
-third component</li>
+(firt Pioala).</p></li>
+<li><p><strong>C</strong> (<em>ufl.Form</em>) – The right Cauchy-Green deformation tensor</p></li>
+<li><p><strong>f0</strong> (<em>dolfin.Function</em>) – A vector function representng the direction of the
+first component</p></li>
+<li><p><strong>s0</strong> (<em>dolfin.Function</em>) – A vector function representng the direction of the
+second component</p></li>
+<li><p><strong>n0</strong> (<em>dolfin.Function</em>) – A vector function representng the direction of the
+third component</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -397,26 +393,22 @@ third component</li>
 <code class="descclassname">pulse.material.active_stress.</code><code class="descname">Wactive_orthotropic</code><span class="sig-paren">(</span><em>Ta</em>, <em>C</em>, <em>f0</em>, <em>s0</em>, <em>n0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/active_stress.html#Wactive_orthotropic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.material.active_stress.Wactive_orthotropic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return active strain energy for an orthotropic
 active stress</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>Ta</strong> (<em>dolfin.Function</em><em> or </em><em>dolfin.Constant</em>) – A vector function representng the mangnitude of the
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Ta</strong> (<em>dolfin.Function</em><em> or </em><em>dolfin.Constant</em>) – A vector function representng the mangnitude of the
 active stress in the reference configuration (firt Pioala).
-Ta = (Ta_f0, Ta_s0, Ta_n0)</li>
-<li><strong>C</strong> (<em>ufl.Form</em>) – The right Cauchy-Green deformation tensor</li>
-<li><strong>f0</strong> (<em>dolfin.Function</em>) – A vector function representng the direction of the
-first component</li>
-<li><strong>s0</strong> (<em>dolfin.Function</em>) – A vector function representng the direction of the
-second component</li>
-<li><strong>n0</strong> (<em>dolfin.Function</em>) – A vector function representng the direction of the
-third component</li>
+Ta = (Ta_f0, Ta_s0, Ta_n0)</p></li>
+<li><p><strong>C</strong> (<em>ufl.Form</em>) – The right Cauchy-Green deformation tensor</p></li>
+<li><p><strong>f0</strong> (<em>dolfin.Function</em>) – A vector function representng the direction of the
+first component</p></li>
+<li><p><strong>s0</strong> (<em>dolfin.Function</em>) – A vector function representng the direction of the
+second component</p></li>
+<li><p><strong>n0</strong> (<em>dolfin.Function</em>) – A vector function representng the direction of the
+third component</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -425,23 +417,19 @@ third component</li>
 <dd><p>Return active strain energy when activation is only
 working along the fibers, with a possible transverse
 component defined by eta</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>Ta</strong> (<em>dolfin.Function</em><em> or </em><em>dolfin.Constant</em>) – A scalar function representng the mangnitude of the
-active stress in the reference configuration (firt Pioala)</li>
-<li><strong>C</strong> (<em>ufl.Form</em>) – The right Cauchy-Green deformation tensor</li>
-<li><strong>f0</strong> (<em>dolfin.Function</em>) – A vector function representng the direction of the
-active stress</li>
-<li><strong>eta</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Amount of active stress in the transverse direction
-(relative to f0)</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Ta</strong> (<em>dolfin.Function</em><em> or </em><em>dolfin.Constant</em>) – A scalar function representng the mangnitude of the
+active stress in the reference configuration (firt Pioala)</p></li>
+<li><p><strong>C</strong> (<em>ufl.Form</em>) – The right Cauchy-Green deformation tensor</p></li>
+<li><p><strong>f0</strong> (<em>dolfin.Function</em>) – A vector function representng the direction of the
+active stress</p></li>
+<li><p><strong>eta</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Amount of active stress in the transverse direction
+(relative to f0)</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -584,14 +572,11 @@ e^{ b_f (I_{4f_0} - 1)_+^2}\]</div>
   0 &amp; \text{if acitve strain} \\
   \gamma I_{4f} &amp; \text{if active stress}
 \end{cases}\end{split}\]</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>F</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dolfin.Function</span></code>) – Deformation gradient</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>F</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dolfin.Function</span></code>) – Deformation gradient</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -604,27 +589,23 @@ e^{ b_f (I_{4f_0} - 1)_+^2}\]</div>
 <em class="property">class </em><code class="descclassname">pulse.material.material_model.</code><code class="descname">Material</code><span class="sig-paren">(</span><em>activation=None</em>, <em>parameters=None</em>, <em>active_model='active_strain'</em>, <em>T_ref=None</em>, <em>eta=0.0</em>, <em>isochoric=True</em>, <em>compressible_model='incompressible'</em>, <em>geometry=None</em>, <em>f0=None</em>, <em>s0=None</em>, <em>n0=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/material_model.html#Material"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.material.material_model.Material" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Initialize material model</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>f0</strong> (<em>:py:class`dolfin.Function`</em>) – Fiber field</li>
-<li><strong>gamma</strong> (<em>:py:class`dolfin.Function`</em>) – Activation parameter</li>
-<li><strong>params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Material parameters</li>
-<li><strong>active_model</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Active model - active strain or active stress</li>
-<li><strong>s0</strong> (<em>:py:class`dolfin.Function`</em>) – Sheets</li>
-<li><strong>n0</strong> (<em>:py:class`dolfin.Function`</em>) – Sheet - normal</li>
-<li><strong>T_ref</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Scale factor for activation parameter (default = 1.0)</li>
-<li><strong>dev_iso_split</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Decouple deformation into deviatoric and isochoric deformations</li>
-<li><strong>eta</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Fraction of transverse active tesion for active stress formulation.
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f0</strong> (<em>:py:class`dolfin.Function`</em>) – Fiber field</p></li>
+<li><p><strong>gamma</strong> (<em>:py:class`dolfin.Function`</em>) – Activation parameter</p></li>
+<li><p><strong>params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Material parameters</p></li>
+<li><p><strong>active_model</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Active model - active strain or active stress</p></li>
+<li><p><strong>s0</strong> (<em>:py:class`dolfin.Function`</em>) – Sheets</p></li>
+<li><p><strong>n0</strong> (<em>:py:class`dolfin.Function`</em>) – Sheet - normal</p></li>
+<li><p><strong>T_ref</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Scale factor for activation parameter (default = 1.0)</p></li>
+<li><p><strong>dev_iso_split</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Decouple deformation into deviatoric and isochoric deformations</p></li>
+<li><p><strong>eta</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Fraction of transverse active tesion for active stress formulation.
 0 = active only along fiber, 1 = equal forces in all directions
-(default=0.0).</li>
+(default=0.0).</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
 <dt id="pulse.material.material_model.Material.CauchyStress">
 <code class="descname">CauchyStress</code><span class="sig-paren">(</span><em>F</em>, <em>p=None</em>, <em>deviatoric=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/material_model.html#Material.CauchyStress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pulse.material.material_model.Material.CauchyStress" title="Permalink to this definition">¶</a></dt>
@@ -725,14 +706,11 @@ constant function (DG_0)</p>
   0 &amp; \text{if acitve strain} \\
   \gamma I_{4f} &amp; \text{if active stress}
 \end{cases}\end{split}\]</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>F</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dolfin.Function</span></code>) – Deformation gradient</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>F</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dolfin.Function</span></code>) – Deformation gradient</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -809,14 +787,11 @@ constant function (DG_0)</p>
   0 &amp; \text{if acitve strain} \\
   \gamma I_{4f} &amp; \text{if active stress}
 \end{cases}\end{split}\]</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>F</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dolfin.Function</span></code>) – Deformation gradient</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>F</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dolfin.Function</span></code>) – Deformation gradient</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

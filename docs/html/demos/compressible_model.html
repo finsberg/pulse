@@ -182,12 +182,12 @@ model where the term</p>
 use <span class="math notranslate nohighlight">\(\mathbb{P}1\)</span> elements for the displacement</p>
 <div class="section" id="code">
 <h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
-<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># demo.py</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># demo.py</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">dolfin</span>
 <span class="kn">import</span> <span class="nn">pulse</span>
 
-<span class="kn">from</span> <span class="nn">problem</span> <span class="k">import</span> <span class="n">CompressibleProblem</span>
+<span class="kn">from</span> <span class="nn">problem</span> <span class="kn">import</span> <span class="n">CompressibleProblem</span>
 
 
 <span class="n">geometry</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">Geometry</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">pulse</span><span class="o">.</span><span class="n">mesh_paths</span><span class="p">[</span><span class="s1">&#39;simple_ellipsoid&#39;</span><span class="p">])</span>
@@ -266,9 +266,9 @@ use <span class="math notranslate nohighlight">\(\mathbb{P}1\)</span> elements f
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># problem.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># problem.py</span>
 <span class="kn">import</span> <span class="nn">dolfin</span>
-<span class="kn">from</span> <span class="nn">pulse</span> <span class="k">import</span> <span class="p">(</span><span class="n">MechanicsProblem</span><span class="p">,</span> <span class="n">DeformationGradient</span><span class="p">,</span> <span class="n">Jacobian</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">pulse</span> <span class="kn">import</span> <span class="p">(</span><span class="n">MechanicsProblem</span><span class="p">,</span> <span class="n">DeformationGradient</span><span class="p">,</span> <span class="n">Jacobian</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">CompressibleProblem</span><span class="p">(</span><span class="n">MechanicsProblem</span><span class="p">):</span>
@@ -319,7 +319,7 @@ use <span class="math notranslate nohighlight">\(\mathbb{P}1\)</span> elements f
 </div>
 <div class="section" id="plot">
 <h2>Plot<a class="headerlink" href="#plot" title="Permalink to this headline">¶</a></h2>
-<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">demo</span><span class="o">.</span><span class="n">py</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python demo.py
 </pre></div>
 </div>
 <img alt="../_images/compressible_model.png" src="../_images/compressible_model.png" />

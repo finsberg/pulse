@@ -180,11 +180,11 @@
             
   <div class="section" id="problem-1">
 <h1>Problem 1<a class="headerlink" href="#problem-1" title="Permalink to this headline">¶</a></h1>
-<p>This code implements problem 1 in <a class="reference internal" href="benchmark.html#land2015" id="id1">[Land2015]</a>.</p>
+<p>This code implements problem 1 in <a class="reference internal" href="benchmark.html#land2015" id="id1"><span>[Land2015]</span></a>.</p>
 <div class="section" id="code">
 <h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
-<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">dolfin</span>
 <span class="kn">import</span> <span class="nn">pulse</span>
 
@@ -262,14 +262,14 @@
 <span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
 
 <span class="c1"># Get displacement and hydrostatic pressure</span>
-<span class="n">u</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">deepcopy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">u</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">deepcopy</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
 <span class="n">point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>
 <span class="n">disp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
 <span class="n">u</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">disp</span><span class="p">,</span> <span class="n">point</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">((</span><span class="s1">&#39;Get z-position of point (</span><span class="si">{}</span><span class="s1">): </span><span class="si">{:.4f}</span><span class="s1"> mm&#39;</span>
-       <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">{:.1f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">point</span><span class="p">]),</span>
+<span class="k">print</span><span class="p">((</span><span class="s1">&#39;Get z-position of point ({}): {:.4f} mm&#39;</span>
+       <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;{:.1f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">point</span><span class="p">]),</span>
                   <span class="n">point</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">disp</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
 
 <span class="n">V</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="n">geometry</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -287,7 +287,7 @@
 </div>
 <div class="section" id="output">
 <h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
-<div class="code shell highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Get</span> <span class="n">z</span><span class="o">-</span><span class="n">position</span> <span class="n">of</span> <span class="n">point</span> <span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">):</span> <span class="mf">4.1549</span> <span class="n">mm</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Get z-position of point <span class="o">(</span><span class="m">10</span>.0, <span class="m">0</span>.5, <span class="m">1</span>.0<span class="o">)</span>: <span class="m">4</span>.1549 mm
 </pre></div>
 </div>
 </div>
