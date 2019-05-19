@@ -13,18 +13,9 @@ The code in this repo used to be part of [pulse-adjoint](https://bitbucket.org/f
 ### Install with pip
 First install the requrements
 ```
-pip install -r requirements.txt
+pip install fenics-pulse
 ```
-then install pulse with python
-```
-python setup.py install --prefix=/path/to/install/directory
-```
-or install with pip
-```
-pip install .
-```
-
-You can also install directly from source
+or you can install the most recent development version
 ```
 pip install git+https://github.com/finsberg/pulse.git
 ```
@@ -34,6 +25,10 @@ You can also install the package using `conda`
 ```
 conda install -c finsberg pulse
 ```
+However, note that there are some problems with the 2017 version of FEniCS on conda. 
+If you want a working conda environment with FEniCS 2017 check out
+[this gist](https://gist.github.com/finsberg/96eeb1d564aab4a73f53a46a1588e6a6)
+
 
 ## Requirements
 * FEniCS verision 2017.x
