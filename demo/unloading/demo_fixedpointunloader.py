@@ -9,6 +9,7 @@ import pulse
 
 
 geometry = pulse.HeartGeometry.from_file(pulse.mesh_paths['simple_ellipsoid'])
+
 material = pulse.HolzapfelOgden()
 # material = pulse.Guccione()
 
@@ -18,6 +19,8 @@ bcs_parameters['base_spring'] = 1.0
 bcs_parameters['base_bc'] = 'fix_x'
 
 # Create the problem
+# When performing unloading you should pass the
+# bcs parameters instead of the bcs directly
 problem = pulse.MechanicsProblem(geometry, material,
                                  bcs_parameters=bcs_parameters)
 

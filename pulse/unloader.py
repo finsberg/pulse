@@ -56,9 +56,6 @@ def step(geometry, pressure, k, u, residual, big_res,
         a_arr = numpy_mpi.gather_broadcast(matparams["a"].vector().array())
         logger.info("material parameters = {}".format(a_arr))
 
-
-    from IPython import embed; embed()
-    exit()
     # Make the solver
     problem, active_control, passive_control \
         = make_mechanics_problem(params, new_geometry,
@@ -92,13 +89,16 @@ class MeshUnloader(object):
 
         self.problem = problem
         self.pressure = pressure
+        self.U = dolfin.Function(problem.get_displacement().function_space())
 
         self.merge_control = merge_control
         self.h5name = h5name
         self.h5group = h5group
 
+        self.u_file = dolfin.File('u.pvd')
+        self.u_file << self.U
         if os.path.isfile(h5name) and overwrite:
-            if mpi_comm_world().rank == 0:
+            if dolfin.mpi_comm_world().rank == 0:
                 os.remove(h5name)
 
         self.n = int(np.rint(np.max(np.divide(pressure, 0.4))))
@@ -140,7 +140,7 @@ class MeshUnloader(object):
         name : str
             Name of the object
         h5group : str
-            The folder you want to save the object 
+            The folder you want to save the object
             withing the HDF file. Default: ''
         """
         group = os.path.join(self.h5group, h5group)
@@ -193,8 +193,6 @@ class MeshUnloader(object):
         
         # Do an initial solve
         logger.info("\nDo an intial solve")
-
-     
         self.problem.solve()
 
         u = utils.inflate_to_pressure(self.pressure, self.problem,
@@ -204,7 +202,6 @@ class MeshUnloader(object):
 
     @property
     def unloaded_geometry(self):
-
         return self.problem.geometry.copy(u=self.U, factor=-1.0)
 
 
@@ -339,6 +336,7 @@ class FixedPointUnloader(MeshUnloader):
 
             u_arr = numpy_mpi.gather_broadcast(u.vector().get_local())
             numpy_mpi.assign_to_vector(self.U.vector(), u_arr)
+            self.u_file << self.U
 
             # The displacent field that we will move the mesh according to
             if save:
@@ -357,18 +355,16 @@ class FixedPointUnloader(MeshUnloader):
             # use cardiac_boundary_conditions function for mechanicsproblem
             # in make_solver_paramerters
             bcs = cardiac_boundary_conditions(geometry=new_geometry,
-                                              **self.parameters)
+                                              **self.problem.bcs_parameters)
             problem = MechanicsProblem(geometry=new_geometry,
                                        material=material,
                                        bcs=bcs)
-                                       # bcs=self.problem.bcs)
-                                       # bcs_parameters=self.problem.bcs_parameters)
 
             # Solve
             u = utils.inflate_to_pressure(self.pressure, problem,
                                           self.parameters["solve_tries"],
                                           self.n, annotate=False)
-
+            self.u_file << u
             utils.print_volumes(new_geometry, txt='inflated', u=u)
 
             # Move the mesh accoring to the new displacement
