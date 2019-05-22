@@ -47,7 +47,7 @@ def compressibility(model, *args, **kwargs):
 
 
 def incompressible(p, J):
-    return -p*(J-1.0)
+    return -p * (J - 1.0)
 
 
 class Material(object):
@@ -78,12 +78,23 @@ class Material(object):
         0 = active only along fiber, 1 = equal forces in all directions
         (default=0.0).
     """
-    def __init__(self,  activation=None, parameters=None,
-                 active_model="active_strain", T_ref=None,
-                 eta=0.0, isochoric=True,
-                 compressible_model="incompressible",
-                 geometry=None,
-                 f0=None, s0=None, n0=None, *args, **kwargs):
+
+    def __init__(
+        self,
+        activation=None,
+        parameters=None,
+        active_model="active_strain",
+        T_ref=None,
+        eta=0.0,
+        isochoric=True,
+        compressible_model="incompressible",
+        geometry=None,
+        f0=None,
+        s0=None,
+        n0=None,
+        *args,
+        **kwargs
+    ):
 
         # Parameters
         if parameters is None:
@@ -93,16 +104,15 @@ class Material(object):
         self._set_parameter_attrs(geometry)
 
         # Active model
-        assert active_model in \
-            ["active_stress", "active_strain"], \
-            "The active model '{}' is not implemented.".format(active_model)
+        assert active_model in [
+            "active_stress",
+            "active_strain",
+        ], "The active model '{}' is not implemented.".format(active_model)
 
-        active_args = (activation, f0, s0, n0,
-                       T_ref, isochoric)
+        active_args = (activation, f0, s0, n0, T_ref, isochoric)
         # Activation
         if active_model == "active_stress":
-            self.active = ActiveStress(*active_args, eta=eta,
-                                       **kwargs)
+            self.active = ActiveStress(*active_args, eta=eta, **kwargs)
         else:
             self.active = ActiveStrain(*active_args)
 
@@ -112,14 +122,13 @@ class Material(object):
             activation_element = self.activation.ufl_element()
             cell = activation_element.cell()
         except AttributeError:
-            if not hasattr(activation, 'cell'):
+            if not hasattr(activation, "cell"):
                 cell = None
             else:
                 cell = activation.cell()
 
         if geometry is not None and cell is not None:
-            self.activation = update_function(geometry.mesh,
-                                              self.activation)
+            self.activation = update_function(geometry.mesh, self.activation)
 
     def _set_parameter_attrs(self, geometry=None):
         for k, v in self.parameters.items():
@@ -132,10 +141,10 @@ class Material(object):
                 if geometry is not None:
 
                     v_new = RegionalParameter(geometry.sfun)
-                    numpy_mpi.\
-                        assign_to_vector(v_new.vector(),
-                                         numpy_mpi.
-                                         gather_broadcast(v.vector().get_local()))
+                    numpy_mpi.assign_to_vector(
+                        v_new.vector(),
+                        numpy_mpi.gather_broadcast(v.vector().get_local()),
+                    )
                     v = v_new
 
                 ind_space = v.proj_space
@@ -156,7 +165,7 @@ class Material(object):
 
         # Loop over the possible attributes containing
         # a domain and update it
-        for m in ('f0', 's0', 'n0'):
+        for m in ("f0", "s0", "n0"):
             setattr(self, m, getattr(geometry, m))
 
         self._set_parameter_attrs(geometry)
@@ -164,8 +173,7 @@ class Material(object):
         activation_element = self.activation.ufl_element()
         if activation_element.cell() is not None:
 
-            self.activation = update_function(geometry.mesh,
-                                              self.activation)
+            self.activation = update_function(geometry.mesh, self.activation)
 
     def copy(self, geometry=None):
 
@@ -174,12 +182,16 @@ class Material(object):
         else:
             f0, s0, n0 = self.f0, self.s0, self.n0
 
-        return self.__class__(activation=self.activation,
-                              parameters=self.parameters,
-                              active_model=self.active_model,
-                              geometry=geometry,
-                              f0=f0, s0=s0, n0=n0,
-                              T_ref=float(self.active.T_ref))
+        return self.__class__(
+            activation=self.activation,
+            parameters=self.parameters,
+            active_model=self.active_model,
+            geometry=geometry,
+            f0=f0,
+            s0=s0,
+            n0=n0,
+            T_ref=float(self.active.T_ref),
+        )
 
     @property
     def name(self):
@@ -210,9 +222,11 @@ class Material(object):
         self.active.n0 = n0
 
     def __repr__(self):
-        return ('{self.__class__.__name__}({self.parameters}, '
-                '{self.active._model}, '
-                '{self.compressible_model})').format(self=self)
+        return (
+            "{self.__class__.__name__}({self.parameters}, "
+            "{self.active._model}, "
+            "{self.compressible_model})"
+        ).format(self=self)
 
     def compressibility(self, p, J):
 
@@ -328,7 +342,7 @@ class Material(object):
 
         Fe = self.active.Fe(F)
         Fa = self.active.Fa()
-        Ce = Fe.T*Fe
+        Ce = Fe.T * Fe
 
         # fe = Fe*f0
         # fefe = dolfin.outer(fe, fe)
@@ -339,21 +353,22 @@ class Material(object):
         Ja = dolfin.det(Fa)
 
         dim = get_dimesion(F)
-        Ce_bar = pow(J, -2.0/float(dim))*Ce
+        Ce_bar = pow(J, -2.0 / float(dim)) * Ce
 
         w1 = self.W_1(I1, diff=1, dim=dim)
         w4f = self.W_4(I4f, diff=1)
 
         # Total Stress
-        S_bar = Ja * (2 * w1*I + 2 * w4f * f0f0) * dolfin.inv(Fa).T
+        S_bar = Ja * (2 * w1 * I + 2 * w4f * f0f0) * dolfin.inv(Fa).T
 
         if self.is_isochoric:
 
             # Deviatoric
-            Dev_S_bar = S_bar - (1.0/3.0) * dolfin.inner(S_bar, Ce_bar) \
-                        * dolfin.inv(Ce_bar)
+            Dev_S_bar = S_bar - (1.0 / 3.0) * dolfin.inner(S_bar, Ce_bar) * dolfin.inv(
+                Ce_bar
+            )
 
-            S_mat = J**(-2.0/3.0)*Dev_S_bar
+            S_mat = J ** (-2.0 / 3.0) * Dev_S_bar
         else:
             S_mat = S_bar
 

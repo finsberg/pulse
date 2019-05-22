@@ -5,6 +5,7 @@ class NeoHookean(Material):
     """
     Class for Neo Hookean material
     """
+
     name = "neo_hookean"
 
     @staticmethod
@@ -16,9 +17,8 @@ class NeoHookean(Material):
         mu = self.mu
 
         if diff == 0:
-            return 0.5 * mu * (I_1-dim)
+            return 0.5 * mu * (I_1 - dim)
         elif diff == 1:
-            return 0.5*mu
+            return 0.5 * mu
         elif diff == 2:
             return 0
-

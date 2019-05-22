@@ -12,6 +12,7 @@ class ActiveStrain(ActiveModel):
     Assuming transversally isotropic material for now
 
     """
+
     _model = "active_strain"
 
     @property
@@ -35,8 +36,7 @@ class ActiveStrain(ActiveModel):
         d = get_dimesion(F)
         mgamma = self._mgamma
 
-        I1e = pow(mgamma, 4-d) * I1 + \
-            (1/mgamma**2 - pow(mgamma, 4-d)) * I4f
+        I1e = pow(mgamma, 4 - d) * I1 + (1 / mgamma ** 2 - pow(mgamma, 4 - d)) * I4f
 
         return I1e
 
@@ -80,7 +80,7 @@ class ActiveStrain(ActiveModel):
         I4f = self._I4(F, a0)
         mgamma = self._mgamma
 
-        I4a0 = 1/mgamma**2 * I4f
+        I4a0 = 1 / mgamma ** 2 * I4f
 
         return I4a0
 
@@ -93,7 +93,7 @@ class ActiveStrain(ActiveModel):
         I = kinematics.SecondOrderIdentity(f0f0)
 
         mgamma = self._mgamma
-        Fa = mgamma*f0f0 + pow(mgamma, -1.0/float(d-1)) * (I - f0f0)
+        Fa = mgamma * f0f0 + pow(mgamma, -1.0 / float(d - 1)) * (I - f0f0)
 
         return Fa
 

@@ -37,29 +37,36 @@ from ..dolfin_utils import RegionalParameter
 
 
 def check_component(component):
-    components = ('f0', 's0', 'n0')
-    msg = ('Component must be one '
-           'of {}, got {}').format(component,
-                                   components)
+    components = ("f0", "s0", "n0")
+    msg = ("Component must be one " "of {}, got {}").format(component, components)
     assert component in components, msg
 
 
 class ActiveModel(kinematics.Invariants):
-    def __init__(self, activation=None,
-                 f0=None, s0=None,
-                 n0=None, T_ref=None,
-                 isochoric=True, *args, **kwargs):
+    def __init__(
+        self,
+        activation=None,
+        f0=None,
+        s0=None,
+        n0=None,
+        T_ref=None,
+        isochoric=True,
+        *args,
+        **kwargs
+    ):
 
         # Fiber system
         self.f0 = f0
         self.s0 = s0
         self.n0 = n0
 
-        self._activation = Constant(0, name="activation") \
-            if activation is None else activation
+        self._activation = (
+            Constant(0, name="activation") if activation is None else activation
+        )
 
-        self.T_ref = Constant(T_ref, name="T_ref") \
-            if T_ref else Constant(1.0, name="T_ref")
+        self.T_ref = (
+            Constant(T_ref, name="T_ref") if T_ref else Constant(1.0, name="T_ref")
+        )
 
         kinematics.Invariants.__init__(self, isochoric, *args)
 

@@ -9,19 +9,18 @@ class StVenantKirchhoff(Material):
     """
     Class for linear elastic material
     """
+
     name = "saint_venant_kirchhoff"
 
     @staticmethod
     def default_parameters():
-        return {"mu": 300.0,
-                "lmbda": 1.0}
+        return {"mu": 300.0, "lmbda": 1.0}
 
     def strain_energy(self, F_):
 
         F = self.active.Fe(F_)
-        E = kinematics.\
-            GreenLagrangeStrain(F, isochoric=self.active.is_isochoric)
-        W = self.lmbda/2*(dolfin.tr(E)**2) + self.mu*dolfin.tr(E*E)
+        E = kinematics.GreenLagrangeStrain(F, isochoric=self.active.is_isochoric)
+        W = self.lmbda / 2 * (dolfin.tr(E) ** 2) + self.mu * dolfin.tr(E * E)
 
         # Active stress
         Wactive = self.active.Wactive(F, diff=0)

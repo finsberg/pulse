@@ -4,12 +4,14 @@ import dolfin
 
 from .utils import make_logger
 from . import parameters
-logger = make_logger(__name__, parameters['log_level'])
+
+logger = make_logger(__name__, parameters["log_level"])
 
 parallel_h5py = h5py.h5.get_config().mpi
 
 try:
     import mpi4py
+
     has_mpi4py = True
 except ImportError:
     has_mpi4py = False
@@ -20,6 +22,7 @@ else:
 
 try:
     import petsc4py
+
     has_petsc4py = True
 except ImportError:
     has_petsc4py = False
@@ -88,8 +91,9 @@ def check_h5group(h5name, h5group, delete=False, comm=dolfin.mpi_comm_world()):
     if not os.access(h5name, os.W_OK):
         filemode = "r"
         if delete:
-            logger.warning(("You do not have write access to file "
-                            "{}").format(h5name))
+            logger.warning(
+                ("You do not have write access to file " "{}").format(h5name)
+            )
             delete = False
 
     with open_h5py(h5name, filemode, comm) as h5file:
@@ -97,14 +101,14 @@ def check_h5group(h5name, h5group, delete=False, comm=dolfin.mpi_comm_world()):
             h5group_in_h5file = True
             if delete:
                 if parallel_h5py:
-                    logger.debug(("Deleting existing group: "
-                                 "'{}'").format(h5group))
+                    logger.debug(("Deleting existing group: " "'{}'").format(h5group))
                     del h5file[h5group]
 
                 else:
                     if dolfin.MPI.rank(comm) == 0:
-                        logger.debug(("Deleting existing group: "
-                                      "'{}'").format(h5group))
+                        logger.debug(
+                            ("Deleting existing group: " "'{}'").format(h5group)
+                        )
                         del h5file[h5group]
 
     return h5group_in_h5file
@@ -130,7 +134,7 @@ def check_and_delete(h5name, h5group, comm=dolfin.mpi_comm_world()):
 def read_h5file(h5file, obj, group, *args, **kwargs):
 
     # Hack in order to work with fenics-adjoint
-    if not hasattr(obj, 'create_block_variable'):
+    if not hasattr(obj, "create_block_variable"):
         obj.create_block_variable = lambda: None
 
     h5file.read(obj, group, *args, **kwargs)

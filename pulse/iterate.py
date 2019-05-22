@@ -5,9 +5,11 @@ import dolfin
 
 try:
     from dolfin_adjoint import Function, Constant
+
     has_dolfin_adjoint = True
 except ImportError:
     from dolfin import Function, Constant
+
     has_dolfin_adjoint = False
 
 
@@ -17,7 +19,7 @@ from .mechanicsproblem import SolverDidNotConverge
 from .dolfin_utils import get_constant
 from .utils import make_logger
 
-logger = make_logger(__name__, parameters['log_level'])
+logger = make_logger(__name__, parameters["log_level"])
 
 
 class Enlisted(tuple):
@@ -46,7 +48,7 @@ def delist(x):
         return x
 
 
-def copy(f, deepcopy=True, name='copied_function'):
+def copy(f, deepcopy=True, name="copied_function"):
     """
     Copy a function. This is to ease the integration
     with dolfin adjoint where copied fuctions are annotated.
@@ -71,7 +73,7 @@ def copy(f, deepcopy=True, name='copied_function'):
         for fi in f:
             l.append(copy(fi))
         return enlist(l)
-        
+
     elif isinstance(f, (list, tuple)):
         l = []
         for fi in f:
@@ -124,15 +126,15 @@ def get_delta(new_control, c0, c1):
         delta = (new_control_arr[0] - c0_arr[0]) / float(c1_arr[0] - c0_arr[0])
 
     elif isinstance(new_control, (dolfin.Function, Function)):
-        new_control_arr = numpy_mpi.\
-                          gather_broadcast(new_control.vector().get_local())
+        new_control_arr = numpy_mpi.gather_broadcast(new_control.vector().get_local())
         c0_arr = numpy_mpi.gather_broadcast(c0.vector().get_local())
         c1_arr = numpy_mpi.gather_broadcast(c1.vector().get_local())
         delta = (new_control_arr[0] - c0_arr[0]) / float(c1_arr[0] - c0_arr[0])
 
     else:
-        msg = ('Unexpected type for new_crontrol in get_delta'
-               'Got {}').format(type(delta))
+        msg = ("Unexpected type for new_crontrol in get_delta" "Got {}").format(
+            type(delta)
+        )
         raise TypeError(msg)
 
     return squeeze(delta)
@@ -141,29 +143,28 @@ def get_delta(new_control, c0, c1):
 def np2str(c_, fmt="{:.3f}"):
     c = delist(c_)
     if isinstance(c, (np.ndarray, list, tuple)):
-        return ', '.join(['{:.3f}'.format(ci) for ci in c])
-    return '{:.3f}'.format(c)
+        return ", ".join(["{:.3f}".format(ci) for ci in c])
+    return "{:.3f}".format(c)
 
 
 def print_control(cs, msg):
-
     controls = [constant2float(c) for c in cs]
-    
+
     if len(controls) > 3:
-        msg += ('\n\tMin:{:.2f}\tMean:{:.2f}\tMax:{:.2f}'
-                '').format(np.min(controls),
-                           np.mean(controls),
-                           np.max(controls))
+        msg += ("\n\tMin:{:.2f}\tMean:{:.2f}\tMax:{:.2f}" "").format(
+            np.min(controls), np.mean(controls), np.max(controls)
+        )
     else:
         cs = []
         for c in controls:
-            if hasattr(c, '__len__'):
+            if hasattr(c, "__len__"):
                 msg += print_control(c, msg)
             else:
                 cs.append(c)
         if cs:
-            msg += ','.join([np2str(c) for c in controls])
+            msg += ",".join([np2str(c) for c in controls])
     return msg
+
 
 def get_diff(current, target):
     """
@@ -173,18 +174,19 @@ def get_diff(current, target):
         diff = target.vector() - current.vector()
 
     elif isinstance(target, (Constant, dolfin.Constant)):
-        diff = np.subtract(constant2float(target),
-                           constant2float(current))
+        diff = np.subtract(constant2float(target), constant2float(current))
     elif isinstance(target, (tuple, list)):
-        diff = np.subtract([constant2float(t) for t in target],
-                           [constant2float(c) for c in current])
+        diff = np.subtract(
+            [constant2float(t) for t in target], [constant2float(c) for c in current]
+        )
     else:
         try:
             diff = np.subtract(target, current)
         except Exception as ex:
             logger.error(ex)
-            raise ValueError(("Unable to compute diff with type {}"
-                              "").format(type(current)))
+            raise ValueError(
+                ("Unable to compute diff with type {}" "").format(type(current))
+            )
 
     return squeeze(diff)
 
@@ -215,16 +217,15 @@ def get_initial_step(current, target, nsteps=5):
 
     diff = get_diff(current, target)
     if isinstance(diff, dolfin.GenericVector):
-        max_diff = dolfin.norm(diff, 'linf')
         step = Function(current.function_space())
         step.vector().axpy(1.0 / float(nsteps), diff)
 
     else:
-        max_diff = abs(np.max(diff))
         step = diff / float(nsteps)
-        
-    logger.debug(("Intial number of steps: {} with step size {}"
-                  "").format(nsteps, step))
+
+    logger.debug(
+        ("Intial number of steps: {} with step size {}" "").format(nsteps, step)
+    )
     return step
 
 
@@ -264,11 +265,19 @@ def step_too_large(current, target, step):
     return np.any(too_large)
 
 
-def iterate(problem, control, target,
-            continuation=True, max_adapt_iter=8,
-            adapt_step=True, old_states=None, old_controls=None,
-            max_nr_crash=20, max_iters=40,
-            initial_number_of_steps=5):
+def iterate(
+    problem,
+    control,
+    target,
+    continuation=True,
+    max_adapt_iter=8,
+    adapt_step=True,
+    old_states=None,
+    old_controls=None,
+    max_nr_crash=20,
+    max_iters=40,
+    initial_number_of_steps=5,
+):
 
     """
     Using the given problem, iterate control to given target.
@@ -295,40 +304,36 @@ def iterate(problem, control, target,
         List of old controls to help speed in the continuation
     """
 
-    with Iterator(problem=problem,
-                  control=control,
-                  target=target,
-                  continuation=continuation,
-                  max_adapt_iter=max_adapt_iter,
-                  adapt_step=adapt_step,
-                  old_states=old_states,
-                  old_controls=old_controls,
-                  max_nr_crash=max_nr_crash,
-                  max_iters=max_iters,
-                  initial_number_of_steps=initial_number_of_steps) as iterator:
+    with Iterator(
+        problem=problem,
+        control=control,
+        target=target,
+        continuation=continuation,
+        max_adapt_iter=max_adapt_iter,
+        adapt_step=adapt_step,
+        old_states=old_states,
+        old_controls=old_controls,
+        max_nr_crash=max_nr_crash,
+        max_iters=max_iters,
+        initial_number_of_steps=initial_number_of_steps,
+    ) as iterator:
         res = iterator.solve()
 
     return res
-
 
 
 class Iterator(object):
     """
     Iterator
     """
-    _control_types = (Function, dolfin.Function,
-                      Constant, dolfin.Constant)
-    
-    def __init__(self,
-                 problem,
-                 control,
-                 target,
-                 old_states=None,
-                 old_controls=None,
-                 **params
+
+    _control_types = (Function, dolfin.Function, Constant, dolfin.Constant)
+
+    def __init__(
+        self, problem, control, target, old_states=None, old_controls=None, **params
     ):
-        
-        logger.setLevel(parameters['log_level'])
+
+        logger.setLevel(parameters["log_level"])
         self.parameters = Iterator.default_parameters()
         self.parameters.update(params)
 
@@ -338,13 +343,16 @@ class Iterator(object):
         self._check_control(control)
         self._check_target(target)
 
-        self.control_values = [copy(delist(self.control), deepcopy=True,
-                                    name='previous control')]
-        self.prev_states = [copy(self.problem.state, deepcopy=True,
-                                 name='previous state')]
+        self.control_values = [
+            copy(delist(self.control), deepcopy=True, name="previous control")
+        ]
+        self.prev_states = [
+            copy(self.problem.state, deepcopy=True, name="previous state")
+        ]
 
-        self.step = get_initial_step(self.control, self.target,
-                                     self.parameters['initial_number_of_steps'])
+        self.step = get_initial_step(
+            self.control, self.target, self.parameters["initial_number_of_steps"]
+        )
 
     def __enter__(self):
         return self
@@ -354,12 +362,14 @@ class Iterator(object):
 
     @staticmethod
     def default_parameters():
-        return dict(continuation=True,
-                    max_adapt_iter=8,
-                    adapt_step=True,
-                    max_nr_crash=20,
-                    max_iters=40,
-                    initial_number_of_steps=5)
+        return dict(
+            continuation=True,
+            max_adapt_iter=8,
+            adapt_step=True,
+            max_nr_crash=20,
+            max_iters=40,
+            initial_number_of_steps=5,
+        )
 
     @property
     def step(self):
@@ -368,15 +378,15 @@ class Iterator(object):
     @step.setter
     def step(self, step):
         s = squeeze(step)
-        if hasattr(s, '__len__') and len(s) != len(self.control):
+        if hasattr(s, "__len__") and len(s) != len(self.control):
             if len(self.control) == 1:
                 # Then probably the control is a function with
                 # dimension higher than one and we have squeezed to much
                 s = enlist(s, force_enlist=True)
             else:
-                msg = ('Step is of lenght {} while the lenght '
-                       'of the control is {}').format(len(s),
-                                                      len(self.control))
+                msg = (
+                    "Step is of lenght {} while the lenght " "of the control is {}"
+                ).format(len(s), len(self.control))
                 raise ValueError(msg)
         else:
             s = enlist(s)
@@ -390,26 +400,28 @@ class Iterator(object):
         while not self.target_reached():
 
             self.niters += 1
-            if self.ncrashes > self.parameters['max_nr_crash'] \
-               or self.niters > self.parameters['max_iters']:
+            if (
+                self.ncrashes > self.parameters["max_nr_crash"]
+                or self.niters > self.parameters["max_iters"]
+            ):
 
                 self.problem.reinit(self.prev_states[0])
                 self.assign_control(enlist(self.control_values[0]))
-                
+
                 raise SolverDidNotConverge
 
             prev_state = self.prev_states[-1]
             prev_control = enlist(self.control_values[-1])
 
             # Check if we are close
-            if step_too_large(delist(prev_control),
-                              delist(self.target),
-                              delist(self.step)):
+            if step_too_large(
+                delist(prev_control), delist(self.target), delist(self.step)
+            ):
                 self.change_step_for_final_iteration(delist(prev_control))
 
             self.increment_control()
 
-            if self.parameters['continuation']:
+            if self.parameters["continuation"]:
                 self.continuation_step()
 
             logger.info("Try new control")
@@ -435,20 +447,24 @@ class Iterator(object):
                 logger.info("\nSUCCESFULL STEP:")
 
                 if not self.target_reached():
-                    if nliter < self.parameters['max_adapt_iter'] and\
-                       self.parameters['adapt_step']:
+                    if (
+                        nliter < self.parameters["max_adapt_iter"]
+                        and self.parameters["adapt_step"]
+                    ):
                         self.change_step_size(1.5)
-                        msg = "Adapt step size. New step size: {}".format(np2str(self.step))
+                        msg = "Adapt step size. New step size: {}".format(
+                            np2str(self.step)
+                        )
                         # print_control(enlist(self.step), msg)
                         logger.info(msg)
 
-                self.control_values.append(delist(copy(self.control,
-                                                  deepcopy=True,
-                                                  name='Previous control')))
+                self.control_values.append(
+                    delist(copy(self.control, deepcopy=True, name="Previous control"))
+                )
 
-                self.prev_states.append(copy(self.problem.state,
-                                             deepcopy=True,
-                                             name='Previous state'))
+                self.prev_states.append(
+                    copy(self.problem.state, deepcopy=True, name="Previous state")
+                )
         return self.prev_states, self.control_values
 
     def change_step_size(self, factor):
@@ -459,12 +475,12 @@ class Iterator(object):
             self.step = factor * step
 
     def print_control(self):
-        msg = 'Current control: '
+        msg = "Current control: "
         msg = print_control(self.control, msg)
         logger.info(msg)
 
     def continuation_step(self):
-        
+
         first_step = len(self.prev_states) < 2
         if first_step:
             return
@@ -507,7 +523,7 @@ class Iterator(object):
                 c.assign(n)
             except TypeError:
                 c.assign(Constant(n))
-                
+
     def change_step_for_final_iteration(self, prev_control):
         """Change step size so that target is 
         reached in the next iteration
@@ -526,16 +542,17 @@ class Iterator(object):
                 prev = numpy_mpi.gather_broadcast(prev_control.vector().get_local())
             else:
                 prev = prev_control
-            
-            step = np.array([constant2float(t) - constant2float(c)
-                             for (t, c) in zip(target, prev)])
+
+            step = np.array(
+                [constant2float(t) - constant2float(c) for (t, c) in zip(target, prev)]
+            )
         elif isinstance(target, (dolfin.Constant, Constant)):
             step = constant2float(target) - constant2float(prev_control)
         else:
             step = target - prev_control
-                    
+
         self.step = step
-        
+
     def _check_target(self, target):
 
         target = enlist(target)
@@ -546,35 +563,37 @@ class Iterator(object):
             try:
                 t = get_constant(tar)
             except TypeError:
-                msg = ('Unable to convert target for type {} '
-                       'to a constant').format(type(target))
+                msg = ("Unable to convert target for type {} " "to a constant").format(
+                    type(target)
+                )
                 raise TypeError(msg)
             targets.append(t)
-        
+
         self.target = Enlisted(targets)
         t0 = self.target[0]
-        msg = ('Unsuppoert shape of control and target. '
-               "Can only hadnle single arrays or multiple scalars.")
+        msg = (
+            "Unsuppoert shape of control and target. "
+            "Can only hadnle single arrays or multiple scalars."
+        )
         for t in self.target[1:]:
-            if t0.value_shape().size > 0 or \
-               t.value_shape().size > 0:
-                raise(ValueError(msg))
-        logger.info('Target: {}'.format([constant2float(t) for t in self.target]))
-
+            if t0.value_shape().size > 0 or t.value_shape().size > 0:
+                raise (ValueError(msg))
+        logger.info("Target: {}".format([constant2float(t) for t in self.target]))
 
     def _check_control(self, control):
 
         control = enlist(control)
-        
+
         # Control has to be either a function or
         # a constant
         for c in control:
-            msg = ('Expected control parameters to be of type {}, '
-                   'got {}').format(self._control_types, type(c))
+            msg = ("Expected control parameters to be of type {}, " "got {}").format(
+                self._control_types, type(c)
+            )
             assert isinstance(c, self._control_types), msg
 
         self.control = control
-        logger.info('Control: {}'.format([constant2float(c) for c in self.control]))
+        logger.info("Control: {}".format([constant2float(c) for c in self.control]))
 
     @property
     def ncontrols(self):
@@ -582,7 +601,6 @@ class Iterator(object):
         """
         return len(self.control)
 
-    
     def target_reached(self):
         """Check if control and target are the same
         """
@@ -591,19 +609,16 @@ class Iterator(object):
         if isinstance(diff, dolfin.GenericVector):
             diff.abs()
             max_diff = diff.max()
-            
+
         else:
-            
+
             max_diff = np.max(abs(diff))
-            
+
         reached = max_diff < 1e-6
         if reached:
             logger.info("Check target reached: YES!")
         else:
             logger.info("Check target reached: NO")
             logger.info("Maximum difference: {:.3e}".format(max_diff))
-            
+
         return reached
-        
-        
-    

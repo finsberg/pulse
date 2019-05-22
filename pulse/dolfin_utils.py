@@ -2,11 +2,23 @@ import numpy as np
 import dolfin
 
 try:
-    from dolfin_adjoint import (Function, interpolate, Constant,
-                                project, assemble, FunctionAssigner)
+    from dolfin_adjoint import (
+        Function,
+        interpolate,
+        Constant,
+        project,
+        assemble,
+        FunctionAssigner,
+    )
 except ImportError:
-    from dolfin import (Function, interpolate, Constant,
-                        project, assemble, FunctionAssigner)
+    from dolfin import (
+        Function,
+        interpolate,
+        Constant,
+        project,
+        assemble,
+        FunctionAssigner,
+    )
 
 
 from . import utils
@@ -15,8 +27,7 @@ from . import numpy_mpi
 from .utils import logger
 
 
-def map_vector_field(f0, new_mesh, u=None, name="fiber",
-                     normalize=True):
+def map_vector_field(f0, new_mesh, u=None, name="fiber", normalize=True):
     """
     Map a vector field (f0) onto a new mesh (new_mesh) where the new mesh
     can be a moved version of the original one according to some
@@ -42,9 +53,10 @@ def map_vector_field(f0, new_mesh, u=None, name="fiber",
         numpy_mpi.assign_to_vector(u0.vector(), arr)
 
         from .kinematics import DeformationGradient
+
         F = DeformationGradient(u0)
 
-        f0_updated = dolfin.project(F*f0, f0.function_space())
+        f0_updated = dolfin.project(F * f0, f0.function_space())
 
         if normalize:
             f0_updated = normalize_vector_field(f0_updated)
@@ -69,10 +81,9 @@ def update_function(mesh, f):
     """
 
     f_new = Function(dolfin.FunctionSpace(mesh, f.ufl_element()))
-    numpy_mpi.\
-        assign_to_vector(f_new.vector(),
-                         numpy_mpi.
-                         gather_broadcast(f.vector().get_local()))
+    numpy_mpi.assign_to_vector(
+        f_new.vector(), numpy_mpi.gather_broadcast(f.vector().get_local())
+    )
     return f_new
 
 
@@ -83,19 +94,20 @@ def normalize_vector_field(u):
     S = u.function_space().sub(0).collapse()
 
     components = vectorfield_to_components(u, S, dim)
-    normarray \
-        = np.sqrt(sum(numpy_mpi.
-                      gather_broadcast(components[i].vector().get_local())**2
-                      for i in range(dim)))
+    normarray = np.sqrt(
+        sum(
+            numpy_mpi.gather_broadcast(components[i].vector().get_local()) ** 2
+            for i in range(dim)
+        )
+    )
 
     for comp in components:
-        numpy_mpi.assign_to_vector(comp.vector(),
-                                   numpy_mpi.
-                                   gather_broadcast(comp.vector().get_local())
-                                   / normarray)
+        numpy_mpi.assign_to_vector(
+            comp.vector(),
+            numpy_mpi.gather_broadcast(comp.vector().get_local()) / normarray,
+        )
 
-    assigners = [FunctionAssigner(u.function_space().sub(i), S)
-                 for i in range(dim)]
+    assigners = [FunctionAssigner(u.function_space().sub(i), S) for i in range(dim)]
     for i, comp, assigner in zip(range(dim), components, assigners):
         assigner.assign(u.sub(i), comp)
 
@@ -104,8 +116,7 @@ def normalize_vector_field(u):
 
 def vectorfield_to_components(u, S, dim):
     components = [dolfin.Function(S) for i in range(dim)]
-    assigners = [FunctionAssigner(S, u.function_space().sub(i))
-                 for i in range(dim)]
+    assigners = [FunctionAssigner(S, u.function_space().sub(i)) for i in range(dim)]
     for i, comp, assigner in zip(range(dim), components, assigners):
         assigner.assign(comp, u.sub(i))
 
@@ -116,8 +127,8 @@ def get_pressure(problem):
     """Returns p_lv (and p_rv if BiV mesh)
     """
 
-    plv = [p.traction for p in problem.bcs.neumann if p.name == 'lv']
-    prv = [p.traction for p in problem.bcs.neumann if p.name == 'rv']
+    plv = [p.traction for p in problem.bcs.neumann if p.name == "lv"]
+    prv = [p.traction for p in problem.bcs.neumann if p.name == "rv"]
 
     assert len(plv) > 0, "Problem has no Neumann BC for LV endo"
     pressure = [plv[0]]
@@ -131,7 +142,7 @@ def get_pressure(problem):
 def read_hdf5(h5name, func, h5group="", comm=dolfin.mpi_comm_world()):
 
     try:
-        with dolfin.HDF5File(comm, h5name, 'r') as h5file:
+        with dolfin.HDF5File(comm, h5name, "r") as h5file:
 
             h5file.read(func, h5group)
 
@@ -142,21 +153,21 @@ def read_hdf5(h5name, func, h5group="", comm=dolfin.mpi_comm_world()):
 
     except RuntimeError as ex:
         logger.errro(ex)
-        logger.error(("Something went wrong when reading file "
-                      "{h5name} into function {func} from group "
-                      "{h5group)").format(h5name=h5name,
-                                          func=func,
-                                          h5group=h5group))
+        logger.error(
+            (
+                "Something went wrong when reading file "
+                "{h5name} into function {func} from group "
+                "{h5group)"
+            ).format(h5name=h5name, func=func, h5group=h5group)
+        )
         raise ex
 
 
-def map_displacement(u, old_space, new_space, approx,
-                     name='mapped displacement'):
+def map_displacement(u, old_space, new_space, approx, name="mapped displacement"):
 
     if approx == "interpolate":
         # Do we need dolfin-adjoint here or is dolfin enough?
-        u_int = interpolate(project(u, old_space),
-                            new_space, name=name)
+        u_int = interpolate(project(u, old_space), new_space, name=name)
 
     elif approx == "project":
         # Do we need dolfin-adjoint here or is dolfin enough?
@@ -169,11 +180,11 @@ def map_displacement(u, old_space, new_space, approx,
 
 
 def compute_meshvolume(domain=None, dx=dolfin.dx, subdomain_id=None):
-    return Constant(dolfin
-                    .assemble(dolfin
-                              .Constant(1.0)
-                              * dx(domain=domain,
-                                   subdomain_id=subdomain_id)))
+    return Constant(
+        dolfin.assemble(
+            dolfin.Constant(1.0) * dx(domain=domain, subdomain_id=subdomain_id)
+        )
+    )
 
 
 def get_cavity_volume(geometry, unload=False, chamber="lv", u=None, xshift=0.0):
@@ -197,9 +208,7 @@ def get_cavity_volume(geometry, unload=False, chamber="lv", u=None, xshift=0.0):
     if hasattr(endo_marker, "__len__"):
         endo_marker = endo_marker[0]
 
-    ds = dolfin.Measure("exterior_facet",
-                        subdomain_data=ffun,
-                        domain=mesh)(endo_marker)
+    ds = dolfin.Measure("exterior_facet", subdomain_data=ffun, domain=mesh)(endo_marker)
 
     vol_form = get_cavity_volume_form(geometry.mesh, u, xshift)
     return assemble(vol_form * ds)
@@ -214,12 +223,11 @@ def get_cavity_volume_form(mesh, u=None, xshift=0.0):
     N = dolfin.FacetNormal(mesh)
 
     if u is None:
-        vol_form = (-1.0/3.0) * dolfin.dot(X, N)
+        vol_form = (-1.0 / 3.0) * dolfin.dot(X, N)
     else:
         F = kinematics.DeformationGradient(u)
         J = kinematics.Jacobian(F)
-        vol_form = (-1.0/3.0) * dolfin.dot(X + u,
-                                           J * dolfin.inv(F).T * N)
+        vol_form = (-1.0 / 3.0) * dolfin.dot(X + u, J * dolfin.inv(F).T * N)
 
     return vol_form
 
@@ -252,7 +260,7 @@ def get_constant(val, value_size=None, value_rank=0, constant=Constant):
         else:
             c = constant([val])
     else:
-        c = constant([val]*value_size)
+        c = constant([val] * value_size)
 
     return c
 
@@ -263,6 +271,7 @@ def get_dimesion(u):
     try:
         if dolfin.DOLFIN_VERSION_MAJOR > 1.6:
             from ufl.domain import find_geometric_dimension
+
             dim = find_geometric_dimension(u)
         else:
             dim = u.geometric_dimension()
@@ -378,15 +387,19 @@ def QuadratureSpace(mesh, degree, dim=3):
 
     if dolfin.DOLFIN_VERSION_MAJOR > 1.6:
         if dim == 1:
-            element = dolfin.FiniteElement(family="Quadrature",
-                                           cell=mesh.ufl_cell(),
-                                           degree=degree,
-                                           quad_scheme="default")
+            element = dolfin.FiniteElement(
+                family="Quadrature",
+                cell=mesh.ufl_cell(),
+                degree=degree,
+                quad_scheme="default",
+            )
         else:
-            element = dolfin.VectorElement(family="Quadrature",
-                                           cell=mesh.ufl_cell(),
-                                           degree=degree,
-                                           quad_scheme="default")
+            element = dolfin.VectorElement(
+                family="Quadrature",
+                cell=mesh.ufl_cell(),
+                degree=degree,
+                quad_scheme="default",
+            )
 
         return dolfin.FunctionSpace(mesh, element)
     else:
@@ -404,6 +417,7 @@ class VertexDomain(dolfin.SubDomain):
     within a given tolerance will be marked as inside
     the domain.
     """
+
     def __init__(self, coords, tol=1e-4):
         """
         *Arguments*
@@ -422,8 +436,7 @@ class VertexDomain(dolfin.SubDomain):
 
     def inside(self, x, on_boundary):
 
-        if np.all([np.any(abs(x[i] - self.coords.T[i]) < self.tol)
-                   for i in range(3)]):
+        if np.all([np.any(abs(x[i] - self.coords.T[i]) < self.tol) for i in range(3)]):
             return True
 
         return False
@@ -440,6 +453,7 @@ class BaseExpression(dolfin.Expression):
     Points that lie on the base but not on the epi- or endoring
     will be given a zero value.
     """
+
     def __init__(self, mesh_verts, seg_verts, sub, it, name):
         """
 
@@ -468,7 +482,7 @@ class BaseExpression(dolfin.Expression):
         self._mesh_verts = np.array(mesh_verts)
         self._all_seg_verts = np.array(seg_verts)
         self.point = 0
-        self.npoints = len(seg_verts)-1
+        self.npoints = len(seg_verts) - 1
 
         self._seg_verts = self._all_seg_verts[0]
 
@@ -495,7 +509,7 @@ class BaseExpression(dolfin.Expression):
         if len(d_intersect) == 1:
 
             idx = d_intersect.pop()
-            prev_seg_verts = self._all_seg_verts[self.point-1]
+            prev_seg_verts = self._all_seg_verts[self.point - 1]
 
             # Return the displacement in the given direction
             # Iterated starting from the previous displacemet
@@ -508,7 +522,7 @@ class BaseExpression(dolfin.Expression):
                 u_prev = self._mesh_verts[idx][2] - prev_seg_verts[idx][2]
                 u_current = self._mesh_verts[idx][2] - self._seg_verts[idx][2]
 
-            val = u_prev + self._it.t*(u_current - u_prev)
+            val = u_prev + self._it.t * (u_current - u_prev)
             value[0] = val
 
         else:
@@ -541,9 +555,7 @@ class MixedParameter(dolfin.Function):
         """
 
         msg = "Please provide a dolin function as argument to MixedParameter"
-        assert isinstance(fun, (dolfin.Function,
-                                Function,
-                                RegionalParameter)), msg
+        assert isinstance(fun, (dolfin.Function, Function, RegionalParameter)), msg
 
         if isinstance(fun, RegionalParameter):
             raise NotImplementedError
@@ -551,13 +563,12 @@ class MixedParameter(dolfin.Function):
         # We can just make a usual mixed function space
         # with n copies of the original one
         V = fun.function_space()
-        W = dolfin.MixedFunctionSpace([V]*n)
+        W = dolfin.MixedFunctionSpace([V] * n)
 
         Function.__init__(self, W, name=name)
 
         # Create a function assigner
-        self.function_assigner \
-            = [FunctionAssigner(W.sub(i), V) for i in range(n)]
+        self.function_assigner = [FunctionAssigner(W.sub(i), V) for i in range(n)]
 
         # Store the original function space
         self.basespace = V
@@ -577,6 +588,7 @@ class MixedParameter(dolfin.Function):
         f_.assign(f)
         self.function_assigner[i].assign(self.split()[i], f_)
 
+
 class RegionalParameter(dolfin.Function):
     """A regional paramerter defined in terms of a dolfin.MeshFunction
 
@@ -584,19 +596,20 @@ class RegionalParameter(dolfin.Function):
     and you want to define different parameters on different regions,
     then this is what you want.
     """
+
     def __init__(self, meshfunction):
 
-        assert isinstance(meshfunction, dolfin.MeshFunctionSizet), \
-            "Invalid meshfunction for regional gamma"
-        
+        assert isinstance(
+            meshfunction, dolfin.MeshFunctionSizet
+        ), "Invalid meshfunction for regional gamma"
+
         mesh = meshfunction.mesh()
 
         self._values = set(numpy_mpi.gather_broadcast(meshfunction.array()))
         self._nvalues = len(self._values)
-        
-        
-        V  = dolfin.VectorFunctionSpace(mesh, "R", 0, dim=self._nvalues)
-        
+
+        V = dolfin.VectorFunctionSpace(mesh, "R", 0, dim=self._nvalues)
+
         dolfin.Function.__init__(self, V)
         self._meshfunction = meshfunction
 
@@ -607,10 +620,10 @@ class RegionalParameter(dolfin.Function):
         self._ind_functions = []
         for v in self._values:
             self._ind_functions.append(self._make_indicator_function(v))
-    
+
     def get_values(self):
         return self._values
-    
+
     @property
     def function(self):
         """
@@ -641,9 +654,9 @@ class RegionalParameter(dolfin.Function):
 
     def _sum(self):
         coeffs = dolfin.split(self)
-        fun = coeffs[0]*self._ind_functions[0]
+        fun = coeffs[0] * self._ind_functions[0]
 
         for c, f in zip(coeffs[1:], self._ind_functions[1:]):
-            fun += c*f
+            fun += c * f
 
         return fun

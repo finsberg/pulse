@@ -3,26 +3,29 @@ from collections import namedtuple
 import os
 import dolfin
 
-from .geometry_utils import (load_geometry_from_h5, move,
-                             save_geometry_to_h5, logger as logger_utils)
+from .geometry_utils import (
+    load_geometry_from_h5,
+    move,
+    save_geometry_to_h5,
+    logger as logger_utils,
+)
 
 from . import numpy_mpi
 from . import parameters
-from .dolfin_utils import (compute_meshvolume,
-                           map_vector_field, get_cavity_volume)
+from .dolfin_utils import compute_meshvolume, map_vector_field, get_cavity_volume
 from .utils import set_default_none, make_logger
 
-logger = make_logger(__name__, parameters['log_level'])
+logger = make_logger(__name__, parameters["log_level"])
 
-Marker = namedtuple('Marker', ['name', 'value', 'dimension'])
+Marker = namedtuple("Marker", ["name", "value", "dimension"])
 
 # f0 - fibers, s0 - sheets, n0 - cross-sheets
-Microstructure = namedtuple('Microstructure', ['f0', 's0', 'n0'])
+Microstructure = namedtuple("Microstructure", ["f0", "s0", "n0"])
 # Set defaults none to allow for different types of anisotropy
 set_default_none(Microstructure)
 
 # l0 - longitudinal, c0 - circumferential, r0 - radial
-CRLBasis = namedtuple('CRLBasis', ['c0', 'r0', 'l0'])
+CRLBasis = namedtuple("CRLBasis", ["c0", "r0", "l0"])
 # These are only needed in the RegionalStrainTarget
 set_default_none(CRLBasis)
 
@@ -31,8 +34,7 @@ set_default_none(CRLBasis)
 # efun - edge function
 # ffun - facet function
 # cfun - cell function
-MarkerFunctions = namedtuple('MarkerFunctions', ['vfun', 'efun',
-                                                 'ffun', 'cfun'])
+MarkerFunctions = namedtuple("MarkerFunctions", ["vfun", "efun", "ffun", "cfun"])
 # Note the this might not allways make sense for meshes
 # of dimension < 3, also some of these function might not
 # be relevant, therefore set defaults to None
@@ -42,7 +44,7 @@ set_default_none(MarkerFunctions)
 def get_attribute(obj, key1, key2, default=None):
     f = getattr(obj, key1, None)
     if f is None:
-        f = getattr(obj,key2, default)
+        f = getattr(obj, key2, default)
     return f
 
 
@@ -89,14 +91,18 @@ class Geometry(object):
             geo = Geometry.from_file("geometry.h5")
 
     """
-    logger.setLevel(parameters['log_level'])
-    logger_utils.setLevel(parameters['log_level'])
 
-    def __init__(self, mesh,
-                 markers=None,
-                 marker_functions=None,
-                 microstructure=None,
-                 crl_basis=None):
+    logger.setLevel(parameters["log_level"])
+    logger_utils.setLevel(parameters["log_level"])
+
+    def __init__(
+        self,
+        mesh,
+        markers=None,
+        marker_functions=None,
+        microstructure=None,
+        crl_basis=None,
+    ):
 
         self.mesh = mesh
 
@@ -107,18 +113,16 @@ class Geometry(object):
 
     def __repr__(self):
         args = []
-        for attr in ('f0', 's0', 'n0', 'vfun',
-                     'ffun', 'cfun', 'c0', 'r0', 'l0'):
+        for attr in ("f0", "s0", "n0", "vfun", "ffun", "cfun", "c0", "r0", "l0"):
             if getattr(self, attr) is not None:
                 args.append(attr)
 
-        return ('{self.__class__.__name__}'
-                '({self.mesh}), '
-                '{args})').format(self=self,
-                                  args=", ".join(args))
+        return ("{self.__class__.__name__}" "({self.mesh}), " "{args})").format(
+            self=self, args=", ".join(args)
+        )
 
     @classmethod
-    def from_file(cls, h5name, h5group='', comm=None):
+    def from_file(cls, h5name, h5group="", comm=None):
 
         comm = comm if comm is not None else dolfin.mpi_comm_world()
 
@@ -139,19 +143,17 @@ class Geometry(object):
             U = u
 
         marker_functions_ = {}
-        for dim, fun in ((0, 'vfun'), (1, 'efun'),
-                         (2, 'ffun'), (3, 'cfun')):
+        for dim, fun in ((0, "vfun"), (1, "efun"), (2, "ffun"), (3, "cfun")):
             f_old = getattr(self, fun)
             if f_old is None:
                 continue
-            f = dolfin.MeshFunction("size_t", new_mesh,
-                                    dim, new_mesh.domains())
+            f = dolfin.MeshFunction("size_t", new_mesh, dim, new_mesh.domains())
             f.set_values(f_old.array())
             marker_functions_[fun] = f
         marker_functions = MarkerFunctions(**marker_functions_)
 
         microstructure_ = {}
-        for field in ('f0', 's0', 'n0'):
+        for field in ("f0", "s0", "n0"):
 
             v0 = getattr(self, field)
             if v0 is None:
@@ -162,7 +164,7 @@ class Geometry(object):
         microstructure = Microstructure(**microstructure_)
 
         crl_basis_ = {}
-        for basis in ('c0', 'r0', 'l0'):
+        for basis in ("c0", "r0", "l0"):
 
             v0 = getattr(self, basis)
             if v0 is None:
@@ -171,11 +173,13 @@ class Geometry(object):
             crl_basis_[basis] = v
         crl_basis = CRLBasis(**crl_basis_)
 
-        return dict(mesh=new_mesh,
-                    markers=self.markers,
-                    marker_functions=marker_functions,
-                    microstructure=microstructure,
-                    crl_basis=crl_basis)
+        return dict(
+            mesh=new_mesh,
+            markers=self.markers,
+            marker_functions=marker_functions,
+            microstructure=microstructure,
+            crl_basis=crl_basis,
+        )
 
     def copy(self, u=None, factor=1.0):
         """Return as copy of the geometry with possiblity to
@@ -189,50 +193,55 @@ class Geometry(object):
 
         logger.debug("Load geometry from file {}".format(h5name))
 
-        geo = load_geometry_from_h5(h5name, h5group,
-                                    include_sheets=True, comm=comm)
+        geo = load_geometry_from_h5(h5name, h5group, include_sheets=True, comm=comm)
 
-        f0 = get_attribute(geo, 'f0', 'fiber', None)
-        s0 = get_attribute(geo, 's0', 'sheet', None)
-        n0 = get_attribute(geo, 'n0', 'sheet_normal', None)
+        f0 = get_attribute(geo, "f0", "fiber", None)
+        s0 = get_attribute(geo, "s0", "sheet", None)
+        n0 = get_attribute(geo, "n0", "sheet_normal", None)
 
-        c0 = get_attribute(geo, 'c0', 'circumferential', None)
-        r0 = get_attribute(geo, 'r0', 'radial', None)
-        l0 = get_attribute(geo, 'l0', 'longitudinal', None)
+        c0 = get_attribute(geo, "c0", "circumferential", None)
+        r0 = get_attribute(geo, "r0", "radial", None)
+        l0 = get_attribute(geo, "l0", "longitudinal", None)
 
-        vfun = getattr(geo, 'vfun', None)
-        ffun = getattr(geo, 'ffun', None)
-        cfun = get_attribute(geo, 'cfun', 'sfun', None)
+        vfun = getattr(geo, "vfun", None)
+        ffun = getattr(geo, "ffun", None)
+        cfun = get_attribute(geo, "cfun", "sfun", None)
 
         kwargs = {
-            'mesh': geo.mesh,
-            'markers': geo.markers,
-            'marker_functions': MarkerFunctions(vfun=vfun,
-                                                ffun=ffun,
-                                                cfun=cfun),
-            'microstructure': Microstructure(f0=f0, s0=s0, n0=n0),
-            'crl_basis': CRLBasis(c0=c0, r0=r0, l0=l0)
+            "mesh": geo.mesh,
+            "markers": geo.markers,
+            "marker_functions": MarkerFunctions(vfun=vfun, ffun=ffun, cfun=cfun),
+            "microstructure": Microstructure(f0=f0, s0=s0, n0=n0),
+            "crl_basis": CRLBasis(c0=c0, r0=r0, l0=l0),
         }
 
         return kwargs
 
-    def save(self, h5name, h5group="",
-             other_functions=None, other_attributes=None,
-             overwrite_file=False, overwrite_group=True):
+    def save(
+        self,
+        h5name,
+        h5group="",
+        other_functions=None,
+        other_attributes=None,
+        overwrite_file=False,
+        overwrite_group=True,
+    ):
 
-        h5name = os.path.splitext(h5name)[0] + '.h5'
-        logger.debug('Save to {}...'.format(h5name))
-        save_geometry_to_h5(self.mesh,
-                            h5name=h5name,
-                            h5group=h5group,
-                            markers=self.markers or None,
-                            fields=self.microstructure_list() or None,
-                            local_basis=self.crl_basis_list() or None,
-                            meshfunctions=self.meshfunction_list(),
-                            overwrite_file=overwrite_file,
-                            overwrite_group=overwrite_group)
-        logger.debug('Saved')
-                            
+        h5name = os.path.splitext(h5name)[0] + ".h5"
+        logger.debug("Save to {}...".format(h5name))
+        save_geometry_to_h5(
+            self.mesh,
+            h5name=h5name,
+            h5group=h5group,
+            markers=self.markers or None,
+            fields=self.microstructure_list() or None,
+            local_basis=self.crl_basis_list() or None,
+            meshfunctions=self.meshfunction_list(),
+            overwrite_file=overwrite_file,
+            overwrite_group=overwrite_group,
+        )
+        logger.debug("Saved")
+
     @property
     def top_dim(self):
         """Topological Dimension
@@ -250,9 +259,9 @@ class Geometry(object):
         c0, r0, l0. Basis elements that are none will not
         be included
         """
-        if not hasattr(self, '_crl_basis_list'):
+        if not hasattr(self, "_crl_basis_list"):
             self._crl_basis_list = []
-            for l in ['c0', 'r0', 'l0']:
+            for l in ["c0", "r0", "l0"]:
 
                 e = getattr(self.crl_basis, l)
                 if e is not None:
@@ -269,16 +278,14 @@ class Geometry(object):
         """Return the volume measure using self.mesh as domain and
         self.cfun as subdomain_data
         """
-        return dolfin.dx(domain=self.mesh,
-                         subdomain_data=self.cfun)
+        return dolfin.dx(domain=self.mesh, subdomain_data=self.cfun)
 
     @property
     def ds(self):
         """Return the surface measure of exterior facets using
         self.mesh as domain and self.ffun as subdomain_data
         """
-        return dolfin.ds(domain=self.mesh,
-                         subdomain_data=self.ffun)
+        return dolfin.ds(domain=self.mesh, subdomain_data=self.ffun)
 
     @property
     def facet_normal(self):
@@ -292,17 +299,17 @@ class Geometry(object):
     def regions(self):
         """Return a set of the unique values of the cell function (cfun)
         """
-        if not hasattr(self, '_regions'):
+        if not hasattr(self, "_regions"):
             try:
-                regions \
-                    = set(numpy_mpi
-                          .gather_broadcast(self.dx
-                                            .subdomain_data().array())
-                          .astype(int))
+                regions = set(
+                    numpy_mpi.gather_broadcast(self.dx.subdomain_data().array()).astype(
+                        int
+                    )
+                )
                 self._regions = {int(i) for i in regions}
             except AttributeError:
                 # self.dx.subdomain_data() is None
-                logger.warning('No regions found')
+                logger.warning("No regions found")
                 self._regions = {0}
 
         return self._regions
@@ -312,17 +319,18 @@ class Geometry(object):
         """Return a list of the volume of each subdomain defined
         by the cell function (cfun)
         """
-        if not hasattr(self, '_meshvols'):
-            self._meshvols = [compute_meshvolume(dx=self.dx,
-                                                 subdomain_id=int(i))
-                              for i in self.regions]
+        if not hasattr(self, "_meshvols"):
+            self._meshvols = [
+                compute_meshvolume(dx=self.dx, subdomain_id=int(i))
+                for i in self.regions
+            ]
         return self._meshvols
 
     @property
     def meshvol(self):
         """Return the volume of the whole mesh
         """
-        if not hasattr(self, '_meshvol'):
+        if not hasattr(self, "_meshvol"):
             self._meshvol = compute_meshvolume(domain=self.mesh)
 
         return self._meshvol
@@ -331,7 +339,7 @@ class Geometry(object):
         """Fibers, sheet and sheet-normals in a list
         """
         fields = []
-        for l in ['f0', 's0', 'n0']:
+        for l in ["f0", "s0", "n0"]:
             e = getattr(self.microstructure, l)
             if e is not None:
                 fields.append(e)
@@ -339,14 +347,13 @@ class Geometry(object):
 
     def meshfunction_list(self):
         meshfunctions = {}
-        for dim, l in enumerate(['vfun', 'efun', 'ffun', 'cfun']):
+        for dim, l in enumerate(["vfun", "efun", "ffun", "cfun"]):
             mf = getattr(self.marker_functions, l)
             if mf is None:
-                mf = dolfin.MeshFunction("size_t", self.mesh, dim,
-                                         self.mesh.domains())
+                mf = dolfin.MeshFunction("size_t", self.mesh, dim, self.mesh.domains())
             meshfunctions[dim] = mf
         return meshfunctions
-                
+
     @property
     def vfun(self):
         """Vertex Function
@@ -415,16 +422,16 @@ class HeartGeometry(Geometry):
 
     @property
     def is_biv(self):
-        if 'ENDO_RV' in self.markers:
-            return self.markers['ENDO_RV'][0] in \
-                set(numpy_mpi.gather_broadcast(self.ffun.array()))
-            
+        if "ENDO_RV" in self.markers:
+            return self.markers["ENDO_RV"][0] in set(
+                numpy_mpi.gather_broadcast(self.ffun.array())
+            )
+
         return False
 
     def cavity_volume(self, chamber="lv", u=None):
 
-        return get_cavity_volume(self, chamber=chamber, u=u,
-                                 xshift=self.xshift)
+        return get_cavity_volume(self, chamber=chamber, u=u, xshift=self.xshift)
 
     @property
     def base_mean_position(self):
@@ -433,8 +440,8 @@ class HeartGeometry(Geometry):
         (serial only?)
         """
         import numpy as np
-        facet_indices, = np.where(self.ffun.array()
-                                  == self.markers["BASE"][0])
+
+        facet_indices, = np.where(self.ffun.array() == self.markers["BASE"][0])
         point_inidces = []
         for facet in dolfin.facets(self.mesh):
             if facet.index() in facet_indices:

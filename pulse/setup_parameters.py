@@ -3,7 +3,7 @@ import dolfin
 import logging
 
 parameters = dolfin.Parameters("Pulse_parameters")
-parameters.add('log_level', logging.INFO)
+parameters.add("log_level", logging.INFO)
 
 
 def setup_general_parameters():
@@ -17,7 +17,7 @@ def setup_general_parameters():
     dolfin.parameters["form_compiler"]["representation"] = "uflacs"
     dolfin.parameters["form_compiler"]["cpp_optimize"] = True
     dolfin.parameters["form_compiler"]["cpp_optimize_flags"] = " ".join(flags)
-    
+
     # dolfin.set_log_active(False)
     dolfin.set_log_level(logging.INFO)
 
@@ -33,8 +33,7 @@ def setup_unloading_parameters():
 
     params = dolfin.Parameters("Unloading_parameters")
 
-    params.add("method", "fixed_point",
-               ["fixed_point", "raghavan"])
+    params.add("method", "fixed_point", ["fixed_point", "raghavan"])
     # Terminate if difference in reference (unloaded) volume
     # is less than tol
     params.add("tol", 0.05)

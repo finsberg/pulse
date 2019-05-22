@@ -14,7 +14,7 @@ from . import parameters
 from .utils import make_logger
 
 
-logger = make_logger(__name__, parameters['log_level'])
+logger = make_logger(__name__, parameters["log_level"])
 
 
 def move(mesh, u, factor=1.0):
@@ -51,24 +51,28 @@ def get_fiber_markers(mesh_type="lv"):
     """
     if mesh_type == "lv":
 
-        return {'BASE': 10,
-                'ENDO': 30,
-                'EPI': 40,
-                'WALL': 50,
-                'ENDORING': 300,
-                'EPIRING': 400,
-                'WALL': 50}
+        return {
+            "BASE": 10,
+            "ENDO": 30,
+            "EPI": 40,
+            "WALL": 50,
+            "ENDORING": 300,
+            "EPIRING": 400,
+            "WALL": 50,
+        }
 
     elif mesh_type == "biv":
 
-        return {'BASE': 10,
-                'ENDO_RV': 20,
-                'ENDO_LV': 30,
-                'EPI': 40,
-                'ENDORING_RV': 200,
-                'ENDORING_LV': 300,
-                'EPIRING': 400,
-                'WALL': 50}
+        return {
+            "BASE": 10,
+            "ENDO_RV": 20,
+            "ENDO_LV": 30,
+            "EPI": 40,
+            "ENDORING_RV": 200,
+            "ENDORING_LV": 300,
+            "EPIRING": 400,
+            "WALL": 50,
+        }
 
 
 def get_markers(mesh_type="lv"):
@@ -101,10 +105,14 @@ def get_markers(mesh_type="lv"):
     return markers
 
 
-def load_geometry_from_h5(h5name, h5group="",
-                          fendo=None, fepi=None,
-                          include_sheets=True,
-                          comm=dolfin.mpi_comm_world()):
+def load_geometry_from_h5(
+    h5name,
+    h5group="",
+    fendo=None,
+    fepi=None,
+    include_sheets=True,
+    comm=dolfin.mpi_comm_world(),
+):
     """Load geometry and other mesh data from
     a h5file to an object.
     If the file contains muliple fiber fields
@@ -124,8 +132,8 @@ def load_geometry_from_h5(h5name, h5group="",
 
     logger.info("\nLoad mesh from h5")
     # Set default groups
-    ggroup = '{}/geometry'.format(h5group)
-    mgroup = '{}/mesh'.format(ggroup)
+    ggroup = "{}/geometry".format(h5group)
+    mgroup = "{}/mesh".format(ggroup)
     lgroup = "{}/local basis functions".format(h5group)
     fgroup = "{}/microstructure/".format(h5group)
 
@@ -134,10 +142,10 @@ def load_geometry_from_h5(h5name, h5group="",
 
     # Check that the given file contains
     # the geometry in the given h5group
-    if not io_utils.check_h5group(h5name, mgroup,
-                                  delete=False, comm=comm):
-        msg = ("Warning!\nGroup: '{}' does not exist in file:"
-               "\n{}").format(mgroup, h5name)
+    if not io_utils.check_h5group(h5name, mgroup, delete=False, comm=comm):
+        msg = ("Warning!\nGroup: '{}' does not exist in file:" "\n{}").format(
+            mgroup, h5name
+        )
 
         with h5py.File(h5name) as h:
             keys = h.keys()
@@ -147,6 +155,7 @@ def load_geometry_from_h5(h5name, h5group="",
     # Create a dummy object for easy parsing
     class Geometry(object):
         pass
+
     geo = Geometry()
 
     with dolfin.HDF5File(comm, h5name, "r") as h5file:
@@ -159,7 +168,7 @@ def load_geometry_from_h5(h5name, h5group="",
         # Get mesh functions
         for dim, attr in zip(range(4), ["vfun", "efun", "ffun", "cfun"]):
 
-            dgroup = '{}/mesh/meshfunction_{}'.format(ggroup, dim)
+            dgroup = "{}/mesh/meshfunction_{}".format(ggroup, dim)
             mf = dolfin.MeshFunction("size_t", mesh, dim, mesh.domains())
 
             if h5file.has_dataset(dgroup):
@@ -179,8 +188,7 @@ def load_geometry_from_h5(h5name, h5group="",
             io_utils.read_h5file(h5file, original_mesh, origmeshgroup, True)
             setattr(geo, "original_geometry", original_mesh)
 
-    for attr in ['f0', 's0', 'n0', 'r0', 'c0',
-                 'l0', 'cfun', 'vfun', 'efun', 'ffun']:
+    for attr in ["f0", "s0", "n0", "r0", "c0", "l0", "cfun", "vfun", "efun", "ffun"]:
         if not hasattr(geo, attr):
             setattr(geo, attr, None)
 
@@ -190,20 +198,21 @@ def load_geometry_from_h5(h5name, h5group="",
 def load_markers(h5file, mesh, ggroup, dgroup):
     try:
         markers = {}
-        for dim in range(mesh.ufl_domain().topological_dimension()+1):
+        for dim in range(mesh.ufl_domain().topological_dimension() + 1):
             for key_str in ["domain", "meshfunction"]:
-                dgroup = '{}/mesh/{}_{}'.format(ggroup, key_str, dim)
+                dgroup = "{}/mesh/{}_{}".format(ggroup, key_str, dim)
 
                 # If dataset is not present
                 if not h5file.has_dataset(dgroup):
                     continue
 
-                for aname in h5file.attributes(dgroup).str().strip()\
-                                                            .split(' '):
-                    if aname.startswith('marker_name'):
+                for aname in h5file.attributes(dgroup).str().strip().split(" "):
+                    if aname.startswith("marker_name"):
 
-                        name = aname.rsplit('marker_name_')[-1]
-                        marker = h5file.attributes(dgroup)['marker_name_{}'.format(name)]
+                        name = aname.rsplit("marker_name_")[-1]
+                        marker = h5file.attributes(dgroup)[
+                            "marker_name_{}".format(name)
+                        ]
                         markers[name] = (int(marker), dim)
 
     except Exception as ex:
@@ -225,21 +234,22 @@ def setup_fiber_parameters():
     fiber_params.add("sheet_angle_endo", 0)
     return fiber_params
 
+
 def full_arctangent(x, y):
     t = np.arctan2(x, y)
     if t < 0:
-        return t + 2*np.pi
+        return t + 2 * np.pi
     else:
         return t
 
 
 def cartesian_to_prolate_ellipsoidal(x, y, z, a):
 
-    b1 = np.sqrt((x + a)**2 + y**2 + z**2)
-    b2 = np.sqrt((x - a)**2 + y**2 + z**2)
+    b1 = np.sqrt((x + a) ** 2 + y ** 2 + z ** 2)
+    b2 = np.sqrt((x - a) ** 2 + y ** 2 + z ** 2)
 
-    sigma = 1/(2.0*a)*(b1 + b2)
-    tau = 1/(2.0*a)*(b1 - b2)
+    sigma = 1 / (2.0 * a) * (b1 + b2)
+    tau = 1 / (2.0 * a) * (b1 - b2)
     phi = full_arctangent(z, y)
     mu = np.arccosh(sigma)
     nu = np.arccos(tau)
@@ -247,17 +257,17 @@ def cartesian_to_prolate_ellipsoidal(x, y, z, a):
 
 
 def prolate_ellipsoidal_to_cartesian(mu, nu, phi, a):
-    x = a*np.cosh(mu)*np.cos(nu)
-    y = a*np.sinh(mu)*np.sin(nu)*np.cos(phi)
-    z = a*np.sinh(mu)*np.sin(nu)*np.sin(phi)
+    x = a * np.cosh(mu) * np.cos(nu)
+    y = a * np.sinh(mu) * np.sin(nu) * np.cos(phi)
+    z = a * np.sinh(mu) * np.sin(nu) * np.sin(phi)
     return x, y, z
 
 
 def fill_coordinates_ec(i, e_c_x, e_c_y, e_c_z, coord, foci):
-    norm = dolfin.sqrt(coord[1]**2 + coord[2]**2)
+    norm = dolfin.sqrt(coord[1] ** 2 + coord[2] ** 2)
     if not dolfin.near(norm, 0):
-        e_c_y.vector()[i] = -coord[2]/norm
-        e_c_z.vector()[i] = coord[1]/norm
+        e_c_y.vector()[i] = -coord[2] / norm
+        e_c_z.vector()[i] = coord[1] / norm
     else:
         # We are at the apex where crl system doesn't make sense
         # So just pick something.
@@ -267,15 +277,12 @@ def fill_coordinates_ec(i, e_c_x, e_c_y, e_c_z, coord, foci):
 
 def fill_coordinates_el(i, e_c_x, e_c_y, e_c_z, coord, foci):
 
-    norm = dolfin.sqrt(coord[1]**2 + coord[2]**2)
+    norm = dolfin.sqrt(coord[1] ** 2 + coord[2] ** 2)
     if not dolfin.near(norm, 0):
-        mu, nu, phi \
-            = cartesian_to_prolate_ellipsoidal(*(coord.tolist() + [foci]))
+        mu, nu, phi = cartesian_to_prolate_ellipsoidal(*(coord.tolist() + [foci]))
         x, y, z = prolate_ellipsoidal_to_cartesian(mu, nu + 0.01, phi, foci)
-        r = np.array([coord[0] - x,
-                      coord[1] - y,
-                      coord[2] - z])
-        e_r = r/np.linalg.norm(r)
+        r = np.array([coord[0] - x, coord[1] - y, coord[2] - z])
+        e_r = r / np.linalg.norm(r)
         e_c_x.vector()[i] = e_r[0]
         e_c_y.vector()[i] = e_r[1]
         e_c_z.vector()[i] = e_r[2]
@@ -378,6 +385,7 @@ def fibers(mesh, fiber_endo=60, fiber_epi=-60):
     f0 = generate_fibers(mesh, fiber_params)[0]
     return f0
 
+
 def get_circ_field(mesh):
 
     fiber_params = Parameters("Fibers")
@@ -396,6 +404,7 @@ def get_circ_field(mesh):
 
     return f0
 
+
 def get_long_field(mesh, mesh_type="biv"):
 
     fiber_params = setup_fiber_parameters()
@@ -412,9 +421,7 @@ def get_long_field(mesh, mesh_type="biv"):
         markers["ENDO_RV"] = markers["ENDO_LV"]
         for facet in doflin.facets(mesh):
             if ffun[facet] != 0:
-                mesh.domains().set_marker((facet.index(),
-                                           markers[ffun[facet]]), 2)
-
+                mesh.domains().set_marker((facet.index(), markers[ffun[facet]]), 2)
 
     f0 = generate_fibers(mesh, fiber_params)[0]
     f0.rename("longitudinal", "local_basis_function")
@@ -424,8 +431,7 @@ def get_long_field(mesh, mesh_type="biv"):
         markers = get_fiber_markers("biv")
         for facet in doflin.facets(mesh):
             if ffun[facet] != 0:
-                mesh.domains().set_marker((facet.index(),
-                                           markers[ffun[facet]]), 2)
+                mesh.domains().set_marker((facet.index(), markers[ffun[facet]]), 2)
     return f0
 
 
@@ -440,8 +446,10 @@ def generate_fibers(mesh, fiber_params, ffun=None):
     try:
         from ldrb import dolfin_ldrb
     except ImportError:
-        msg = ('"ldrb" package not found. Please go to '
-               'https://github.com/finsberg/ldrb to see how you can get it!')
+        msg = (
+            '"ldrb" package not found. Please go to '
+            "https://github.com/finsberg/ldrb to see how you can get it!"
+        )
         print(msg)
         raise ImportError(msg)
 
@@ -449,9 +457,11 @@ def generate_fibers(mesh, fiber_params, ffun=None):
         p = fiber_params.to_dict()
     else:
         p = fiber_params
-        
-    angles = dict(alpha_endo_lv=p.get('fiber_angle_endo', None),
-                  alpha_epi_lv=p.get('fiber_angle_epi', None))
+
+    angles = dict(
+        alpha_endo_lv=p.get("fiber_angle_endo", None),
+        alpha_epi_lv=p.get("fiber_angle_epi", None),
+    )
 
     return dolfin_ldrb(mesh, ffun=ffun, **angles)
 
@@ -469,16 +479,19 @@ def generate_fibers_old(mesh, fiber_params):
 
     fiber_space_name = fiber_params["fiber_space"]
 
-    assert len(fiber_space_name.split("_")) == 2, \
-        "expected fiber_space_name in 'FamilyName_Degree' format"
+    assert (
+        len(fiber_space_name.split("_")) == 2
+    ), "expected fiber_space_name in 'FamilyName_Degree' format"
 
     family, degree = fiber_space_name.split("_")
 
     if dolfin.DOLFIN_VERSION_MAJOR > 1.6:
-        el = dolfin.FiniteElement(family=family,
-                                  cell=mesh.ufl_cell(),
-                                  degree=int(degree),
-                                  quad_scheme="default")
+        el = dolfin.FiniteElement(
+            family=family,
+            cell=mesh.ufl_cell(),
+            degree=int(degree),
+            quad_scheme="default",
+        )
         fiber_space = dolfin.FunctionSpace(mesh, el)
     else:
         fiber_space = dolfin.FunctionSpace(mesh, family, int(degree))
@@ -494,31 +507,39 @@ def generate_fibers_old(mesh, fiber_params):
     sheet_angle_endo = fiber_params.to_dict().get("sheet_angle_endo", 0)
     sheet_angle_epi = fiber_params.to_dict().get("sheet_angle_epi", 0)
 
-    microstructures = dolfin_fiberrules(mesh,
-                                        fiber_space,
-                                        fiber_angle_epi,
-                                        fiber_angle_endo,
-                                        sheet_angle_epi,
-                                        sheet_angle_endo)
+    microstructures = dolfin_fiberrules(
+        mesh,
+        fiber_space,
+        fiber_angle_epi,
+        fiber_angle_endo,
+        sheet_angle_epi,
+        sheet_angle_endo,
+    )
 
     if dolfin.DOLFIN_VERSION_MAJOR > 2016:
         dolfin.parameters["form_compiler"]["representation"] = "uflacs"
 
-    microstructures[0].rename("fiber",
-                              "epi{}_endo{}".format(fiber_params["fiber_angle_epi"],
-                                                    fiber_params["fiber_angle_endo"]))
+    microstructures[0].rename(
+        "fiber",
+        "epi{}_endo{}".format(
+            fiber_params["fiber_angle_epi"], fiber_params["fiber_angle_endo"]
+        ),
+    )
     fields = [microstructures[0]]
 
-
     if fiber_params["include_sheets"]:
-        microstructures[1].rename("sheet",
-                                  "epi{}_endo{}".format(sheet_angle_epi,
-                                                                sheet_angle_endo))
-        microstructures[2].rename("cross_sheet",
-                                  "fepi{}_fendo{}_sepi{}_sendo{}".format(fiber_params["fiber_angle_epi"],
-                                                                         fiber_params["fiber_angle_endo"],
-                                                                         sheet_angle_epi,
-                                                                         sheet_angle_endo))
+        microstructures[1].rename(
+            "sheet", "epi{}_endo{}".format(sheet_angle_epi, sheet_angle_endo)
+        )
+        microstructures[2].rename(
+            "cross_sheet",
+            "fepi{}_fendo{}_sepi{}_sendo{}".format(
+                fiber_params["fiber_angle_epi"],
+                fiber_params["fiber_angle_endo"],
+                sheet_angle_epi,
+                sheet_angle_endo,
+            ),
+        )
         fields.append(microstructures[1])
         fields.append(microstructures[2])
 
@@ -531,16 +552,18 @@ def load_local_basis(h5file, lgroup, mesh, geo):
         # Get local bais functions
         local_basis_attrs = h5file.attributes(lgroup)
         lspace = local_basis_attrs["space"]
-        family, order = lspace.split('_')
+        family, order = lspace.split("_")
 
         namesstr = local_basis_attrs["names"]
         names = namesstr.split(":")
 
         if dolfin.DOLFIN_VERSION_MAJOR > 1.6:
-            elm = dolfin.VectorElement(family=family,
-                                       cell=mesh.ufl_cell(),
-                                       degree=int(order),
-                                       quad_scheme="default")
+            elm = dolfin.VectorElement(
+                family=family,
+                cell=mesh.ufl_cell(),
+                degree=int(order),
+                quad_scheme="default",
+            )
             V = dolfin.FunctionSpace(mesh, elm)
         else:
             V = dolfin.VectorFunctionSpace(mesh, family, int(order))
@@ -548,12 +571,12 @@ def load_local_basis(h5file, lgroup, mesh, geo):
         for name in names:
             lb = Function(V, name=name)
 
-            io_utils.read_h5file(h5file, lb, lgroup+"/{}".format(name))
+            io_utils.read_h5file(h5file, lb, lgroup + "/{}".format(name))
             setattr(geo, name, lb)
     else:
-        setattr(geo, 'circumferential', None)
-        setattr(geo, 'radial', None)
-        setattr(geo, 'longitudinal', None)
+        setattr(geo, "circumferential", None)
+        setattr(geo, "radial", None)
+        setattr(geo, "longitudinal", None)
 
 
 def load_microstructure(h5file, fgroup, mesh, geo, include_sheets=True):
@@ -567,7 +590,7 @@ def load_microstructure(h5file, fgroup, mesh, geo, include_sheets=True):
             family = "Quadrature"
             order = 4
         else:
-            family, order = fspace.split('_')
+            family, order = fspace.split("_")
 
         namesstr = fiber_attrs["names"]
         if namesstr is None:
@@ -577,16 +600,18 @@ def load_microstructure(h5file, fgroup, mesh, geo, include_sheets=True):
 
         # Check that these fibers exists
         for name in names:
-            fsubgroup = fgroup+"/{}".format(name)
+            fsubgroup = fgroup + "/{}".format(name)
             if not h5file.has_dataset(fsubgroup):
                 msg = ("H5File does not have dataset {}").format(fsubgroup)
                 logger.warning(msg)
 
         if dolfin.DOLFIN_VERSION_MAJOR > 1.6:
-            elm = dolfin.VectorElement(family=family,
-                                       cell=mesh.ufl_cell(),
-                                       degree=int(order),
-                                       quad_scheme="default")
+            elm = dolfin.VectorElement(
+                family=family,
+                cell=mesh.ufl_cell(),
+                degree=int(order),
+                quad_scheme="default",
+            )
             V = dolfin.FunctionSpace(mesh, elm)
         else:
             V = dolfin.VectorFunctionSpace(mesh, family, int(order))
@@ -594,18 +619,27 @@ def load_microstructure(h5file, fgroup, mesh, geo, include_sheets=True):
         attrs = ["f0", "s0", "n0"]
         for i, name in enumerate(names):
             func = Function(V, name=name)
-            fsubgroup = fgroup+"/{}".format(name)
+            fsubgroup = fgroup + "/{}".format(name)
 
             io_utils.read_h5file(h5file, func, fsubgroup)
 
             setattr(geo, attrs[i], func)
 
 
-def save_geometry_to_h5(mesh, h5name, h5group="", markers=None,
-                        fields=None, local_basis=None, meshfunctions=None,
-                        comm=None,
-                        other_functions=None, other_attributes=None,
-                        overwrite_file=False, overwrite_group=True):
+def save_geometry_to_h5(
+    mesh,
+    h5name,
+    h5group="",
+    markers=None,
+    fields=None,
+    local_basis=None,
+    meshfunctions=None,
+    comm=None,
+    other_functions=None,
+    other_attributes=None,
+    overwrite_file=False,
+    overwrite_group=True,
+):
     """
     Save geometry and other geometrical functions to a HDF file.
 
@@ -655,9 +689,9 @@ def save_geometry_to_h5(mesh, h5name, h5group="", markers=None,
     with dolfin.HDF5File(comm, h5name, file_mode) as h5file:
 
         # Save mesh
-        ggroup = '{}/geometry'.format(h5group)
+        ggroup = "{}/geometry".format(h5group)
 
-        mgroup = '{}/mesh'.format(ggroup)
+        mgroup = "{}/mesh".format(ggroup)
 
         h5file.write(mesh, mgroup)
 
@@ -671,7 +705,7 @@ def save_geometry_to_h5(mesh, h5name, h5group="", markers=None,
             save_mf = dolfin.MPI.max(comm, len(set(mf.array()))) > 1
 
             if save_mf:
-                dgroup = '{}/mesh/meshfunction_{}'.format(ggroup, dim)
+                dgroup = "{}/mesh/meshfunction_{}".format(ggroup, dim)
                 h5file.write(mf, dgroup)
 
         if markers is not None:
@@ -680,10 +714,10 @@ def save_geometry_to_h5(mesh, h5name, h5group="", markers=None,
 
                 for key_str in ["domain", "meshfunction"]:
 
-                    dgroup = '{}/mesh/{}_{}'.format(ggroup, key_str, dim)
+                    dgroup = "{}/mesh/{}_{}".format(ggroup, key_str, dim)
 
                     if h5file.has_dataset(dgroup):
-                        aname = 'marker_name_{}'.format(name)
+                        aname = "marker_name_{}".format(name)
                         h5file.attributes(dgroup)[aname] = marker
 
         if local_basis is not None:
@@ -696,28 +730,27 @@ def save_geometry_to_h5(mesh, h5name, h5group="", markers=None,
 
             elm = l.function_space().ufl_element()
             family, degree = elm.family(), elm.degree()
-            lspace = '{}_{}'.format(family, degree)
-            h5file.attributes(lgroup)['space'] = lspace
-            h5file.attributes(lgroup)['names'] = ":".join(names)
+            lspace = "{}_{}".format(family, degree)
+            h5file.attributes(lgroup)["space"] = lspace
+            h5file.attributes(lgroup)["names"] = ":".join(names)
 
         if fields is not None:
             # Save fiber field
             fgroup = "{}/microstructure".format(h5group)
             names = []
             for field in fields:
-                label = field.label() \
-                        if field.label().rfind('a Function') == -1 else ""
+                label = field.label() if field.label().rfind("a Function") == -1 else ""
                 name = "_".join(filter(None, [str(field), label]))
                 fsubgroup = "{}/{}".format(fgroup, name)
                 h5file.write(field, fsubgroup)
-                h5file.attributes(fsubgroup)['name'] = field.name()
+                h5file.attributes(fsubgroup)["name"] = field.name()
                 names.append(name)
 
             elm = field.function_space().ufl_element()
             family, degree = elm.family(), elm.degree()
-            fspace = '{}_{}'.format(family, degree)
-            h5file.attributes(fgroup)['space'] = fspace
-            h5file.attributes(fgroup)['names'] = ":".join(names)
+            fspace = "{}_{}".format(family, degree)
+            h5file.attributes(fgroup)["space"] = fspace
+            h5file.attributes(fgroup)["names"] = ":".join(names)
 
         if other_functions is not None:
             for k, fun in other_functions.items():
@@ -726,11 +759,10 @@ def save_geometry_to_h5(mesh, h5name, h5group="", markers=None,
 
             if isinstance(fun, dolfin.Function):
                 elm = fun.function_space().ufl_element()
-                family, degree, vsize \
-                    = elm.family(), elm.degree(), elm.value_size()
-                fspace = '{}_{}'.format(family, degree)
-                h5file.attributes(fungroup)['space'] = fspace
-                h5file.attributes(fungroup)['value_size'] = vsize
+                family, degree, vsize = elm.family(), elm.degree(), elm.value_size()
+                fspace = "{}_{}".format(family, degree)
+                h5file.attributes(fungroup)["space"] = fspace
+                h5file.attributes(fungroup)["value_size"] = vsize
 
         if other_attributes is not None:
             for k, v in other_attributes.iteritems():
@@ -767,24 +799,23 @@ def mark_strain_regions(mesh, foc=None, nsectors=(6, 6, 4, 1), mark_mesh=True):
     else:
         mus = [90, 0]
 
-    thetas = [np.linspace(pi, 3*pi, s+1)[:-1].tolist() + [pi]
-              for s in nsectors]
+    thetas = [np.linspace(pi, 3 * pi, s + 1)[:-1].tolist() + [pi] for s in nsectors]
 
     start = 0
     end = nsectors[0]
     regions = np.zeros((sum(nsectors), 4))
     for i in range(nlevels):
-        regions.T[0][start:end] = mus[i]*pi/180
-        regions.T[3][start:end] = mus[i+1]*pi/180
-        if i != len(nsectors)-1:
+        regions.T[0][start:end] = mus[i] * pi / 180
+        regions.T[3][start:end] = mus[i + 1] * pi / 180
+        if i != len(nsectors) - 1:
             start += nsectors[i]
-            end += nsectors[i+1]
+            end += nsectors[i + 1]
 
     start = 0
     for j, t in enumerate(thetas):
         for i in range(nsectors[j]):
-            regions.T[1][i+start] = t[i]
-            regions.T[2][i+start] = t[i+1]
+            regions.T[1][i + start] = t[i]
+            regions.T[2][i + start] = t[i + 1]
         start += nsectors[j]
 
     sfun = mark_cell_function(fun, mesh, foc, regions)
@@ -861,8 +892,9 @@ def strain_region_number(T, regions):
 
 def get_level(regions, mu):
 
-    A = np.intersect1d(np.where((regions.T[3] <= mu))[0],
-                       np.where((mu <= regions.T[0]))[0])
+    A = np.intersect1d(
+        np.where((regions.T[3] <= mu))[0], np.where((mu <= regions.T[0]))[0]
+    )
     if len(A) == 0:
         return [np.shape(regions)[0] + 1]
     else:
@@ -871,8 +903,9 @@ def get_level(regions, mu):
 
 def get_sector(regions, theta):
 
-    if not(np.count_nonzero(regions.T[1] <= regions.T[2])
-           >= 0.5*np.shape(regions)[0]):
+    if not (
+        np.count_nonzero(regions.T[1] <= regions.T[2]) >= 0.5 * np.shape(regions)[0]
+    ):
         raise ValueError("Surfaces are flipped")
 
     sectors = []
@@ -920,6 +953,6 @@ def estimate_focal_point(mesh):
     long_axis = np.max(axis)
     short_axis = np.min(axis)
 
-    focal = np.sqrt(long_axis**2 - short_axis**2)
+    focal = np.sqrt(long_axis ** 2 - short_axis ** 2)
 
     return focal

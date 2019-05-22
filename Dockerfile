@@ -1,8 +1,5 @@
-FROM quay.io/fenicsproject/stable:2017.2.0
+FROM finsberg/fenics2017
 MAINTAINER Henrik Finsberg <henriknf@simula.no>
-USER root
 
-RUN git clone https://github.com/finsberg/pulse.git pulse && \
-    cd pulse && \
-    sudo pip install -r requirements.txt && \
-    sudo pip install .
+RUN sudo pip3 insatall git+https://github.com/finsberg/pulse.git
+

@@ -7,8 +7,10 @@ geometry
 __author__ = "Henrik Finsberg (henriknf@simula.no)"
 import os
 import numpy as np
+
 try:
     from scipy.optimize import minimize_scalar
+
     has_scipy = True
 except ImportError:
     has_scipy = False
@@ -23,7 +25,8 @@ from .mechanicsproblem import MechanicsProblem, cardiac_boundary_conditions
 from .utils import make_logger
 
 from . import parameters
-logger = make_logger(__name__, parameters['log_level'])
+
+logger = make_logger(__name__, parameters["log_level"])
 
 try:
     dolfin.parameters["adjoint"]["stop_annotating"] = True
@@ -31,24 +34,34 @@ except KeyError:
     pass
 
 
-def step(geometry, pressure, k, u, residual, big_res,
-         material_parameters=None, params=None,
-         n=2, solve_tries=1, merge_control="",
-         regen_fibers=False):
+def step(
+    geometry,
+    pressure,
+    k,
+    u,
+    residual,
+    big_res,
+    material_parameters=None,
+    params=None,
+    n=2,
+    solve_tries=1,
+    merge_control="",
+    regen_fibers=False,
+):
 
     logger.info("\n\nk = {}".format(k))
 
     # Create new reference geometry by moving according to rule
     U = dolfin.Function(u.function_space())
-    numpy_mpi.assign_to_vector(U.vector(),
-                               k * numpy_mpi.
-                               gather_broadcast(u.vector().array()))
+    numpy_mpi.assign_to_vector(
+        U.vector(), k * numpy_mpi.gather_broadcast(u.vector().array())
+    )
 
     new_geometry = geometry.copy(u=U)
 
-    matparams = utils.update_material_parameters(material_parameters,
-                                                 new_geometry.mesh,
-                                                 merge_control)
+    matparams = utils.update_material_parameters(
+        material_parameters, new_geometry.mesh, merge_control
+    )
 
     if isinstance(matparams["a"], float):
         logger.info("material parameters = {}".format(matparams["a"]))
@@ -57,35 +70,40 @@ def step(geometry, pressure, k, u, residual, big_res,
         logger.info("material parameters = {}".format(a_arr))
 
     # Make the solver
-    problem, active_control, passive_control \
-        = make_mechanics_problem(params, new_geometry,
-                                 matparams=matparams)
+    problem, active_control, passive_control = make_mechanics_problem(
+        params, new_geometry, matparams=matparams
+    )
 
     try:
         # Inflate new geometry to target pressure
-        u0 = utils.inflate_to_pressure(pressure, solver, p_expr,
-                                       solve_tries, n, annotate = False)
+        u0 = utils.inflate_to_pressure(
+            pressure, solver, p_expr, solve_tries, n, annotate=False
+        )
     except:
         logger.info("Failed to increase pressure")
         return big_res
-    
+
     # Move mesh to ED
     mesh = dolfin.Mesh(new_geometry.mesh)
     move(mesh, u0, 1.0)
-    
+
     # Compute the residual
     res = residual.calculate_residual(mesh)
     logger.info("\nResidual:\t{}\n".format(res))
     return res
-    
+
 
 class MeshUnloader(object):
-    def __init__(self, problem,
-                 pressure,
-                 h5name="test.h5",
-                 options=None,
-                 h5group="", overwrite=False,
-                 merge_control=""):
+    def __init__(
+        self,
+        problem,
+        pressure,
+        h5name="test.h5",
+        options=None,
+        h5group="",
+        overwrite=False,
+        merge_control="",
+    ):
 
         self.problem = problem
         self.pressure = pressure
@@ -105,13 +123,16 @@ class MeshUnloader(object):
         if options is not None:
             self.parameters.update(**options)
 
-        msg = ("\n\n"+" Unloading options ".center(72, "-") + "\n\n" +
-               "\tTarget pressure: {}\n".format(pressure) +
-               "\tmaxiter = {}\n".format(self.parameters["maxiter"]) +
-               "\ttolerance = {}\n".format(self.parameters["tol"]) +
-               "\tregenerate_fibers (serial only)= "
-               "{}\n\n".format(self.parameters["regen_fibers"]) +
-               "".center(72, "-") + "\n")
+        msg = (
+            "\n\n"
+            + " Unloading options ".center(72, "-")
+            + "\n\n"
+            + "\tTarget pressure: {}\n".format(pressure)
+            + "\tmaxiter = {}\n".format(self.parameters["maxiter"])
+            + "\ttolerance = {}\n".format(self.parameters["tol"])
+            + "\tregenerate_fibers (serial only)= "
+            "{}\n\n".format(self.parameters["regen_fibers"]) + "".center(72, "-") + "\n"
+        )
         logger.info(msg)
 
     def default_parameters(self):
@@ -119,12 +140,14 @@ class MeshUnloader(object):
         Default parameters.
         """
 
-        return {"maxiter": 10,
-                "tol": 1e-4,
-                "lb": 0.5,
-                "ub": 2.0,
-                "regen_fibers": False,
-                "solve_tries": 20}
+        return {
+            "maxiter": 10,
+            "tol": 1e-4,
+            "lb": 0.5,
+            "ub": 2.0,
+            "regen_fibers": False,
+            "solve_tries": 20,
+        }
 
     def save(self, obj, name, h5group=""):
         """
@@ -149,18 +172,27 @@ class MeshUnloader(object):
         Unload the geometry
         """
         if save:
-            self.save(self.problem.geometry.mesh,
-                      "original_geometry/mesh", "0")
+            self.save(self.problem.geometry.mesh, "original_geometry/mesh", "0")
 
-        logger.info("".center(72,"-"))
-        logger.info("Start unloading".center(72,"-"))
-        logger.info("".center(72,"-"))
-        
-        logger.info(("\nLV Volume of original geometry = "
-                     "{:.3f} ml".format(self.problem.geometry.cavity_volume(chamber='lv'))))
+        logger.info("".center(72, "-"))
+        logger.info("Start unloading".center(72, "-"))
+        logger.info("".center(72, "-"))
+
+        logger.info(
+            (
+                "\nLV Volume of original geometry = "
+                "{:.3f} ml".format(self.problem.geometry.cavity_volume(chamber="lv"))
+            )
+        )
         if self.problem.geometry.is_biv:
-            logger.info(("RV Volume of original geometry = "\
-                         "{:.3f} ml".format(self.problem.geometry.cavity_volume(chamber='rv'))))
+            logger.info(
+                (
+                    "RV Volume of original geometry = "
+                    "{:.3f} ml".format(
+                        self.problem.geometry.cavity_volume(chamber="rv")
+                    )
+                )
+            )
 
         residual = utils.ResidualCalculator(self.problem.geometry.mesh)
 
@@ -169,7 +201,7 @@ class MeshUnloader(object):
 
         self.unload_step(u, residual, save=save)
 
-        logger.info("".center(72, "#")+"\nUnloading suceeding")
+        logger.info("".center(72, "#") + "\nUnloading suceeding")
 
     @property
     def backward_displacement(self):
@@ -180,7 +212,7 @@ class MeshUnloader(object):
         W = dolfin.VectorFunctionSpace(self.U.function_space().mesh(), "CG", 1)
         u_int = dolfin.interpolate(self.U, W)
         u = dolfin.Function(W)
-        u.vector()[:] = -1*u_int.vector()
+        u.vector()[:] = -1 * u_int.vector()
         return u
 
     def initial_solve(self, save=False):
@@ -188,14 +220,18 @@ class MeshUnloader(object):
         Inflate the original geometry to the target pressure and return
         the displacement field.
         """
-        
+
         # Do an initial solve
         logger.info("\nDo an intial solve")
         self.problem.solve()
 
-        u = utils.inflate_to_pressure(self.pressure, self.problem,
-                                      self.parameters["solve_tries"],
-                                      self.n, annotate=False)
+        u = utils.inflate_to_pressure(
+            self.pressure,
+            self.problem,
+            self.parameters["solve_tries"],
+            self.n,
+            annotate=False,
+        )
         return u
 
     @property
@@ -263,6 +299,7 @@ class RaghavanUnloader(MeshUnloader):
        (2006): 1414-1419.
 
     """
+
     def unload_step(self, u, residual, save=True):
 
         big_res = 100.0
@@ -270,32 +307,44 @@ class RaghavanUnloader(MeshUnloader):
 
         def iterate(k):
 
-            res = step(self.geometry, self.pressure, k, u, residual,
-                       big_res, self.material_parameters,
-                       self.params, self.n,
-                       self.parameters["solve_tries"],
-                       self.merge_control,
-                       self.parameters["regen_fibers"])
+            res = step(
+                self.geometry,
+                self.pressure,
+                k,
+                u,
+                residual,
+                big_res,
+                self.material_parameters,
+                self.params,
+                self.n,
+                self.parameters["solve_tries"],
+                self.merge_control,
+                self.parameters["regen_fibers"],
+            )
             residuals[k] = res
             return res
 
         logger.info("\nStart iterating....")
-        res = minimize_scalar(iterate, method="bounded",
-                              bounds=(self.parameters["lb"],
-                                      self.parameters["ub"]),
-                              options={"xatol": self.parameters["tol"],
-                                       "maxiter": self.parameters["maxiter"]})
+        res = minimize_scalar(
+            iterate,
+            method="bounded",
+            bounds=(self.parameters["lb"], self.parameters["ub"]),
+            options={
+                "xatol": self.parameters["tol"],
+                "maxiter": self.parameters["maxiter"],
+            },
+        )
 
         logger.info("Minimzation terminated sucessfully".center(72, "-"))
-        logger.info("Found:\n\tk={:.6f}\n\tResidual={:.3e}\n".format(res.x,
-                                                                     res.fun))
+        logger.info("Found:\n\tk={:.6f}\n\tResidual={:.3e}\n".format(res.x, res.fun))
         logger.info("Save new reference geometry")
 
-        numpy_mpi.assign_to_vector(self.U.vector(),
-                                   res.x *
-                                   numpy_mpi.
-                                   gather_broadcast(u.vector().array()))
-        new_geometry = utils.update_geometry(self.geometry, self.U, self.parameters["regen_fibers"])
+        numpy_mpi.assign_to_vector(
+            self.U.vector(), res.x * numpy_mpi.gather_broadcast(u.vector().array())
+        )
+        new_geometry = utils.update_geometry(
+            self.geometry, self.U, self.parameters["regen_fibers"]
+        )
 
         if save:
             self.save(new_geometry.mesh, "reference_geometry/mesh", "")
@@ -322,6 +371,7 @@ class FixedPointUnloader(MeshUnloader):
         vessels." Journal of computational and Applied mathematics 246 (2013): 10-17.
 
     """
+
     def unload_step(self, u, residual, save=False, it=0):
         """
         Unload step
@@ -329,7 +379,7 @@ class FixedPointUnloader(MeshUnloader):
 
         res = np.inf
         while it < self.parameters["maxiter"] and res > self.parameters["tol"]:
-            
+
             logger.info("\nIteration: {}".format(it))
 
             u_arr = numpy_mpi.gather_broadcast(u.vector().get_local())
@@ -342,32 +392,36 @@ class FixedPointUnloader(MeshUnloader):
             # Create new reference geomtry
             logger.debug("Create new reference geometry")
             new_geometry = self.problem.geometry.copy(u=self.U, factor=-1.0)
-            utils.print_volumes(new_geometry, txt='original')
+            utils.print_volumes(new_geometry, txt="original")
             if save:
-                self.save(new_geometry.mesh,
-                          "reference_geometry/mesh", str(it))
+                self.save(new_geometry.mesh, "reference_geometry/mesh", str(it))
 
             material = self.problem.material.copy(geometry=new_geometry)
             # TDOO: Make a copy function for bcs as well
             # use cardiac_boundary_conditions function for mechanicsproblem
             # in make_solver_paramerters
-            bcs = cardiac_boundary_conditions(geometry=new_geometry,
-                                              **self.problem.bcs_parameters)
-            problem = MechanicsProblem(geometry=new_geometry,
-                                       material=material,
-                                       bcs=bcs)
+            bcs = cardiac_boundary_conditions(
+                geometry=new_geometry, **self.problem.bcs_parameters
+            )
+            problem = MechanicsProblem(
+                geometry=new_geometry, material=material, bcs=bcs
+            )
 
             # Solve
-            u = utils.inflate_to_pressure(self.pressure, problem,
-                                          self.parameters["solve_tries"],
-                                          self.n, annotate=False)
+            u = utils.inflate_to_pressure(
+                self.pressure,
+                problem,
+                self.parameters["solve_tries"],
+                self.n,
+                annotate=False,
+            )
 
-            utils.print_volumes(new_geometry, txt='inflated', u=u)
+            utils.print_volumes(new_geometry, txt="inflated", u=u)
 
             # Move the mesh accoring to the new displacement
             ed_geometry = problem.geometry.copy(u=u, factor=1.0)
-            utils.print_volumes(ed_geometry, txt='new reference')
-                
+            utils.print_volumes(ed_geometry, txt="new reference")
+
             if save:
                 self.save(ed_geometry.mesh, "ed_geometry", str(it))
 

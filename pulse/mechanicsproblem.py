@@ -3,15 +3,26 @@ from collections import namedtuple
 from functools import partial
 
 import dolfin
+
 try:
-    from dolfin_adjoint import (Function, Constant, FunctionAssigner,
-                                NonlinearVariationalSolver,
-                                NonlinearVariationalProblem)
+    from dolfin_adjoint import (
+        Function,
+        Constant,
+        FunctionAssigner,
+        NonlinearVariationalSolver,
+        NonlinearVariationalProblem,
+    )
+
     has_dolfin_adjoint = True
 except ImportError:
-    from dolfin import (Function, Constant, FunctionAssigner,
-                        NonlinearVariationalSolver,
-                        NonlinearVariationalProblem)
+    from dolfin import (
+        Function,
+        Constant,
+        FunctionAssigner,
+        NonlinearVariationalSolver,
+        NonlinearVariationalProblem,
+    )
+
     has_dolfin_adjoint = False
 
 from . import kinematics
@@ -20,89 +31,107 @@ from .utils import set_default_none, make_logger, get_lv_marker
 from .geometry import HeartGeometry
 from .dolfin_utils import list_sum
 
-logger = make_logger(__name__, parameters['log_level'])
+logger = make_logger(__name__, parameters["log_level"])
 
-BoundaryConditions = namedtuple('BoundaryConditions',
-                                ['dirichlet', 'neumann',
-                                 'robin', 'body_force'])
+BoundaryConditions = namedtuple(
+    "BoundaryConditions", ["dirichlet", "neumann", "robin", "body_force"]
+)
 set_default_none(BoundaryConditions, ())
 
-NeumannBC = namedtuple('NeumannBC', ['traction', 'marker', 'name'])
+NeumannBC = namedtuple("NeumannBC", ["traction", "marker", "name"])
 # Name is optional
-NeumannBC.__new__.__defaults__ = ('',)
-RobinBC = namedtuple('RobinBC', ['value', 'marker'])
+NeumannBC.__new__.__defaults__ = ("",)
+RobinBC = namedtuple("RobinBC", ["value", "marker"])
 
 
 def dirichlet_fix_base(W, ffun, marker):
-    '''Fix the basal plane.
-    '''
+    """Fix the basal plane.
+    """
     V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
-    bc = dolfin.DirichletBC(V, dolfin.Constant((0, 0, 0)),
-                     ffun, marker)
+    bc = dolfin.DirichletBC(V, dolfin.Constant((0, 0, 0)), ffun, marker)
     return bc
 
 
 def dirichlet_fix_base_directional(W, ffun, marker, direction=0):
     V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
-    bc = dolfin.DirichletBC(V.sub(direction),
-                     dolfin.Constant(0.0),
-                     ffun, marker)
+    bc = dolfin.DirichletBC(V.sub(direction), dolfin.Constant(0.0), ffun, marker)
     return bc
 
 
-def cardiac_boundary_conditions(geometry, pericardium_spring=0.0,
-                                base_spring=0.0, base_bc='fix_x', **kwargs):
+def cardiac_boundary_conditions(
+    geometry, pericardium_spring=0.0, base_spring=0.0, base_bc="fix_x", **kwargs
+):
 
-    msg = ('Cardiac boundary conditions can only be applied to a '
-           'HeartGeometry got {}'.format(type(geometry)))
+    msg = (
+        "Cardiac boundary conditions can only be applied to a "
+        "HeartGeometry got {}".format(type(geometry))
+    )
     assert isinstance(geometry, HeartGeometry), msg
 
     # Neumann BC
     lv_marker = get_lv_marker(geometry)
-    lv_pressure = NeumannBC(traction=Constant(0.0, name="lv_pressure"),
-                            marker=lv_marker, name='lv')
+    lv_pressure = NeumannBC(
+        traction=Constant(0.0, name="lv_pressure"), marker=lv_marker, name="lv"
+    )
     neumann_bc = [lv_pressure]
 
     if geometry.is_biv:
 
-        rv_pressure = NeumannBC(traction=Constant(0.0, name='lv_pressure'),
-                                marker=geometry.markers['ENDO_RV'][0],
-                                name='rv')
+        rv_pressure = NeumannBC(
+            traction=Constant(0.0, name="lv_pressure"),
+            marker=geometry.markers["ENDO_RV"][0],
+            name="rv",
+        )
 
         neumann_bc += [rv_pressure]
 
     # Robin BC
     if pericardium_spring > 0.0:
 
-        robin_bc = [RobinBC(value=dolfin.Constant(pericardium_spring),
-                            marker=geometry.markers["EPI"][0])]
+        robin_bc = [
+            RobinBC(
+                value=dolfin.Constant(pericardium_spring),
+                marker=geometry.markers["EPI"][0],
+            )
+        ]
 
     else:
         robin_bc = []
 
     # Apply a linear sprint robin type BC to limit motion
     if base_spring > 0.0:
-        robin_bc += [RobinBC(value=dolfin.Constant(base_spring),
-                             marker=geometry.markers["BASE"][0])]
+        robin_bc += [
+            RobinBC(
+                value=dolfin.Constant(base_spring), marker=geometry.markers["BASE"][0]
+            )
+        ]
 
     # Dirichlet BC
     if base_bc == "fixed":
 
-        dirichlet_bc = [partial(dirichlet_fix_base,
-                                ffun=geometry.ffun,
-                                marker=geometry.markers["BASE"][0])]
+        dirichlet_bc = [
+            partial(
+                dirichlet_fix_base,
+                ffun=geometry.ffun,
+                marker=geometry.markers["BASE"][0],
+            )
+        ]
 
-    elif base_bc == 'fix_x':
+    elif base_bc == "fix_x":
 
-        dirichlet_bc = [partial(dirichlet_fix_base_directional,
-                                ffun=geometry.ffun,
-                                marker=geometry.markers["BASE"][0])]
+        dirichlet_bc = [
+            partial(
+                dirichlet_fix_base_directional,
+                ffun=geometry.ffun,
+                marker=geometry.markers["BASE"][0],
+            )
+        ]
     else:
         raise ValueError("Unknown base bc {}".format(base_bc))
 
-    boundary_conditions = BoundaryConditions(dirichlet=dirichlet_bc,
-                                             neumann=neumann_bc,
-                                             robin=robin_bc)
+    boundary_conditions = BoundaryConditions(
+        dirichlet=dirichlet_bc, neumann=neumann_bc, robin=robin_bc
+    )
 
     return boundary_conditions
 
@@ -115,11 +144,12 @@ class MechanicsProblem(object):
     """
     Base class for mechanics problem
     """
-    def __init__(self, geometry, material,
-                 bcs=None, bcs_parameters=None,
-                 solver_parameters=None):
 
-        logger.debug('Initialize mechanics problem')
+    def __init__(
+        self, geometry, material, bcs=None, bcs_parameters=None, solver_parameters=None
+    ):
+
+        logger.debug("Initialize mechanics problem")
         self.geometry = geometry
         self.material = material
 
@@ -129,11 +159,11 @@ class MechanicsProblem(object):
                 self.bcs_parameters.update(**bcs_parameters)
 
             else:
-                raise ValueError(('Please provive boundary conditions '
-                                  'to MechanicsProblem'))
+                raise ValueError(
+                    ("Please provive boundary conditions " "to MechanicsProblem")
+                )
 
-            self.bcs = cardiac_boundary_conditions(geometry,
-                                                   **self.bcs_parameters)
+            self.bcs = cardiac_boundary_conditions(geometry, **self.bcs_parameters)
 
         else:
             self.bcs = bcs
@@ -156,13 +186,11 @@ class MechanicsProblem(object):
 
     @staticmethod
     def default_bcs_parameters():
-        return dict(pericardium_spring=0.0,
-                    base_spring=0.0,
-                    base_bc='fixed')
+        return dict(pericardium_spring=0.0, base_spring=0.0, base_bc="fixed")
 
     def _init_spaces(self):
 
-        logger.debug('Initialize spaces for mechanics problem')
+        logger.debug("Initialize spaces for mechanics problem")
         mesh = self.geometry.mesh
 
         P2 = dolfin.VectorElement("Lagrange", mesh.ufl_cell(), 2)
@@ -170,14 +198,14 @@ class MechanicsProblem(object):
 
         # P2_space = FunctionSpace(mesh, P2)
         # P1_space = FunctionSpace(mesh, P1)
-        self.state_space = dolfin.FunctionSpace(mesh, P2*P1)
+        self.state_space = dolfin.FunctionSpace(mesh, P2 * P1)
 
         self.state = Function(self.state_space, name="state")
         self.state_test = dolfin.TestFunction(self.state_space)
 
     def _init_forms(self):
 
-        logger.debug('Initialize forms mechanics problem')
+        logger.debug("Initialize forms mechanics problem")
         # Displacement and hydrostatic_pressure
         u, p = dolfin.split(self.state)
         v, q = dolfin.split(self.state_test)
@@ -187,12 +215,13 @@ class MechanicsProblem(object):
         J = kinematics.Jacobian(F)
         dx = self.geometry.dx
 
-        internal_energy = self.material.strain_energy(F) \
-            + self.material.compressibility(p, J)
+        internal_energy = self.material.strain_energy(
+            F
+        ) + self.material.compressibility(p, J)
 
-        self._virtual_work \
-            = dolfin.derivative(internal_energy * dx,
-                                self.state, self.state_test)
+        self._virtual_work = dolfin.derivative(
+            internal_energy * dx, self.state, self.state_test
+        )
 
         self._virtual_work += self._external_work(u, v)
 
@@ -202,15 +231,16 @@ class MechanicsProblem(object):
         # DirichletBC
         for dirichlet_bc in self.bcs.dirichlet:
 
-            msg = ('DirichletBC only implemented for as '
-                   'callable. Please provide DirichletBC '
-                   'as a callable with argument being the '
-                   'state space only')
+            msg = (
+                "DirichletBC only implemented for as "
+                "callable. Please provide DirichletBC "
+                "as a callable with argument being the "
+                "state space only"
+            )
 
-            if hasattr(dirichlet_bc, '__call__'):
+            if hasattr(dirichlet_bc, "__call__"):
                 try:
-                    self._dirichlet_bc \
-                        = dirichlet_bc(self.state_space)
+                    self._dirichlet_bc = dirichlet_bc(self.state_space)
                 except Exception as ex:
                     logger.error(msg)
                     raise ex
@@ -235,13 +265,13 @@ class MechanicsProblem(object):
 
         for robin in self.bcs.robin:
 
-            external_work.append(dolfin.inner(robin.value * u, v)
-                                 * ds(robin.marker))
+            external_work.append(dolfin.inner(robin.value * u, v) * ds(robin.marker))
 
         for body_force in self.bcs.body_force:
 
             external_work.append(
-                -dolfin.derivative(dolfin.inner(body_force, u) * dx, u, v))
+                -dolfin.derivative(dolfin.inner(body_force, u) * dx, u, v)
+            )
 
         if len(external_work) > 0:
             return list_sum(external_work)
@@ -266,6 +296,7 @@ class MechanicsProblem(object):
     @staticmethod
     def defaul_solver_parameters():
         return dolfin.NonlinearVariationalSolver.default_parameters().to_dict()
+
     def solve(self):
         r"""
         Solve the variational problem
@@ -276,16 +307,15 @@ class MechanicsProblem(object):
 
         """
 
-        self._jacobian \
-            = dolfin.derivative(self._virtual_work, self.state,
-                                dolfin.TrialFunction(self.state_space))
+        self._jacobian = dolfin.derivative(
+            self._virtual_work, self.state, dolfin.TrialFunction(self.state_space)
+        )
 
-        logger.debug('Solving variational problem')
+        logger.debug("Solving variational problem")
         # Get old state in case of non-convergence
         if has_dolfin_adjoint:
             try:
-                old_state = self.state.copy(deepcopy=True,
-                                            name='Old state (pulse)')
+                old_state = self.state.copy(deepcopy=True, name="Old state (pulse)")
             except TypeError:
                 # In case this is a dolfin fuction and not a
                 # dolfin-adjoint function
@@ -293,32 +323,29 @@ class MechanicsProblem(object):
 
         else:
             old_state = self.state.copy(deepcopy=True)
-        problem \
-            = NonlinearVariationalProblem(self._virtual_work,
-                                          self.state,
-                                          self._dirichlet_bc,
-                                          self._jacobian)
+        problem = NonlinearVariationalProblem(
+            self._virtual_work, self.state, self._dirichlet_bc, self._jacobian
+        )
 
         solver = NonlinearVariationalSolver(problem)
         solver.parameters.update(self.solver_parameters)
-        
 
         try:
-            logger.debug('Try to solve')
+            logger.debug("Try to solve")
             nliter, nlconv = solver.solve()
             if not nlconv:
-                logger.debug('Failed')
+                logger.debug("Failed")
                 raise SolverDidNotConverge("Solver did not converge...")
 
         except RuntimeError as ex:
-            logger.debug('Failed')
-            logger.debug('Reintialize old state and raise exception')
+            logger.debug("Failed")
+            logger.debug("Reintialize old state and raise exception")
 
             self.reinit(old_state)
 
             raise SolverDidNotConverge(ex)
         else:
-            logger.debug('Sucess')
+            logger.debug("Sucess")
 
         return nliter, nlconv
 
@@ -328,11 +355,10 @@ class MechanicsProblem(object):
         V = D.collapse()
 
         fa = FunctionAssigner(V, D)
-        u = Function(V, name='displacement')
+        u = Function(V, name="displacement")
 
         if has_dolfin_adjoint:
-            fa.assign(u, self.state.split()[0],
-                      annotate=annotate)
+            fa.assign(u, self.state.split()[0], annotate=annotate)
         else:
             fa.assign(u, self.state.split()[0])
 

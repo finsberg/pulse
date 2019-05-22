@@ -2,11 +2,11 @@
 from dolfin import MPI, mpi_comm_world, compile_extension_module
 import numpy as np
 
-#These functions are copied from cbcpost https://bitbucket.org/simula_cbc/cbcpost
+# These functions are copied from cbcpost https://bitbucket.org/simula_cbc/cbcpost
 def broadcast(array, from_process):
     "Broadcast array to all processes"
     if not hasattr(broadcast, "cpp_module"):
-        cpp_code = '''
+        cpp_code = """
     
         namespace dolfin {
             std::vector<double> broadcast(const MPI_Comm mpi_comm, const Array<double>& inarray, int from_process)
@@ -26,13 +26,15 @@ def broadcast(array, from_process):
                 return outvector;
             }
         }
-        '''
-        cpp_module = compile_extension_module(cpp_code, additional_system_headers=["dolfin/common/MPI.h"])
-        
+        """
+        cpp_module = compile_extension_module(
+            cpp_code, additional_system_headers=["dolfin/common/MPI.h"]
+        )
+
         broadcast.cpp_module = cpp_module
-    
+
     cpp_module = broadcast.cpp_module
-    
+
     if MPI.rank(mpi_comm_world()) == from_process:
         array = np.array(array, dtype=np.float)
         shape = array.shape
@@ -40,21 +42,22 @@ def broadcast(array, from_process):
     else:
         array = np.array([], dtype=np.float)
         shape = np.array([], dtype=np.float_)
-    
+
     shape = cpp_module.broadcast(mpi_comm_world(), shape, from_process)
     array = array.flatten()
-    
+
     out_array = cpp_module.broadcast(mpi_comm_world(), array, from_process)
-   
+
     if len(shape) > 1:
         out_array = out_array.reshape(*shape)
 
     return out_array
 
+
 def gather(array, on_process=0, flatten=False):
     "Gather array from all processes on a single process"
     if not hasattr(gather, "cpp_module"):
-        cpp_code = '''
+        cpp_code = """
         namespace dolfin {
             std::vector<double> gather(const MPI_Comm mpi_comm, const Array<double>& inarray, int on_process)
             {
@@ -72,8 +75,10 @@ def gather(array, on_process=0, flatten=False):
                 return outvector;
             }
         }
-        '''
-        gather.cpp_module = compile_extension_module(cpp_code, additional_system_headers=["dolfin/common/MPI.h"])
+        """
+        gather.cpp_module = compile_extension_module(
+            cpp_code, additional_system_headers=["dolfin/common/MPI.h"]
+        )
 
     cpp_module = gather.cpp_module
     array = np.array(array, dtype=np.float)
@@ -83,15 +88,16 @@ def gather(array, on_process=0, flatten=False):
         return out_array
 
     dist = distribution(len(array))
-    cumsum = [0]+[sum(dist[:i+1]) for i in range(len(dist))]
-    out_array = [[out_array[cumsum[i]:cumsum[i+1]]] for i in range(len(cumsum)-1)]
+    cumsum = [0] + [sum(dist[: i + 1]) for i in range(len(dist))]
+    out_array = [[out_array[cumsum[i] : cumsum[i + 1]]] for i in range(len(cumsum) - 1)]
 
     return out_array
+
 
 def distribution(number):
     "Get distribution of number on all processes"
     if not hasattr(distribution, "cpp_module"):
-        cpp_code = '''
+        cpp_code = """
         namespace dolfin {
             std::vector<unsigned int> distribution(const MPI_Comm mpi_comm, int number)
             {
@@ -111,11 +117,14 @@ def distribution(number):
                 return distribution;
           }
         }
-        '''
-        distribution.cpp_module = compile_extension_module(cpp_code, additional_system_headers=["dolfin/common/MPI.h"])
+        """
+        distribution.cpp_module = compile_extension_module(
+            cpp_code, additional_system_headers=["dolfin/common/MPI.h"]
+        )
 
     cpp_module = distribution.cpp_module
     return cpp_module.distribution(mpi_comm_world(), number)
+
 
 def gather_broadcast(arr):
     try:
@@ -123,7 +132,7 @@ def gather_broadcast(arr):
     except AttributeError:
         dtype = np.float
 
-    arr = gather(arr, flatten = True)
+    arr = gather(arr, flatten=True)
     arr = broadcast(arr, 0)
 
     return arr.astype(dtype)
@@ -134,9 +143,9 @@ def assign_to_vector(v, a):
     Assign the value of the array a to the dolfin vector v
     """
     lr = v.local_range()
-    v[:] = a[lr[0]:lr[1]]
-  
-    
+    v[:] = a[lr[0] : lr[1]]
+
+
 def mpi_print(mess):
     if mpi_comm_world().rank == 0:
         print(mess)

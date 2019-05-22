@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-from dolfin import (det, grad as Grad,
-                    inv, Identity, tr, inner)
+from dolfin import det, grad as Grad, inv, Identity, tr, inner
 
 from .dolfin_utils import get_dimesion
 
@@ -31,7 +30,7 @@ def IsochoricDeformationGradient(F):
     """
     J = Jacobian(F)
     dim = get_dimesion(F)
-    return pow(J, -1.0/float(dim))*F
+    return pow(J, -1.0 / float(dim)) * F
 
 
 def Jacobian(F):
@@ -48,14 +47,14 @@ def EngineeringStrain(F, isochoric=False):
         return IsochoricDeformationGradient(F) - I
     else:
         return F - I
-    
+
 
 def GreenLagrangeStrain(F, isochoric=False):
     """Green-Lagrange strain tensor
     """
     I = SecondOrderIdentity(F)
     C = RightCauchyGreen(F, isochoric)
-    return 0.5*(C - I)
+    return 0.5 * (C - I)
 
 
 def LeftCauchyGreen(F, isochoric=False):
@@ -66,7 +65,7 @@ def LeftCauchyGreen(F, isochoric=False):
     else:
         F_ = F
 
-    return F_*F_.T
+    return F_ * F_.T
 
 
 def RightCauchyGreen(F, isochoric=False):
@@ -77,7 +76,7 @@ def RightCauchyGreen(F, isochoric=False):
     else:
         F_ = F
 
-    return F_.T*F_
+    return F_.T * F_
 
 
 def EulerAlmansiStrain(F, isochoric=False):
@@ -85,7 +84,7 @@ def EulerAlmansiStrain(F, isochoric=False):
     """
     I = SecondOrderIdentity(F)
     b = LeftCauchyGreen(F, isochoric)
-    return 0.5*(I - inv(b))
+    return 0.5 * (I - inv(b))
 
 
 # Invariants #####
@@ -114,12 +113,12 @@ class Invariants(object):
     def _I4(self, F, a0):
 
         C = RightCauchyGreen(F, self._isochoric)
-        I4 = inner(C*a0, a0)
+        I4 = inner(C * a0, a0)
         return I4
 
     def _I5(self, F, a0):
         C = RightCauchyGreen(F, self._isochoric)
-        I5 = inner(C*a0, C*a0)
+        I5 = inner(C * a0, C * a0)
         return I5
 
     def _I6(self, F, a0):
@@ -130,7 +129,7 @@ class Invariants(object):
 
     def _I8(self, u, a0, b0):
         C = RightCauchyGreen(F, self._isochoric)
-        I8 = inner(C*a0, C*b0)
+        I8 = inner(C * a0, C * b0)
         return I8
 
 
@@ -139,7 +138,7 @@ class Invariants(object):
 # configuration
 def PiolaTransform(A, F):
     J = Jacobian(F)
-    B = J*A*inv(F).T
+    B = J * A * inv(F).T
     return B
 
 
@@ -147,5 +146,5 @@ def PiolaTransform(A, F):
 # configuration
 def InversePiolaTransform(A, F):
     J = Jacobian(F)
-    B = (1/J)*A*F.T
+    B = (1 / J) * A * F.T
     return B

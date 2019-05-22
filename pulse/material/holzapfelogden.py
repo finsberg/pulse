@@ -40,8 +40,7 @@ class HolzapfelOgden(Material):
         Taken from Table 1 row 3 of [1]
         """
 
-        return {"a": 2.28, "a_f": 1.685,
-                "b": 9.726, "b_f": 15.779}
+        return {"a": 2.28, "a_f": 1.685, "b": 9.726, "b_f": 15.779}
 
     # def CauchyStress(self, F, p=None, deviatoric=False):
 
@@ -106,11 +105,11 @@ class HolzapfelOgden(Material):
         b = self.b
 
         if diff == 0:
-            return a/(2.0*b) * (dolfin.exp(b*(I_1 - 3)) - 1)
+            return a / (2.0 * b) * (dolfin.exp(b * (I_1 - 3)) - 1)
         elif diff == 1:
-            return a/2.0 * dolfin.exp(b*(I_1 - 3))
+            return a / 2.0 * dolfin.exp(b * (I_1 - 3))
         elif diff == 2:
-            return a*b/2.0 * dolfin.exp(b * (I_1 - 3))
+            return a * b / 2.0 * dolfin.exp(b * (I_1 - 3))
 
     def W_4(self, I_4, diff=0, *args, **kwargs):
         r"""
@@ -151,15 +150,19 @@ class HolzapfelOgden(Material):
             return 0
 
         if diff == 0:
-            return a/(2.0*b) * heaviside(I_4 - 1) \
-                * (dolfin.exp(b*pow(I_4 - 1, 2)) - 1)
+            return (
+                a
+                / (2.0 * b)
+                * heaviside(I_4 - 1)
+                * (dolfin.exp(b * pow(I_4 - 1, 2)) - 1)
+            )
 
         elif diff == 1:
-            return a * subplus(I_4 - 1) \
-                     * dolfin.exp(b * pow(I_4 - 1, 2))
+            return a * subplus(I_4 - 1) * dolfin.exp(b * pow(I_4 - 1, 2))
         elif diff == 2:
-            return a * heaviside(I_4 - 1) \
-                     * (1 + 2.0 * b * pow(I_4 - 1, 2)) \
-                     * dolfin.exp(b * pow(I_4 - 1, 2))
-
-
+            return (
+                a
+                * heaviside(I_4 - 1)
+                * (1 + 2.0 * b * pow(I_4 - 1, 2))
+                * dolfin.exp(b * pow(I_4 - 1, 2))
+            )
