@@ -29,6 +29,12 @@ However, note that there are some problems with the 2017 version of FEniCS on co
 If you want a working conda environment with FEniCS 2017 check out
 [this gist](https://gist.github.com/finsberg/96eeb1d564aab4a73f53a46a1588e6a6)
 
+### Docker
+It is also possible to use Docker. There is a prebuilt docker image
+using FEniCS 2017.2, python3.6 and pulse. You can get it by typing
+```
+docker pull finsberg/pulse:latest
+```
 
 ## Requirements
 * FEniCS verision 2017.x
@@ -38,6 +44,14 @@ see e.g [this issue](https://github.com/conda-forge/hdf5-feedstock/issues/51).
 
 ## Getting started
 Check out the demos in the demo folder.
+
+## Automated test
+Test are provided in the folder [`tests`](tests). You can run the test
+with `pytest`
+```
+python -m pytest tests -vv
+```
+
 
 ## Documentation
 Documentation can be found at[finsberg.github.io/pulse](https://finsberg.github.io/pulse)
