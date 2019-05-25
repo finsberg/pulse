@@ -34,10 +34,10 @@ uses numerical continuation for stepping up the parameters.
 It is also implemented an algorithm, known as the backward
 displacement method for finding the unloaded stress free geometry.
 
-
 For a detail background in cardiac mechanics and the methods used in
 this code the reader is referred to [@finsberg2017patient].
 
 Papers using this code includes [@finsberg2018estimating] and
 [@finsberg2018efficient].
 
+# References
