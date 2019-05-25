@@ -7,7 +7,7 @@ tags:
   - Finite Element
   - Mechanics
 authors:
-  - name: Henrik Nicolay 
+  - name: Henrik Nicolay Topnes Finsberg
     orcid: 0000-0003-3766-2393
     affiliation: "1" # (Multiple affiliations must be quoted)
 
