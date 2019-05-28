@@ -3,6 +3,7 @@ from collections import namedtuple
 from functools import partial
 
 import dolfin
+import ufl
 
 try:
     from dolfin_adjoint import (
@@ -260,7 +261,7 @@ class MechanicsProblem(object):
 
         for neumann in self.bcs.neumann:
 
-            n = neumann.traction * dolfin.cofac(F) * N
+            n = neumann.traction * ufl.cofac(F) * N
             external_work.append(dolfin.inner(v, n) * ds(neumann.marker))
 
         for robin in self.bcs.robin:

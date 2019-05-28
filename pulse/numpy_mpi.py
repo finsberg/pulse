@@ -1,8 +1,28 @@
 #!/usr/bin/env python
-from dolfin import MPI, mpi_comm_world, compile_extension_module
+"""These functions are copied from
+cbcpost https://bitbucket.org/simula_cbc/cbcpost
+"""
+import dolfin
+from dolfin import MPI
 import numpy as np
 
-# These functions are copied from cbcpost https://bitbucket.org/simula_cbc/cbcpost
+from .utils import mpi_comm_world, DOLFIN_VERSION_MAJOR
+
+
+def compile_extension_module(cpp_code, **kwargs):
+    if DOLFIN_VERSION_MAJOR >= 2018:
+        headers = kwargs.get('additional_system_headers', [])
+        headers = ["#include <Eigen/Core>",
+                   '#include <pybind11/pybind11.h>',
+                   # "using Array = Eigen::Ref<const Eigen::ArrayXi>;;"] +\
+                   "using Array = Eigen::ArrayXi;"] +\
+            ['#include <' + h + '>' for h in headers if h != '']
+        cpp_code = '\n'.join(headers) + cpp_code
+        return dolfin.compile_cpp_code(cpp_code)
+    else:
+        return dolfin.compile_extension_module(cpp_code, **kwargs)
+
+
 def broadcast(array, from_process):
     "Broadcast array to all processes"
     if not hasattr(broadcast, "cpp_module"):
@@ -27,6 +47,14 @@ def broadcast(array, from_process):
             }
         }
         """
+        if DOLFIN_VERSION_MAJOR >= 2018:
+            cpp_code += """
+            
+            PYBIND11_MODULE(SIGNATURE, m)
+            {
+            m.def("broadcast", &dolfin::broadcast);
+            }
+            """
         cpp_module = compile_extension_module(
             cpp_code, additional_system_headers=["dolfin/common/MPI.h"]
         )
@@ -76,6 +104,14 @@ def gather(array, on_process=0, flatten=False):
             }
         }
         """
+        if DOLFIN_VERSION_MAJOR >= 2018:
+            cpp_code += """
+            
+            PYBIND11_MODULE(SIGNATURE, m)
+            {
+            m.def("gather", &dolfin::gather);
+            }
+            """
         gather.cpp_module = compile_extension_module(
             cpp_code, additional_system_headers=["dolfin/common/MPI.h"]
         )
@@ -118,6 +154,14 @@ def distribution(number):
           }
         }
         """
+        if DOLFIN_VERSION_MAJOR >= 2018:
+            cpp_code += """
+            
+            PYBIND11_MODULE(SIGNATURE, m)
+            {
+            m.def("distribution", &dolfin::distribution);
+            }
+            """
         distribution.cpp_module = compile_extension_module(
             cpp_code, additional_system_headers=["dolfin/common/MPI.h"]
         )

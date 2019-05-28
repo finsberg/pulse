@@ -6,6 +6,11 @@ import logging
 import dolfin
 from . import parameters
 
+if dolfin.__version__.startswith('20'):
+    # Year based versioning
+    DOLFIN_VERSION_MAJOR = float(dolfin.__version__.split('.')[0])
+else:
+    DOLFIN_VERSION_MAJOR = float('.'.join(dolfin.__version__.split('.')[:2]))
 
 class Annotation(object):
     """
@@ -43,6 +48,13 @@ class Annotation(object):
 annotation = Annotation()
 
 
+def mpi_comm_world():
+    if DOLFIN_VERSION_MAJOR >= 2018:
+        return dolfin.MPI.comm_world
+    else:
+        return dolfin.mpi_comm_world()
+
+
 def set_default_none(NamedTuple, default=None):
     NamedTuple.__new__.__defaults__ = (default,) * len(NamedTuple._fields)
 
@@ -54,7 +66,7 @@ class Object(object):
 
 def make_logger(name, level=parameters["log_level"]):
     def log_if_process0(record):
-        if dolfin.MPI.rank(dolfin.mpi_comm_world()) == 0:
+        if dolfin.MPI.rank(mpi_comm_world()) == 0:
             return 1
         else:
             return 0

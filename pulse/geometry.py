@@ -13,7 +13,7 @@ from .geometry_utils import (
 from . import numpy_mpi
 from . import parameters
 from .dolfin_utils import compute_meshvolume, map_vector_field, get_cavity_volume
-from .utils import set_default_none, make_logger
+from .utils import set_default_none, make_logger, mpi_comm_world
 
 logger = make_logger(__name__, parameters["log_level"])
 
@@ -124,7 +124,7 @@ class Geometry(object):
     @classmethod
     def from_file(cls, h5name, h5group="", comm=None):
 
-        comm = comm if comm is not None else dolfin.mpi_comm_world()
+        comm = comm if comm is not None else mpi_comm_world()
 
         return cls(**cls.load_from_file(h5name, h5group, comm))
 

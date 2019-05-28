@@ -30,7 +30,7 @@ logger = make_logger(__name__, parameters["log_level"])
 
 try:
     dolfin.parameters["adjoint"]["stop_annotating"] = True
-except KeyError:
+except (KeyError, RuntimeError):
     pass
 
 

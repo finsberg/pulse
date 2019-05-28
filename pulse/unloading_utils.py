@@ -3,7 +3,7 @@ import os
 import numpy as np
 import dolfin
 from . import numpy_mpi
-from .utils import make_logger
+from .utils import make_logger, mpi_comm_world
 from .io_utils import check_and_delete
 from .iterate import iterate, logger as logger_it
 from .dolfin_utils import get_pressure
@@ -51,7 +51,7 @@ class ResidualCalculator(object):
             ]
         )
 
-        return dolfin.MPI.max(dolfin.mpi_comm_world(), d)
+        return dolfin.MPI.max(mpi_comm_world(), d)
 
 
 def save(obj, h5name, name, h5group=""):
@@ -86,7 +86,7 @@ def save(obj, h5name, name, h5group=""):
         quad_to_xdmf(obj, h5name, group, file_mode)
 
     else:
-        with dolfin.HDF5File(dolfin.mpi_comm_world(), h5name, file_mode) as h5file:
+        with dolfin.HDF5File(mpi_comm_world(), h5name, file_mode) as h5file:
             h5file.write(obj, group)
 
 
@@ -107,7 +107,7 @@ def quad_to_xdmf(obj, h5name, h5group="", file_mode="w"):
     with open_h5py(h5name) as h5file:
 
         if not parallel_h5py:
-            if dolfin.mpi_comm_world().rank == 0:
+            if mpi_comm_world().rank == 0:
 
                 h5file.create_dataset("/".join([h5group, "coordinates"]), data=coords)
                 h5file.create_dataset("/".join([h5group, "vector"]), data=vecs)
@@ -307,5 +307,5 @@ def continuation_step(params, it_, paramvec):
 def load_material_parameter(h5name, h5group, paramvec):
     logger.info("Load {}:{}".format(h5name, h5group))
     group = "/".join([h5group, "passive_inflation", "optimal_control"])
-    with df.HDF5File(df.mpi_comm_world(), h5name, "r") as h5file:
+    with df.HDF5File(mpi_comm_world(), h5name, "r") as h5file:
         h5file.read(paramvec, group)

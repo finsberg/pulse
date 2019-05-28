@@ -2,7 +2,7 @@ import os
 import h5py
 import dolfin
 
-from .utils import make_logger
+from .utils import make_logger, mpi_comm_world
 from . import parameters
 
 logger = make_logger(__name__, parameters["log_level"])
@@ -45,7 +45,7 @@ def check_group_exists(h5name, h5group, comm=None):
 
     h5file.close()
     if comm is None:
-        comm = dolfin.mpi_comm_world()
+        comm = mpi_comm_world()
     dolfin.MPI.barrier(comm)
     return group_exists
 
@@ -53,7 +53,7 @@ def check_group_exists(h5name, h5group, comm=None):
 def copy_h5group(h5name, src, dst, comm=None, overwrite=False):
 
     if comm is None:
-        comm = dolfin.mpi_comm_world()
+        comm = mpi_comm_world()
 
     if comm.rank == 0:
         with h5py.File(h5name, "a") as h5file:
@@ -67,7 +67,7 @@ def copy_h5group(h5name, src, dst, comm=None, overwrite=False):
     dolfin.MPI.barrier(comm)
 
 
-def open_h5py(h5name, file_mode="a", comm=dolfin.mpi_comm_world()):
+def open_h5py(h5name, file_mode="a", comm=mpi_comm_world()):
 
     if parallel_h5py:
         if has_mpi4py and has_petsc4py:
@@ -81,7 +81,7 @@ def open_h5py(h5name, file_mode="a", comm=dolfin.mpi_comm_world()):
         return h5py.File(h5name, file_mode)
 
 
-def check_h5group(h5name, h5group, delete=False, comm=dolfin.mpi_comm_world()):
+def check_h5group(h5name, h5group, delete=False, comm=mpi_comm_world()):
 
     h5group_in_h5file = False
     if not os.path.isfile(h5name):
@@ -114,7 +114,7 @@ def check_h5group(h5name, h5group, delete=False, comm=dolfin.mpi_comm_world()):
     return h5group_in_h5file
 
 
-def check_and_delete(h5name, h5group, comm=dolfin.mpi_comm_world()):
+def check_and_delete(h5name, h5group, comm=mpi_comm_world()):
 
     with open_h5py(h5name, "a", comm) as h5file:
         if h5group in h5file:
@@ -134,7 +134,7 @@ def check_and_delete(h5name, h5group, comm=dolfin.mpi_comm_world()):
 def read_h5file(h5file, obj, group, *args, **kwargs):
 
     # Hack in order to work with fenics-adjoint
-    if not hasattr(obj, "create_block_variable"):
-        obj.create_block_variable = lambda: None
+    # if not hasattr(obj, "create_block_variable"):
+    #     obj.create_block_variable = lambda: None
 
     h5file.read(obj, group, *args, **kwargs)

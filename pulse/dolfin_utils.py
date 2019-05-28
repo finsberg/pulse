@@ -24,7 +24,7 @@ except ImportError:
 from . import utils
 from . import numpy_mpi
 
-from .utils import logger
+from .utils import logger, mpi_comm_world, DOLFIN_VERSION_MAJOR
 
 
 def map_vector_field(f0, new_mesh, u=None, name="fiber", normalize=True):
@@ -35,7 +35,7 @@ def map_vector_field(f0, new_mesh, u=None, name="fiber", normalize=True):
     map the vector field.
     """
 
-    if dolfin.DOLFIN_VERSION_MAJOR > 2016:
+    if DOLFIN_VERSION_MAJOR > 2016:
         dolfin.parameters["form_compiler"]["representation"] = "quadrature"
 
     dolfin.parameters["form_compiler"]["quadrature_degree"] = 4
@@ -68,7 +68,7 @@ def map_vector_field(f0, new_mesh, u=None, name="fiber", normalize=True):
         f0_arr = numpy_mpi.gather_broadcast(f0.vector().get_local())
         numpy_mpi.assign_to_vector(f0_new.vector(), f0_arr)
 
-    if dolfin.DOLFIN_VERSION_MAJOR > 2016:
+    if DOLFIN_VERSION_MAJOR > 2016:
         dolfin.parameters["form_compiler"]["representation"] = "uflacs"
 
     return f0_new
@@ -139,7 +139,7 @@ def get_pressure(problem):
         return pressure[0]
 
 
-def read_hdf5(h5name, func, h5group="", comm=dolfin.mpi_comm_world()):
+def read_hdf5(h5name, func, h5group="", comm=mpi_comm_world()):
 
     try:
         with dolfin.HDF5File(comm, h5name, "r") as h5file:
@@ -269,7 +269,7 @@ def get_dimesion(u):
 
     # TODO : Check argument
     try:
-        if dolfin.DOLFIN_VERSION_MAJOR > 1.6:
+        if DOLFIN_VERSION_MAJOR > 1.6:
             from ufl.domain import find_geometric_dimension
 
             dim = find_geometric_dimension(u)
@@ -385,7 +385,7 @@ def QuadratureSpace(mesh, degree, dim=3):
 
     """
 
-    if dolfin.DOLFIN_VERSION_MAJOR > 1.6:
+    if DOLFIN_VERSION_MAJOR > 1.6:
         if dim == 1:
             element = dolfin.FiniteElement(
                 family="Quadrature",
@@ -599,9 +599,9 @@ class RegionalParameter(dolfin.Function):
 
     def __init__(self, meshfunction):
 
-        assert isinstance(
-            meshfunction, dolfin.MeshFunctionSizet
-        ), "Invalid meshfunction for regional gamma"
+        # assert isinstance(
+        #     meshfunction, dolfin.MeshFunctionSizet
+        # ), "Invalid meshfunction for regional gamma"
 
         mesh = meshfunction.mesh()
 

@@ -6,6 +6,7 @@ from pulse.geometry import (Geometry, Marker,
                             Microstructure, MarkerFunctions)
 from pulse.dolfin_utils import QuadratureSpace
 from pulse import kinematics
+from pulse.utils import mpi_comm_world
 
 
 from pulse.material import material_models
@@ -37,7 +38,7 @@ free_marker = 2
 def unitcube_geometry():
 
     N = 3
-    mesh = dolfin.UnitCubeMesh(dolfin.mpi_comm_world(), N, N, N)
+    mesh = dolfin.UnitCubeMesh(mpi_comm_world(), N, N, N)
 
     ffun = dolfin.MeshFunction("size_t", mesh, 2)
     ffun.set_all(0)

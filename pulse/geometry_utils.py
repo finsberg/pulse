@@ -11,7 +11,7 @@ except ImportError:
 from . import numpy_mpi
 from . import io_utils
 from . import parameters
-from .utils import make_logger
+from .utils import make_logger, mpi_comm_world, DOLFIN_VERSION_MAJOR
 
 
 logger = make_logger(__name__, parameters["log_level"])
@@ -111,7 +111,7 @@ def load_geometry_from_h5(
     fendo=None,
     fepi=None,
     include_sheets=True,
-    comm=dolfin.mpi_comm_world(),
+    comm=mpi_comm_world(),
 ):
     """Load geometry and other mesh data from
     a h5file to an object.
@@ -330,7 +330,7 @@ def make_crl_basis(mesh, foc):
     VV = dolfin.VectorFunctionSpace(mesh, "CG", 1)
     V = dolfin.FunctionSpace(mesh, "CG", 1)
 
-    if dolfin.DOLFIN_VERSION_MAJOR > 1.6:
+    if DOLFIN_VERSION_MAJOR > 1.6:
         dofs_x = V.tabulate_dof_coordinates().reshape((-1, mesh.geometry().dim()))
     else:
         dm = V.dofmap()
@@ -485,7 +485,7 @@ def generate_fibers_old(mesh, fiber_params):
 
     family, degree = fiber_space_name.split("_")
 
-    if dolfin.DOLFIN_VERSION_MAJOR > 1.6:
+    if DOLFIN_VERSION_MAJOR > 1.6:
         el = dolfin.FiniteElement(
             family=family,
             cell=mesh.ufl_cell(),
@@ -498,7 +498,7 @@ def generate_fibers_old(mesh, fiber_params):
 
     if family == "Quadrature":
         dolfin.parameters["form_compiler"]["quadrature_degree"] = int(degree)
-        if dolfin.DOLFIN_VERSION_MAJOR > 2016:
+        if DOLFIN_VERSION_MAJOR > 2016:
             dolfin.parameters["form_compiler"]["representation"] = "quadrature"
 
     # There are some strange shifting in the fiberrults angles
@@ -516,7 +516,7 @@ def generate_fibers_old(mesh, fiber_params):
         sheet_angle_endo,
     )
 
-    if dolfin.DOLFIN_VERSION_MAJOR > 2016:
+    if DOLFIN_VERSION_MAJOR > 2016:
         dolfin.parameters["form_compiler"]["representation"] = "uflacs"
 
     microstructures[0].rename(
@@ -557,7 +557,7 @@ def load_local_basis(h5file, lgroup, mesh, geo):
         namesstr = local_basis_attrs["names"]
         names = namesstr.split(":")
 
-        if dolfin.DOLFIN_VERSION_MAJOR > 1.6:
+        if DOLFIN_VERSION_MAJOR > 1.6:
             elm = dolfin.VectorElement(
                 family=family,
                 cell=mesh.ufl_cell(),
@@ -605,7 +605,7 @@ def load_microstructure(h5file, fgroup, mesh, geo, include_sheets=True):
                 msg = ("H5File does not have dataset {}").format(fsubgroup)
                 logger.warning(msg)
 
-        if dolfin.DOLFIN_VERSION_MAJOR > 1.6:
+        if DOLFIN_VERSION_MAJOR > 1.6:
             elm = dolfin.VectorElement(
                 family=family,
                 cell=mesh.ufl_cell(),
