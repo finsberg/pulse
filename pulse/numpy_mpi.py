@@ -9,6 +9,14 @@ import numpy as np
 from .utils import mpi_comm_world, DOLFIN_VERSION_MAJOR
 
 
+def gather_vector(u):
+    x = dolfin.Vector()
+    comm = mpi_comm_world()
+    size = MPI.size(comm) * MPI.sum(comm, u.size())
+    u.gather(x, np.arange(size, dtype="intc"))
+    return x.get_local()
+
+    
 def compile_extension_module(cpp_code, **kwargs):
     if DOLFIN_VERSION_MAJOR >= 2018:
         headers = kwargs.get('additional_system_headers', [])
@@ -171,15 +179,16 @@ def distribution(number):
 
 
 def gather_broadcast(arr):
-    try:
-        dtype = arr.dtype
-    except AttributeError:
-        dtype = np.float
+    # try:
+    #     dtype = arr.dtype
+    # except AttributeError:
+    #     dtype = np.float
 
-    arr = gather(arr, flatten=True)
-    arr = broadcast(arr, 0)
+    # arr = gather(arr, flatten=True)
+    # arr = broadcast(arr, 0)
 
-    return arr.astype(dtype)
+    # return arr.astype(dtype)
+    return arr
 
 
 def assign_to_vector(v, a):

@@ -27,7 +27,7 @@ def move(mesh, u, factor=1.0):
     u_int = dolfin.interpolate(u, W)
 
     u0 = dolfin.Function(W)
-    arr = factor * numpy_mpi.gather_broadcast(u_int.vector().get_local())
+    arr = factor * numpy_mpi.gather_vector(u_int.vector())
     numpy_mpi.assign_to_vector(u0.vector(), arr)
 
     V = dolfin.VectorFunctionSpace(mesh, "CG", 1)

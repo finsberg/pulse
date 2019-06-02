@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+import logging
 import numpy as np
 import dolfin
 from . import numpy_mpi
@@ -37,6 +38,7 @@ class ResidualCalculator(object):
             local_points = [v.point() for v in dolfin.vertices(self.mesh)]
             coords = [(p.x(), p.y(), p.z()) for p in local_points]
 
+            # FIXME
             coords = numpy_mpi.gather_broadcast(np.array(coords).flatten())
             coords.resize(int(len(coords) / d), d)
 
@@ -96,11 +98,12 @@ def quad_to_xdmf(obj, h5name, h5group="", file_mode="w"):
     gx, gy, gz = obj.split(deepcopy=True)
 
     W = V.sub(0).collapse()
+    # FIXME
     coords_tmp = numpy_mpi.gather_broadcast(W.tabulate_dof_coordinates())
     coords = coords_tmp.reshape((-1, 3))
-    u = numpy_mpi.gather_broadcast(gx.vector().array())
-    v = numpy_mpi.gather_broadcast(gy.vector().array())
-    w = numpy_mpi.gather_broadcast(gz.vector().array())
+    u = numpy_mpi.gather_vector(gx.vector())
+    v = numpy_mpi.gather_vector(gy.vector())
+    w = numpy_mpi.gather_vector(gz.vector())
     vecs = np.array([u, v, w]).T
     from ..io_utils import open_h5py, parallel_h5py
 
@@ -146,7 +149,7 @@ def solve(target_pressure, problem, pressure, ntries=5, n=2, annotate=False):
         dolfin.parameters["adjoint"]["stop_annotating"] = True
 
     level = logger_it.level
-    logger_it.setLevel(dolfin.WARNING)
+    logger_it.setLevel(logging.WARNING)
 
     try:
         iterate(problem, pressure, target_pressure)
@@ -181,7 +184,7 @@ def update_material_parameters(material_parameters, mesh, merge_control_str=""):
             sfun = merge_control(geo, merge_control_str)
 
             v_new = RegionalParameter(sfun)
-            v_arr = numpy_mpi.gather_broadcast(v.vector().array())
+            v_arr = numpy_mpi.gather_vector(v.vector())
 
             numpy_mpi.assign_to_vector(v_new.vector(), v_arr)
             new_matparams[k] = v_new
@@ -190,7 +193,7 @@ def update_material_parameters(material_parameters, mesh, merge_control_str=""):
             v_new = dolfin.Function(
                 dolfin.FunctionSpace(mesh, v.function_space().ufl_element())
             )
-            v_arr = numpy_mpi.gather_broadcast(v.vector().array())
+            v_arr = numpy_mpi.gather_vector(v.vector())
             numpy_mpi.assign_to_vector(v_new.vector(), v_arr)
             new_matparams[k] = v_new
 
@@ -256,10 +259,10 @@ def continuation_step(params, it_, paramvec):
 
     v_target = load_opt_target(params["sim_file"], "0", "volume", "target")
     for it in range(it_):
-        p_tmp = df.Function(paramvec.function_space())
+        p_tmp = dolfin.Function(paramvec.function_space())
         load_material_parameter(params["sim_file"], str(it), p_tmp)
 
-        values.append(gather_broadcast(p_tmp.vector().array()))
+        values.append(numpy_mpi.gather_vector(p_tmp.vector()))
 
         v = load_opt_target(params["sim_file"], str(it), "volume", "simulated")
         vols.append(v)
@@ -301,11 +304,11 @@ def continuation_step(params, it_, paramvec):
             params["Optimization_parameters"]["matparams_max"],
         )
 
-    assign_to_vector(paramvec.vector(), a)
+    numpy_mpi.assign_to_vector(paramvec.vector(), a)
 
 
 def load_material_parameter(h5name, h5group, paramvec):
     logger.info("Load {}:{}".format(h5name, h5group))
     group = "/".join([h5group, "passive_inflation", "optimal_control"])
-    with df.HDF5File(mpi_comm_world(), h5name, "r") as h5file:
+    with dolfin.HDF5File(mpi_comm_world(), h5name, "r") as h5file:
         h5file.read(paramvec, group)

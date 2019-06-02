@@ -3,6 +3,10 @@ __pycache__/
 *.pyc
 *~
 
+
+*vtu
+*pvd
+
 *.DS_Store
 
 # C extensions

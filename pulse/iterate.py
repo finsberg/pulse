@@ -17,7 +17,7 @@ from . import numpy_mpi
 from . import parameters, annotation
 from .mechanicsproblem import SolverDidNotConverge
 from .dolfin_utils import get_constant
-from .utils import make_logger
+from .utils import make_logger, value_size
 
 logger = make_logger(__name__, parameters["log_level"])
 
@@ -120,15 +120,15 @@ def get_delta(new_control, c0, c1):
         delta = (new_control[0] - c0[0]) / float(c1[0] - c0[0])
 
     elif isinstance(new_control, (dolfin.GenericVector, dolfin.Vector)):
-        new_control_arr = numpy_mpi.gather_broadcast(new_control.get_local())
-        c0_arr = numpy_mpi.gather_broadcast(c0.get_local())
-        c1_arr = numpy_mpi.gather_broadcast(c1.get_local())
+        new_control_arr = numpy_mpi.gather_vector(new_control)
+        c0_arr = numpy_mpi.gather_vector(c0)
+        c1_arr = numpy_mpi.gather_vector(c1)
         delta = (new_control_arr[0] - c0_arr[0]) / float(c1_arr[0] - c0_arr[0])
 
     elif isinstance(new_control, (dolfin.Function, Function)):
-        new_control_arr = numpy_mpi.gather_broadcast(new_control.vector().get_local())
-        c0_arr = numpy_mpi.gather_broadcast(c0.vector().get_local())
-        c1_arr = numpy_mpi.gather_broadcast(c1.vector().get_local())
+        new_control_arr = numpy_mpi.gather_vector(new_control.vector())
+        c0_arr = numpy_mpi.gather_vector(c0.vector())
+        c1_arr = numpy_mpi.gather_vector(c1.vector())
         delta = (new_control_arr[0] - c0_arr[0]) / float(c1_arr[0] - c0_arr[0])
 
     else:
@@ -235,19 +235,19 @@ def step_too_large(current, target, step):
     """
 
     if isinstance(target, (dolfin.Function, Function)):
-        target = numpy_mpi.gather_broadcast(target.vector().get_local())
+        target = numpy_mpi.gather_vector(target.vector())
     elif isinstance(target, (Constant, dolfin.Constant)):
         target = constant2float(target)
     target = squeeze(target)
 
     if isinstance(current, (dolfin.Function, Function)):
-        current = numpy_mpi.gather_broadcast(current.vector().get_local())
+        current = numpy_mpi.gather_vector(current.vector())
     elif isinstance(current, (Constant, dolfin.Constant)):
         current = constant2float(current)
     current = squeeze(current)
 
     if isinstance(step, (dolfin.Function, Function)):
-        step = numpy_mpi.gather_broadcast(step.vector().get_local())
+        step = numpy_mpi.gather_vector(step.vector())
     elif isinstance(step, (Constant, dolfin.Constant)):
         step = constant2float(step)
     step = squeeze(step)
@@ -506,7 +506,7 @@ class Iterator(object):
 
         for c, s in zip(self.control, self.step):
             if isinstance(c, (dolfin.Function, Function)):
-                c_arr = numpy_mpi.gather_broadcast(c.vector().get_local())
+                c_arr = numpy_mpi.gather_vector(c.vector())
                 c_tmp = Function(c.function_space())
                 c_tmp.vector()[:] = c_arr + s
                 c.assign(c_tmp)
@@ -539,7 +539,7 @@ class Iterator(object):
             step.vector().axpy(-1.0, prev_control.vector())
         elif isinstance(target, (list, np.ndarray, tuple)):
             if isinstance(prev_control, (dolfin.Function, Function)):
-                prev = numpy_mpi.gather_broadcast(prev_control.vector().get_local())
+                prev = numpy_mpi.gather_vector(prev_control.vector())
             else:
                 prev = prev_control
 
@@ -573,10 +573,10 @@ class Iterator(object):
         t0 = self.target[0]
         msg = (
             "Unsuppoert shape of control and target. "
-            "Can only hadnle single arrays or multiple scalars."
+            "Can only handle single arrays or multiple scalars."
         )
         for t in self.target[1:]:
-            if t0.value_shape().size > 0 or t.value_shape().size > 0:
+            if value_size(t0) > 1 or value_size(t) > 1:
                 raise (ValueError(msg))
         logger.info("Target: {}".format([constant2float(t) for t in self.target]))
 

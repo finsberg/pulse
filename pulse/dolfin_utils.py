@@ -49,7 +49,7 @@ def map_vector_field(f0, new_mesh, u=None, name="fiber", normalize=True):
         u_elm = u.function_space().ufl_element()
         V = dolfin.FunctionSpace(f0_mesh, u_elm)
         u0 = dolfin.Function(V)
-        arr = numpy_mpi.gather_broadcast(u.vector().get_local())
+        arr = numpy_mpi.gather_vector(u.vector())
         numpy_mpi.assign_to_vector(u0.vector(), arr)
 
         from .kinematics import DeformationGradient
@@ -61,11 +61,11 @@ def map_vector_field(f0, new_mesh, u=None, name="fiber", normalize=True):
         if normalize:
             f0_updated = normalize_vector_field(f0_updated)
 
-        f0_arr = numpy_mpi.gather_broadcast(f0_updated.vector().get_local())
+        f0_arr = numpy_mpi.gather_vector(f0_updated.vector())
         numpy_mpi.assign_to_vector(f0_new.vector(), f0_arr)
 
     else:
-        f0_arr = numpy_mpi.gather_broadcast(f0.vector().get_local())
+        f0_arr = numpy_mpi.gather_vector(f0.vector())
         numpy_mpi.assign_to_vector(f0_new.vector(), f0_arr)
 
     if DOLFIN_VERSION_MAJOR > 2016:
@@ -82,7 +82,7 @@ def update_function(mesh, f):
 
     f_new = Function(dolfin.FunctionSpace(mesh, f.ufl_element()))
     numpy_mpi.assign_to_vector(
-        f_new.vector(), numpy_mpi.gather_broadcast(f.vector().get_local())
+        f_new.vector(), numpy_mpi.gather_vector(f.vector())
     )
     return f_new
 
@@ -96,7 +96,7 @@ def normalize_vector_field(u):
     components = vectorfield_to_components(u, S, dim)
     normarray = np.sqrt(
         sum(
-            numpy_mpi.gather_broadcast(components[i].vector().get_local()) ** 2
+            numpy_mpi.gather_vector(components[i].vector()) ** 2
             for i in range(dim)
         )
     )
@@ -104,7 +104,7 @@ def normalize_vector_field(u):
     for comp in components:
         numpy_mpi.assign_to_vector(
             comp.vector(),
-            numpy_mpi.gather_broadcast(comp.vector().get_local()) / normarray,
+            numpy_mpi.gather_vector(comp.vector()) / normarray,
         )
 
     assigners = [FunctionAssigner(u.function_space().sub(i), S) for i in range(dim)]
@@ -237,10 +237,10 @@ def get_constant(val, value_size=None, value_rank=0, constant=Constant):
     if isinstance(val, (Constant, dolfin.Constant)):
         return val
     elif isinstance(val, (Function, dolfin.Function)):
-        arr = numpy_mpi.gather_broadcast(val.vector().get_local())
+        arr = numpy_mpi.gather_vector(val.vector())
         return constant(arr)
     elif isinstance(val, dolfin.GenericVector):
-        arr = numpy_mpi.gather_broadcast(val.get_local())
+        arr = numpy_mpi.gather_vector(val)
         return constant(arr)
 
     if value_size is None:
@@ -605,6 +605,7 @@ class RegionalParameter(dolfin.Function):
 
         mesh = meshfunction.mesh()
 
+        # FIXME
         self._values = set(numpy_mpi.gather_broadcast(meshfunction.array()))
         self._nvalues = len(self._values)
 

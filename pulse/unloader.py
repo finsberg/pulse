@@ -22,7 +22,7 @@ from . import unloading_utils as utils
 from . import numpy_mpi
 from .mechanicsproblem import MechanicsProblem, cardiac_boundary_conditions
 
-from .utils import make_logger
+from .utils import make_logger, mpi_comm_world
 
 from . import parameters
 
@@ -54,7 +54,7 @@ def step(
     # Create new reference geometry by moving according to rule
     U = dolfin.Function(u.function_space())
     numpy_mpi.assign_to_vector(
-        U.vector(), k * numpy_mpi.gather_broadcast(u.vector().array())
+        U.vector(), k * numpy_mpi.gather_vector(u.vector())
     )
 
     new_geometry = geometry.copy(u=U)
@@ -66,7 +66,7 @@ def step(
     if isinstance(matparams["a"], float):
         logger.info("material parameters = {}".format(matparams["a"]))
     else:
-        a_arr = numpy_mpi.gather_broadcast(matparams["a"].vector().array())
+        a_arr = numpy_mpi.gather_vector(matparams["a"].vector())
         logger.info("material parameters = {}".format(a_arr))
 
     # Make the solver
@@ -114,7 +114,7 @@ class MeshUnloader(object):
         self.h5group = h5group
 
         if os.path.isfile(h5name) and overwrite:
-            if dolfin.mpi_comm_world().rank == 0:
+            if mpi_comm_world().rank == 0:
                 os.remove(h5name)
 
         self.n = int(np.rint(np.max(np.divide(pressure, 0.4))))
@@ -340,7 +340,7 @@ class RaghavanUnloader(MeshUnloader):
         logger.info("Save new reference geometry")
 
         numpy_mpi.assign_to_vector(
-            self.U.vector(), res.x * numpy_mpi.gather_broadcast(u.vector().array())
+            self.U.vector(), res.x * numpy_mpi.gather_vector(u.vector())
         )
         new_geometry = utils.update_geometry(
             self.geometry, self.U, self.parameters["regen_fibers"]
@@ -382,7 +382,7 @@ class FixedPointUnloader(MeshUnloader):
 
             logger.info("\nIteration: {}".format(it))
 
-            u_arr = numpy_mpi.gather_broadcast(u.vector().get_local())
+            u_arr = numpy_mpi.gather_vector(u.vector())
             numpy_mpi.assign_to_vector(self.U.vector(), u_arr)
 
             # The displacent field that we will move the mesh according to

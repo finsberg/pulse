@@ -183,7 +183,7 @@ class MechanicsProblem(object):
         self._init_forms()
         self.solver_parameters = MechanicsProblem.defaul_solver_parameters()
         if solver_parameters is not None:
-            self.solver_parameters.update(solver_parameters)
+            self.solver_parameters.update(**solver_parameters)
 
     @staticmethod
     def default_bcs_parameters():
@@ -296,7 +296,7 @@ class MechanicsProblem(object):
 
     @staticmethod
     def defaul_solver_parameters():
-        return dolfin.NonlinearVariationalSolver.default_parameters().to_dict()
+        return dolfin.NonlinearVariationalSolver.default_parameters()
 
     def solve(self):
         r"""
@@ -350,7 +350,7 @@ class MechanicsProblem(object):
 
         return nliter, nlconv
 
-    def get_displacement(self, annotate=True):
+    def get_displacement(self, annotate=False):
 
         D = self.state_space.sub(0)
         V = D.collapse()

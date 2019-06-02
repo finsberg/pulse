@@ -161,9 +161,9 @@ def test_iterate_regional_gamma_pressure():
 if __name__ == "__main__":
 
     prob = problem()
-    # test_iterate_pressure(prob)
+    test_iterate_pressure(prob)
     # test_iterate_gamma(prob)
-    test_iterate_gamma_regional()
+    # test_iterate_gamma_regional()
     # test_iterate_gamma_cg1(True)
     # test_iterate_gamma_pressure(prob)
     # test_iterate_regional_gamma_pressure()

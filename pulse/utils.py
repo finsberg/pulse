@@ -55,6 +55,19 @@ def mpi_comm_world():
         return dolfin.mpi_comm_world()
 
 
+def value_size(obj):
+    try:
+        return obj.value_size()
+    except AttributeError:
+        value_shape = obj.value_shape()
+        if len(value_shape) == 0:
+            return 1
+        else:
+            return [0]
+
+        
+
+
 def set_default_none(NamedTuple, default=None):
     NamedTuple.__new__.__defaults__ = (default,) * len(NamedTuple._fields)
 

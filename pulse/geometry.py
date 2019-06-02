@@ -301,6 +301,7 @@ class Geometry(object):
         """
         if not hasattr(self, "_regions"):
             try:
+                # FIXME
                 regions = set(
                     numpy_mpi.gather_broadcast(self.dx.subdomain_data().array()).astype(
                         int
@@ -423,6 +424,7 @@ class HeartGeometry(Geometry):
     @property
     def is_biv(self):
         if "ENDO_RV" in self.markers:
+            # FIXME
             return self.markers["ENDO_RV"][0] in set(
                 numpy_mpi.gather_broadcast(self.ffun.array())
             )
