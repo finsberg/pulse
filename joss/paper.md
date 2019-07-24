@@ -26,7 +26,11 @@ bibliography: paper.bib
 
 The user can pick any of the built-in meshes or choose a custom user defined mesh. The user also need to provide appropriate markers for the boundaries where the boundary conditions will be applied, as well as microstructural information (i.e information about muscle fiber orientations) if an anisotropic model is to be used. Examples of how to create custom idealized geometries as well as appropriate microstructure can be found in another repository called [ldrb](https://github.com/finsberg/ldrb) which uses the Laplace-Dirichlet Rule-Based (LDRB) algorithm for assigning myocardial fiber orientations.
 
-Next the user needs to select a material model or create a [custom material model](https://finsberg.github.io/pulse/html/demos/custom_material.html), and define appropriate boundary conditions (Dirichlet, Neumann or Robin boundary conditions). Finally a `MechanicsProblem` is built using the geometry, material and boundary conditions. Figure ![Visualization of the different components that are part of the `pulse` library](components.png) shows the different components involved as well as how they are related. The problem is solved using some iterative strategy, either with an incremental load technique with fixed or adaptive stepping and/or using with a continuation technique [@finsberg2017patient].
+Next the user needs to select a material model or create a [custom material model](https://finsberg.github.io/pulse/html/demos/custom_material.html), and define appropriate boundary conditions (Dirichlet, Neumann or Robin boundary conditions). Finally a `MechanicsProblem` is built using the geometry, material and boundary conditions. Figure \ref{components} shows the different components involved as well as how they are related.
+ 
+![Visualization of the different components that are part of the `pulse` library. \label{component}](components.png)
+
+The problem is solved using some iterative strategy, either with an incremental load technique with fixed or adaptive stepping and/or using with a continuation technique [@finsberg2017patient].
 
 It is also possible to estimate the unloaded zero-pressure geometry [@bols2013computational]. This is of particular importance if the geometry you are using is taken from a medical image of a patient. In this case, the geometry is subjected to some load due to the blood pressure, and therefore in order to correctly assess the stresses one need to first first the unloaded geometry.
 
