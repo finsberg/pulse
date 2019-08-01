@@ -206,7 +206,13 @@ def load_markers(h5file, mesh, ggroup, dgroup):
                 if not h5file.has_dataset(dgroup):
                     continue
 
-                for aname in h5file.attributes(dgroup).str().strip().split(" "):
+                def get_attributes():
+                    if DOLFIN_VERSION_MAJOR >= 2018:
+                        return h5file.attributes(dgroup).list_attributes()
+                    else:
+                        return h5file.attributes(dgroup).str().strip().split(" ")
+
+                for aname in get_attributes():
                     if aname.startswith("marker_name"):
 
                         name = aname.rsplit("marker_name_")[-1]
