@@ -1,5 +1,5 @@
 {% set name = "pulse" %}
-{% set version = "0.1.1" %}
+{% set version = "2019.0" %}
 {% set sha256 = "bc58f5ac3c167a2d92c0c2875b8ac1b7a240d527218512b0fcf38fda0333eb0e" %}
 
 package:
@@ -16,9 +16,16 @@ build:
   noarch: python
 
 requirements:
+  build:
+    - h5py>=2.8.0
+    - fenics 2018
+    - scipy
+    - matplotlib
   run:
     - h5py>=2.8.0
     - fenics 2018
+    - scipy
+    - matplotlib
 test:
   imports:
     - pulse
