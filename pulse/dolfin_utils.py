@@ -49,9 +49,9 @@ def map_vector_field(f0, new_mesh, u=None, name="fiber", normalize=True):
         u_elm = u.function_space().ufl_element()
         V = dolfin.FunctionSpace(f0_mesh, u_elm)
         u0 = dolfin.Function(V)
-        arr = numpy_mpi.gather_vector(u.vector())
-        numpy_mpi.assign_to_vector(u0.vector(), arr)
-
+        # arr = numpy_mpi.gather_vector(u.vector())
+        # numpy_mpi.assign_to_vector(u0.vector(), arr)
+        u0.vector()[:] = u.vector()
         from .kinematics import DeformationGradient
 
         F = DeformationGradient(u0)
@@ -61,12 +61,14 @@ def map_vector_field(f0, new_mesh, u=None, name="fiber", normalize=True):
         if normalize:
             f0_updated = normalize_vector_field(f0_updated)
 
-        f0_arr = numpy_mpi.gather_vector(f0_updated.vector())
-        numpy_mpi.assign_to_vector(f0_new.vector(), f0_arr)
+        f0_new.vector()[:] = f0_updated.vector()
+        # f0_arr = numpy_mpi.gather_vector(f0_updated.vector())
+        # numpy_mpi.assign_to_vector(f0_new.vector(), f0_arr)
 
     else:
-        f0_arr = numpy_mpi.gather_vector(f0.vector())
-        numpy_mpi.assign_to_vector(f0_new.vector(), f0_arr)
+        # f0_arr = numpy_mpi.gather_vector(f0.vector())
+        # numpy_mpi.assign_to_vector(f0_new.vector(), f0_arr)
+        f0_new.vector()[:] = f0.vector()
 
     if DOLFIN_VERSION_MAJOR > 2016:
         dolfin.parameters["form_compiler"]["representation"] = "uflacs"
@@ -81,9 +83,7 @@ def update_function(mesh, f):
     """
 
     f_new = Function(dolfin.FunctionSpace(mesh, f.ufl_element()))
-    numpy_mpi.assign_to_vector(
-        f_new.vector(), numpy_mpi.gather_vector(f.vector())
-    )
+    numpy_mpi.assign_to_vector(f_new.vector(), numpy_mpi.gather_vector(f.vector()))
     return f_new
 
 
@@ -94,18 +94,11 @@ def normalize_vector_field(u):
     S = u.function_space().sub(0).collapse()
 
     components = vectorfield_to_components(u, S, dim)
-    normarray = np.sqrt(
-        sum(
-            numpy_mpi.gather_vector(components[i].vector()) ** 2
-            for i in range(dim)
-        )
-    )
+
+    normarray = np.sqrt(sum(components[i].vector().norm("l2") ** 2 for i in range(dim)))
 
     for comp in components:
-        numpy_mpi.assign_to_vector(
-            comp.vector(),
-            numpy_mpi.gather_vector(comp.vector()) / normarray,
-        )
+        comp.vector()[:] = comp.vector() / normarray
 
     assigners = [FunctionAssigner(u.function_space().sub(i), S) for i in range(dim)]
     for i, comp, assigner in zip(range(dim), components, assigners):

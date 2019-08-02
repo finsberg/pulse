@@ -53,9 +53,7 @@ def step(
 
     # Create new reference geometry by moving according to rule
     U = dolfin.Function(u.function_space())
-    numpy_mpi.assign_to_vector(
-        U.vector(), k * numpy_mpi.gather_vector(u.vector())
-    )
+    numpy_mpi.assign_to_vector(U.vector(), k * numpy_mpi.gather_vector(u.vector()))
 
     new_geometry = geometry.copy(u=U)
 
@@ -381,9 +379,7 @@ class FixedPointUnloader(MeshUnloader):
         while it < self.parameters["maxiter"] and res > self.parameters["tol"]:
 
             logger.info("\nIteration: {}".format(it))
-
-            u_arr = numpy_mpi.gather_vector(u.vector())
-            numpy_mpi.assign_to_vector(self.U.vector(), u_arr)
+            self.U.vector()[:] = u.vector()
 
             # The displacent field that we will move the mesh according to
             if save:
