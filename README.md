@@ -42,7 +42,7 @@ docker pull finsberg/pulse:latest
 ```
 
 ## Requirements
-* FEniCS version 2017.x
+* FEniCS version 2016 or newer
 
 Note that if you install FEniCS using anaconda then you will not get support for parallel HDF5
 see e.g [this issue](https://github.com/conda-forge/hdf5-feedstock/issues/51).
