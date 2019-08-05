@@ -30,9 +30,10 @@ You can also install the package using `conda`
 ```
 conda install -c finsberg pulse
 ```
-However, note that there are some problems with the 2017 version of FEniCS on conda. 
-If you want a working conda environment with FEniCS 2017 check out
-[this gist](https://gist.github.com/finsberg/96eeb1d564aab4a73f53a46a1588e6a6)
+`pulse` is also available on conda-forge
+```
+conda install -c conda-forge pulse
+```
 
 ### Docker
 It is also possible to use Docker. There is a prebuilt docker image

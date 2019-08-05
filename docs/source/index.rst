@@ -48,9 +48,12 @@ You can also install the library using conda
 
 .. code::
 
+   conda install -c conda-forge pulse
    conda install -c finsberg pulse
 
 It is also possible to use Docker. There is a prebuilt docker image using FEniCS 2017.2, python3.6 and pulse. You can get it by typing
+
+.. code::
 
    docker pull finsberg/pulse:latest
 

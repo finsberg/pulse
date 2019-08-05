@@ -1,29 +1,31 @@
-{% set name = "pulse" %}
 {% set version = "2019.0" %}
-{% set sha256 = "bc58f5ac3c167a2d92c0c2875b8ac1b7a240d527218512b0fcf38fda0333eb0e" %}
 
 package:
-  name: {{ name|lower }}
+  name: pulse
   version: {{ version }}
 
 source:
   url: https://github.com/finsberg/pulse/archive/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  sha256: db2a150e2f6476657642bf7094f6a3912b5841775edbd96c3adbcfa3456c41e6
 
 build:
   number: 0
-  script: python setup.py install
-  noarch: python
+  skip: True  # [win or py<36]
+  script: "{{ PYTHON }} -m pip install . -vv"
 
 requirements:
   build:
-    - h5py>=2.8.0
-    - fenics 2018
+    - python
+
+    - pip
+    - h5py
+    - fenics
     - scipy
     - matplotlib
   run:
-    - h5py>=2.8.0
-    - fenics 2018
+    - python
+    - h5py
+    - fenics
     - scipy
     - matplotlib
 test:
@@ -42,3 +44,6 @@ about:
     problems in continuum mechanics, in particular cardiac mechanics.
   doc_url: https://finsberg.github.io/pulse/html/index.html
   dev_url: https://github.com/finsberg/pulse
+extra:
+  recipe-maintainers:
+    - finsberg
