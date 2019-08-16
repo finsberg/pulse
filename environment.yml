@@ -3,7 +3,8 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - fenics=2018
-  - h5py
-  - scipy
-  - numpy
+    - python
+    - h5py
+    - fenics
+    - scipy
+    - matplotlib
