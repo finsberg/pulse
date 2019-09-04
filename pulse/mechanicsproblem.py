@@ -79,7 +79,7 @@ def cardiac_boundary_conditions(
     if geometry.is_biv:
 
         rv_pressure = NeumannBC(
-            traction=Constant(0.0, name="lv_pressure"),
+            traction=Constant(0.0, name="rv_pressure"),
             marker=geometry.markers["ENDO_RV"][0],
             name="rv",
         )
