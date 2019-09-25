@@ -159,8 +159,6 @@ class MechanicsProblem(object):
                 self.bcs_parameters = MechanicsProblem.default_bcs_parameters()
                 if bcs_parameters is not None:
                     self.bcs_parameters.update(**bcs_parameters)
-                self.bcs_parameters.update(**bcs_parameters)
-
             else:
                 raise ValueError(
                     ("Please provive boundary conditions " "to MechanicsProblem")
