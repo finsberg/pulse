@@ -3,7 +3,7 @@ import dolfin
 import logging
 
 parameters = dolfin.Parameters("Pulse_parameters")
-parameters.add("log_level", logging.INFO)
+parameters.add("log_level", dolfin.get_log_level())
 
 
 def setup_general_parameters():
