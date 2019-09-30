@@ -466,9 +466,11 @@ def generate_fibers(mesh, fiber_params, ffun=None):
         p = fiber_params
 
     angles = dict(
-        alpha_endo_lv=p.get("fiber_angle_endo", None),
-        alpha_epi_lv=p.get("fiber_angle_epi", None),
+        alpha_endo_lv=p.get("fiber_angle_endo"), alpha_epi_lv=p.get("fiber_angle_epi")
     )
+    for name, a in angles.items():
+        if isinstance(a, dolfin.cpp.parameter.Parameter):
+            angles[name] = a.value()
 
     return dolfin_ldrb(mesh, ffun=ffun, **angles)
 
