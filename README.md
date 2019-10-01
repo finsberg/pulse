@@ -65,4 +65,9 @@ Documentation can be found at [finsberg.github.io/pulse](https://finsberg.github
 You can create documentation yourselves by typing `make html` in the
 root directory.
 
+## Known issues
+* If you encounter errors with `h5py` try to uninstall it (`pip uninstall h5py`) and then re-install it without installing any binary packages, i.e
+```
+pip install h5py --no-binary
+```
 
