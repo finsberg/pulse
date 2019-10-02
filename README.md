@@ -67,7 +67,7 @@ root directory.
 
 ## Citing
 
-If you use code in your own research, please cite the [JOSS paper](https://joss.theoj.org/papers/10.21105/joss.01539)
+If you use `pulse` in your own research, please cite the [JOSS paper](https://joss.theoj.org/papers/10.21105/joss.01539)
 
 ```
 @article{pulse,
