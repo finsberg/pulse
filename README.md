@@ -65,6 +65,26 @@ Documentation can be found at [finsberg.github.io/pulse](https://finsberg.github
 You can create documentation yourselves by typing `make html` in the
 root directory.
 
+## Citing
+
+If you use code in your own research, please cite the [JOSS paper](https://joss.theoj.org/papers/10.21105/joss.01539)
+
+```
+@article{pulse,
+  doi = {10.21105/joss.01539},
+  url = {https://doi.org/10.21105/joss.01539},
+  year  = {2019},
+  month = {sept},
+  publisher = {The Open Journal},
+  volume = {4},
+  number = {41},
+  pages = {1539},
+  author = {Henrik Finsberg},
+  title = {pulse: A python package based on FEniCS for solving problems in cardiac mechanics},
+  journal = {The Journal of Open Source Software}
+}
+```
+
 ## Known issues
 * If you encounter errors with `h5py` try to uninstall it (`pip uninstall h5py`) and then re-install it without installing any binary packages, i.e
 ```
