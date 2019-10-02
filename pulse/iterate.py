@@ -87,17 +87,19 @@ def constant2float(const):
     """
     Convert a :class:`dolfin.Constant` to float
     """
-    const = get_constant(const)
     try:
         c = float(const)
-    except TypeError:
+    except:
+        const = get_constant(const)
         try:
-            c = np.zeros(len(const))
-            const.eval(c, c)
-        except Exception as ex:
-            logger.warning(ex, exc_info=True)
-            return const
-
+            c = float(const)
+        except TypeError:
+            try:
+                c = np.zeros(len(const))
+                const.eval(c, c)
+            except Exception as ex:
+                logger.warning(ex, exc_info=True)
+                return const
     return c
 
 
@@ -126,9 +128,11 @@ def get_delta(new_control, c0, c1):
         delta = (new_control_arr[0] - c0_arr[0]) / float(c1_arr[0] - c0_arr[0])
 
     elif isinstance(new_control, (dolfin.Function, Function)):
-        new_control_arr = numpy_mpi.gather_vector(new_control.vector())
-        c0_arr = numpy_mpi.gather_vector(c0.vector())
-        c1_arr = numpy_mpi.gather_vector(c1.vector())
+        new_control_arr = numpy_mpi.gather_vector(
+            new_control.vector(), new_control.function_space().dim()
+        )
+        c0_arr = numpy_mpi.gather_vector(c0.vector(), c0.function_space().dim())
+        c1_arr = numpy_mpi.gather_vector(c1.vector(), c1.function_space().dim())
         delta = (new_control_arr[0] - c0_arr[0]) / float(c1_arr[0] - c0_arr[0])
 
     else:
@@ -235,29 +239,29 @@ def step_too_large(current, target, step):
     """
 
     if isinstance(target, (dolfin.Function, Function)):
-        target = numpy_mpi.gather_vector(target.vector())
+        target = numpy_mpi.gather_vector(target.vector(), target.function_space().dim())
     elif isinstance(target, (Constant, dolfin.Constant)):
         target = constant2float(target)
     target = squeeze(target)
 
     if isinstance(current, (dolfin.Function, Function)):
-        current = numpy_mpi.gather_vector(current.vector())
+        current = numpy_mpi.gather_vector(
+            current.vector(), current.function_space().dim()
+        )
     elif isinstance(current, (Constant, dolfin.Constant)):
         current = constant2float(current)
     current = squeeze(current)
 
     if isinstance(step, (dolfin.Function, Function)):
-        step = numpy_mpi.gather_vector(step.vector())
+        step = numpy_mpi.gather_vector(step.vector(), step.function_space().dim())
     elif isinstance(step, (Constant, dolfin.Constant)):
         step = constant2float(step)
     step = squeeze(step)
 
-    if isinstance(target, (float, int)):
+    if not hasattr(target, "__len__"):
         comp = op.gt if current < target else op.lt
         return comp(current + step, target)
     else:
-        assert hasattr(target, "__len__")
-
         too_large = []
         for (c, t, s) in zip(current, target, step):
             too_large.append(step_too_large(c, t, s))
@@ -340,6 +344,7 @@ class Iterator(object):
         self.old_controls = () if old_controls is None else old_controls
         self.old_states = () if old_states is None else old_states
         self.problem = problem
+
         self._check_control(control)
         self._check_target(target)
 
@@ -426,6 +431,7 @@ class Iterator(object):
 
             logger.info("Try new control")
             self.print_control()
+
             try:
                 nliter, nlconv = self.problem.solve()
 
@@ -505,10 +511,12 @@ class Iterator(object):
     def increment_control(self):
 
         for c, s in zip(self.control, self.step):
+            # if isinstance(s, (dolfin.Function, Function))
             if isinstance(c, (dolfin.Function, Function)):
-                c_arr = numpy_mpi.gather_vector(c.vector())
+                c_arr = numpy_mpi.gather_vector(c.vector(), c.function_space().dim())
                 c_tmp = Function(c.function_space())
-                c_tmp.vector()[:] = c_arr + s
+                c_tmp.vector().set_local(np.array(c_arr + s))
+                c_tmp.vector().apply("")
                 c.assign(c_tmp)
             else:
                 c_arr = c
@@ -539,7 +547,9 @@ class Iterator(object):
             step.vector().axpy(-1.0, prev_control.vector())
         elif isinstance(target, (list, np.ndarray, tuple)):
             if isinstance(prev_control, (dolfin.Function, Function)):
-                prev = numpy_mpi.gather_vector(prev_control.vector())
+                prev = numpy_mpi.gather_vector(
+                    prev_control.vector(), prev_control.function_space().dim()
+                )
             else:
                 prev = prev_control
 
@@ -583,7 +593,6 @@ class Iterator(object):
     def _check_control(self, control):
 
         control = enlist(control)
-
         # Control has to be either a function or
         # a constant
         for c in control:

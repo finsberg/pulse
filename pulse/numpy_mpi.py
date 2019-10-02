@@ -9,23 +9,41 @@ import numpy as np
 from .utils import mpi_comm_world, DOLFIN_VERSION_MAJOR
 
 
-def gather_vector(u):
-    x = dolfin.Vector()
+def gather_vector(u, size=None):
     comm = mpi_comm_world()
-    size = MPI.size(comm) * MPI.sum(comm, u.size())
-    u.gather(x, np.arange(size, dtype="intc"))
-    return x.get_local()
 
-    
+    if size is None:
+        # size = int(MPI.size(comm) * MPI.sum(comm, u.size()))
+        size = int(MPI.sum(comm, u.size()))
+
+    # From this post: https://fenicsproject.discourse.group/t/gather-function-in-parallel-error/1114/4
+    u_vec = dolfin.Vector(comm, size)
+    # Values from everywhere on 0
+    u_vec = u.gather_on_zero()
+    # To everywhere from 0
+    mine = comm.bcast(u_vec)
+
+    # Reconstruct
+    if comm.rank == 0:
+        x = u_vec
+    else:
+        v = dolfin.Vector(MPI.comm_self, size)
+        v.set_local(mine)
+        x = v.get_local()
+
+    return x
+
+
 def compile_extension_module(cpp_code, **kwargs):
     if DOLFIN_VERSION_MAJOR >= 2018:
-        headers = kwargs.get('additional_system_headers', [])
-        headers = ["#include <Eigen/Core>",
-                   '#include <pybind11/pybind11.h>',
-                   # "using Array = Eigen::Ref<const Eigen::ArrayXi>;;"] +\
-                   "using Array = Eigen::ArrayXi;"] +\
-            ['#include <' + h + '>' for h in headers if h != '']
-        cpp_code = '\n'.join(headers) + cpp_code
+        headers = kwargs.get("additional_system_headers", [])
+        headers = [
+            "#include <Eigen/Core>",
+            "#include <pybind11/pybind11.h>",
+            # "using Array = Eigen::Ref<const Eigen::ArrayXi>;;"] +\
+            "using Array = Eigen::ArrayXi;",
+        ] + ["#include <" + h + ">" for h in headers if h != ""]
+        cpp_code = "\n".join(headers) + cpp_code
         return dolfin.compile_cpp_code(cpp_code)
     else:
         return dolfin.compile_extension_module(cpp_code, **kwargs)
