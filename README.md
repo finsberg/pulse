@@ -68,6 +68,6 @@ root directory.
 ## Known issues
 * If you encounter errors with `h5py` try to uninstall it (`pip uninstall h5py`) and then re-install it without installing any binary packages, i.e
 ```
-pip install h5py --no-binary
+pip install h5py --no-binary=h5py
 ```
 
