@@ -167,7 +167,11 @@ def load_geometry_from_h5(
         geo.mesh = mesh
 
         # Get mesh functions
-        for dim, attr in zip(range(4), ["vfun", "efun", "ffun", "cfun"]):
+        for dim, attr in enumerate(["vfun", "efun", "ffun", "cfun"]):
+
+            if dim > mesh.geometric_dimension():
+                setattr(geo, attr, None)
+                continue
 
             dgroup = "{}/mesh/meshfunction_{}".format(ggroup, dim)
             mf = dolfin.MeshFunction("size_t", mesh, dim, mesh.domains())
@@ -395,7 +399,7 @@ def fibers(mesh, fiber_endo=60, fiber_epi=-60):
 
 def get_circ_field(mesh):
 
-    fiber_params = Parameters("Fibers")
+    fiber_params = dolfin.Parameters("Fibers")
     fiber_params.add("fiber_space", "Quadrature_4")
     # fiber_params.add("fiber_space", "Lagrange_1")
     fiber_params.add("include_sheets", False)
@@ -704,7 +708,7 @@ def save_geometry_to_h5(
 
         h5file.write(mesh, mgroup)
 
-        for dim in range(4):
+        for dim in range(mesh.geometric_dimension() + 1):
 
             if meshfunctions is not None and dim in meshfunctions:
                 mf = meshfunctions[dim]
