@@ -22,7 +22,7 @@ URL = "https://github.com/finsberg/pulse"
 EMAIL = "henriknf@simula.no"
 AUTHOR = "Henrik Finsberg"
 REQUIRES_PYTHON = ">=3.5.0"
-VERSION = "2019.0"
+VERSION = "2019.1"
 
 # What packages are required for this module to be executed?
 REQUIRED = ["h5py", "numpy", "scipy"]
@@ -49,12 +49,9 @@ except FileNotFoundError:
 
 # Load the package's __version__.py module as a dictionary.
 about = {}
-if not VERSION:
-    project_slug = NAME.lower().replace("-", "_").replace(" ", "_")
-    with open(os.path.join(here, project_slug, "__version__.py")) as f:
-        exec(f.read(), about)
-else:
-    about["__version__"] = VERSION
+with open(os.path.join(here, "pulse/__version__.py")) as f:
+    exec(f.read(), about)
+about["__version__"] = VERSION
 
 
 class UploadCommand(Command):

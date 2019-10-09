@@ -72,8 +72,8 @@ from .kinematics import (
     PiolaTransform,
     InversePiolaTransform,
 )
+from .__version__ import __version__
 
-__version__ = "0.1.1"
 __author__ = "Henrik Finsberg"
 __credits__ = ["Henrik Finsberg"]
 __license__ = "LGPL-3"
