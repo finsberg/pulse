@@ -24,9 +24,7 @@ c_endo = 0.5
 
 
 # Markers (first index is the marker, second is the topological dimension)
-markers = dict(base_marker=(10, 2),
-               endo_marker=(30, 2),
-               epi_marker=(40, 2))
+markers = dict(base_marker=(10, 2), endo_marker=(30, 2), epi_marker=(40, 2))
 
 
 # Some refinement level
@@ -35,21 +33,31 @@ N = 13
 
 class Endo(df.SubDomain):
     def inside(self, x, on_boundary):
-        return (x[0]-center.x())**2/a_endo**2 \
-            + (x[1]-center.y())**2/b_endo**2 \
-            + (x[2]-center.z())**2/c_endo**2 -1.1 < df.DOLFIN_EPS \
+        return (
+            (x[0] - center.x()) ** 2 / a_endo ** 2
+            + (x[1] - center.y()) ** 2 / b_endo ** 2
+            + (x[2] - center.z()) ** 2 / c_endo ** 2
+            - 1.1
+            < df.DOLFIN_EPS
             and on_boundary
+        )
+
 
 class Base(df.SubDomain):
     def inside(self, x, on_boundary):
         return x[0] - base_x < df.DOLFIN_EPS and on_boundary
 
+
 class Epi(df.SubDomain):
     def inside(self, x, on_boundary):
-        return (x[0]-center.x())**2/a_epi**2 \
-            + (x[1]-center.y())**2/b_epi**2 \
-            + (x[2]-center.z())**2/c_epi**2 - 0.9 > df.DOLFIN_EPS \
+        return (
+            (x[0] - center.x()) ** 2 / a_epi ** 2
+            + (x[1] - center.y()) ** 2 / b_epi ** 2
+            + (x[2] - center.z()) ** 2 / c_epi ** 2
+            - 0.9
+            > df.DOLFIN_EPS
             and on_boundary
+        )
 
 
 # The plane cutting the base
@@ -77,11 +85,11 @@ ffun = df.MeshFunction("size_t", mesh, 2)
 ffun.set_all(0)
 
 endo = Endo()
-endo.mark(ffun, markers['endo_marker'][0])
+endo.mark(ffun, markers["endo_marker"][0])
 base = Base()
-base.mark(ffun, markers['base_marker'][0])
+base.mark(ffun, markers["base_marker"][0])
 epi = Epi()
-epi.mark(ffun, markers['epi_marker'][0])
+epi.mark(ffun, markers["epi_marker"][0])
 
 # Mark mesh
 for facet in df.facets(mesh):
@@ -104,28 +112,31 @@ except ImportError:
     fields = []
     fields_names = []
 else:
-    fields_names = ['f0', 's0', 'n0']
+    fields_names = ["f0", "s0", "n0"]
 
 microstructure = Microstructure(**dict(zip(fields_names, fields)))
 
-geometry = Geometry(mesh, markers=markers,
-                    marker_functions=marker_functions,
-                    microstructure=microstructure)
-geometry.save('lv_geometry')
+geometry = Geometry(
+    mesh,
+    markers=markers,
+    marker_functions=marker_functions,
+    microstructure=microstructure,
+)
+geometry.save("lv_geometry")
 
 
-df.plot(mesh)
-ax = plt.gca()
-ax.view_init(elev=-67, azim=-179)
-ax.set_axis_off()
+# df.plot(mesh)
+# ax = plt.gca()
+# ax.view_init(elev=-67, azim=-179)
+# ax.set_axis_off()
 
-plt.savefig('lv_geometry.png')
-plt.close()
+# plt.savefig('lv_geometry.png')
+# plt.close()
 
-if fields:
-    df.plot(fields[0])
-    ax = plt.gca()
-    ax.view_init(elev=-67, azim=-179)
-    ax.set_axis_off()
+# if fields:
+#     df.plot(fields[0])
+#     ax = plt.gca()
+#     ax.view_init(elev=-67, azim=-179)
+#     ax.set_axis_off()
 
-    plt.savefig('lv_geometry_fiber.png')
+#     plt.savefig('lv_geometry_fiber.png')
