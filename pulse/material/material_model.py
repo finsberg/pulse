@@ -341,7 +341,7 @@ class Material(object):
         I4f = dolfin.variable(self.active.I4(F))
 
         Fe = self.active.Fe(F)
-        Fa = self.active.Fa()
+        Fa = self.active.Fa
         Ce = Fe.T * Fe
 
         # fe = Fe*f0
@@ -381,7 +381,7 @@ class Material(object):
 
         # Active stress
         wactive = self.active.Wactive(F, diff=1)
-        eta = self.active.eta()
+        eta = self.active.eta
 
         S_active = wactive * (f0f0 + eta * (I - f0f0))
 
