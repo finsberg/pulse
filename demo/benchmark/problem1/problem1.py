@@ -19,16 +19,13 @@ L = 10
 W = 1
 
 # Create mesh
-mesh = dolfin.BoxMesh(dolfin.Point(0, 0, 0),
-                      dolfin.Point(L, W, W),
-                      30, 3, 3)
+mesh = dolfin.BoxMesh(dolfin.Point(0, 0, 0), dolfin.Point(L, W, W), 30, 3, 3)
 
 # Mark boundary subdomians
 left = dolfin.CompiledSubDomain("near(x[0], side) && on_boundary", side=0)
 bottom = dolfin.CompiledSubDomain("near(x[2], side) && on_boundary", side=0)
 
-boundary_markers = dolfin.MeshFunction("size_t", mesh,
-                                       mesh.topology().dim() - 1)
+boundary_markers = dolfin.MeshFunction("size_t", mesh, mesh.topology().dim() - 1)
 boundary_markers.set_all(0)
 
 left.mark(boundary_markers, 1)
@@ -36,8 +33,8 @@ bottom.mark(boundary_markers, 2)
 
 marker_functions = pulse.MarkerFunctions(ffun=boundary_markers)
 
-left_marker = pulse.Marker(name='left', value=1, dimension=2)
-bottom_marker = pulse.Marker(name='bottom', value=2, dimension=2)
+left_marker = pulse.Marker(name="left", value=1, dimension=2)
+bottom_marker = pulse.Marker(name="bottom", value=2, dimension=2)
 markers = (left_marker, bottom_marker)
 
 # Create mictrotructure
@@ -49,16 +46,19 @@ n0 = dolfin.Expression(("0.0", "0.0", "1.0"), degree=1, cell=mesh.ufl_cell())
 microstructure = pulse.Microstructure(f0=f0, s0=s0, n0=n0)
 
 # Create the geometry
-geometry = pulse.Geometry(mesh=mesh, markers=markers,
-                          marker_functions=marker_functions,
-                          microstructure=microstructure)
+geometry = pulse.Geometry(
+    mesh=mesh,
+    markers=markers,
+    marker_functions=marker_functions,
+    microstructure=microstructure,
+)
 
 # Create the material
 material_parameters = pulse.Guccione.default_parameters()
-material_parameters['CC'] = 2.0
-material_parameters['bf'] = 8.0
-material_parameters['bfs'] = 4.0
-material_parameters['bt'] = 2.0
+material_parameters["CC"] = 2.0
+material_parameters["bf"] = 8.0
+material_parameters["bfs"] = 4.0
+material_parameters["bt"] = 2.0
 
 material = pulse.Guccione(params=material_parameters)
 
@@ -71,12 +71,10 @@ def dirichlet_bc(W):
 
 # Traction at the bottom of the beam
 p_bottom = dolfin.Constant(0.004)
-neumann_bc = pulse.NeumannBC(traction=p_bottom,
-                             marker=bottom_marker.value)
+neumann_bc = pulse.NeumannBC(traction=p_bottom, marker=bottom_marker.value)
 
 # Collect Boundary Conditions
-bcs = pulse.BoundaryConditions(dirichlet=(dirichlet_bc,),
-                               neumann=(neumann_bc,))
+bcs = pulse.BoundaryConditions(dirichlet=(dirichlet_bc,), neumann=(neumann_bc,))
 
 # Create problem
 problem = pulse.MechanicsProblem(geometry, material, bcs)
@@ -91,19 +89,22 @@ point = np.array([10.0, 0.5, 1.0])
 disp = np.zeros(3)
 u.eval(disp, point)
 
-print(('Get z-position of point ({}): {:.4f} mm'
-       '').format(', '.join(['{:.1f}'.format(p) for p in point]),
-                  point[2] + disp[2]))
+print(
+    ("Get z-position of point ({}): {:.4f} mm" "").format(
+        ", ".join(["{:.1f}".format(p) for p in point]), point[2] + disp[2]
+    )
+)
 
 V = dolfin.VectorFunctionSpace(geometry.mesh, "CG", 1)
 u_int = dolfin.interpolate(u, V)
 mesh = dolfin.Mesh(geometry.mesh)
 dolfin.ALE.move(mesh, u_int)
-fig = plt.figure()
-dolfin.plot(geometry.mesh, alpha=0.5, color='w', edgecolor='k')
-dolfin.plot(mesh, color='r', edgecolor='k', alpha=0.7, title='Bending beam')
-ax = plt.gca()
-ax.view_init(elev=2, azim=-92)
-ax.set_aspect(5)
-fig.tight_layout()
-fig.savefig('problem1.png')# figsize=(12,8), dpi=300)
+
+# fig = plt.figure()
+# dolfin.plot(geometry.mesh, alpha=0.5, color='w', edgecolor='k')
+# dolfin.plot(mesh, color='r', edgecolor='k', alpha=0.7, title='Bending beam')
+# ax = plt.gca()
+# ax.view_init(elev=2, azim=-92)
+# ax.set_aspect(5)
+# fig.tight_layout()
+# fig.savefig('problem1.png')# figsize=(12,8), dpi=300)

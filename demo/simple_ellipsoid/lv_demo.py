@@ -85,11 +85,11 @@ mesh = dolfin.Mesh(geometry.mesh)
 dolfin.ALE.move(mesh, u_int)
 
 # Plot the result on to of the original
-dolfin.plot(geometry.mesh, alpha=0.1, edgecolor="k", color="w")
-dolfin.plot(mesh, color="r")
+# dolfin.plot(geometry.mesh, alpha=0.1, edgecolor="k", color="w")
+# dolfin.plot(mesh, color="r")
 
-ax = plt.gca()
-ax.view_init(elev=-67, azim=-179)
-ax.set_axis_off()
-# plt.show()
-plt.savefig("simple_ellipsoid.png")
+# ax = plt.gca()
+# ax.view_init(elev=-67, azim=-179)
+# ax.set_axis_off()
+# # plt.show()
+# plt.savefig("simple_ellipsoid.png")

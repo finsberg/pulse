@@ -51,8 +51,8 @@ cfun.set_all(0)
 marker_functions = pulse.MarkerFunctions(ffun=ffun, cfun=cfun)
 
 # Collect the individual markers
-fixed_marker = pulse.Marker(name='fixed', value=1, dimension=2)
-free_marker = pulse.Marker(name='free', value=2, dimension=2)
+fixed_marker = pulse.Marker(name="fixed", value=1, dimension=2)
+free_marker = pulse.Marker(name="free", value=2, dimension=2)
 markers = (fixed_marker, free_marker)
 
 # Create mictrotructure
@@ -64,14 +64,16 @@ n0 = dolfin.Expression(("0.0", "0.0", "1.0"), degree=1, cell=mesh.ufl_cell())
 microstructure = pulse.Microstructure(f0=f0, s0=s0, n0=n0)
 
 # Create the geometry
-geometry = pulse.Geometry(mesh=mesh, markers=markers,
-                          marker_functions=marker_functions,
-                          microstructure=microstructure)
+geometry = pulse.Geometry(
+    mesh=mesh,
+    markers=markers,
+    marker_functions=marker_functions,
+    microstructure=microstructure,
+)
 
 
 # Use the default material parameters
 class MooneyRivelin(pulse.Material):
-
     @staticmethod
     def default_parameters():
         return dict(C1=1.0, C2=1.0)
@@ -99,25 +101,20 @@ active_model = "active_strain"
 activation = dolfin.Constant(0.1)
 
 # Create material
-material = MooneyRivelin(active_model=active_model,
-                         activation=activation)
+material = MooneyRivelin(active_model=active_model, activation=activation)
 
 
 # Make Dirichlet boundary conditions
 def dirichlet_bc(W):
     V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
-    return dolfin.DirichletBC(V,
-                              dolfin.Constant((0.0, 0.0, 0.0)),
-                              fixed)
+    return dolfin.DirichletBC(V, dolfin.Constant((0.0, 0.0, 0.0)), fixed)
 
 
 # Make Neumann boundary conditions
-neumann_bc = pulse.NeumannBC(traction=dolfin.Constant(0.0),
-                             marker=free_marker.value)
+neumann_bc = pulse.NeumannBC(traction=dolfin.Constant(0.0), marker=free_marker.value)
 
 # Collect Boundary Conditions
-bcs = pulse.BoundaryConditions(dirichlet=(dirichlet_bc,),
-                               neumann=(neumann_bc,))
+bcs = pulse.BoundaryConditions(dirichlet=(dirichlet_bc,), neumann=(neumann_bc,))
 
 # Create problem
 problem = pulse.MechanicsProblem(geometry, material, bcs)
@@ -129,13 +126,12 @@ problem.solve()
 u, p = problem.state.split(deepcopy=True)
 
 # Plot
-u_int = dolfin.interpolate(u,
-                           dolfin.VectorFunctionSpace(geometry.mesh, "CG", 1))
+u_int = dolfin.interpolate(u, dolfin.VectorFunctionSpace(geometry.mesh, "CG", 1))
 mesh = dolfin.Mesh(geometry.mesh)
 dolfin.ALE.move(mesh, u_int)
-dolfin.plot(geometry.mesh, alpha=0.5, edgecolor='k', title="original")
-dolfin.plot(mesh, edgecolor='g', alpha=0.7, title='Contracting cube')
-ax = plt.gca()
-ax.view_init(elev=2, azim=-92)
-# plt.show()
-plt.savefig('custom_material.png')
+# dolfin.plot(geometry.mesh, alpha=0.5, edgecolor='k', title="original")
+# dolfin.plot(mesh, edgecolor='g', alpha=0.7, title='Contracting cube')
+# ax = plt.gca()
+# ax.view_init(elev=2, azim=-92)
+# # plt.show()
+# plt.savefig('custom_material.png')
