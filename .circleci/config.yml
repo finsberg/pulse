@@ -9,7 +9,7 @@ jobs:
       # specify the version you desire here
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
       - image: quay.io/fenicsproject/stable:latest
-      
+
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
@@ -23,9 +23,9 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "requirements.txt" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+            - v1-dependencies-{{ checksum "requirements.txt" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
 
       - run:
           name: install dependencies
@@ -44,20 +44,13 @@ jobs:
 
       - restore_cache:
           keys:
-          - v2-dolfin-jit-cache
+            - v2-dolfin-jit-cache
 
       # run tests!
       - run:
           name: run tests
           command: |
             python3 -m pytest -v tests
-
-      # run demos
-      - run:
-          name: run demos
-          command: |
-            python3 tests/run_all_demos.py
-          
 
       - save_cache:
           key: v2-dolfin-jit-cache
