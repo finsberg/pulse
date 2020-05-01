@@ -1,5 +1,5 @@
 import dolfin
-from pulse import (MechanicsProblem, DeformationGradient, Jacobian)
+from pulse import MechanicsProblem, DeformationGradient, Jacobian
 
 
 class CompressibleProblem(MechanicsProblem):
@@ -8,6 +8,7 @@ class CompressibleProblem(MechanicsProblem):
     compressibility term, solving for the displacement only.
 
     """
+
     def _init_spaces(self):
 
         mesh = self.geometry.mesh
@@ -19,7 +20,7 @@ class CompressibleProblem(MechanicsProblem):
 
         # Add penalty factor
         self.kappa = dolfin.Constant(1e3)
-        
+
     def _init_forms(self):
 
         u = self.state
@@ -31,21 +32,18 @@ class CompressibleProblem(MechanicsProblem):
         dx = self.geometry.dx
 
         # Add penalty term
-        internal_energy = self.material.strain_energy(F) \
-            + self.kappa * (J * dolfin.ln(J) - J + 1)
+        internal_energy = self.material.strain_energy(F) + self.kappa * (
+            J * dolfin.ln(J) - J + 1
+        )
 
-        self._virtual_work \
-            = dolfin.derivative(internal_energy * dx,
-                                self.state, self.state_test)
+        self._virtual_work = dolfin.derivative(
+            internal_energy * dx, self.state, self.state_test
+        )
 
         self._virtual_work += self._external_work(u, v)
 
-        self._jacobian \
-            = dolfin.derivative(self._virtual_work, self.state,
-                                dolfin.TrialFunction(self.state_space))
+        self._jacobian = dolfin.derivative(
+            self._virtual_work, self.state, dolfin.TrialFunction(self.state_space)
+        )
 
         self._set_dirichlet_bc()
-
-
-
-

@@ -6,11 +6,12 @@ import logging
 import dolfin
 from . import parameters
 
-if dolfin.__version__.startswith('20'):
+if dolfin.__version__.startswith("20"):
     # Year based versioning
-    DOLFIN_VERSION_MAJOR = float(dolfin.__version__.split('.')[0])
+    DOLFIN_VERSION_MAJOR = float(dolfin.__version__.split(".")[0])
 else:
-    DOLFIN_VERSION_MAJOR = float('.'.join(dolfin.__version__.split('.')[:2]))
+    DOLFIN_VERSION_MAJOR = float(".".join(dolfin.__version__.split(".")[:2]))
+
 
 class Annotation(object):
     """
@@ -64,8 +65,6 @@ def value_size(obj):
             return 1
         else:
             return [0]
-
-        
 
 
 def set_default_none(NamedTuple, default=None):

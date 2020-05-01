@@ -5,6 +5,7 @@ from pulse.iterate import iterate
 
 try:
     import dolfin_adjoint
+
     has_dolfin_adjoint = True
 except ImportError:
     has_dolfin_adjoint = False
@@ -26,14 +27,14 @@ cases = itertools.product((False, True), annotates)
 
 @pytest.fixture
 def problem():
-    problem = make_lv_mechanics_problem('R_0')
+    problem = make_lv_mechanics_problem("R_0")
     return problem
 
 
 def test_iterate_pressure(problem):
 
     target_pressure = 1.0
-    plv = [p.traction for p in problem.bcs.neumann if p.name == 'lv']
+    plv = [p.traction for p in problem.bcs.neumann if p.name == "lv"]
     pressure = plv[0]
 
     if has_dolfin_adjoint:
@@ -71,10 +72,10 @@ def test_iterate_gamma(problem):
 
 
 def test_iterate_gamma_regional():
-    problem = make_lv_mechanics_problem('regional')
+    problem = make_lv_mechanics_problem("regional")
     target_gamma = problem.material.activation.vector().get_local()
     for i in range(len(target_gamma)):
-        target_gamma[i] = 0.1 - i*0.001
+        target_gamma[i] = 0.1 - i * 0.001
     print(target_gamma)
 
     gamma = problem.material.activation
@@ -93,26 +94,23 @@ def test_iterate_gamma_regional():
         assert dolfin_adjoint.replay_dolfin(tol=1e-12)
 
 
-@pytest.mark.parametrize('continuation', [True, False])
+@pytest.mark.parametrize("continuation", [True, False])
 def test_iterate_gamma_cg1(continuation):
 
-    problem = make_lv_mechanics_problem('CG_1')
+    problem = make_lv_mechanics_problem("CG_1")
     V = problem.material.activation.function_space()
-    target_gamma \
-        = dolfin.interpolate(dolfin.Expression('0.1 * x[0]',
-                                               degree=1), V)
+    target_gamma = dolfin.interpolate(dolfin.Expression("0.1 * x[0]", degree=1), V)
     gamma = problem.material.activation
 
     if has_dolfin_adjoint:
         dolfin.parameters["adjoint"]["stop_annotating"] = False
         dolfin_adjoint.adj_reset()
 
-    iterate(problem, gamma,
-            target_gamma,
-            continuation=continuation)
+    iterate(problem, gamma, target_gamma, continuation=continuation)
 
-    assert np.all(gamma.vector().get_local()
-                  - target_gamma.vector().get_local() < 1e-12)
+    assert np.all(
+        gamma.vector().get_local() - target_gamma.vector().get_local() < 1e-12
+    )
     assert dolfin.norm(problem.state.vector()) > 0
 
     if has_dolfin_adjoint:
@@ -121,7 +119,7 @@ def test_iterate_gamma_cg1(continuation):
 
 def test_iterate_gamma_pressure(problem):
     target_pressure = 1.0
-    plv = [p.traction for p in problem.bcs.neumann if p.name == 'lv']
+    plv = [p.traction for p in problem.bcs.neumann if p.name == "lv"]
     pressure = plv[0]
 
     target_gamma = 0.1
@@ -136,26 +134,25 @@ def test_iterate_gamma_pressure(problem):
     assert all(gamma.vector().get_local() == target_gamma)
     assert float(plv[0]) == target_pressure
     assert dolfin.norm(problem.state.vector()) > 0
-    
 
     if has_dolfin_adjoint:
         assert dolfin_adjoint.replay_dolfin(tol=1e-12)
 
+
 def test_iterate_regional_gamma_pressure():
 
-    problem = make_lv_mechanics_problem('regional')
+    problem = make_lv_mechanics_problem("regional")
     target_gamma = problem.material.activation.vector().get_local()
     for i in range(len(target_gamma)):
-        target_gamma[i] = 0.1 - i*0.001
+        target_gamma[i] = 0.1 - i * 0.001
     gamma = problem.material.activation
 
     target_pressure = 1.0
-    plv = [p.traction for p in problem.bcs.neumann if p.name == 'lv']
+    plv = [p.traction for p in problem.bcs.neumann if p.name == "lv"]
     pressure = plv[0]
 
     with pytest.raises(ValueError):
         iterate(problem, (pressure, gamma), (target_pressure, target_gamma))
-
 
 
 if __name__ == "__main__":
@@ -180,4 +177,3 @@ if __name__ == "__main__":
         test_iterate_gamma(prob, continuation=c, annotate=a)
         if has_dolfin_adjoint:
             dolfin_adjoint.adj_reset()
-

@@ -10,7 +10,7 @@ import numpy as np
 import dolfin
 import pulse
 
-geometry = pulse.HeartGeometry.from_file(pulse.mesh_paths['simple_ellipsoid'])
+geometry = pulse.HeartGeometry.from_file(pulse.mesh_paths["simple_ellipsoid"])
 geometry.mesh.coordinates()[:] *= 3.15
 ED_pressure = 1.6  # kPa
 
@@ -35,10 +35,9 @@ def setup_material(material_model):
         matparams["bf"] = 27.75
         matparams["bt"] = 5.37
         matparams["bfs"] = 2.445
-        material = pulse.Guccione(parameters=matparams,
-                                  f0=geometry.f0,
-                                  s0=geometry.s0,
-                                  n0=geometry.n0)
+        material = pulse.Guccione(
+            parameters=matparams, f0=geometry.f0, s0=geometry.s0, n0=geometry.n0
+        )
 
     elif material_model == "neo_hookean":
 
@@ -54,12 +53,11 @@ def setup_material(material_model):
         matparams["a_f"] = 10.0  # kPa
         matparams["b"] = 5.0
         matparams["b_f"] = 5.0
-        material = pulse.HolzapfelOgden(parameters=matparams,
-                                        f0=geometry.f0,
-                                        s0=geometry.s0,
-                                        n0=geometry.n0)
+        material = pulse.HolzapfelOgden(
+            parameters=matparams, f0=geometry.f0, s0=geometry.s0, n0=geometry.n0
+        )
     return material
-    
+
 
 def klotz_curve():
     """
@@ -82,13 +80,13 @@ def klotz_curve():
     Bn = 2.76
 
     # kpa to mmhg
-    Pm = Pm * 760/101.325
+    Pm = Pm * 760 / 101.325
 
     V0 = Vm * (0.6 - 0.006 * Pm)
-    V30 = V0 + (Vm - V0) / (Pm/An)**(1.0/Bn)
+    V30 = V0 + (Vm - V0) / (Pm / An) ** (1.0 / Bn)
 
     beta = math.log(Pm / 30.0) / math.log(Vm / V30)
-    alpha = 30.0/V30**beta
+    alpha = 30.0 / V30 ** beta
 
     # Unloaded volume (not used here)
     # P_V0 = alpha * V0 ** beta
@@ -98,30 +96,30 @@ def klotz_curve():
     for p in np.linspace(1.0, 12.0):
         vi = (p / alpha) ** (1.0 / beta)
         vs.append(vi)
-        ps.append(p * 101.325/760)  # Convert from mmhg to kPa
+        ps.append(p * 101.325 / 760)  # Convert from mmhg to kPa
 
     return vs, ps
 
 
 def main():
-
     def fix_basal_plane(W):
         V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
-        bc = dolfin.DirichletBC(V,
-                                dolfin.Constant((0.0, 0.0, 0.0)),
-                                geometry.ffun, geometry.markers["BASE"][0])
+        bc = dolfin.DirichletBC(
+            V,
+            dolfin.Constant((0.0, 0.0, 0.0)),
+            geometry.ffun,
+            geometry.markers["BASE"][0],
+        )
         return bc
 
     dirichlet_bc = [fix_basal_plane]
 
     lvp = dolfin.Constant(0.0)
-    lv_marker = geometry.markers['ENDO'][0]
-    lv_pressure = pulse.NeumannBC(traction=lvp,
-                                  marker=lv_marker, name='lv')
+    lv_marker = geometry.markers["ENDO"][0]
+    lv_pressure = pulse.NeumannBC(traction=lvp, marker=lv_marker, name="lv")
     neumann_bc = [lv_pressure]
 
-    bcs = pulse.BoundaryConditions(dirichlet=dirichlet_bc,
-                                   neumann=neumann_bc)
+    bcs = pulse.BoundaryConditions(dirichlet=dirichlet_bc, neumann=neumann_bc)
 
     fig, ax = plt.subplots()
     for material_model in ["neo_hookean", "guccione", "holzapfel_ogden"]:
@@ -138,19 +136,18 @@ def main():
             pressures.append(p)
             volumes.append(geometry.cavity_volume(u=problem.state.split()[0]))
 
-        ax.plot(volumes, pressures,
-                label=" ".join(material_model.split("_")))
+        ax.plot(volumes, pressures, label=" ".join(material_model.split("_")))
 
         # Reset pressure
         lvp.assign(dolfin.Constant(0.0))
 
     vs, ps = klotz_curve()
-    ax.plot(vs, ps, linestyle="--", label='Klotz curve')
+    ax.plot(vs, ps, linestyle="--", label="Klotz curve")
     ax.legend(loc="best")
-    ax.set_xlabel('Volume (ml)')
-    ax.set_ylabel('Pressure (kPa)')
+    ax.set_xlabel("Volume (ml)")
+    ax.set_ylabel("Pressure (kPa)")
     # plt.show()
-    plt.savefig('klotz_curve.png')
+    plt.savefig("klotz_curve.png")
 
 
 if __name__ == "__main__":

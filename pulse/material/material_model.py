@@ -142,8 +142,7 @@ class Material(object):
 
                     v_new = RegionalParameter(geometry.sfun)
                     numpy_mpi.assign_to_vector(
-                        v_new.vector(),
-                        numpy_mpi.gather_vector(v.vector()),
+                        v_new.vector(), numpy_mpi.gather_vector(v.vector())
                     )
                     v = v_new
 
