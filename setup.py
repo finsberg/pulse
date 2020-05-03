@@ -80,7 +80,7 @@ class ReleaseCommand(Command):
 
         self.status("Pushing git tags…")
         os.system("git tag v{0}".format(about["__version__"]))
-        os.system("git push --tags")
+        os.system("git push finsberg master --tags")
 
         sys.exit()
 
