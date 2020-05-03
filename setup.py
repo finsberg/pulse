@@ -22,7 +22,7 @@ URL = "https://github.com/finsberg/pulse"
 EMAIL = "henriknf@simula.no"
 AUTHOR = "Henrik Finsberg"
 REQUIRES_PYTHON = ">=3.5.0"
-VERSION = "2019.1"
+VERSION = "2019.2"
 
 # What packages are required for this module to be executed?
 REQUIRED = ["h5py", "numpy", "scipy"]
@@ -54,7 +54,7 @@ with open(os.path.join(here, "pulse/__version__.py")) as f:
 about["__version__"] = VERSION
 
 
-class UploadCommand(Command):
+class ReleaseCommand(Command):
     """Support setup.py upload."""
 
     description = "Build and publish the package."
@@ -116,5 +116,5 @@ setup(
         # 'Programming Language :: Python :: Implementation :: CPython',
     ],
     # $ setup.py publish support.
-    cmdclass={"release": UploadCommand},
+    cmdclass={"release": ReleaseCommand},
 )
