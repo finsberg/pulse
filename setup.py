@@ -78,12 +78,6 @@ class UploadCommand(Command):
         except OSError:
             pass
 
-        self.status("Building Source and Wheel (universal) distribution…")
-        os.system("{0} setup.py sdist bdist_wheel --universal".format(sys.executable))
-
-        self.status("Uploading the package to PyPI via Twine…")
-        os.system("python -m twine upload dist/*")
-
         self.status("Pushing git tags…")
         os.system("git tag v{0}".format(about["__version__"]))
         os.system("git push --tags")
@@ -122,5 +116,5 @@ setup(
         # 'Programming Language :: Python :: Implementation :: CPython',
     ],
     # $ setup.py publish support.
-    cmdclass={"upload": UploadCommand},
+    cmdclass={"release": UploadCommand},
 )
