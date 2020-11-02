@@ -38,7 +38,7 @@ jobs:
       - run:
           name: install package
           command: |
-            python -m pip install .
+            python3 -m pip install .
 
       - save_cache:
           paths:
