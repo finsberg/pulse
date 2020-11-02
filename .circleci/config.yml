@@ -10,7 +10,7 @@ executors:
       - image: quay.io/fenicsproject/stable:latest
   fenics-2017:
     docker:
-      - image: quay.io/fenicsproject/stable:2017.2.0
+      - image: finsberg/fenics2017
       
 jobs:
   test:
