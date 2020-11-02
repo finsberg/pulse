@@ -26,6 +26,12 @@ except ImportError:
 
     has_dolfin_adjoint = False
 
+# For newer versions of dolfin_adjoint
+try:
+    from dolfin_adjoint import DirichletBC
+except ImportError:
+    from dolfin import DirichletBC
+
 from . import kinematics
 from . import parameters
 from .utils import set_default_none, make_logger, get_lv_marker
@@ -49,13 +55,13 @@ def dirichlet_fix_base(W, ffun, marker):
     """Fix the basal plane.
     """
     V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
-    bc = dolfin.DirichletBC(V, dolfin.Constant((0, 0, 0)), ffun, marker)
+    bc = DirichletBC(V, dolfin.Constant((0, 0, 0)), ffun, marker)
     return bc
 
 
 def dirichlet_fix_base_directional(W, ffun, marker, direction=0):
     V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
-    bc = dolfin.DirichletBC(V.sub(direction), dolfin.Constant(0.0), ffun, marker)
+    bc = DirichletBC(V.sub(direction), dolfin.Constant(0.0), ffun, marker)
     return bc
 
 
