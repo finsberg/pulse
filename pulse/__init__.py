@@ -56,10 +56,6 @@ from pulse.mechanicsproblem import (
 )
 from .dolfin_utils import QuadratureSpace, MixedParameter, RegionalParameter
 
-
-# from .utils import logger
-# from .dolfin_utils import RegionalParameter
-
 from .kinematics import (
     SecondOrderIdentity,
     DeformationGradient,

@@ -8,6 +8,12 @@ try:
 except ImportError:
     from dolfin import Constant, Function
 
+# For newer versions of dolfin_adjoint
+try:
+    from dolfin_adjoint import Mesh
+except ImportError:
+    from dolfin import Mesh
+
 from . import numpy_mpi
 from . import io_utils
 from . import parameters
@@ -162,7 +168,7 @@ def load_geometry_from_h5(
     with dolfin.HDF5File(comm, h5name, "r") as h5file:
 
         # Load mesh
-        mesh = dolfin.Mesh(comm)
+        mesh = Mesh(comm)
         io_utils.read_h5file(h5file, mesh, mgroup, True)
         geo.mesh = mesh
 
@@ -189,7 +195,7 @@ def load_geometry_from_h5(
 
         origmeshgroup = "{}/original_geometry".format(h5group)
         if h5file.has_dataset(origmeshgroup):
-            original_mesh = dolfin.Mesh(comm)
+            original_mesh = Mesh(comm)
             io_utils.read_h5file(h5file, original_mesh, origmeshgroup, True)
             setattr(geo, "original_geometry", original_mesh)
 

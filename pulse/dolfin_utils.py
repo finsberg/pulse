@@ -160,11 +160,11 @@ def map_displacement(u, old_space, new_space, approx, name="mapped displacement"
 
     if approx == "interpolate":
         # Do we need dolfin-adjoint here or is dolfin enough?
-        u_int = interpolate(project(u, old_space), new_space, name=name)
+        u_int = interpolate(project(u, old_space), new_space)  # , name=name)
 
     elif approx == "project":
         # Do we need dolfin-adjoint here or is dolfin enough?
-        u_int = project(u, new_space, name=name)
+        u_int = project(u, new_space)  # , name=name)
 
     else:
         u_int = u

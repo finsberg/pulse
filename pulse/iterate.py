@@ -89,7 +89,7 @@ def constant2float(const):
     """
     try:
         c = float(const)
-    except:
+    except Exception:
         const = get_constant(const)
         try:
             c = float(const)
@@ -199,12 +199,12 @@ def squeeze(x):
 
     try:
         y = np.squeeze(x)
-    except:
+    except Exception:
         return x
     else:
         try:
             shape = np.shape(y)
-        except:
+        except Exception:
             return y
         else:
             if len(shape) == 0:
