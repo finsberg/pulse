@@ -112,6 +112,13 @@ def get_markers(mesh_type="lv"):
     return markers
 
 
+def get_geometric_dimension(mesh):
+    try:
+        return mesh.geometric_dimension()
+    except:
+        return mesh.geometry().dim()
+
+
 def load_geometry_from_h5(
     h5name,
     h5group="",
@@ -175,7 +182,7 @@ def load_geometry_from_h5(
         # Get mesh functions
         for dim, attr in enumerate(["vfun", "efun", "ffun", "cfun"]):
 
-            if dim > mesh.geometric_dimension():
+            if dim > get_geometric_dimension(mesh):
                 setattr(geo, attr, None)
                 continue
 
