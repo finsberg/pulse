@@ -7,21 +7,21 @@ import ufl
 
 try:
     from dolfin_adjoint import (
-        Function,
         Constant,
+        Function,
         FunctionAssigner,
-        NonlinearVariationalSolver,
         NonlinearVariationalProblem,
+        NonlinearVariationalSolver,
     )
 
     has_dolfin_adjoint = True
 except ImportError:
     from dolfin import (
-        Function,
         Constant,
+        Function,
         FunctionAssigner,
-        NonlinearVariationalSolver,
         NonlinearVariationalProblem,
+        NonlinearVariationalSolver,
     )
 
     has_dolfin_adjoint = False
@@ -32,11 +32,10 @@ try:
 except ImportError:
     from dolfin import DirichletBC
 
-from . import kinematics
-from . import parameters
-from .utils import set_default_none, make_logger, get_lv_marker
-from .geometry import HeartGeometry
+from . import kinematics, parameters
 from .dolfin_utils import list_sum
+from .geometry import HeartGeometry
+from .utils import get_lv_marker, make_logger, set_default_none
 
 logger = make_logger(__name__, parameters["log_level"])
 
@@ -47,7 +46,7 @@ set_default_none(BoundaryConditions, ())
 
 NeumannBC = namedtuple("NeumannBC", ["traction", "marker", "name"])
 # Name is optional
-NeumannBC.__new__.__defaults__ = ("",)
+NeumannBC.__new__.__defaults__ = ("",)  # type: ignore
 RobinBC = namedtuple("RobinBC", ["value", "marker"])
 
 

@@ -1,14 +1,14 @@
-import numpy as np
 import dolfin
+import numpy as np
 
 try:
     from dolfin_adjoint import (
-        Function,
-        interpolate,
         Constant,
-        project,
-        assemble,
+        Function,
         FunctionAssigner,
+        assemble,
+        interpolate,
+        project,
     )
 except ImportError:
     from dolfin import (
@@ -20,11 +20,8 @@ except ImportError:
         FunctionAssigner,
     )
 
-
-from . import utils
-from . import numpy_mpi
-
-from .utils import logger, mpi_comm_world, DOLFIN_VERSION_MAJOR
+from . import numpy_mpi, utils
+from .utils import DOLFIN_VERSION_MAJOR, logger, mpi_comm_world
 
 
 def map_vector_field(f0, new_mesh, u=None, name="fiber", normalize=True):
@@ -150,7 +147,7 @@ def read_hdf5(h5name, func, h5group="", comm=mpi_comm_world()):
             (
                 "Something went wrong when reading file "
                 "{h5name} into function {func} from group "
-                "{h5group)"
+                "{h5group}"
             ).format(h5name=h5name, func=func, h5group=h5group)
         )
         raise ex
@@ -309,7 +306,7 @@ def heaviside(x):
     return dolfin.conditional(dolfin.ge(x, 0.0), 1.0, 0.0)
 
 
-def list_sum(l):
+def list_sum(lst):
     """
     Return the sum of a list, when the convetiional
     method (like `sum`) it not working.
@@ -321,11 +318,11 @@ def list_sum(l):
 
     """
 
-    if not isinstance(l, list):
-        return l
+    if not isinstance(lst, list):
+        return lst
 
-    out = l[0]
-    for item in l[1:]:
+    out = lst[0]
+    for item in lst[1:]:
         out += item
     return out
 
@@ -626,8 +623,8 @@ class RegionalParameter(dolfin.Function):
 
         :returns: A function with parameter values at each segment
                   specified by the meshfunction
-        :rtype:  :py:class`dolfin.Function             
-             
+        :rtype:  :py:class`dolfin.Function
+
         """
         return self._sum()
 

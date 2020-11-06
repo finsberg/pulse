@@ -1,6 +1,8 @@
-import pytest
 import itertools
+
 import numpy as np
+import pytest
+
 from pulse.iterate import iterate
 
 try:
@@ -11,7 +13,7 @@ except ImportError:
     has_dolfin_adjoint = False
 
 import dolfin
-
+from utils import make_lv_mechanics_problem
 
 has_dolfin_adjoint = False
 if has_dolfin_adjoint:
@@ -20,7 +22,6 @@ if has_dolfin_adjoint:
 else:
     annotates = (False, False)
 
-from utils import make_lv_mechanics_problem
 
 cases = itertools.product((False, True), annotates)
 

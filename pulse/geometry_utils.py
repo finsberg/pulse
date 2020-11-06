@@ -1,12 +1,13 @@
 import os
-import numpy as np
-import h5py
+
 import dolfin
+import h5py
+import numpy as np
 
 try:
-    from dolfin_adjoint import Constant, Function
+    from dolfin_adjoint import Function
 except ImportError:
-    from dolfin import Constant, Function
+    from dolfin import Function
 
 # For newer versions of dolfin_adjoint
 try:
@@ -14,11 +15,8 @@ try:
 except ImportError:
     from dolfin import Mesh
 
-from . import numpy_mpi
-from . import io_utils
-from . import parameters
-from .utils import make_logger, mpi_comm_world, DOLFIN_VERSION_MAJOR
-
+from . import io_utils, parameters
+from .utils import DOLFIN_VERSION_MAJOR, make_logger, mpi_comm_world
 
 logger = make_logger(__name__, parameters["log_level"])
 
@@ -115,7 +113,7 @@ def get_markers(mesh_type="lv"):
 def get_geometric_dimension(mesh):
     try:
         return mesh.geometric_dimension()
-    except:
+    except AttributeError:
         return mesh.geometry().dim()
 
 
@@ -443,7 +441,7 @@ def get_long_field(mesh, mesh_type="biv"):
         # Mark the mesh with same markers on the LV and RV before
         # running the LDRB algorithm
         markers["ENDO_RV"] = markers["ENDO_LV"]
-        for facet in doflin.facets(mesh):
+        for facet in dolfin.facets(mesh):
             if ffun[facet] != 0:
                 mesh.domains().set_marker((facet.index(), markers[ffun[facet]]), 2)
 
@@ -453,7 +451,7 @@ def get_long_field(mesh, mesh_type="biv"):
     if mesh_type == "biv":
         # Put the correct markers
         markers = get_fiber_markers("biv")
-        for facet in doflin.facets(mesh):
+        for facet in dolfin.facets(mesh):
             if ffun[facet] != 0:
                 mesh.domains().set_marker((facet.index(), markers[ffun[facet]]), 2)
     return f0
@@ -716,9 +714,7 @@ def save_geometry_to_h5(
 
         # Save mesh
         ggroup = "{}/geometry".format(h5group)
-
         mgroup = "{}/mesh".format(ggroup)
-
         h5file.write(mesh, mgroup)
 
         for dim in range(get_geometric_dimension(mesh) + 1):
@@ -739,7 +735,6 @@ def save_geometry_to_h5(
             for name, (marker, dim) in markers.items():
 
                 for key_str in ["domain", "meshfunction"]:
-
                     dgroup = "{}/mesh/{}_{}".format(ggroup, key_str, dim)
 
                     if h5file.has_dataset(dgroup):
@@ -749,39 +744,12 @@ def save_geometry_to_h5(
         if local_basis is not None:
             # Save local basis functions
             lgroup = "{}/local basis functions".format(h5group)
-            names = []
-            for l in local_basis:
-                h5file.write(l, lgroup + "/{}".format(l.name()))
-                names.append(l.name())
-
-            elm = l.function_space().ufl_element()
-            family, degree = elm.family(), elm.degree()
-            lspace = "{}_{}".format(family, degree)
-            h5file.attributes(lgroup)["space"] = lspace
-            h5file.attributes(lgroup)["names"] = ":".join(names)
+            save_local_basis(h5file, lgroup, local_basis)
 
         if fields is not None:
             # Save fiber field
             fgroup = "{}/microstructure".format(h5group)
-            names = []
-            for field in fields:
-                try:
-                    label = (
-                        field.label() if field.label().rfind("a Function") == -1 else ""
-                    )
-                except AttributeError:
-                    label = field.name()
-                name = "_".join(filter(None, [str(field), label]))
-                fsubgroup = "{}/{}".format(fgroup, name)
-                h5file.write(field, fsubgroup)
-                h5file.attributes(fsubgroup)["name"] = field.name()
-                names.append(name)
-
-            elm = field.function_space().ufl_element()
-            family, degree = elm.family(), elm.degree()
-            fspace = "{}_{}".format(family, degree)
-            h5file.attributes(fgroup)["space"] = fspace
-            h5file.attributes(fgroup)["names"] = ":".join(names)
+            save_fields(h5file, fgroup, fields)
 
         if other_functions is not None:
             for k, fun in other_functions.items():
@@ -803,6 +771,61 @@ def save_geometry_to_h5(
                     logger.warning("Invalid attribute {} = {}".format(k, v))
 
     logger.info("Geometry saved to {}".format(h5name))
+
+
+def save_fields(h5file, fgroup, fields):
+    """Save mictrostructure to h5file
+
+    Parameters
+    ----------
+    h5file : dolfin.HDF5File
+        The file to write to
+    fgroup : str
+        The folder inside the file to write to
+    fields : list
+        List of dolfin functions to write
+    """
+    names = []
+    for field in fields:
+        try:
+            label = field.label() if field.label().rfind("a Function") == -1 else ""
+        except AttributeError:
+            label = field.name()
+        name = "_".join(filter(None, [str(field), label]))
+        fsubgroup = "{}/{}".format(fgroup, name)
+        h5file.write(field, fsubgroup)
+        h5file.attributes(fsubgroup)["name"] = field.name()
+        names.append(name)
+
+    elm = field.function_space().ufl_element()
+    family, degree = elm.family(), elm.degree()
+    fspace = "{}_{}".format(family, degree)
+    h5file.attributes(fgroup)["space"] = fspace
+    h5file.attributes(fgroup)["names"] = ":".join(names)
+
+
+def save_local_basis(h5file, lgroup, local_basis):
+    """Save local basis functions
+
+    Parameters
+    ----------
+    h5file : dolfin.HDF5File
+        The file to write to
+    lgroup : str
+        Folder inside file to store the local basis
+    local_basis : list
+        List of dolfin functions with local basis functions
+    """
+    names = []
+    for basis in local_basis:
+        h5file.write(basis, lgroup + "/{}".format(basis.name()))
+        names.append(basis.name())
+
+    elm = basis.function_space().ufl_element()
+    family, degree = elm.family(), elm.degree()
+    lspace = "{}_{}".format(family, degree)
+    h5file.attributes(lgroup)["space"] = lspace
+    h5file.attributes(lgroup)["names"] = ":".join(names)
 
 
 def mark_strain_regions(mesh, foc=None, nsectors=(6, 6, 4, 1), mark_mesh=True):
@@ -887,7 +910,7 @@ def strain_region_number(T, regions):
     For a given point in prolate coordinates,
     return the region it belongs to.
 
-    :param regions: Array of all coordinates for the strain 
+    :param regions: Array of all coordinates for the strain
                     regions taken from the strain mesh.
     :type regions: :py:class:`numpy.array`
 
@@ -957,9 +980,9 @@ def get_sector(regions, theta):
 
 
 def estimate_focal_point(mesh):
-    """Copmute the focal point based on approximating the 
+    r"""Copmute the focal point based on approximating the
     endocardial surfaces as a ellipsoidal cap.
-    
+
     .. math::
 
            focal = \sqrt{ l^2 - s^2}

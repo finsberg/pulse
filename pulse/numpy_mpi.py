@@ -3,10 +3,10 @@
 cbcpost https://bitbucket.org/simula_cbc/cbcpost
 """
 import dolfin
-from dolfin import MPI
 import numpy as np
+from dolfin import MPI
 
-from .utils import mpi_comm_world, DOLFIN_VERSION_MAJOR
+from .utils import DOLFIN_VERSION_MAJOR, mpi_comm_world
 
 
 def gather_vector(u, size=None):
@@ -57,13 +57,13 @@ def broadcast(array, from_process):
     "Broadcast array to all processes"
     if not hasattr(broadcast, "cpp_module"):
         cpp_code = """
-    
+
         namespace dolfin {
             std::vector<double> broadcast(const MPI_Comm mpi_comm, const Array<double>& inarray, int from_process)
             {
                 int this_process = dolfin::MPI::rank(mpi_comm);
                 std::vector<double> outvector(inarray.size());
-    
+
                 if(this_process == from_process) {
                     for(int i=0; i<inarray.size(); i++)
                     {
@@ -72,14 +72,14 @@ def broadcast(array, from_process):
                 }
                 dolfin::MPI::barrier(mpi_comm);
                 dolfin::MPI::broadcast(mpi_comm, outvector, from_process);
-    
+
                 return outvector;
             }
         }
         """
         if DOLFIN_VERSION_MAJOR >= 2018:
             cpp_code += """
-            
+
             PYBIND11_MODULE(SIGNATURE, m)
             {
             m.def("broadcast", &dolfin::broadcast);
@@ -120,15 +120,15 @@ def gather(array, on_process=0, flatten=False):
             std::vector<double> gather(const MPI_Comm mpi_comm, const Array<double>& inarray, int on_process)
             {
                 int this_process = dolfin::MPI::rank(mpi_comm);
-    
+
                 std::vector<double> outvector(dolfin::MPI::size(mpi_comm)*dolfin::MPI::sum(mpi_comm, inarray.size()));
                 std::vector<double> invector(inarray.size());
-    
+
                 for(int i=0; i<inarray.size(); i++)
                 {
                     invector[i] = inarray[i];
                 }
-    
+
                 dolfin::MPI::gather(mpi_comm, invector, outvector, on_process);
                 return outvector;
             }
@@ -136,7 +136,7 @@ def gather(array, on_process=0, flatten=False):
         """
         if DOLFIN_VERSION_MAJOR >= 2018:
             cpp_code += """
-            
+
             PYBIND11_MODULE(SIGNATURE, m)
             {
             m.def("gather", &dolfin::gather);
@@ -170,9 +170,9 @@ def distribution(number):
                 // Variables to help in synchronization
                 int num_processes = dolfin::MPI::size(mpi_comm);
                 int this_process = dolfin::MPI::rank(mpi_comm);
-    
+
                 std::vector<uint> distribution(num_processes);
-    
+
                 for(uint i=0; i<num_processes; i++) {
                     if(i==this_process) {
                         distribution[i] = number;
@@ -186,7 +186,7 @@ def distribution(number):
         """
         if DOLFIN_VERSION_MAJOR >= 2018:
             cpp_code += """
-            
+
             PYBIND11_MODULE(SIGNATURE, m)
             {
             m.def("distribution", &dolfin::distribution);
