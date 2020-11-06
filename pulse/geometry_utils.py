@@ -721,7 +721,7 @@ def save_geometry_to_h5(
 
         h5file.write(mesh, mgroup)
 
-        for dim in range(mesh.geometric_dimension() + 1):
+        for dim in range(get_geometric_dimension(mesh) + 1):
 
             if meshfunctions is not None and dim in meshfunctions:
                 mf = meshfunctions[dim]

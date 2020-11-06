@@ -21,7 +21,11 @@ def gather_vector(u, size=None):
     # Values from everywhere on 0
     u_vec = u.gather_on_zero()
     # To everywhere from 0
-    mine = comm.bcast(u_vec)
+    try:
+        mine = comm.bcast(u_vec)
+    except AttributeError:
+        comm = comm.tompi4py()
+        mine = comm.bcast(u_vec)
 
     # Reconstruct
     if comm.rank == 0:

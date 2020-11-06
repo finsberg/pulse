@@ -48,28 +48,28 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr .pytest_cache
 
 lint: ## check style with flake8
-	python3 -m flake8 pulse_adjoint tests
+	python3 -m flake8 pulse tests
 
 type: ## Run mypy
-	python3 -m mypy pulse_adjoint tests
+	python3 -m mypy pulse tests
 
 test: ## run tests quickly with the default Python
-	python3 -m pytest --cov=pulse_adjoint tests
+	python3 -m pytest --cov=pulse tests
 
 test-all: ## run tests on every Python version with tox
 	tox
 
 coverage: ## check code coverage quickly with the default Python
-	coverage run --source pulse_adjoint -m pytest
+	coverage run --source pulse -m pytest
 	coverage report -m
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
 docs: ## generate Sphinx HTML documentation, including API docs
-	rm -f docs/source/pulse_adjoint.rst
+	rm -f docs/source/pulse.rst
 	rm -f docs/source/modules.rst
-	rm -f docs/source/pulse_adjoint.scripts.rst
-	sphinx-apidoc -o docs/source pulse_adjoint
+	rm -f docs/source/pulse.scripts.rst
+	sphinx-apidoc -o docs/source pulse
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 	# $(BROWSER) docs/build/html/index.html
