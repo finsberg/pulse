@@ -9,7 +9,7 @@ import os
 import sys
 from shutil import rmtree
 
-from setuptools import find_packages, setup, Command
+from setuptools import Command, find_packages, setup
 
 # Package meta-data.
 NAME = "fenics-pulse"
@@ -22,7 +22,7 @@ URL = "https://github.com/finsberg/pulse"
 EMAIL = "henriknf@simula.no"
 AUTHOR = "Henrik Finsberg"
 REQUIRES_PYTHON = ">=3.6"
-VERSION = "2020.0"
+VERSION = "2020.1"
 
 # What packages are required for this module to be executed?
 REQUIRED = ["h5py", "numpy", "scipy"]
