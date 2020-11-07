@@ -1,28 +1,6 @@
 # flake8: noqa
 import warnings as _warnings
-
-try:
-    from ffc.quadrature.deprecation import QuadratureRepresentationDeprecationWarning
-
-    _warnings.filterwarnings(
-        "ignore", category=QuadratureRepresentationDeprecationWarning
-    )
-    _warnings.filterwarnings("ignore", category=DeprecationWarning)
-except Exception:
-    pass
-
-_warnings.filterwarnings("ignore", category=FutureWarning)
-_warnings.filterwarnings("ignore", category=UserWarning)
-
-from . import setup_parameters
-from .setup_parameters import parameters
-from .utils import annotation
-
-setup_parameters.setup_general_parameters()
-
 from collections import namedtuple
-
-Patient = namedtuple("Patient", ["geometry", "data"])
 
 from pulse.mechanicsproblem import (
     BoundaryConditions,
@@ -40,6 +18,7 @@ from . import (
     material,
     mechanicsproblem,
     numpy_mpi,
+    setup_parameters,
     unloader,
     utils,
 )
@@ -54,7 +33,51 @@ from .geometry import (
     MarkerFunctions,
     Microstructure,
 )
+from .kinematics import (
+    DeformationGradient,
+    EulerAlmansiStrain,
+    GreenLagrangeStrain,
+    Invariants,
+    InversePiolaTransform,
+    Jacobian,
+    LeftCauchyGreen,
+    PiolaTransform,
+    RightCauchyGreen,
+    SecondOrderIdentity,
+)
+from .material import (
+    ActiveStrain,
+    ActiveStress,
+    Guccione,
+    HolzapfelOgden,
+    LinearElastic,
+    Material,
+    NeoHookean,
+    StVenantKirchhoff,
+)
+from .setup_parameters import parameters
 from .unloader import FixedPointUnloader, MeshUnloader, RaghavanUnloader
+from .utils import annotation
+
+try:
+    from ffc.quadrature.deprecation import QuadratureRepresentationDeprecationWarning
+
+    _warnings.filterwarnings(
+        "ignore", category=QuadratureRepresentationDeprecationWarning
+    )
+    _warnings.filterwarnings("ignore", category=DeprecationWarning)
+except Exception:
+    pass
+
+_warnings.filterwarnings("ignore", category=FutureWarning)
+_warnings.filterwarnings("ignore", category=UserWarning)
+
+
+setup_parameters.setup_general_parameters()
+
+
+Patient = namedtuple("Patient", ["geometry", "data"])
+
 
 __all__ = [
     "parameters",
@@ -85,6 +108,24 @@ __all__ = [
     "MechanicsProblem",
     "NeumannBC",
     "RobinBC",
+    "ActiveStrain",
+    "ActiveStress",
+    "Material",
+    "HolzapfelOgden",
+    "Guccione",
+    "LinearElastic",
+    "NeoHookean",
+    "StVenantKirchhoff",
+    "SecondOrderIdentity",
+    "DeformationGradient",
+    "Jacobian",
+    "GreenLagrangeStrain",
+    "LeftCauchyGreen",
+    "RightCauchyGreen",
+    "EulerAlmansiStrain",
+    "Invariants",
+    "PiolaTransform",
+    "InversePiolaTransform",
     "__version__",
 ]
 
