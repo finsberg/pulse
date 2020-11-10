@@ -8,10 +8,13 @@ executors:
   fenics-latest:
     docker:
       - image: quay.io/fenicsproject/stable:latest
+  fenics-adjoint-latest:
+    docker:
+      - image: quay.io/dolfinadjoint/pyadjoint:latest
   fenics-2017:
     docker:
       - image: finsberg/fenics2017
-      
+
 jobs:
   test:
     parameters:
@@ -64,7 +67,7 @@ jobs:
       - store_artifacts:
           path: test-reports
           destination: test-reports
-            
+
 workflows:
   all-tests:
     jobs:
