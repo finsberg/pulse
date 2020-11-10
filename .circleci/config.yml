@@ -74,4 +74,4 @@ workflows:
       - test:
           matrix:
             parameters:
-              fenics: [fenics-latest, fenics-2017]
+              fenics: [fenics-latest, fenics-2017, fenics-adjoint-latest]
