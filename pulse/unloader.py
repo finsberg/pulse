@@ -6,89 +6,93 @@ geometry
 
 __author__ = "Henrik Finsberg (henriknf@simula.no)"
 import os
-import numpy as np
-
-try:
-    from scipy.optimize import minimize_scalar
-
-    has_scipy = True
-except ImportError:
-    has_scipy = False
 
 import dolfin
+import numpy as np
+
+# try:
+#     from scipy.optimize import minimize_scalar
+
+#     has_scipy = True
+# except ImportError:
+#     has_scipy = False
 
 
-from . import unloading_utils as utils
-from . import numpy_mpi
-from .mechanicsproblem import MechanicsProblem, cardiac_boundary_conditions
+try:
+    from dolfin_adjoint import Function, interpolate
+except ImportError:
+    from dolfin import Function, interpolate
 
-from .utils import make_logger, mpi_comm_world
-
+# from . import numpy_mpi
 from . import parameters
+from . import unloading_utils as utils
+from .mechanicsproblem import MechanicsProblem, cardiac_boundary_conditions
+from .utils import make_logger, mpi_comm_world
 
 logger = make_logger(__name__, parameters["log_level"])
 
-try:
-    dolfin.parameters["adjoint"]["stop_annotating"] = True
-except (KeyError, RuntimeError):
-    pass
+# try:
+#     dolfin.parameters["adjoint"]["stop_annotating"] = True
+# except (KeyError, RuntimeError):
+#     pass
 
 
-def step(
-    geometry,
-    pressure,
-    k,
-    u,
-    residual,
-    big_res,
-    material_parameters=None,
-    params=None,
-    n=2,
-    solve_tries=1,
-    merge_control="",
-    regen_fibers=False,
-):
+# def step(
+#     geometry,
+#     pressure,
+#     k,
+#     u,
+#     residual,
+#     big_res,
+#     material_parameters=None,
+#     params=None,
+#     n=2,
+#     solve_tries=1,
+#     merge_control="",
+#     regen_fibers=False,
+# ):
 
-    logger.info("\n\nk = {}".format(k))
+#     logger.info("\n\nk = {}".format(k))
 
-    # Create new reference geometry by moving according to rule
-    U = dolfin.Function(u.function_space())
-    numpy_mpi.assign_to_vector(U.vector(), k * numpy_mpi.gather_vector(u.vector()))
+#     # Create new reference geometry by moving according to rule
+#     U = Function(u.function_space())
+#     numpy_mpi.assign_to_vector(U.vector(), k * numpy_mpi.gather_vector(u.vector()))
 
-    new_geometry = geometry.copy(u=U)
+#     new_geometry = geometry.copy(u=U)
 
-    matparams = utils.update_material_parameters(
-        material_parameters, new_geometry.mesh, merge_control
-    )
+#     matparams = utils.update_material_parameters(
+#         material_parameters, new_geometry.mesh, merge_control
+#     )
 
-    if isinstance(matparams["a"], float):
-        logger.info("material parameters = {}".format(matparams["a"]))
-    else:
-        a_arr = numpy_mpi.gather_vector(matparams["a"].vector())
-        logger.info("material parameters = {}".format(a_arr))
+#     if isinstance(matparams["a"], float):
+#         logger.info("material parameters = {}".format(matparams["a"]))
+#     else:
+#         a_arr = numpy_mpi.gather_vector(matparams["a"].vector())
+#         logger.info("material parameters = {}".format(a_arr))
 
-    # Make the solver
-    problem, active_control, passive_control = make_mechanics_problem(
-        params, new_geometry, matparams=matparams
-    )
 
-    try:
-        # Inflate new geometry to target pressure
-        u0 = utils.inflate_to_pressure(
-            pressure, solver, p_expr, solve_tries, n, annotate=False
-        )
-    except:
-        logger.info("Failed to increase pressure")
-        return big_res
+#     # Make the solver
+#     problem, active_control, passive_control = make_mechanics_problem(
+#         params, new_geometry, matparams=matparams
+#     )
 
-    # Move mesh to ED
-    mesh = dolfin.Mesh(new_geometry.mesh)
-    move(mesh, u0, 1.0)
+#     try:
+#         # Inflate new geometry to target pressure
+#         u0 = utils.inflate_to_pressure(
+#             pressure, solver, p_expr, solve_tries, n, annotate=False
+#         )
+#     except:
+#         logger.info("Failed to increase pressure")
+#         return big_res
 
-    # Compute the residual
-    res = residual.calculate_residual(mesh)
-    logger.info("\nResidual:\t{}\n".format(res))
-    return res
+#     # Move mesh to ED
+#     mesh = Mesh(new_geometry.mesh)
+#     move(mesh, u0, 1.0)
+
+#     # Compute the residual
+#     res = residual.calculate_residual(mesh)
+#     logger.info("\nResidual:\t{}\n".format(res))
+#     return res
 
 
 class MeshUnloader(object):
@@ -105,7 +109,8 @@ class MeshUnloader(object):
 
         self.problem = problem
         self.pressure = pressure
-        self.U = dolfin.Function(problem.get_displacement().function_space())
+
+        self.U = Function(problem.get_displacement(annotate=True).function_space())
 
         self.merge_control = merge_control
         self.h5name = h5name
@@ -149,7 +154,7 @@ class MeshUnloader(object):
 
     def save(self, obj, name, h5group=""):
         """
-        Save object to and HDF file. 
+        Save object to and HDF file.
 
         Parameters
         ----------
@@ -195,7 +200,7 @@ class MeshUnloader(object):
         residual = utils.ResidualCalculator(self.problem.geometry.mesh)
 
         u = self.initial_solve(True)
-        self.U = dolfin.Function(u.function_space())
+        self.U = Function(u.function_space())
 
         self.unload_step(u, residual, save=save)
 
@@ -208,8 +213,8 @@ class MeshUnloader(object):
         function on the original geometry.
         """
         W = dolfin.VectorFunctionSpace(self.U.function_space().mesh(), "CG", 1)
-        u_int = dolfin.interpolate(self.U, W)
-        u = dolfin.Function(W)
+        u_int = interpolate(self.U, W)
+        u = Function(W)
         u.vector()[:] = -1 * u_int.vector()
         return u
 
@@ -228,7 +233,7 @@ class MeshUnloader(object):
             self.problem,
             self.parameters["solve_tries"],
             self.n,
-            annotate=False,
+            annotate=True,
         )
         return u
 
@@ -300,52 +305,54 @@ class RaghavanUnloader(MeshUnloader):
 
     def unload_step(self, u, residual, save=True):
 
-        big_res = 100.0
-        residuals = {}
+        raise NotImplementedError("RahavanUnloader is not yet implemented")
 
-        def iterate(k):
+        # big_res = 100.0
+        # residuals = {}
 
-            res = step(
-                self.geometry,
-                self.pressure,
-                k,
-                u,
-                residual,
-                big_res,
-                self.material_parameters,
-                self.params,
-                self.n,
-                self.parameters["solve_tries"],
-                self.merge_control,
-                self.parameters["regen_fibers"],
-            )
-            residuals[k] = res
-            return res
+        # def iterate(k):
 
-        logger.info("\nStart iterating....")
-        res = minimize_scalar(
-            iterate,
-            method="bounded",
-            bounds=(self.parameters["lb"], self.parameters["ub"]),
-            options={
-                "xatol": self.parameters["tol"],
-                "maxiter": self.parameters["maxiter"],
-            },
-        )
+        #     res = step(
+        #         self.geometry,
+        #         self.pressure,
+        #         k,
+        #         u,
+        #         residual,
+        #         big_res,
+        #         self.material_parameters,
+        #         self.params,
+        #         self.n,
+        #         self.parameters["solve_tries"],
+        #         self.merge_control,
+        #         self.parameters["regen_fibers"],
+        #     )
+        #     residuals[k] = res
+        #     return res
 
-        logger.info("Minimzation terminated sucessfully".center(72, "-"))
-        logger.info("Found:\n\tk={:.6f}\n\tResidual={:.3e}\n".format(res.x, res.fun))
-        logger.info("Save new reference geometry")
+        # logger.info("\nStart iterating....")
+        # res = minimize_scalar(
+        #     iterate,
+        #     method="bounded",
+        #     bounds=(self.parameters["lb"], self.parameters["ub"]),
+        #     options={
+        #         "xatol": self.parameters["tol"],
+        #         "maxiter": self.parameters["maxiter"],
+        #     },
+        # )
 
-        numpy_mpi.assign_to_vector(
-            self.U.vector(), res.x * numpy_mpi.gather_vector(u.vector())
-        )
-        new_geometry = utils.update_geometry(
-            self.geometry, self.U, self.parameters["regen_fibers"]
-        )
+        # logger.info("Minimzation terminated sucessfully".center(72, "-"))
+        # logger.info("Found:\n\tk={:.6f}\n\tResidual={:.3e}\n".format(res.x, res.fun))
+        # logger.info("Save new reference geometry")
 
-        if save:
-            self.save(new_geometry.mesh, "reference_geometry/mesh", "")
+        # numpy_mpi.assign_to_vector(
+        #     self.U.vector(), res.x * numpy_mpi.gather_vector(u.vector())
+        # )
+        # new_geometry = utils.update_geometry(
+        #     self.geometry, self.U, self.parameters["regen_fibers"]
+        # )
+
+        # if save:
+        #     self.save(new_geometry.mesh, "reference_geometry/mesh", "")
 
 
 class FixedPointUnloader(MeshUnloader):
@@ -364,8 +371,8 @@ class FixedPointUnloader(MeshUnloader):
 
     References
     ----------
-    .. [2] Bols, Joris, et al. "A computational method to assess the in 
-        vivo stresses and unloaded configuration of patient-specific blood 
+    .. [2] Bols, Joris, et al. "A computational method to assess the in
+        vivo stresses and unloaded configuration of patient-specific blood
         vessels." Journal of computational and Applied mathematics 246 (2013): 10-17.
 
     """
