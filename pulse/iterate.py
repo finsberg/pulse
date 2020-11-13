@@ -1,22 +1,22 @@
 #!/usr/bin/env python
-import numpy as np
 import operator as op
+
 import dolfin
+import numpy as np
 
 try:
-    from dolfin_adjoint import Function, Constant
+    from dolfin_adjoint import Constant, Function
 
     has_dolfin_adjoint = True
 except ImportError:
-    from dolfin import Function, Constant
+    from dolfin import Constant, Function
 
     has_dolfin_adjoint = False
 
 
-from . import numpy_mpi
-from . import parameters, annotation
-from .mechanicsproblem import SolverDidNotConverge
+from . import numpy_mpi, parameters
 from .dolfin_utils import get_constant
+from .mechanicsproblem import SolverDidNotConverge
 from .utils import make_logger, value_size
 
 logger = make_logger(__name__, parameters["log_level"])
@@ -69,16 +69,16 @@ def copy(f, deepcopy=True, name="copied_function"):
     elif isinstance(f, (float, int)):
         return f
     elif isinstance(f, Enlisted):
-        l = []
+        lst = []
         for fi in f:
-            l.append(copy(fi))
-        return enlist(l)
+            lst.append(copy(fi))
+        return enlist(lst)
 
     elif isinstance(f, (list, tuple)):
-        l = []
+        lst = []
         for fi in f:
-            l.append(copy(fi))
-        return tuple(l)
+            lst.append(copy(fi))
+        return tuple(lst)
     else:
         return f
 
@@ -429,7 +429,7 @@ class Iterator(object):
             if self.parameters["continuation"]:
                 self.continuation_step()
 
-            logger.info("Try new control")
+            logger.debug("Try new control")
             self.print_control()
 
             try:
@@ -437,8 +437,8 @@ class Iterator(object):
 
             except SolverDidNotConverge as ex:
                 logger.debug(ex)
-                logger.info("\nNOT CONVERGING")
-                logger.info("Reduce control step")
+                logger.debug("\nNOT CONVERGING")
+                logger.debug("Reduce control step")
                 self.ncrashes += 1
                 self.assign_control(prev_control)
                 # Assign old state
@@ -449,8 +449,8 @@ class Iterator(object):
                 self.change_step_size(0.5)
 
             else:
-                ncrashes = 0
-                logger.info("\nSUCCESFULL STEP:")
+                self.ncrashes = 0
+                logger.debug("\nSUCCESFULL STEP:")
 
                 if not self.target_reached():
                     if (
@@ -462,7 +462,7 @@ class Iterator(object):
                             np2str(self.step)
                         )
                         # print_control(enlist(self.step), msg)
-                        logger.info(msg)
+                        logger.debug(msg)
 
                 self.control_values.append(
                     delist(copy(self.control, deepcopy=True, name="Previous control"))
@@ -483,7 +483,7 @@ class Iterator(object):
     def print_control(self):
         msg = "Current control: "
         msg = print_control(self.control, msg)
-        logger.info(msg)
+        logger.debug(msg)
 
     def continuation_step(self):
 
@@ -533,10 +533,10 @@ class Iterator(object):
                 c.assign(Constant(n))
 
     def change_step_for_final_iteration(self, prev_control):
-        """Change step size so that target is 
+        """Change step size so that target is
         reached in the next iteration
         """
-        logger.info("Change step size for final iteration")
+        logger.debug("Change step size for final iteration")
 
         target = delist(self.target)
         prev_control = delist(prev_control)
@@ -588,7 +588,7 @@ class Iterator(object):
         for t in self.target[1:]:
             if value_size(t0) > 1 or value_size(t) > 1:
                 raise (ValueError(msg))
-        logger.info("Target: {}".format([constant2float(t) for t in self.target]))
+        logger.debug("Target: {}".format([constant2float(t) for t in self.target]))
 
     def _check_control(self, control):
 
@@ -602,17 +602,15 @@ class Iterator(object):
             assert isinstance(c, self._control_types), msg
 
         self.control = control
-        logger.info("Control: {}".format([constant2float(c) for c in self.control]))
+        logger.debug("Control: {}".format([constant2float(c) for c in self.control]))
 
     @property
     def ncontrols(self):
-        """Number of controls
-        """
+        """Number of controls"""
         return len(self.control)
 
     def target_reached(self):
-        """Check if control and target are the same
-        """
+        """Check if control and target are the same"""
         diff = get_diff(self.control, self.target)
 
         if isinstance(diff, dolfin.GenericVector):
@@ -625,9 +623,9 @@ class Iterator(object):
 
         reached = max_diff < 1e-6
         if reached:
-            logger.info("Check target reached: YES!")
+            logger.debug("Check target reached: YES!")
         else:
-            logger.info("Check target reached: NO")
-            logger.info("Maximum difference: {:.3e}".format(max_diff))
+            logger.debug("Check target reached: NO")
+            logger.debug("Maximum difference: {:.3e}".format(max_diff))
 
         return reached
