@@ -1,5 +1,11 @@
 import dolfin
-from pulse import MechanicsProblem, DeformationGradient, Jacobian
+
+try:
+    from dolfin_adjoint import Constant, Function
+except ImportError:
+    from dolfin import Function, Constant
+
+from pulse import DeformationGradient, Jacobian, MechanicsProblem
 
 
 class CompressibleProblem(MechanicsProblem):
@@ -15,11 +21,11 @@ class CompressibleProblem(MechanicsProblem):
 
         element = dolfin.VectorElement("P", mesh.ufl_cell(), 1)
         self.state_space = dolfin.FunctionSpace(mesh, element)
-        self.state = dolfin.Function(self.state_space)
+        self.state = Function(self.state_space)
         self.state_test = dolfin.TestFunction(self.state_space)
 
         # Add penalty factor
-        self.kappa = dolfin.Constant(1e3)
+        self.kappa = Constant(1e3)
 
     def _init_forms(self):
 

@@ -1,10 +1,8 @@
-import matplotlib.pyplot as plt
 import dolfin as df
 import mshr
 
+from pulse.geometry import Geometry, MarkerFunctions, Microstructure
 from pulse.geometry_utils import generate_fibers
-from pulse.geometry import Microstructure, Geometry, MarkerFunctions
-
 
 geo_file = "lv_ellipsoid.h5"
 
@@ -33,14 +31,11 @@ N = 13
 
 class Endo(df.SubDomain):
     def inside(self, x, on_boundary):
-        return (
-            (x[0] - center.x()) ** 2 / a_endo ** 2
-            + (x[1] - center.y()) ** 2 / b_endo ** 2
-            + (x[2] - center.z()) ** 2 / c_endo ** 2
-            - 1.1
-            < df.DOLFIN_EPS
-            and on_boundary
-        )
+        return (x[0] - center.x()) ** 2 / a_endo ** 2 + (
+            x[1] - center.y()
+        ) ** 2 / b_endo ** 2 + (
+            x[2] - center.z()
+        ) ** 2 / c_endo ** 2 - 1.1 < df.DOLFIN_EPS and on_boundary
 
 
 class Base(df.SubDomain):
@@ -50,14 +45,11 @@ class Base(df.SubDomain):
 
 class Epi(df.SubDomain):
     def inside(self, x, on_boundary):
-        return (
-            (x[0] - center.x()) ** 2 / a_epi ** 2
-            + (x[1] - center.y()) ** 2 / b_epi ** 2
-            + (x[2] - center.z()) ** 2 / c_epi ** 2
-            - 0.9
-            > df.DOLFIN_EPS
-            and on_boundary
-        )
+        return (x[0] - center.x()) ** 2 / a_epi ** 2 + (
+            x[1] - center.y()
+        ) ** 2 / b_epi ** 2 + (
+            x[2] - center.z()
+        ) ** 2 / c_epi ** 2 - 0.9 > df.DOLFIN_EPS and on_boundary
 
 
 # The plane cutting the base

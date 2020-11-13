@@ -4,11 +4,18 @@ material models, and compare with the Klotz curve.
 
 
 """
-import matplotlib.pyplot as plt
 import math
+
+import matplotlib.pyplot as plt
 import numpy as np
-import dolfin
+
 import pulse
+
+try:
+    from dolfin_adjoint import Constant, DirichletBC
+except ImportError:
+    from dolfin import Constant, DirichletBC
+
 
 geometry = pulse.HeartGeometry.from_file(pulse.mesh_paths["simple_ellipsoid"])
 geometry.mesh.coordinates()[:] *= 3.15
@@ -18,7 +25,7 @@ ED_pressure = 1.6  # kPa
 def setup_material(material_model):
     """
     Choose parameters based on
-    
+
     Hadjicharalambous, Myrianthi, et al. "Analysis of passive
     cardiac constitutive laws for parameter estimation using 3D
     tagged MRI." Biomechanics and modeling in mechanobiology 14.4
@@ -104,17 +111,14 @@ def klotz_curve():
 def main():
     def fix_basal_plane(W):
         V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
-        bc = dolfin.DirichletBC(
-            V,
-            dolfin.Constant((0.0, 0.0, 0.0)),
-            geometry.ffun,
-            geometry.markers["BASE"][0],
+        bc = DirichletBC(
+            V, Constant((0.0, 0.0, 0.0)), geometry.ffun, geometry.markers["BASE"][0]
         )
         return bc
 
     dirichlet_bc = [fix_basal_plane]
 
-    lvp = dolfin.Constant(0.0)
+    lvp = Constant(0.0)
     lv_marker = geometry.markers["ENDO"][0]
     lv_pressure = pulse.NeumannBC(traction=lvp, marker=lv_marker, name="lv")
     neumann_bc = [lv_pressure]
@@ -139,7 +143,7 @@ def main():
         ax.plot(volumes, pressures, label=" ".join(material_model.split("_")))
 
         # Reset pressure
-        lvp.assign(dolfin.Constant(0.0))
+        lvp.assign(Constant(0.0))
 
     vs, ps = klotz_curve()
     ax.plot(vs, ps, linestyle="--", label="Klotz curve")

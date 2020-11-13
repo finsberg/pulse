@@ -6,10 +6,14 @@ Crozier A, Favino M, Fastl TE. Verification of cardiac mechanics software:
 benchmark problems and solutions for testing active and passive material
 behaviour. Proc. R. Soc. A. 2015 Dec 8;471(2184):20150641.
 """
-import matplotlib.pyplot as plt
 import dolfin
-import pulse
 
+try:
+    from dolfin_adjoint import Constant, DirichletBC, Mesh, interpolate
+except ImportError:
+    from dolfin import DirichletBC, Constant, interpolate, Mesh
+
+import pulse
 
 geometry = pulse.HeartGeometry.from_file(pulse.mesh_paths["benchmark"])
 
@@ -26,13 +30,13 @@ material = pulse.Guccione(params=material_parameters)
 # Define Dirichlet boundary. Fix the base_spring
 def dirichlet_bc(W):
     V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
-    return dolfin.DirichletBC(
-        V, dolfin.Constant((0.0, 0.0, 0.0)), geometry.ffun, geometry.markers["BASE"][0]
+    return DirichletBC(
+        V, Constant((0.0, 0.0, 0.0)), geometry.ffun, geometry.markers["BASE"][0]
     )
 
 
 # Traction at the bottom of the beam
-lvp = dolfin.Constant(0.0)
+lvp = Constant(0.0)
 neumann_bc = pulse.NeumannBC(traction=lvp, marker=geometry.markers["ENDO"][0])
 
 # Collect Boundary Conditions
@@ -72,8 +76,8 @@ print(
 )
 
 V = dolfin.VectorFunctionSpace(geometry.mesh, "CG", 1)
-u_int = dolfin.interpolate(u, V)
-mesh = dolfin.Mesh(geometry.mesh)
+u_int = interpolate(u, V)
+mesh = Mesh(geometry.mesh)
 dolfin.ALE.move(mesh, u_int)
 
 # fig = plt.figure()

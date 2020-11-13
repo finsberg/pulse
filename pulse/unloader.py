@@ -416,7 +416,7 @@ class FixedPointUnloader(MeshUnloader):
                 problem,
                 self.parameters["solve_tries"],
                 self.n,
-                annotate=False,
+                annotate=True,
             )
 
             utils.print_volumes(new_geometry, txt="inflated", u=u)

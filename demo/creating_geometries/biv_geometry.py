@@ -1,9 +1,8 @@
-import matplotlib.pyplot as plt
 import dolfin as df
 import mshr
 
+from pulse.geometry import Geometry, MarkerFunctions, Microstructure
 from pulse.geometry_utils import generate_fibers
-from pulse.geometry import Microstructure, Geometry, MarkerFunctions
 
 base_x = 0.0
 
@@ -47,14 +46,11 @@ markers = dict(
 
 class EndoLV(df.SubDomain):
     def inside(self, x, on_boundary):
-        return (
-            (x[0] - center_lv.x()) ** 2 / a_lv_endo ** 2
-            + (x[1] - center_lv.y()) ** 2 / b_lv_endo ** 2
-            + (x[2] - center_lv.z()) ** 2 / c_lv_endo ** 2
-            - 1
-            < df.DOLFIN_EPS
-            and on_boundary
-        )
+        return (x[0] - center_lv.x()) ** 2 / a_lv_endo ** 2 + (
+            x[1] - center_lv.y()
+        ) ** 2 / b_lv_endo ** 2 + (
+            x[2] - center_lv.z()
+        ) ** 2 / c_lv_endo ** 2 - 1 < df.DOLFIN_EPS and on_boundary
 
 
 class Base(df.SubDomain):

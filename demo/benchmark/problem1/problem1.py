@@ -6,9 +6,21 @@ Crozier A, Favino M, Fastl TE. Verification of cardiac mechanics software:
 benchmark problems and solutions for testing active and passive material
 behaviour. Proc. R. Soc. A. 2015 Dec 8;471(2184):20150641.
 """
-import matplotlib.pyplot as plt
-import numpy as np
 import dolfin
+import numpy as np
+
+try:
+    from dolfin_adjoint import (
+        BoxMesh,
+        Constant,
+        DirichletBC,
+        Expression,
+        Mesh,
+        interpolate,
+    )
+except ImportError:
+    from dolfin import BoxMesh, Expression, DirichletBC, Constant, interpolate, Mesh
+
 import pulse
 
 # Create the Beam geometry
@@ -19,7 +31,7 @@ L = 10
 W = 1
 
 # Create mesh
-mesh = dolfin.BoxMesh(dolfin.Point(0, 0, 0), dolfin.Point(L, W, W), 30, 3, 3)
+mesh = BoxMesh(dolfin.Point(0, 0, 0), dolfin.Point(L, W, W), 30, 3, 3)
 
 # Mark boundary subdomians
 left = dolfin.CompiledSubDomain("near(x[0], side) && on_boundary", side=0)
@@ -38,9 +50,9 @@ bottom_marker = pulse.Marker(name="bottom", value=2, dimension=2)
 markers = (left_marker, bottom_marker)
 
 # Create mictrotructure
-f0 = dolfin.Expression(("1.0", "0.0", "0.0"), degree=1, cell=mesh.ufl_cell())
-s0 = dolfin.Expression(("0.0", "1.0", "0.0"), degree=1, cell=mesh.ufl_cell())
-n0 = dolfin.Expression(("0.0", "0.0", "1.0"), degree=1, cell=mesh.ufl_cell())
+f0 = Expression(("1.0", "0.0", "0.0"), degree=1, cell=mesh.ufl_cell())
+s0 = Expression(("0.0", "1.0", "0.0"), degree=1, cell=mesh.ufl_cell())
+n0 = Expression(("0.0", "0.0", "1.0"), degree=1, cell=mesh.ufl_cell())
 
 # Collect the mictrotructure
 microstructure = pulse.Microstructure(f0=f0, s0=s0, n0=n0)
@@ -66,11 +78,11 @@ material = pulse.Guccione(params=material_parameters)
 # Define Dirichlet boundary. Fix at the left boundary
 def dirichlet_bc(W):
     V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
-    return dolfin.DirichletBC(V, dolfin.Constant((0.0, 0.0, 0.0)), left)
+    return DirichletBC(V, Constant((0.0, 0.0, 0.0)), left)
 
 
 # Traction at the bottom of the beam
-p_bottom = dolfin.Constant(0.004)
+p_bottom = Constant(0.004)
 neumann_bc = pulse.NeumannBC(traction=p_bottom, marker=bottom_marker.value)
 
 # Collect Boundary Conditions
@@ -96,8 +108,8 @@ print(
 )
 
 V = dolfin.VectorFunctionSpace(geometry.mesh, "CG", 1)
-u_int = dolfin.interpolate(u, V)
-mesh = dolfin.Mesh(geometry.mesh)
+u_int = interpolate(u, V)
+mesh = Mesh(geometry.mesh)
 dolfin.ALE.move(mesh, u_int)
 
 # fig = plt.figure()

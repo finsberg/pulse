@@ -1,11 +1,16 @@
-import matplotlib.pyplot as plt
 import dolfin
-import pulse
+
+try:
+    from dolfin_adjoint import Constant, DirichletBC, Function, Mesh, interpolate
+except ImportError:
+    from dolfin import Mesh, Function, Constant, DirichletBC, interpolate
+
 import json
 
+import pulse
 
 # Mesh
-mesh = dolfin.Mesh(pulse.utils.mpi_comm_world(), "data/mesh.xml")
+mesh = Mesh(pulse.utils.mpi_comm_world(), "data/mesh.xml")
 
 # Marker functions
 facet_function = dolfin.MeshFunction("size_t", mesh, "data/facet_function.xml")
@@ -25,7 +30,7 @@ fiber_element = dolfin.VectorElement(
     family="Quadrature", cell=mesh.ufl_cell(), degree=4, quad_scheme="default"
 )
 fiber_space = dolfin.FunctionSpace(mesh, fiber_element)
-fiber = dolfin.Function(fiber_space, "data/fiber.xml")
+fiber = Function(fiber_space, "data/fiber.xml")
 
 microstructure = pulse.Microstructure(f0=fiber)
 
@@ -38,33 +43,29 @@ geometry = pulse.HeartGeometry(
     microstructure=microstructure,
 )
 
-activation = dolfin.Function(dolfin.FunctionSpace(geometry.mesh, "R", 0))
-activation.assign(dolfin.Constant(0.2))
+activation = Function(dolfin.FunctionSpace(geometry.mesh, "R", 0))
+activation.assign(Constant(0.2))
 matparams = pulse.HolzapfelOgden.default_parameters()
 material = pulse.HolzapfelOgden(
     activation=activation, parameters=matparams, f0=geometry.f0
 )
 
 # LV Pressure
-lvp = dolfin.Constant(1.0)
+lvp = Constant(1.0)
 lv_marker = markers_dict["ENDO"][0]
 lv_pressure = pulse.NeumannBC(traction=lvp, marker=lv_marker, name="lv")
 neumann_bc = [lv_pressure]
 
 # Add spring term at the base with stiffness 1.0 kPa/cm^2
 base_spring = 1.0
-robin_bc = [
-    pulse.RobinBC(value=dolfin.Constant(base_spring), marker=markers_dict["BASE"][0])
-]
+robin_bc = [pulse.RobinBC(value=Constant(base_spring), marker=markers_dict["BASE"][0])]
 
 
 # Fix the basal plane in the longitudinal direction
 # 0 in V.sub(0) refers to x-direction, which is the longitudinal direction
 def fix_basal_plane(W):
     V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
-    bc = dolfin.DirichletBC(
-        V.sub(0), dolfin.Constant(0.0), geometry.ffun, markers_dict["BASE"][0]
-    )
+    bc = DirichletBC(V.sub(0), Constant(0.0), geometry.ffun, markers_dict["BASE"][0])
     return bc
 
 
@@ -90,8 +91,8 @@ problem.solve()
 u, p = problem.state.split(deepcopy=True)
 
 # Move mesh accoring to displacement
-u_int = dolfin.interpolate(u, dolfin.VectorFunctionSpace(geometry.mesh, "CG", 1))
-mesh = dolfin.Mesh(geometry.mesh)
+u_int = interpolate(u, dolfin.VectorFunctionSpace(geometry.mesh, "CG", 1))
+mesh = Mesh(geometry.mesh)
 dolfin.ALE.move(mesh, u_int)
 
 # Plot the result on to of the original

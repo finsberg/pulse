@@ -98,17 +98,16 @@ def normalize_vector_field(u):
 
     assigners = [FunctionAssigner(u.function_space().sub(i), S) for i in range(dim)]
     for i, comp, assigner in zip(range(dim), components, assigners):
-        assigner.assign(u.sub(i), comp)
+        assigner.assign(u.split()[i], comp)
 
     return u
 
 
 def vectorfield_to_components(u, S, dim):
     components = [Function(S) for i in range(dim)]
-    breakpoint()
     assigners = [FunctionAssigner(S, u.function_space().sub(i)) for i in range(dim)]
     for i, comp, assigner in zip(range(dim), components, assigners):
-        assigner.assign(comp, u.sub(i))
+        assigner.assign(comp, u.split()[i])
 
     return components
 
@@ -170,7 +169,9 @@ def map_displacement(u, old_space, new_space, approx, name="mapped displacement"
 
 def compute_meshvolume(domain=None, dx=dolfin.dx, subdomain_id=None):
     return Constant(
-        assemble(Constant(1.0) * dx(domain=domain, subdomain_id=subdomain_id))
+        dolfin.assemble(
+            dolfin.Constant(1.0) * dx(domain=domain, subdomain_id=subdomain_id)
+        )
     )
 
 

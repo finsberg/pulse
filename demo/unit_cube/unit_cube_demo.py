@@ -1,12 +1,29 @@
-import matplotlib.pyplot as plt
 import dolfin
+
+try:
+    from dolfin_adjoint import (
+        Constant,
+        DirichletBC,
+        Expression,
+        Mesh,
+        UnitCubeMesh,
+        interpolate,
+    )
+except ImportError:
+    from dolfin import (
+        Constant,
+        DirichletBC,
+        Mesh,
+        interpolate,
+        Expression,
+        UnitCubeMesh,
+    )
 
 import pulse
 
-
 # Create mesh
 N = 6
-mesh = dolfin.UnitCubeMesh(N, N, N)
+mesh = UnitCubeMesh(N, N, N)
 
 
 # Create subdomains
@@ -51,11 +68,11 @@ markers = (fixed_marker, free_marker)
 V_f = pulse.QuadratureSpace(mesh, 4)
 
 # Fibers
-f0 = dolfin.interpolate(dolfin.Expression(("1.0", "0.0", "0.0"), degree=1), V_f)
+f0 = interpolate(Expression(("1.0", "0.0", "0.0"), degree=1), V_f)
 # Sheets
-s0 = dolfin.interpolate(dolfin.Expression(("0.0", "1.0", "0.0"), degree=1), V_f)
+s0 = interpolate(Expression(("0.0", "1.0", "0.0"), degree=1), V_f)
 # Fiber-sheet normal
-n0 = dolfin.interpolate(dolfin.Expression(("0.0", "0.0", "1.0"), degree=1), V_f)
+n0 = interpolate(Expression(("0.0", "0.0", "1.0"), degree=1), V_f)
 
 # Collect the mictrotructure
 microstructure = pulse.Microstructure(f0=f0, s0=s0, n0=n0)
@@ -76,7 +93,7 @@ active_model = "active_strain"
 # active_model = "active_stress"
 
 # Set the activation
-activation = dolfin.Constant(0.1)
+activation = Constant(0.1)
 
 # Create material
 material = pulse.HolzapfelOgden(
@@ -87,11 +104,11 @@ material = pulse.HolzapfelOgden(
 # Make Dirichlet boundary conditions
 def dirichlet_bc(W):
     V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
-    return dolfin.DirichletBC(V, dolfin.Constant((0.0, 0.0, 0.0)), fixed)
+    return DirichletBC(V, Constant((0.0, 0.0, 0.0)), fixed)
 
 
 # Make Neumann boundary conditions
-neumann_bc = pulse.NeumannBC(traction=dolfin.Constant(0.0), marker=free_marker.value)
+neumann_bc = pulse.NeumannBC(traction=Constant(0.0), marker=free_marker.value)
 
 # Collect Boundary Conditions
 bcs = pulse.BoundaryConditions(dirichlet=(dirichlet_bc,), neumann=(neumann_bc,))
@@ -106,8 +123,8 @@ problem.solve()
 u, p = problem.state.split(deepcopy=True)
 
 # Plot
-u_int = dolfin.interpolate(u, dolfin.VectorFunctionSpace(geometry.mesh, "CG", 1))
-mesh = dolfin.Mesh(geometry.mesh)
+u_int = interpolate(u, dolfin.VectorFunctionSpace(geometry.mesh, "CG", 1))
+mesh = Mesh(geometry.mesh)
 dolfin.ALE.move(mesh, u_int)
 # dolfin.plot(geometry.mesh, alpha=0.5, edgecolor='k', title="original")
 # dolfin.plot(mesh, edgecolor='g', alpha=0.7, title='Contracting cube')

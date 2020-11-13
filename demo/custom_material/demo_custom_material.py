@@ -3,18 +3,35 @@ In this demo we show how you can use the pulse-framework
 together with your custom material model.
 
 To illustrate this we will implement a model for a
-Mooney-Rivelin material. 
+Mooney-Rivelin material.
 """
 
-import matplotlib.pyplot as plt
 import dolfin
+
+try:
+    from dolfin_adjoint import (
+        Constant,
+        DirichletBC,
+        Expression,
+        Mesh,
+        UnitCubeMesh,
+        interpolate,
+    )
+except ImportError:
+    from dolfin import (
+        UnitCubeMesh,
+        Expression,
+        Constant,
+        DirichletBC,
+        interpolate,
+        Mesh,
+    )
 
 import pulse
 
-
 # Create mesh
 N = 6
-mesh = dolfin.UnitCubeMesh(N, N, N)
+mesh = UnitCubeMesh(N, N, N)
 
 
 # Create subdomains
@@ -56,9 +73,9 @@ free_marker = pulse.Marker(name="free", value=2, dimension=2)
 markers = (fixed_marker, free_marker)
 
 # Create mictrotructure
-f0 = dolfin.Expression(("1.0", "0.0", "0.0"), degree=1, cell=mesh.ufl_cell())
-s0 = dolfin.Expression(("0.0", "1.0", "0.0"), degree=1, cell=mesh.ufl_cell())
-n0 = dolfin.Expression(("0.0", "0.0", "1.0"), degree=1, cell=mesh.ufl_cell())
+f0 = Expression(("1.0", "0.0", "0.0"), degree=1, cell=mesh.ufl_cell())
+s0 = Expression(("0.0", "1.0", "0.0"), degree=1, cell=mesh.ufl_cell())
+n0 = Expression(("0.0", "0.0", "1.0"), degree=1, cell=mesh.ufl_cell())
 
 # Collect the mictrotructure
 microstructure = pulse.Microstructure(f0=f0, s0=s0, n0=n0)
@@ -98,7 +115,7 @@ active_model = "active_strain"
 # active_model = "active_stress"
 
 # Set the activation
-activation = dolfin.Constant(0.1)
+activation = Constant(0.1)
 
 # Create material
 material = MooneyRivelin(active_model=active_model, activation=activation)
@@ -107,11 +124,11 @@ material = MooneyRivelin(active_model=active_model, activation=activation)
 # Make Dirichlet boundary conditions
 def dirichlet_bc(W):
     V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
-    return dolfin.DirichletBC(V, dolfin.Constant((0.0, 0.0, 0.0)), fixed)
+    return DirichletBC(V, Constant((0.0, 0.0, 0.0)), fixed)
 
 
 # Make Neumann boundary conditions
-neumann_bc = pulse.NeumannBC(traction=dolfin.Constant(0.0), marker=free_marker.value)
+neumann_bc = pulse.NeumannBC(traction=Constant(0.0), marker=free_marker.value)
 
 # Collect Boundary Conditions
 bcs = pulse.BoundaryConditions(dirichlet=(dirichlet_bc,), neumann=(neumann_bc,))
@@ -126,8 +143,8 @@ problem.solve()
 u, p = problem.state.split(deepcopy=True)
 
 # Plot
-u_int = dolfin.interpolate(u, dolfin.VectorFunctionSpace(geometry.mesh, "CG", 1))
-mesh = dolfin.Mesh(geometry.mesh)
+u_int = interpolate(u, dolfin.VectorFunctionSpace(geometry.mesh, "CG", 1))
+mesh = Mesh(geometry.mesh)
 dolfin.ALE.move(mesh, u_int)
 # dolfin.plot(geometry.mesh, alpha=0.5, edgecolor='k', title="original")
 # dolfin.plot(mesh, edgecolor='g', alpha=0.7, title='Contracting cube')

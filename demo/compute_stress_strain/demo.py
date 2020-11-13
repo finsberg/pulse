@@ -1,12 +1,16 @@
 import dolfin
-import pulse
-import sys
 
+try:
+    from dolfin_adjoint import Constant, DirichletBC, Function, project
+except ImportError:
+    from dolfin import DirichletBC, Constant, project, Function
+
+import pulse
 
 gamma_space = "R_0"
 
 geometry = pulse.Geometry.from_file(pulse.mesh_paths["simple_ellipsoid"])
-activation = dolfin.Function(dolfin.FunctionSpace(geometry.mesh, "R", 0))
+activation = Function(dolfin.FunctionSpace(geometry.mesh, "R", 0))
 
 matparams = pulse.HolzapfelOgden.default_parameters()
 material = pulse.HolzapfelOgden(
@@ -21,7 +25,7 @@ material = pulse.HolzapfelOgden(
 )
 
 # LV Pressure
-lvp = dolfin.Constant(0.0)
+lvp = Constant(0.0)
 lv_marker = geometry.markers["ENDO"][0]
 lv_pressure = pulse.NeumannBC(traction=lvp, marker=lv_marker, name="lv")
 neumann_bc = [lv_pressure]
@@ -29,16 +33,14 @@ neumann_bc = [lv_pressure]
 # Add spring term at the base with stiffness 1.0 kPa/cm^2
 base_spring = 1.0
 robin_bc = [
-    pulse.RobinBC(
-        value=dolfin.Constant(base_spring), marker=geometry.markers["BASE"][0]
-    )
+    pulse.RobinBC(value=Constant(base_spring), marker=geometry.markers["BASE"][0])
 ]
 
 
 def fix_basal_plane(W):
     V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
-    bc = dolfin.DirichletBC(
-        V.sub(0), dolfin.Constant(0.0), geometry.ffun, geometry.markers["BASE"][0]
+    bc = DirichletBC(
+        V.sub(0), Constant(0.0), geometry.ffun, geometry.markers["BASE"][0]
     )
     return bc
 
@@ -64,7 +66,7 @@ dolfin.File("u.pvd") << u
 F = pulse.kinematics.DeformationGradient(u)
 E = pulse.kinematics.GreenLagrangeStrain(F)
 # Green strain normal to fiber direction
-Ef = dolfin.project(
+Ef = project(
     dolfin.inner(E * geometry.f0, geometry.f0),
     dolfin.FunctionSpace(geometry.mesh, "CG", 1),
     # solver_type="gmres",
@@ -74,7 +76,7 @@ dolfin.File("Ef.pvd") << Ef
 
 P = material.FirstPiolaStress(F, p)
 # First piola stress normal to fiber direction
-Pf = dolfin.project(
+Pf = project(
     dolfin.inner(P * geometry.f0, geometry.f0),
     dolfin.FunctionSpace(geometry.mesh, "CG", 1),
 )

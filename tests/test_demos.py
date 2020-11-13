@@ -1,7 +1,15 @@
 import os
 import sys
 from unittest import mock
+
 import pytest
+
+try:
+    import mshr  # noqa: F401
+except ImportError:
+    has_mshr = False
+else:
+    has_mshr = True
 
 # There are some problems with some plotting backends in containers.
 # Therefore we set the backend here, and execute the files in stead
@@ -24,6 +32,8 @@ demos = [
 @pytest.mark.parametrize("filename, root", demos)
 def test_demo(filename, root):
     if os.path.basename(root) == "closed_loop":
+        return
+    if os.path.basename(root) == "creating_geometries" and not has_mshr:
         return
     os.chdir(root)
     # Add the current folder to sys.path so that
