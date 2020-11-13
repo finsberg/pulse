@@ -1,16 +1,33 @@
 import itertools
-import pytest
+
 import dolfin
+import pytest
 
-from pulse.geometry import Geometry, Marker, Microstructure, MarkerFunctions
-from pulse.dolfin_utils import QuadratureSpace
+try:
+    from dolfin_adjoint import (
+        Constant,
+        DirichletBC,
+        Expression,
+        UnitCubeMesh,
+        interpolate,
+        project,
+    )
+except ImportError:
+    from dolfin import (
+        project,
+        DirichletBC,
+        Constant,
+        UnitCubeMesh,
+        interpolate,
+        Expression,
+    )
+
 from pulse import kinematics
-from pulse.utils import mpi_comm_world
-
-
+from pulse.dolfin_utils import QuadratureSpace
+from pulse.geometry import Geometry, Marker, MarkerFunctions, Microstructure
 from pulse.material import material_models
-
-from pulse.mechanicsproblem import MechanicsProblem, BoundaryConditions, NeumannBC
+from pulse.mechanicsproblem import BoundaryConditions, MechanicsProblem, NeumannBC
+from pulse.utils import mpi_comm_world
 
 
 class Free(dolfin.SubDomain):
@@ -34,7 +51,7 @@ free_marker = 2
 def unitcube_geometry():
 
     N = 3
-    mesh = dolfin.UnitCubeMesh(mpi_comm_world(), N, N, N)
+    mesh = UnitCubeMesh(mpi_comm_world(), N, N, N)
 
     ffun = dolfin.MeshFunction("size_t", mesh, 2)
     ffun.set_all(0)
@@ -50,9 +67,9 @@ def unitcube_geometry():
     # Fibers
     V_f = QuadratureSpace(mesh, 4)
 
-    f0 = dolfin.interpolate(dolfin.Expression(("1.0", "0.0", "0.0"), degree=1), V_f)
-    s0 = dolfin.interpolate(dolfin.Expression(("0.0", "1.0", "0.0"), degree=1), V_f)
-    n0 = dolfin.interpolate(dolfin.Expression(("0.0", "0.0", "1.0"), degree=1), V_f)
+    f0 = interpolate(Expression(("1.0", "0.0", "0.0"), degree=1), V_f)
+    s0 = interpolate(Expression(("0.0", "1.0", "0.0"), degree=1), V_f)
+    n0 = interpolate(Expression(("0.0", "0.0", "1.0"), degree=1), V_f)
 
     microstructure = Microstructure(f0=f0, s0=s0, n0=n0)
 
@@ -78,25 +95,23 @@ def test_material(unitcube_geometry, Material, active_model, isochoric):
 
     if active_model == "active_stress":
         active_value = 20.0
-        activation = dolfin.Constant(1.0)
+        activation = Constant(1.0)
         T_ref = active_value
 
         def dirichlet_bc(W):
             V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
-            return dolfin.DirichletBC(V, dolfin.Constant((0.0, 0.0, 0.0)), fixed)
+            return DirichletBC(V, Constant((0.0, 0.0, 0.0)), fixed)
 
     else:
-        activation = dolfin.Constant(0.0)
+        activation = Constant(0.0)
         active_value = 0.0
         T_ref = 1.0
 
         def dirichlet_bc(W):
             V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
-            return dolfin.DirichletBC(
-                V.sub(0), dolfin.Constant(0.0), fixed, "pointwise"
-            )
+            return DirichletBC(V.sub(0), Constant(0.0), fixed, "pointwise")
 
-    neumann_bc = NeumannBC(traction=dolfin.Constant(-active_value), marker=free_marker)
+    neumann_bc = NeumannBC(traction=Constant(-active_value), marker=free_marker)
 
     bcs = BoundaryConditions(dirichlet=(dirichlet_bc,), neumann=(neumann_bc,))
 
@@ -156,7 +171,7 @@ def test_material(unitcube_geometry, Material, active_model, isochoric):
 
         # Fiber stress
         Tf = dolfin.inner(T * f / f ** 2, f)
-        Tf_dg = dolfin.project(Tf, V_dg)
+        Tf_dg = project(Tf, V_dg)
 
         tol = 1e-10
 

@@ -5,9 +5,9 @@ import h5py
 import numpy as np
 
 try:
-    from dolfin_adjoint import Function
+    from dolfin_adjoint import Function, FunctionAssigner, interpolate
 except ImportError:
-    from dolfin import Function
+    from dolfin import Function, FunctionAssigner, interpolate
 
 # For newer versions of dolfin_adjoint
 try:
@@ -28,14 +28,14 @@ def move(mesh, u, factor=1.0):
     W = dolfin.VectorFunctionSpace(u.function_space().mesh(), "CG", 1)
 
     # Use interpolation for now. It is the only thing that makes sense
-    u_int = dolfin.interpolate(u, W)
+    u_int = interpolate(u, W)
 
-    u0 = dolfin.Function(W)
+    u0 = Function(W)
     # arr = factor * numpy_mpi.gather_vector(u_int.vector())
     # numpy_mpi.assign_to_vector(u0.vector(), arr)
     u0.vector()[:] = factor * u_int.vector()
     V = dolfin.VectorFunctionSpace(mesh, "CG", 1)
-    U = dolfin.Function(V)
+    U = Function(V)
     U.vector()[:] = u0.vector()
     # numpy_mpi.assign_to_vector(U.vector(), arr)
 
@@ -314,7 +314,7 @@ def fill_coordinates_el(i, e_c_x, e_c_y, e_c_z, coord, foci):
 
 
 def calc_cross_products(e1, e2, VV):
-    e_crossed = dolfin.Function(VV)
+    e_crossed = Function(VV)
 
     e1_arr = e1.vector().get_local().reshape((-1, 3))
     e2_arr = e2.vector().get_local().reshape((-1, 3))
@@ -328,16 +328,16 @@ def calc_cross_products(e1, e2, VV):
 
 
 def make_unit_vector(V, VV, dofs_x, fill_coordinates, foc=None):
-    e_c_x = dolfin.Function(V)
-    e_c_y = dolfin.Function(V)
-    e_c_z = dolfin.Function(V)
+    e_c_x = Function(V)
+    e_c_y = Function(V)
+    e_c_z = Function(V)
 
     for i, coord in enumerate(dofs_x):
         fill_coordinates(i, e_c_x, e_c_y, e_c_z, coord, foc)
 
-    e = dolfin.Function(VV)
+    e = Function(VV)
 
-    fa = [dolfin.FunctionAssigner(VV.sub(i), V) for i in range(3)]
+    fa = [FunctionAssigner(VV.sub(i), V) for i in range(3)]
     for i, e_c_comp in enumerate([e_c_x, e_c_y, e_c_z]):
         fa[i].assign(e.split()[i], e_c_comp)
     return e
@@ -835,7 +835,7 @@ def mark_strain_regions(mesh, foc=None, nsectors=(6, 6, 4, 1), mark_mesh=True):
     the  AHA 17-segment model, then nsector = [6,6,4,1],
     i.e 6 basal, 6 mid, 4 apical and one apex
 
-     """
+    """
 
     fun = dolfin.MeshFunction("size_t", mesh, 3)
     nlevels = len(nsectors)

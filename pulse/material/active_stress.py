@@ -1,4 +1,10 @@
 import dolfin
+
+try:
+    from dolfin_adjoint import Constant
+except ImportError:
+    from dolfin import Constant
+
 from .. import kinematics
 from .active_model import ActiveModel, check_component
 
@@ -26,14 +32,14 @@ def Wactive_transversally(Ta, C, f0, eta=0.0):
 
     I4f = dolfin.inner(C * f0, f0)
     I1 = dolfin.tr(C)
-    return dolfin.Constant(0.5) * Ta * ((I4f - 1) + eta * ((I1 - 3) - (I4f - 1)))
+    return Constant(0.5) * Ta * ((I4f - 1) + eta * ((I1 - 3) - (I4f - 1)))
 
 
 def Wactive_orthotropic(Ta, C, f0, s0, n0):
     """Return active strain energy for an orthotropic
     active stress
 
-    
+
     Arguments
     ---------
     Ta : dolfin.Function or dolfin.Constant
@@ -57,7 +63,7 @@ def Wactive_orthotropic(Ta, C, f0, s0, n0):
     I4n = dolfin.inner(C * n0, n0)
 
     I4 = dolfin.as_vector([I4f - 1, I4s - 1, I4n - 1])
-    return dolfin.Constant(0.5) * dolfin.inner(Ta, I4)
+    return Constant(0.5) * dolfin.inner(Ta, I4)
 
 
 def Wactive_anisotropic(Ta, C, f0, s0, n0):
@@ -65,7 +71,7 @@ def Wactive_anisotropic(Ta, C, f0, s0, n0):
     acitvation.
     Note that the three basis vectors are assumed to be
     orthogonal
-    
+
     Arguments
     ---------
     Ta : dolfin.Function or dolfin.Constant
@@ -115,7 +121,7 @@ class ActiveStress(ActiveModel):
         # Fraction of transverse stress
         # (0 = active only along fiber, 1 = equal
         # amout of tension in all directions)
-        self._eta = dolfin.Constant(kwargs.pop("eta", 0.0))
+        self._eta = Constant(kwargs.pop("eta", 0.0))
 
         self.active_isotropy = kwargs.pop("active_isotropy", "transversally")
 
@@ -126,8 +132,7 @@ class ActiveStress(ActiveModel):
         return self._eta
 
     def Wactive(self, F, diff=0):
-        """Active stress energy
-        """
+        """Active stress energy"""
 
         C = F.T * F
 

@@ -1,15 +1,17 @@
 #!/usr/bin/env python
-import os
 import logging
-import numpy as np
-import dolfin
-from . import numpy_mpi
-from .utils import make_logger, mpi_comm_world
-from .io_utils import check_and_delete
-from .iterate import iterate, logger as logger_it
-from .dolfin_utils import get_pressure
+import os
 
-from . import parameters
+import dolfin
+import h5py
+import numpy as np
+
+from . import annotation, numpy_mpi, parameters
+from .dolfin_utils import get_pressure
+from .io_utils import check_and_delete
+from .iterate import iterate
+from .iterate import logger as logger_it
+from .utils import make_logger, mpi_comm_world
 
 logger = make_logger(__name__, parameters["log_level"])
 
@@ -145,26 +147,17 @@ def print_volumes(geometry, logger=logger, txt="original", u=None):
 
 def solve(target_pressure, problem, pressure, ntries=5, n=2, annotate=False):
 
-    if "adjoint" in dolfin.parameters:
-        dolfin.parameters["adjoint"]["stop_annotating"] = True
+    annotation.annotate = False
 
     level = logger_it.level
     logger_it.setLevel(logging.WARNING)
 
-    try:
-        iterate(problem, pressure, target_pressure)
+    iterate(problem, pressure, target_pressure)
 
-    except:
-        from IPython import embed
-
-        embed()
-        exit()
-
-    if annotate and "adjoint" in dolfin.parameters:
-        # Only record the last solve, otherwise it becomes too
-        # expensive memorywise.
-        dolfin.parameters["adjoint"]["stop_annotating"] = False
-        problem.solve()
+    annotation.annotate = True
+    # Only record the last solve, otherwise it becomes too
+    # expensive memorywise.
+    problem.solve()
 
     logger_it.setLevel(level)
     w = problem.state.copy(deepcopy=True)

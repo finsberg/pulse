@@ -1,19 +1,20 @@
 #!/usr/bin/env python
-from collections import namedtuple
 import os
+from collections import namedtuple
+
 import dolfin
 
-from .geometry_utils import (
-    load_geometry_from_h5,
-    move,
-    save_geometry_to_h5,
-    logger as logger_utils,
-)
+try:
+    from dolfin_adjoint import Mesh
+except ImportError:
+    from dolfin import Mesh
 
-from . import numpy_mpi
-from . import parameters
-from .dolfin_utils import compute_meshvolume, map_vector_field, get_cavity_volume
-from .utils import set_default_none, make_logger, mpi_comm_world
+from . import numpy_mpi, parameters
+from .dolfin_utils import compute_meshvolume, get_cavity_volume, map_vector_field
+from .geometry_utils import load_geometry_from_h5
+from .geometry_utils import logger as logger_utils
+from .geometry_utils import move, save_geometry_to_h5
+from .utils import make_logger, mpi_comm_world, set_default_none
 
 logger = make_logger(__name__, parameters["log_level"])
 
@@ -67,7 +68,7 @@ class Geometry(object):
     crl_basis : :class:`pulse.geometry.CRLBasis`
         A CRLBasis objedt with funcions for the circumferential,
         radial and longitudinal vectors. (optional)
-     
+
 
     Geometry can be intanciated directly
 
@@ -135,7 +136,7 @@ class Geometry(object):
         If no displacement is provided this will just
         return a copy of the original geometry.
         """
-        new_mesh = dolfin.Mesh(self.mesh)
+        new_mesh = Mesh(self.mesh)
 
         if u is not None:
             U = move(new_mesh, u, factor)
@@ -244,14 +245,12 @@ class Geometry(object):
 
     @property
     def top_dim(self):
-        """Topological Dimension
-        """
+        """Topological Dimension"""
         return self.mesh.topology().dim()
 
     @property
     def geo_dim(self):
-        """Geometric Dimension
-        """
+        """Geometric Dimension"""
         return self.mesh.geometry().dim()
 
     def crl_basis_list(self):
@@ -261,9 +260,9 @@ class Geometry(object):
         """
         if not hasattr(self, "_crl_basis_list"):
             self._crl_basis_list = []
-            for l in ["c0", "r0", "l0"]:
+            for basis in ["c0", "r0", "l0"]:
 
-                e = getattr(self.crl_basis, l)
+                e = getattr(self.crl_basis, basis)
                 if e is not None:
                     self._crl_basis_list.append(e)
 
@@ -297,8 +296,7 @@ class Geometry(object):
 
     @property
     def regions(self):
-        """Return a set of the unique values of the cell function (cfun)
-        """
+        """Return a set of the unique values of the cell function (cfun)"""
         if not hasattr(self, "_regions"):
             try:
                 # FIXME
@@ -329,27 +327,25 @@ class Geometry(object):
 
     @property
     def meshvol(self):
-        """Return the volume of the whole mesh
-        """
+        """Return the volume of the whole mesh"""
         if not hasattr(self, "_meshvol"):
             self._meshvol = compute_meshvolume(domain=self.mesh)
 
         return self._meshvol
 
     def microstructure_list(self):
-        """Fibers, sheet and sheet-normals in a list
-        """
+        """Fibers, sheet and sheet-normals in a list"""
         fields = []
-        for l in ["f0", "s0", "n0"]:
-            e = getattr(self.microstructure, l)
+        for field in ["f0", "s0", "n0"]:
+            e = getattr(self.microstructure, field)
             if e is not None:
                 fields.append(e)
         return fields
 
     def meshfunction_list(self):
         meshfunctions = {}
-        for dim, l in enumerate(["vfun", "efun", "ffun", "cfun"]):
-            mf = getattr(self.marker_functions, l)
+        for dim, func in enumerate(["vfun", "efun", "ffun", "cfun"]):
+            mf = getattr(self.marker_functions, func)
             if mf is None:
                 mf = dolfin.MeshFunction("size_t", self.mesh, dim, self.mesh.domains())
             meshfunctions[dim] = mf
@@ -357,62 +353,52 @@ class Geometry(object):
 
     @property
     def vfun(self):
-        """Vertex Function
-        """
+        """Vertex Function"""
         return self.marker_functions.vfun
 
     @property
     def efun(self):
-        """Edge Function
-        """
+        """Edge Function"""
         return self.marker_functions.efun
 
     @property
     def ffun(self):
-        """Facet Function
-        """
+        """Facet Function"""
         return self.marker_functions.ffun
 
     @property
     def cfun(self):
-        """Cell Function
-        """
+        """Cell Function"""
         return self.marker_functions.cfun
 
     @property
     def f0(self):
-        """Fibers
-        """
+        """Fibers"""
         return self.microstructure.f0
 
     @property
     def s0(self):
-        """Sheets
-        """
+        """Sheets"""
         return self.microstructure.s0
 
     @property
     def n0(self):
-        """Cross-Sheets
-        """
+        """Cross-Sheets"""
         return self.microstructure.n0
 
     @property
     def l0(self):
-        """Longitudinal
-        """
+        """Longitudinal"""
         return self.crl_basis.l0
 
     @property
     def c0(self):
-        """Circumferential
-        """
+        """Circumferential"""
         return self.crl_basis.c0
 
     @property
     def r0(self):
-        """Radial
-        """
+        """Radial"""
         return self.crl_basis.r0
 
 
@@ -443,7 +429,7 @@ class HeartGeometry(Geometry):
         """
         import numpy as np
 
-        facet_indices, = np.where(self.ffun.array() == self.markers["BASE"][0])
+        (facet_indices,) = np.where(self.ffun.array() == self.markers["BASE"][0])
         point_inidces = []
         for facet in dolfin.facets(self.mesh):
             if facet.index() in facet_indices:

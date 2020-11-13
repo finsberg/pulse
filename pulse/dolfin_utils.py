@@ -38,14 +38,14 @@ def map_vector_field(f0, new_mesh, u=None, name="fiber", normalize=True):
     dolfin.parameters["form_compiler"]["quadrature_degree"] = 4
 
     ufl_elem = f0.function_space().ufl_element()
-    f0_new = dolfin.Function(dolfin.FunctionSpace(new_mesh, ufl_elem))
+    f0_new = Function(dolfin.FunctionSpace(new_mesh, ufl_elem))
 
     if u is not None:
 
         f0_mesh = f0.function_space().mesh()
         u_elm = u.function_space().ufl_element()
         V = dolfin.FunctionSpace(f0_mesh, u_elm)
-        u0 = dolfin.Function(V)
+        u0 = Function(V)
         # arr = numpy_mpi.gather_vector(u.vector())
         # numpy_mpi.assign_to_vector(u0.vector(), arr)
         u0.vector()[:] = u.vector()
@@ -53,7 +53,7 @@ def map_vector_field(f0, new_mesh, u=None, name="fiber", normalize=True):
 
         F = DeformationGradient(u0)
 
-        f0_updated = dolfin.project(F * f0, f0.function_space())
+        f0_updated = project(F * f0, f0.function_space())
 
         if normalize:
             f0_updated = normalize_vector_field(f0_updated)
@@ -85,8 +85,7 @@ def update_function(mesh, f):
 
 
 def normalize_vector_field(u):
-    """Given a vector field, return a vector field with an L2 norm equal to 1.0
-    """
+    """Given a vector field, return a vector field with an L2 norm equal to 1.0"""
     dim = len(u)
     S = u.function_space().sub(0).collapse()
 
@@ -105,7 +104,8 @@ def normalize_vector_field(u):
 
 
 def vectorfield_to_components(u, S, dim):
-    components = [dolfin.Function(S) for i in range(dim)]
+    components = [Function(S) for i in range(dim)]
+    breakpoint()
     assigners = [FunctionAssigner(S, u.function_space().sub(i)) for i in range(dim)]
     for i, comp, assigner in zip(range(dim), components, assigners):
         assigner.assign(comp, u.sub(i))
@@ -114,8 +114,7 @@ def vectorfield_to_components(u, S, dim):
 
 
 def get_pressure(problem):
-    """Returns p_lv (and p_rv if BiV mesh)
-    """
+    """Returns p_lv (and p_rv if BiV mesh)"""
 
     plv = [p.traction for p in problem.bcs.neumann if p.name == "lv"]
     prv = [p.traction for p in problem.bcs.neumann if p.name == "rv"]
@@ -171,9 +170,7 @@ def map_displacement(u, old_space, new_space, approx, name="mapped displacement"
 
 def compute_meshvolume(domain=None, dx=dolfin.dx, subdomain_id=None):
     return Constant(
-        dolfin.assemble(
-            dolfin.Constant(1.0) * dx(domain=domain, subdomain_id=subdomain_id)
-        )
+        assemble(Constant(1.0) * dx(domain=domain, subdomain_id=subdomain_id))
     )
 
 
@@ -519,7 +516,7 @@ class BaseExpression(dolfin.Expression):
             value[0] = 0
 
 
-class MixedParameter(dolfin.Function):
+class MixedParameter(Function):
     def __init__(self, fun, n, name="material_parameters"):
         """
         Initialize Mixed parameter.
@@ -574,12 +571,12 @@ class MixedParameter(dolfin.Function):
         :param int i: The subspace number
 
         """
-        f_ = dolfin.Function(self.basespace)
+        f_ = Function(self.basespace)
         f_.assign(f)
         self.function_assigner[i].assign(self.split()[i], f_)
 
 
-class RegionalParameter(dolfin.Function):
+class RegionalParameter(Function):
     """A regional paramerter defined in terms of a dolfin.MeshFunction
 
     Suppose you have a MeshFunction defined different regions in your mesh,
@@ -601,7 +598,7 @@ class RegionalParameter(dolfin.Function):
 
         V = dolfin.VectorFunctionSpace(mesh, "R", 0, dim=self._nvalues)
 
-        dolfin.Function.__init__(self, V)
+        Function.__init__(self, V)
         self._meshfunction = meshfunction
 
         # Functionspace for the indicator functions
@@ -639,7 +636,7 @@ class RegionalParameter(dolfin.Function):
     def _make_indicator_function(self, marker):
 
         dofs = self._meshfunction.where_equal(marker)
-        f = dolfin.Function(self._proj_space)
+        f = Function(self._proj_space)
         f.vector()[dofs] = 1.0
         return f
 

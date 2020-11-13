@@ -51,16 +51,15 @@ RobinBC = namedtuple("RobinBC", ["value", "marker"])
 
 
 def dirichlet_fix_base(W, ffun, marker):
-    """Fix the basal plane.
-    """
+    """Fix the basal plane."""
     V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
-    bc = DirichletBC(V, dolfin.Constant((0, 0, 0)), ffun, marker)
+    bc = DirichletBC(V, Constant((0, 0, 0)), ffun, marker)
     return bc
 
 
 def dirichlet_fix_base_directional(W, ffun, marker, direction=0):
     V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
-    bc = DirichletBC(V.sub(direction), dolfin.Constant(0.0), ffun, marker)
+    bc = DirichletBC(V.sub(direction), Constant(0.0), ffun, marker)
     return bc
 
 
@@ -96,8 +95,7 @@ def cardiac_boundary_conditions(
 
         robin_bc = [
             RobinBC(
-                value=dolfin.Constant(pericardium_spring),
-                marker=geometry.markers["EPI"][0],
+                value=Constant(pericardium_spring), marker=geometry.markers["EPI"][0]
             )
         ]
 
@@ -107,9 +105,7 @@ def cardiac_boundary_conditions(
     # Apply a linear sprint robin type BC to limit motion
     if base_spring > 0.0:
         robin_bc += [
-            RobinBC(
-                value=dolfin.Constant(base_spring), marker=geometry.markers["BASE"][0]
-            )
+            RobinBC(value=Constant(base_spring), marker=geometry.markers["BASE"][0])
         ]
 
     # Dirichlet BC
@@ -282,11 +278,10 @@ class MechanicsProblem(object):
         if len(external_work) > 0:
             return list_sum(external_work)
         else:
-            return dolfin.Constant(0.0)
+            return Constant(0.0)
 
     def reinit(self, state, annotate=False):
-        """Reinitialze state
-        """
+        """Reinitialze state"""
 
         if has_dolfin_adjoint:
             try:
