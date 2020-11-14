@@ -22,7 +22,7 @@ URL = "https://github.com/finsberg/pulse"
 EMAIL = "henriknf@simula.no"
 AUTHOR = "Henrik Finsberg"
 REQUIRES_PYTHON = ">=3.6"
-VERSION = "2020.1.1"
+VERSION = "2020.2"
 
 # What packages are required for this module to be executed?
 REQUIRED = ["h5py", "numpy", "scipy"]
