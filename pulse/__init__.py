@@ -72,7 +72,7 @@ from .__version__ import __version__
 
 __author__ = "Henrik Finsberg"
 __credits__ = ["Henrik Finsberg"]
-__license__ = "LGPL-3"
+__license__ = "LGPL-3.0-or-later"
 __maintainer__ = "Henrik Finsberg"
 __email__ = "henriknf@simula.no"
 
