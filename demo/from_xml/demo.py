@@ -18,12 +18,8 @@ marker_functions = pulse.MarkerFunctions(ffun=facet_function)
 
 # Markers
 with open("data/markers.json", "r") as f:
-    markers_dict = json.load(f)
+    markers = json.load(f)
 
-markers = []
-for k, v in markers_dict.items():
-    marker = pulse.Marker(name=k, value=v[0], dimension=v[1])
-    markers.append(marker)
 
 # Fiber
 fiber_element = dolfin.VectorElement(
@@ -52,20 +48,20 @@ material = pulse.HolzapfelOgden(
 
 # LV Pressure
 lvp = Constant(1.0)
-lv_marker = markers_dict["ENDO"][0]
+lv_marker = markers["ENDO"][0]
 lv_pressure = pulse.NeumannBC(traction=lvp, marker=lv_marker, name="lv")
 neumann_bc = [lv_pressure]
 
 # Add spring term at the base with stiffness 1.0 kPa/cm^2
 base_spring = 1.0
-robin_bc = [pulse.RobinBC(value=Constant(base_spring), marker=markers_dict["BASE"][0])]
+robin_bc = [pulse.RobinBC(value=Constant(base_spring), marker=markers["BASE"][0])]
 
 
 # Fix the basal plane in the longitudinal direction
 # 0 in V.sub(0) refers to x-direction, which is the longitudinal direction
 def fix_basal_plane(W):
     V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
-    bc = DirichletBC(V.sub(0), Constant(0.0), geometry.ffun, markers_dict["BASE"][0])
+    bc = DirichletBC(V.sub(0), Constant(0.0), geometry.ffun, markers["BASE"][0])
     return bc
 
 
@@ -89,6 +85,9 @@ problem.solve()
 
 # Get the solution
 u, p = problem.state.split(deepcopy=True)
+
+volume = geometry.cavity_volume(u=u)
+print(f"Cavity volume = {volume}")
 
 # Move mesh accoring to displacement
 u_int = interpolate(u, dolfin.VectorFunctionSpace(geometry.mesh, "CG", 1))
