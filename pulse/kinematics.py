@@ -1,24 +1,22 @@
 #!/usr/bin/env python
-from dolfin import det, grad as Grad, inv, Identity, tr, inner
+from dolfin import Identity, det
+from dolfin import grad as Grad
+from dolfin import inner, inv, tr
 
 from .dolfin_utils import get_dimesion
 
 
-# Strain tensors #####
-
 # Second order identity tensor
 def SecondOrderIdentity(F):
-    """Return identity with same dimension as input
-    """
+    """Return identity with same dimension as input"""
     dim = get_dimesion(F)
     return Identity(dim)
 
 
 def DeformationGradient(u, isochoric=False):
-    """Return deformation gradient from displacement.
-    """
-    I = SecondOrderIdentity(u)
-    F = I + Grad(u)
+    """Return deformation gradient from displacement."""
+    Id = SecondOrderIdentity(u)
+    F = Id + Grad(u)
     if isochoric:
         return IsochoricDeformationGradient(F)
     else:
@@ -26,40 +24,35 @@ def DeformationGradient(u, isochoric=False):
 
 
 def IsochoricDeformationGradient(F):
-    """Return the isochoric deformation gradient
-    """
+    """Return the isochoric deformation gradient"""
     J = Jacobian(F)
     dim = get_dimesion(F)
     return pow(J, -1.0 / float(dim)) * F
 
 
 def Jacobian(F):
-    """Determinant of the deformation gradient
-    """
+    """Determinant of the deformation gradient"""
     return det(F)
 
 
 def EngineeringStrain(F, isochoric=False):
-    """Equivalent of engineering strain
-    """
-    I = SecondOrderIdentity(F)
+    """Equivalent of engineering strain"""
+    Id = SecondOrderIdentity(F)
     if isochoric:
-        return IsochoricDeformationGradient(F) - I
+        return IsochoricDeformationGradient(F) - Id
     else:
-        return F - I
+        return F - Id
 
 
 def GreenLagrangeStrain(F, isochoric=False):
-    """Green-Lagrange strain tensor
-    """
-    I = SecondOrderIdentity(F)
+    """Green-Lagrange strain tensor"""
+    Id = SecondOrderIdentity(F)
     C = RightCauchyGreen(F, isochoric)
-    return 0.5 * (C - I)
+    return 0.5 * (C - Id)
 
 
 def LeftCauchyGreen(F, isochoric=False):
-    """Left Cauchy-Green tensor
-    """
+    """Left Cauchy-Green tensor"""
     if isochoric:
         F_ = IsochoricDeformationGradient(F)
     else:
@@ -69,8 +62,7 @@ def LeftCauchyGreen(F, isochoric=False):
 
 
 def RightCauchyGreen(F, isochoric=False):
-    """Left Cauchy-Green tensor
-    """
+    """Left Cauchy-Green tensor"""
     if isochoric:
         F_ = IsochoricDeformationGradient(F)
     else:
@@ -80,11 +72,10 @@ def RightCauchyGreen(F, isochoric=False):
 
 
 def EulerAlmansiStrain(F, isochoric=False):
-    """Euler-Almansi strain tensor
-    """
-    I = SecondOrderIdentity(F)
+    """Euler-Almansi strain tensor"""
+    Id = SecondOrderIdentity(F)
     b = LeftCauchyGreen(F, isochoric)
-    return 0.5 * (I - inv(b))
+    return 0.5 * (Id - inv(b))
 
 
 # Invariants #####
@@ -121,15 +112,14 @@ class Invariants(object):
         I5 = inner(C * a0, C * a0)
         return I5
 
-    def _I6(self, F, a0):
-        return self._I4(F, a0)
+    def _I6(self, F, b0):
+        return self._I4(F, b0)
 
-    def _I7(self, F, a0):
-        return self._I5(F, a0)
+    def _I7(self, F, b0):
+        return self._I5(F, b0)
 
-    def _I8(self, u, a0, b0):
-        C = RightCauchyGreen(F, self._isochoric)
-        I8 = inner(C * a0, C * b0)
+    def _I8(self, F, a0, b0):
+        I8 = inner(F * a0, F * b0)
         return I8
 
 
