@@ -284,7 +284,7 @@ class MechanicsProblem(object):
         if len(external_work) > 0:
             return list_sum(external_work)
         else:
-            return Constant(0.0)
+            return Constant(0.0) * dx
 
     def reinit(self, state, annotate=False):
         """Reinitialze state"""
