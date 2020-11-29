@@ -41,7 +41,6 @@ from .material import *
 from .unloader import MeshUnloader, RaghavanUnloader, FixedPointUnloader
 from .geometry import (
     Geometry,
-    Marker,
     CRLBasis,
     HeartGeometry,
     Microstructure,
@@ -89,7 +88,6 @@ __all__ = [
     "iterate",
     "unloader",
     "Geometry",
-    "Marker",
     "CRLBasis",
     "HeartGeometry",
     "Microstructure",

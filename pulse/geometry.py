@@ -18,8 +18,6 @@ from .utils import make_logger, mpi_comm_world, set_default_none
 
 logger = make_logger(__name__, parameters["log_level"])
 
-Marker = namedtuple("Marker", ["name", "value", "dimension"])
-
 # f0 - fibers, s0 - sheets, n0 - cross-sheets
 Microstructure = namedtuple("Microstructure", ["f0", "s0", "n0"])
 # Set defaults none to allow for different types of anisotropy

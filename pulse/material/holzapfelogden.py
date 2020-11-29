@@ -41,7 +41,16 @@ class HolzapfelOgden(Material):
         Taken from Table 1 row 3 of [1]
         """
 
-        return {"a": 2.28, "a_f": 1.685, "b": 9.726, "b_f": 15.779}
+        return {
+            "a": 0.059,
+            "b": 0.023,
+            "a_f": 18.472,
+            "b_f": 16.026,
+            "a_s": 2.481,
+            "b_s": 11.120,
+            "a_fs": 0.216,
+            "b_fs": 11.436,
+        }
 
     def W_1(self, I_1, diff=0, *args, **kwargs):
         r"""
@@ -132,3 +141,18 @@ class HolzapfelOgden(Material):
                 * (1 + 2.0 * b * pow(I_4 - 1, 2))
                 * dolfin.exp(b * pow(I_4 - 1, 2))
             )
+
+    def W8(self, I8):
+        """
+        Cross fiber-sheet contribution.
+        """
+        a = self.parameters["a_cross"]
+        b = self.parameters["b_cross"]
+
+        if float(a) > DOLFIN_EPS:
+            if float(b) > DOLFIN_EPS:
+                return a / (2.0 * b) * (exp(b * I8 ** 2) - 1.0)
+            else:
+                return a / 2.0 * I8 ** 2
+        else:
+            return 0.0

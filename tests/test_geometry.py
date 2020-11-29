@@ -1,17 +1,16 @@
-import pytest
 import dolfin
 import numpy as np
+import pytest
 
+from pulse.dolfin_utils import QuadratureSpace
 from pulse.example_meshes import mesh_paths
 from pulse.geometry import (
-    Geometry,
-    Marker,
     CRLBasis,
+    Geometry,
     HeartGeometry,
-    Microstructure,
     MarkerFunctions,
+    Microstructure,
 )
-from pulse.dolfin_utils import QuadratureSpace
 
 
 class Free(dolfin.SubDomain):
@@ -78,11 +77,6 @@ def unitcube_geometry():
 
     marker_functions = MarkerFunctions(ffun=ffun, cfun=cfun)
 
-    fixed_marker_ = Marker(name="fixed", value=fixed_marker, dimension=2)
-    free_marker_ = Marker(name="free", value=free_marker, dimension=2)
-
-    markers = (fixed_marker_, free_marker_)
-
     # Fibers
     f0 = dolfin.interpolate(dolfin.Expression(("1.0", "0.0", "0.0"), degree=1), V_f)
     s0 = dolfin.interpolate(dolfin.Expression(("0.0", "1.0", "0.0"), degree=1), V_f)
@@ -92,7 +86,6 @@ def unitcube_geometry():
 
     geometry = Geometry(
         mesh=mesh,
-        markers=markers,
         marker_functions=marker_functions,
         microstructure=microstructure,
         crl_basis=crl_basis,

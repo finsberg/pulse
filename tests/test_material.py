@@ -24,7 +24,7 @@ except ImportError:
 
 from pulse import kinematics
 from pulse.dolfin_utils import QuadratureSpace
-from pulse.geometry import Geometry, Marker, MarkerFunctions, Microstructure
+from pulse.geometry import Geometry, MarkerFunctions, Microstructure
 from pulse.material import material_models
 from pulse.mechanicsproblem import BoundaryConditions, MechanicsProblem, NeumannBC
 from pulse.utils import mpi_comm_world
@@ -60,9 +60,6 @@ def unitcube_geometry():
     free.mark(ffun, free_marker)
 
     marker_functions = MarkerFunctions(ffun=ffun)
-    fixed_marker_ = Marker(name="fixed", value=fixed_marker, dimension=2)
-    free_marker_ = Marker(name="free", value=free_marker, dimension=2)
-    markers = (fixed_marker_, free_marker_)
 
     # Fibers
     V_f = QuadratureSpace(mesh, 4)
@@ -75,7 +72,6 @@ def unitcube_geometry():
 
     geometry = Geometry(
         mesh=mesh,
-        markers=markers,
         marker_functions=marker_functions,
         microstructure=microstructure,
     )

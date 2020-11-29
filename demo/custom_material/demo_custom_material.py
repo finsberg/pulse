@@ -67,11 +67,6 @@ cfun.set_all(0)
 # Collect the functions containing the markers
 marker_functions = pulse.MarkerFunctions(ffun=ffun, cfun=cfun)
 
-# Collect the individual markers
-fixed_marker = pulse.Marker(name="fixed", value=1, dimension=2)
-free_marker = pulse.Marker(name="free", value=2, dimension=2)
-markers = (fixed_marker, free_marker)
-
 # Create mictrotructure
 f0 = Expression(("1.0", "0.0", "0.0"), degree=1, cell=mesh.ufl_cell())
 s0 = Expression(("0.0", "1.0", "0.0"), degree=1, cell=mesh.ufl_cell())
@@ -83,7 +78,6 @@ microstructure = pulse.Microstructure(f0=f0, s0=s0, n0=n0)
 # Create the geometry
 geometry = pulse.Geometry(
     mesh=mesh,
-    markers=markers,
     marker_functions=marker_functions,
     microstructure=microstructure,
 )
@@ -128,7 +122,7 @@ def dirichlet_bc(W):
 
 
 # Make Neumann boundary conditions
-neumann_bc = pulse.NeumannBC(traction=Constant(0.0), marker=free_marker.value)
+neumann_bc = pulse.NeumannBC(traction=Constant(0.0), marker=free_marker)
 
 # Collect Boundary Conditions
 bcs = pulse.BoundaryConditions(dirichlet=(dirichlet_bc,), neumann=(neumann_bc,))

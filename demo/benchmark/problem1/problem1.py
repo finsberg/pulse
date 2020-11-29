@@ -40,14 +40,12 @@ bottom = dolfin.CompiledSubDomain("near(x[2], side) && on_boundary", side=0)
 boundary_markers = dolfin.MeshFunction("size_t", mesh, mesh.topology().dim() - 1)
 boundary_markers.set_all(0)
 
+left_marker = 1
 left.mark(boundary_markers, 1)
+bottom_marker = 2
 bottom.mark(boundary_markers, 2)
 
 marker_functions = pulse.MarkerFunctions(ffun=boundary_markers)
-
-left_marker = pulse.Marker(name="left", value=1, dimension=2)
-bottom_marker = pulse.Marker(name="bottom", value=2, dimension=2)
-markers = (left_marker, bottom_marker)
 
 # Create mictrotructure
 f0 = Expression(("1.0", "0.0", "0.0"), degree=1, cell=mesh.ufl_cell())
@@ -60,7 +58,6 @@ microstructure = pulse.Microstructure(f0=f0, s0=s0, n0=n0)
 # Create the geometry
 geometry = pulse.Geometry(
     mesh=mesh,
-    markers=markers,
     marker_functions=marker_functions,
     microstructure=microstructure,
 )
@@ -83,7 +80,7 @@ def dirichlet_bc(W):
 
 # Traction at the bottom of the beam
 p_bottom = Constant(0.004)
-neumann_bc = pulse.NeumannBC(traction=p_bottom, marker=bottom_marker.value)
+neumann_bc = pulse.NeumannBC(traction=p_bottom, marker=bottom_marker)
 
 # Collect Boundary Conditions
 bcs = pulse.BoundaryConditions(dirichlet=(dirichlet_bc,), neumann=(neumann_bc,))
