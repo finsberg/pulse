@@ -281,6 +281,7 @@ def iterate(
     max_nr_crash=20,
     max_iters=40,
     initial_number_of_steps=5,
+    reinit_each_step=False,
 ):
 
     """
@@ -306,6 +307,8 @@ def iterate(
         Adapt / increase step size when sucessful iterations are achevied.
     old_states: list
         List of old controls to help speed in the continuation
+    reinit_each_step : bool
+        If True reinitialize form at each step.
     """
 
     with Iterator(
@@ -320,6 +323,7 @@ def iterate(
         max_nr_crash=max_nr_crash,
         max_iters=max_iters,
         initial_number_of_steps=initial_number_of_steps,
+        reinit_each_step=reinit_each_step,
     ) as iterator:
         res = iterator.solve()
 
@@ -374,6 +378,7 @@ class Iterator(object):
             max_nr_crash=20,
             max_iters=40,
             initial_number_of_steps=5,
+            reinit_each_step=False,
         )
 
     @property
@@ -521,6 +526,9 @@ class Iterator(object):
             else:
                 c_arr = c
                 c.assign(Constant(constant2float(c) + s))
+
+        if self.parameters["reinit_each_step"]:
+            self.problem._init_forms()
 
     def assign_control(self, new_control):
         """
