@@ -34,7 +34,8 @@ except ImportError:
 
 from . import kinematics, parameters
 from .dolfin_utils import list_sum
-from .geometry import HeartGeometry
+from .geometry import Geometry, HeartGeometry
+from .material import Material
 from .utils import get_lv_marker, make_logger, set_default_none
 
 logger = make_logger(__name__, parameters["log_level"])
@@ -148,7 +149,12 @@ class MechanicsProblem(object):
     """
 
     def __init__(
-        self, geometry, material, bcs=None, bcs_parameters=None, solver_parameters=None
+        self,
+        geometry: Geometry,
+        material: Material,
+        bcs=None,
+        bcs_parameters=None,
+        solver_parameters=None,
     ):
 
         logger.debug("Initialize mechanics problem")
@@ -364,3 +370,23 @@ class MechanicsProblem(object):
             fa.assign(u, self.state.split()[0])
 
         return u
+
+    def SecondPiolaStress(self):
+        u, p = self.state.split(deepcopy=True)
+        F = kinematics.DeformationGradient(u)
+        return self.material.SecondPiolaStress(F, p)
+
+    def FirstPiolaStress(self):
+        u, p = self.state.split(deepcopy=True)
+        F = kinematics.DeformationGradient(u)
+        return self.material.FirstPiolaStress(F, p)
+
+    def ChachyStress(self):
+        u, p = self.state.split(deepcopy=True)
+        F = kinematics.DeformationGradient(u)
+        return self.material.CauchyStress(F, p)
+
+    def GreenLagrangeStrain(self):
+        u, p = self.state.split(deepcopy=True)
+        F = kinematics.DeformationGradient(u)
+        return kinematics.GreenLagrangeStrain(F)

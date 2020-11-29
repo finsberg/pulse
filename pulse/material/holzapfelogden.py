@@ -1,5 +1,6 @@
 import dolfin
-from ..dolfin_utils import subplus, heaviside
+
+from ..dolfin_utils import heaviside, subplus
 from .material_model import Material
 
 
@@ -41,41 +42,6 @@ class HolzapfelOgden(Material):
         """
 
         return {"a": 2.28, "a_f": 1.685, "b": 9.726, "b_f": 15.779}
-
-    # def CauchyStress(self, F, p=None, deviatoric=False):
-
-    #     I1  = self.active.I1(F)
-    #     I4f = self.active.I4(F)
-
-    #     # Active stress
-    #     wactive = self.active.Wactive(F, diff = 1)
-
-    #     dim = get_dimesion(F)
-    #     I = Identity(dim)
-    #     w1   = self.W_1(I1, diff = 1, dim = dim)
-    #     w4f  = self.W_4(I4f, diff = 1)
-
-    #     Fe = self.active.Fe(F)
-    #     Be = Fe*Fe.T
-    #     B = F*F.T
-
-    #     fe = Fe*self.active.get_component("fiber")
-    #     f = F*self.active.get_component("fiber")
-
-    #     fefe = outer(fe, fe)
-    #     ff = outer(f,f)
-
-    #     # T = 2*w1*Be + 2*w4f*fefe + wactive*ff
-    #     # T = 2*w4f*ff + wactive*ff  #2*w1*B
-    #     T = wactive*ff
-    #     if deviatoric:
-    #         return T - tr(T)*I
-
-    #     if p is None:
-    #         return T
-
-    #     else:
-    #         return T - p*I
 
     def W_1(self, I_1, diff=0, *args, **kwargs):
         r"""

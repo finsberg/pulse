@@ -28,14 +28,12 @@
 import dolfin
 
 try:
-    from dolfin_adjoint import Constant, Function, project
+    from dolfin_adjoint import Constant, Function
 except ImportError:
-    from dolfin import Constant, Function, project
+    from dolfin import Constant, Function
 
-from .. import kinematics
-from .. import numpy_mpi
-from ..dolfin_utils import get_dimesion, RegionalParameter, update_function
-
+from .. import kinematics, numpy_mpi
+from ..dolfin_utils import RegionalParameter, get_dimesion, update_function
 from .active_strain import ActiveStrain
 from .active_stress import ActiveStress
 
@@ -313,16 +311,13 @@ class Material(object):
 
     def CauchyStress(self, F, p=None, deviatoric=False):
 
-        I = kinematics.SecondOrderIdentity(F)
-
         F = dolfin.variable(F)
-        # J = dolfin.variable(det(F))
 
         # First Piola Kirchoff
         if deviatoric:
-            P = self.FirstPiolaStress(F, None)
-        else:
-            P = self.FirstPiolaStress(F, p)
+            p = None
+
+        P = self.FirstPiolaStress(F, p)
 
         # Cauchy stress
         T = kinematics.InversePiolaTransform(P, F)
@@ -331,79 +326,30 @@ class Material(object):
 
     def SecondPiolaStress(self, F, p=None, deviatoric=False, *args, **kwargs):
 
-        I = kinematics.SecondOrderIdentity(F)
+        # First Piola Kirchoff
+        if deviatoric:
+            p = None
 
-        f0 = self.f0
-        f0f0 = dolfin.outer(f0, f0)
+        P = self.FirstPiolaStress(F, p)
 
-        I1 = dolfin.variable(self.active.I1(F))
-        I4f = dolfin.variable(self.active.I4(F))
-
-        Fe = self.active.Fe(F)
-        Fa = self.active.Fa
-        Ce = Fe.T * Fe
-
-        # fe = Fe*f0
-        # fefe = dolfin.outer(fe, fe)
-
-        # Elastic volume ratio
-        J = dolfin.variable(dolfin.det(Fe))
-        # Active volume ration
-        Ja = dolfin.det(Fa)
-
-        dim = get_dimesion(F)
-        Ce_bar = pow(J, -2.0 / float(dim)) * Ce
-
-        w1 = self.W_1(I1, diff=1, dim=dim)
-        w4f = self.W_4(I4f, diff=1)
-
-        # Total Stress
-        S_bar = Ja * (2 * w1 * I + 2 * w4f * f0f0) * dolfin.inv(Fa).T
-
-        if self.is_isochoric:
-
-            # Deviatoric
-            Dev_S_bar = S_bar - (1.0 / 3.0) * dolfin.inner(S_bar, Ce_bar) * dolfin.inv(
-                Ce_bar
-            )
-
-            S_mat = J ** (-2.0 / 3.0) * Dev_S_bar
-        else:
-            S_mat = S_bar
-
-        # Volumetric
-        if p is None or deviatoric:
-            S_vol = dolfin.zero((dim, dim))
-        else:
-            psi_vol = self.compressibility(p, J)
-            S_vol = J * dolfin.diff(psi_vol, J) * dolfin.inv(Ce)
-
-        # Active stress
-        wactive = self.active.Wactive(F, diff=1)
-        eta = self.active.eta
-
-        S_active = wactive * (f0f0 + eta * (I - f0f0))
-
-        S = S_mat + S_vol + S_active
+        S = dolfin.inv(F) * P * dolfin.inv(F).T
 
         return S
 
     def FirstPiolaStress(self, F, p=None, *args, **kwargs):
 
-        I = kinematics.SecondOrderIdentity(F)
         F = dolfin.variable(F)
 
         # First Piola Kirchoff
         psi_iso = self.strain_energy(F)
-        P_iso = dolfin.diff(psi_iso, F)
+        P = dolfin.diff(psi_iso, F)
 
-        if p is None:
-            return P_iso
-        else:
-            J = dolfin.variable(dolfin.det(F))
+        if p is not None:
+            J = dolfin.variable(kinematics.Jacobian(F))
             psi_vol = self.compressibility(p, J)
+            # PiolaTransform
             P_vol = J * dolfin.diff(psi_vol, J) * dolfin.inv(F).T
 
-            P = P_iso + P_vol
+            P += P_vol
 
-            return P
+        return P

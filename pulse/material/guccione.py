@@ -6,7 +6,6 @@ except ImportError:
     from dolfin import Constant
 
 from .. import kinematics
-from ..dolfin_utils import get_dimesion
 from .material_model import Material
 
 
@@ -79,12 +78,12 @@ class Guccione(Material):
                 dolfin.inner(E * e1, e2),
                 dolfin.inner(E * e1, e3),
             )
-            E21, E22, E23 = (
+            _, E22, E23 = (
                 dolfin.inner(E * e2, e1),
                 dolfin.inner(E * e2, e2),
                 dolfin.inner(E * e2, e3),
             )
-            E31, E32, E33 = (
+            _, _, E33 = (
                 dolfin.inner(E * e3, e1),
                 dolfin.inner(E * e3, e2),
                 dolfin.inner(E * e3, e3),
