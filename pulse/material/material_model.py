@@ -33,7 +33,7 @@ except ImportError:
     from dolfin import Constant, Function
 
 from .. import kinematics, numpy_mpi
-from ..dolfin_utils import RegionalParameter, get_dimesion, update_function
+from ..dolfin_utils import RegionalParameter, update_function
 from .active_strain import ActiveStrain
 from .active_stress import ActiveStress
 
@@ -262,52 +262,6 @@ class Material(object):
         constant function (DG_0)
         """
         return self.active.activation_field
-
-    def strain_energy(self, F):
-        r"""
-        Strain-energy density function.
-
-        .. math::
-
-           \mathcal{W} = \mathcal{W}_1 + \mathcal{W}_{4f}
-           + \mathcal{W}_{\mathrm{active}}
-
-        where
-
-        .. math::
-
-           \mathcal{W}_{\mathrm{active}} =
-           \begin{cases}
-             0 & \text{if acitve strain} \\
-             \gamma I_{4f} & \text{if active stress}
-           \end{cases}
-
-
-        :param F: Deformation gradient
-        :type F: :py:class:`dolfin.Function`
-
-        """
-
-        # Invariants
-        I1 = self.active.I1(F)
-        I4f = self.active.I4(F)
-
-        # Active stress
-        Wactive = self.active.Wactive(F, diff=0)
-
-        dim = get_dimesion(F)
-        W1 = self.W_1(I1, diff=0, dim=dim)
-        W4f = self.W_4(I4f, diff=0)
-
-        W = W1 + W4f + Wactive
-
-        return W
-
-    def W_1(self, *args, **kwargs):
-        return 0
-
-    def W_4(self, *args, **kwargs):
-        return 0
 
     def CauchyStress(self, F, p=None, deviatoric=False):
 

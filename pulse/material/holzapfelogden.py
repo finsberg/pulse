@@ -1,6 +1,6 @@
 import dolfin
 
-from ..dolfin_utils import heaviside, subplus
+from ..dolfin_utils import get_dimesion, heaviside, subplus
 from .material_model import Material
 
 
@@ -52,7 +52,7 @@ class HolzapfelOgden(Material):
             "b_fs": 11.436,
         }
 
-    def W_1(self, I_1, diff=0, *args, **kwargs):
+    def W_1(self, I1, diff=0, *args, **kwargs):
         r"""
         Isotropic contribution.
 
@@ -80,13 +80,22 @@ class HolzapfelOgden(Material):
         b = self.b
 
         if diff == 0:
-            return a / (2.0 * b) * (dolfin.exp(b * (I_1 - 3)) - 1)
+            try:
+                if float(a) > dolfin.DOLFIN_EPS:
+                    if float(b) > dolfin.DOLFIN_EPS:
+                        return a / (2.0 * b) * (dolfin.exp(b * (I1 - 3)) - 1.0)
+                    else:
+                        return a / 2.0 * (I1 - 3)
+                else:
+                    return 0.0
+            except Exception:
+                return a / (2.0 * b) * (dolfin.exp(b * (I1 - 3)) - 1)
         elif diff == 1:
-            return a / 2.0 * dolfin.exp(b * (I_1 - 3))
+            return a / 2.0 * dolfin.exp(b * (I1 - 3))
         elif diff == 2:
-            return a * b / 2.0 * dolfin.exp(b * (I_1 - 3))
+            return a * b / 2.0 * dolfin.exp(b * (I1 - 3))
 
-    def W_4(self, I_4, diff=0, *args, **kwargs):
+    def W_4(self, I4, diff=0, use_heaviside=False, *args, **kwargs):
         r"""
         Anisotropic contribution.
 
@@ -121,38 +130,92 @@ class HolzapfelOgden(Material):
         a = self.a_f
         b = self.b_f
 
-        if I_4 == 0:
+        if I4 == 0:
             return 0
 
         if diff == 0:
-            return (
-                a
-                / (2.0 * b)
-                * heaviside(I_4 - 1)
-                * (dolfin.exp(b * pow(I_4 - 1, 2)) - 1)
-            )
+            try:
+                if float(a) > dolfin.DOLFIN_EPS:
+                    if float(b) > dolfin.DOLFIN_EPS:
+                        return (
+                            a / (2.0 * b) * (dolfin.exp(b * subplus(I4 - 1) ** 2) - 1.0)
+                        )
+                    else:
+                        return a / 2.0 * subplus(I4 - 1) ** 2
+                else:
+                    return 0.0
+            except Exception:
+                # Probably failed to convert a and b to float
+                return a / (2.0 * b) * (dolfin.exp(b * subplus(I4 - 1) ** 2) - 1.0)
 
         elif diff == 1:
-            return a * subplus(I_4 - 1) * dolfin.exp(b * pow(I_4 - 1, 2))
+            return a * subplus(I4 - 1) * dolfin.exp(b * pow(I4 - 1, 2))
         elif diff == 2:
             return (
                 a
-                * heaviside(I_4 - 1)
-                * (1 + 2.0 * b * pow(I_4 - 1, 2))
-                * dolfin.exp(b * pow(I_4 - 1, 2))
+                * heaviside(I4 - 1)
+                * (1 + 2.0 * b * pow(I4 - 1, 2))
+                * dolfin.exp(b * pow(I4 - 1, 2))
             )
 
-    def W8(self, I8):
+    def W_8(self, I8, *args, **kwargs):
         """
         Cross fiber-sheet contribution.
         """
-        a = self.parameters["a_cross"]
-        b = self.parameters["b_cross"]
+        a = self.a_fs
+        b = self.b_fs
 
-        if float(a) > DOLFIN_EPS:
-            if float(b) > DOLFIN_EPS:
-                return a / (2.0 * b) * (exp(b * I8 ** 2) - 1.0)
+        try:
+            if float(a) > dolfin.DOLFIN_EPS:
+                if float(b) > dolfin.DOLFIN_EPS:
+                    return a / (2.0 * b) * (dolfin.exp(b * I8 ** 2) - 1.0)
+                else:
+                    return a / 2.0 * I8 ** 2
             else:
-                return a / 2.0 * I8 ** 2
-        else:
-            return 0.0
+                return 0.0
+        except Exception:
+            return a / (2.0 * b) * (dolfin.exp(b * I8 ** 2) - 1.0)
+
+    def strain_energy(self, F):
+        r"""
+        Strain-energy density function.
+
+        .. math::
+
+           \mathcal{W} = \mathcal{W}_1 + \mathcal{W}_{4f}
+           + \mathcal{W}_{\mathrm{active}}
+
+        where
+
+        .. math::
+
+           \mathcal{W}_{\mathrm{active}} =
+           \begin{cases}
+             0 & \text{if acitve strain} \\
+             \gamma I_{4f} & \text{if active stress}
+           \end{cases}
+
+
+        :param F: Deformation gradient
+        :type F: :py:class:`dolfin.Function`
+
+        """
+
+        # Invariants
+        I1 = self.active.I1(F)
+        I4f = self.active.I4(F, self.f0)
+        I4s = self.active.I4(F, self.s0)
+        I8fs = self.active.I8(F, self.f0, self.s0)
+
+        # Active stress
+        Wactive = self.active.Wactive(F, diff=0)
+
+        dim = get_dimesion(F)
+        W1 = self.W_1(I1, diff=0, dim=dim)
+        W4f = self.W_4(I4f, diff=0)
+        W4s = self.W_4(I4s, diff=0)
+        W8fs = self.W_8(I8fs, diff=0)
+
+        W = W1 + W4f + W4s + W8fs + Wactive
+
+        return W

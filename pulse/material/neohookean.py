@@ -1,3 +1,4 @@
+from ..dolfin_utils import get_dimesion
 from .material_model import Material
 
 
@@ -22,3 +23,41 @@ class NeoHookean(Material):
             return 0.5 * mu
         elif diff == 2:
             return 0
+
+    def strain_energy(self, F):
+        r"""
+        Strain-energy density function.
+
+        .. math::
+
+           \mathcal{W} = \mathcal{W}_1 + \mathcal{W}_{4f}
+           + \mathcal{W}_{\mathrm{active}}
+
+        where
+
+        .. math::
+
+           \mathcal{W}_{\mathrm{active}} =
+           \begin{cases}
+             0 & \text{if acitve strain} \\
+             \gamma I_{4f} & \text{if active stress}
+           \end{cases}
+
+
+        :param F: Deformation gradient
+        :type F: :py:class:`dolfin.Function`
+
+        """
+
+        # Invariants
+        I1 = self.active.I1(F)
+
+        # Active stress
+        Wactive = self.active.Wactive(F, diff=0)
+
+        dim = get_dimesion(F)
+        W1 = self.W_1(I1, diff=0, dim=dim)
+
+        W = W1 + Wactive
+
+        return W

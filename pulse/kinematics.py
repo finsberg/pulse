@@ -3,6 +3,12 @@ from dolfin import Identity, det
 from dolfin import grad as Grad
 from dolfin import inner, inv, tr
 
+try:
+    from dolfin_adjoint import Constant
+except ImportError:
+    from dolfin import Constant
+
+
 from .dolfin_utils import get_dimesion
 
 
@@ -103,13 +109,19 @@ class Invariants(object):
 
     def _I4(self, F, a0):
 
-        C = RightCauchyGreen(F, self._isochoric)
-        I4 = inner(C * a0, a0)
+        if a0 is not None:
+            C = RightCauchyGreen(F, self._isochoric)
+            I4 = inner(C * a0, a0)
+        else:
+            I4 = Constant(0.0)
         return I4
 
     def _I5(self, F, a0):
-        C = RightCauchyGreen(F, self._isochoric)
-        I5 = inner(C * a0, C * a0)
+        if a0 is not None:
+            C = RightCauchyGreen(F, self._isochoric)
+            I5 = inner(C * a0, C * a0)
+        else:
+            I5 = Constant(0.0)
         return I5
 
     def _I6(self, F, b0):
@@ -119,7 +131,10 @@ class Invariants(object):
         return self._I5(F, b0)
 
     def _I8(self, F, a0, b0):
-        I8 = inner(F * a0, F * b0)
+        if a0 is None or b0 is None:
+            I8 = Constant(0.0)
+        else:
+            I8 = inner(F * a0, F * b0)
         return I8
 
 

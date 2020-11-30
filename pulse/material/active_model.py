@@ -25,8 +25,6 @@
 # SIMULA RESEARCH LABORATORY MAKES NO REPRESENTATIONS AND EXTENDS NO
 # WARRANTIES OF ANY KIND, EITHER IMPLIED OR EXPRESSED, INCLUDING, BUT
 # NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
-import dolfin
-
 try:
     from dolfin_adjoint import Constant
 except ImportError:
@@ -34,12 +32,6 @@ except ImportError:
 
 from .. import kinematics
 from ..dolfin_utils import RegionalParameter
-
-
-def check_component(component):
-    components = ("f0", "s0", "n0")
-    msg = ("Component must be one " "of {}, got {}").format(component, components)
-    assert component in components, msg
 
 
 class ActiveModel(kinematics.Invariants):

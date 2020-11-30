@@ -6,7 +6,7 @@ except ImportError:
     from dolfin import Constant
 
 from .. import kinematics
-from .active_model import ActiveModel, check_component
+from .active_model import ActiveModel
 
 
 def Wactive_transversally(Ta, C, f0, eta=0.0):
@@ -163,15 +163,6 @@ class ActiveStress(ActiveModel):
     @property
     def type(self):
         return "ActiveStress"
-
-    def I1(self, F, *args):
-        return self._I1(F)
-
-    def I4(self, F, component="f0", *args):
-
-        check_component(component)
-        a0 = getattr(self, component)
-        return self._I4(F, a0)
 
     @property
     def Fa(self):
