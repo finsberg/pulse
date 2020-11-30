@@ -95,10 +95,9 @@ class Material(object):
     ):
 
         # Parameters
+        self.parameters = self.default_parameters()
         if parameters is None:
-            parameters = self.default_parameters()
-
-        self.parameters = parameters
+            self.parameters.update(parameters)
         self._set_parameter_attrs(geometry)
 
         # Active model
