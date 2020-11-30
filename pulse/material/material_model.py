@@ -96,7 +96,7 @@ class Material(object):
 
         # Parameters
         self.parameters = self.default_parameters()
-        if parameters is None:
+        if parameters is not None:
             self.parameters.update(parameters)
         self._set_parameter_attrs(geometry)
 
