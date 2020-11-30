@@ -1,3 +1,5 @@
+from unittest import mock
+
 import pytest
 from utils import make_mechanics_problem
 
@@ -14,9 +16,13 @@ def problem():
 
 def test_fixedpointunloader(problem):
 
-    unloader = FixedPointUnloader(problem=problem, pressure=1.0)
+    unloader = FixedPointUnloader(
+        problem=problem, pressure=0.1, options=dict(maxiter=2)
+    )
 
-    unloader.unload()
+    with mock.patch("pulse.mechanicsproblem.MechanicsProblem.solve") as solve_mock:
+        solve_mock.return_value = (1, True)  # (niter, nconv)
+        unloader.unload()
 
 
 if __name__ == "__main__":
