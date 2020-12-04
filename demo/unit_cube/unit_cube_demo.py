@@ -91,7 +91,7 @@ activation = Constant(0.1)
 
 # Create material
 material = pulse.HolzapfelOgden(
-    active_model=active_model, params=material_parameters, activation=activation
+    active_model=active_model, parameters=material_parameters, activation=activation
 )
 
 

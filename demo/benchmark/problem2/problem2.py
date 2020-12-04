@@ -24,7 +24,7 @@ material_parameters["bf"] = 1.0
 material_parameters["bfs"] = 1.0
 material_parameters["bt"] = 1.0
 
-material = pulse.Guccione(params=material_parameters)
+material = pulse.Guccione(parameters=material_parameters)
 
 
 # Define Dirichlet boundary. Fix the base_spring

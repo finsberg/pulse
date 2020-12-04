@@ -69,7 +69,7 @@ material_parameters["bf"] = 8.0
 material_parameters["bfs"] = 4.0
 material_parameters["bt"] = 2.0
 
-material = pulse.Guccione(params=material_parameters)
+material = pulse.Guccione(parameters=material_parameters)
 
 
 # Define Dirichlet boundary. Fix at the left boundary

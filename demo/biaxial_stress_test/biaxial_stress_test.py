@@ -97,7 +97,7 @@ material_parameters = {
 }
 
 # Create material
-material = pulse.HolzapfelOgden(params=material_parameters)
+material = pulse.HolzapfelOgden(parameters=material_parameters)
 
 
 # Eff / Ess strain ratio
