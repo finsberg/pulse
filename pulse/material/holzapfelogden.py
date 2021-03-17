@@ -6,15 +6,15 @@ from .material_model import Material
 
 class HolzapfelOgden(Material):
     r"""
-    Transversally isotropic version of the
-    Holzapfel and Ogden material model
+    Orthotropic model by Holzapfel and Ogden
 
     .. math::
 
        \mathcal{W}(I_1, I_{4f_0})
        = \frac{a}{2 b} \left( e^{ b (I_1 - 3)}  -1 \right)
        + \frac{a_f}{2 b_f} \left( e^{ b_f (I_{4f_0} - 1)_+^2} -1 \right)
-
+       + \frac{a_s}{2 b_s} \left( e^{ b_s (I_{4s_0} - 1)_+^2} -1 \right)
+       + \frac{a_fs}{2 b_fs} \left( e^{ b_fs I_{8fs}^2} -1 \right)
     where
 
     .. math::
