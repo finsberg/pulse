@@ -408,8 +408,11 @@ class Iterator(object):
         self.ncrashes = 0
         self.niters = 0
         logger.info("Iterating....")
-        logger.info(print_control(self.control, "Current control: "))
-        logger.info(print_control(self.target, "Target: "))
+        control_name = delist(self.control).name()
+        msg = f"Current control: {control_name} = "
+        logger.info(print_control(self.control, msg))
+        msg = "Target: "
+        logger.info(print_control(self.target, msg))
         while not self.target_reached():
 
             self.niters += 1
