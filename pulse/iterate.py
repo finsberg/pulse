@@ -407,8 +407,9 @@ class Iterator(object):
 
         self.ncrashes = 0
         self.niters = 0
-        logger.info("Iterating....")
-        control_name = delist(self.control).name()
+        #print(type(self.control))
+        control_name = self.control[0].name()
+        logger.info(f"Iterating to target control ({control_name})...")
         msg = f"Current control: {control_name} = "
         logger.info(print_control(self.control, msg))
         msg = "Target: "
