@@ -1,5 +1,6 @@
 import dolfin
 
+# Make sure to use dolfin-adjoint version of object if using dolfin_adjoint
 try:
     from dolfin_adjoint import Constant, Function
 except ImportError:

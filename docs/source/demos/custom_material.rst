@@ -11,26 +11,52 @@ Code
 
 .. code:: python
 
-    import matplotlib.pyplot as plt
+    """
+    In this demo we show how you can use the pulse-framework
+    together with your custom material model.
+
+    To illustrate this we will implement a model for a
+    Mooney-Rivelin material.
+    """
+
     import dolfin
+
+    # Make sure to use dolfin-adjoint version of object if using dolfin_adjoint
+    try:
+        from dolfin_adjoint import (
+            Constant,
+            DirichletBC,
+            Expression,
+            Mesh,
+            UnitCubeMesh,
+            interpolate,
+        )
+    except ImportError:
+        from dolfin import (
+            UnitCubeMesh,
+            Expression,
+            Constant,
+            DirichletBC,
+            interpolate,
+            Mesh,
+        )
 
     import pulse
 
-
     # Create mesh
     N = 6
-    mesh = dolfin.UnitCubeMesh(N, N, N)
+    mesh = UnitCubeMesh(N, N, N)
 
 
     # Create subdomains
     class Free(dolfin.SubDomain):
-	def inside(self, x, on_boundary):
-	    return x[0] > (1.0 - dolfin.DOLFIN_EPS) and on_boundary
+        def inside(self, x, on_boundary):
+            return x[0] > (1.0 - dolfin.DOLFIN_EPS) and on_boundary
 
 
     class Fixed(dolfin.SubDomain):
-	def inside(self, x, on_boundary):
-	    return x[0] < dolfin.DOLFIN_EPS and on_boundary
+        def inside(self, x, on_boundary):
+            return x[0] < dolfin.DOLFIN_EPS and on_boundary
 
 
     # Create a facet fuction in order to mark the subdomains
@@ -55,45 +81,41 @@ Code
     # Collect the functions containing the markers
     marker_functions = pulse.MarkerFunctions(ffun=ffun, cfun=cfun)
 
-    # Collect the individual markers
-    fixed_marker = pulse.Marker(name='fixed', value=1, dimension=2)
-    free_marker = pulse.Marker(name='free', value=2, dimension=2)
-    markers = (fixed_marker, free_marker)
-
     # Create mictrotructure
-    f0 = dolfin.Expression(("1.0", "0.0", "0.0"), degree=1, cell=mesh.ufl_cell())
-    s0 = dolfin.Expression(("0.0", "1.0", "0.0"), degree=1, cell=mesh.ufl_cell())
-    n0 = dolfin.Expression(("0.0", "0.0", "1.0"), degree=1, cell=mesh.ufl_cell())
+    f0 = Expression(("1.0", "0.0", "0.0"), degree=1, cell=mesh.ufl_cell())
+    s0 = Expression(("0.0", "1.0", "0.0"), degree=1, cell=mesh.ufl_cell())
+    n0 = Expression(("0.0", "0.0", "1.0"), degree=1, cell=mesh.ufl_cell())
 
     # Collect the mictrotructure
     microstructure = pulse.Microstructure(f0=f0, s0=s0, n0=n0)
 
     # Create the geometry
-    geometry = pulse.Geometry(mesh=mesh, markers=markers,
-			      marker_functions=marker_functions,
-			      microstructure=microstructure)
+    geometry = pulse.Geometry(
+        mesh=mesh,
+        marker_functions=marker_functions,
+        microstructure=microstructure,
+    )
 
 
     # Use the default material parameters
     class MooneyRivelin(pulse.Material):
+        @staticmethod
+        def default_parameters():
+            return dict(C1=1.0, C2=1.0)
 
-	@staticmethod
-	def default_parameters():
-	    return dict(C1=1.0, C2=1.0)
+        def strain_energy(self, F_):
 
-	def strain_energy(self, F_):
+            # Get elastic part of deformation gradient,
+            # in case of active strain model
+            F = self.active.Fe(F_)
 
-	    # Get elastic part of deformation gradient,
-	    # in case of active strain model
-	    F = self.active.Fe(F_)
+            # Active stress (which is zero for acitve strain)
+            Wactive = self.active.Wactive(F, diff=0)
 
-	    # Active stress (which is zero for acitve strain)
-	    Wactive = self.active.Wactive(F, diff=0)
+            I1 = self.active.I1(F)
+            I2 = self.active.I2(F)
 
-	    I1 = self.active.I1(F)
-	    I2 = self.active.I2(F)
-
-	    return self.C1 * (I1 - 3) + self.C2 * (I2 - 3) + Wactive
+            return self.C1 * (I1 - 3) + self.C2 * (I2 - 3) + Wactive
 
 
     # Select model for active contraction
@@ -101,28 +123,23 @@ Code
     # active_model = "active_stress"
 
     # Set the activation
-    activation = dolfin.Constant(0.1)
+    activation = Constant(0.1)
 
     # Create material
-    material = MooneyRivelin(active_model=active_model,
-			     activation=activation)
+    material = MooneyRivelin(active_model=active_model, activation=activation)
 
 
     # Make Dirichlet boundary conditions
     def dirichlet_bc(W):
-	V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
-	return dolfin.DirichletBC(V,
-				  dolfin.Constant((0.0, 0.0, 0.0)),
-				  fixed)
+        V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
+        return DirichletBC(V, Constant((0.0, 0.0, 0.0)), fixed)
 
 
     # Make Neumann boundary conditions
-    neumann_bc = pulse.NeumannBC(traction=dolfin.Constant(0.0),
-				 marker=free_marker.value)
+    neumann_bc = pulse.NeumannBC(traction=Constant(0.0), marker=free_marker)
 
     # Collect Boundary Conditions
-    bcs = pulse.BoundaryConditions(dirichlet=(dirichlet_bc,),
-				   neumann=(neumann_bc,))
+    bcs = pulse.BoundaryConditions(dirichlet=(dirichlet_bc,), neumann=(neumann_bc,))
 
     # Create problem
     problem = pulse.MechanicsProblem(geometry, material, bcs)
@@ -133,16 +150,9 @@ Code
     # Get displacement and hydrostatic pressure
     u, p = problem.state.split(deepcopy=True)
 
-    # Plot
-    u_int = dolfin.interpolate(u,
-			       dolfin.VectorFunctionSpace(geometry.mesh, "CG", 1))
-    mesh = dolfin.Mesh(geometry.mesh)
-    dolfin.ALE.move(mesh, u_int)
-    dolfin.plot(geometry.mesh, alpha=0.5, edgecolor='k', title="original")
-    dolfin.plot(mesh, edgecolor='g', alpha=0.7, title='Contracting cube')
-    ax = plt.gca()
-    ax.view_init(elev=2, azim=-92)
-    plt.show()
+    # Dump file that can be viewed in paraview
+    dolfin.File("displacement.pvd") << u
+
 
 
 

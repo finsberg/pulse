@@ -8,23 +8,15 @@ Mooney-Rivelin material.
 
 import dolfin
 
+# Make sure to use dolfin-adjoint version of object if using dolfin_adjoint
 try:
-    from dolfin_adjoint import (
-        Constant,
-        DirichletBC,
-        Expression,
-        Mesh,
-        UnitCubeMesh,
-        interpolate,
-    )
+    from dolfin_adjoint import Constant, DirichletBC, Expression, UnitCubeMesh
 except ImportError:
     from dolfin import (
         UnitCubeMesh,
         Expression,
         Constant,
         DirichletBC,
-        interpolate,
-        Mesh,
     )
 
 import pulse
@@ -136,13 +128,5 @@ problem.solve()
 # Get displacement and hydrostatic pressure
 u, p = problem.state.split(deepcopy=True)
 
-# Plot
-u_int = interpolate(u, dolfin.VectorFunctionSpace(geometry.mesh, "CG", 1))
-mesh = Mesh(geometry.mesh)
-dolfin.ALE.move(mesh, u_int)
-# dolfin.plot(geometry.mesh, alpha=0.5, edgecolor='k', title="original")
-# dolfin.plot(mesh, edgecolor='g', alpha=0.7, title='Contracting cube')
-# ax = plt.gca()
-# ax.view_init(elev=2, azim=-92)
-# # plt.show()
-# plt.savefig('custom_material.png')
+# Dump file that can be viewed in paraview
+dolfin.File("displacement.pvd") << u

@@ -21,51 +21,51 @@ Code
 .. code:: python
 
     # demo.py
-    import matplotlib.pyplot as plt
     import dolfin
+
     import pulse
+    # Make sure to use dolfin-adjoint version of object if using dolfin_adjoint
+    try:
+        from dolfin_adjoint import Constant, DirichletBC, Function
+    except ImportError:
+        from dolfin import Function, Constant, DirichletBC
 
     from problem import CompressibleProblem
 
+    geometry = pulse.Geometry.from_file(pulse.mesh_paths["simple_ellipsoid"])
 
-    geometry = pulse.Geometry.from_file(pulse.mesh_paths['simple_ellipsoid'])
-    # Plot geometry
-    # dolfin.plot(geometry.mesh, edgecolor="k", color="w")
-    # ax = plt.gca()
-    # ax.view_init(elev=-67, azim=-179)
-    # ax.set_axis_off()
-    # plt.show()
-
-    activation = dolfin.Function(dolfin.FunctionSpace(geometry.mesh, "R", 0))
-    activation.assign(dolfin.Constant(0.2))
+    activation = Function(dolfin.FunctionSpace(geometry.mesh, "R", 0))
+    activation.assign(Constant(0.2))
     matparams = pulse.HolzapfelOgden.default_parameters()
-    material = pulse.HolzapfelOgden(activation=activation,
-				    parameters=matparams,
-				    f0=geometry.f0,
-				    s0=geometry.s0,
-				    n0=geometry.n0)
+    material = pulse.HolzapfelOgden(
+        activation=activation,
+        parameters=matparams,
+        f0=geometry.f0,
+        s0=geometry.s0,
+        n0=geometry.n0,
+    )
 
     # LV Pressure
-    lvp = dolfin.Constant(1.0)
-    lv_marker = geometry.markers['ENDO'][0]
-    lv_pressure = pulse.NeumannBC(traction=lvp,
-				  marker=lv_marker, name='lv')
+    lvp = Constant(1.0)
+    lv_marker = geometry.markers["ENDO"][0]
+    lv_pressure = pulse.NeumannBC(traction=lvp, marker=lv_marker, name="lv")
     neumann_bc = [lv_pressure]
 
     # Add spring term at the base with stiffness 1.0 kPa/cm^2
     base_spring = 1.0
-    robin_bc = [pulse.RobinBC(value=dolfin.Constant(base_spring),
-			      marker=geometry.markers["BASE"][0])]
+    robin_bc = [
+        pulse.RobinBC(value=Constant(base_spring), marker=geometry.markers["BASE"][0])
+    ]
 
 
     # Fix the basal plane in the longitudinal direction
     # 0 in V.sub(0) refers to x-direction, which is the longitudinal direction
     def fix_basal_plane(W):
-	V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
-	bc = dolfin.DirichletBC(V.sub(0),
-				dolfin.Constant(0.0),
-				geometry.ffun, geometry.markers["BASE"][0])
-	return bc
+        V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
+        bc = DirichletBC(
+            V.sub(0), Constant(0.0), geometry.ffun, geometry.markers["BASE"][0]
+        )
+        return bc
 
 
     dirichlet_bc = [fix_basal_plane]
@@ -76,9 +76,9 @@ Code
     #                        marker=geometry.markers["BASE"][0])
 
     # Collect boundary conditions
-    bcs = pulse.BoundaryConditions(dirichlet=dirichlet_bc,
-				   neumann=neumann_bc,
-				   robin=robin_bc)
+    bcs = pulse.BoundaryConditions(
+        dirichlet=dirichlet_bc, neumann=neumann_bc, robin=robin_bc
+    )
 
     # Create the problem
     problem = CompressibleProblem(geometry, material, bcs)
@@ -88,71 +88,70 @@ Code
 
     # Get the solution
     u = problem.state
+    # Dump file that can be viewed in paraview
+    dolfin.File("displacement.pvd") << u
 
-    # Move mesh accoring to displacement
-    mesh = dolfin.Mesh(geometry.mesh)
-    dolfin.ALE.move(mesh, u)
 
-    fig = plt.figure()
-    # Plot the result on to of the original
-    dolfin.plot(geometry.mesh, alpha=0.1, edgecolor='k', color='w')
-    dolfin.plot(mesh, color="r")
-
-    ax = plt.gca()
-    ax.view_init(elev=-67, azim=-179)
-    ax.set_axis_off()
-    plt.show()
 
 .. code:: python
 
     # problem.py
     import dolfin
-    from pulse import (MechanicsProblem, DeformationGradient, Jacobian)
+    # Make sure to use dolfin-adjoint version of object if using dolfin_adjoint
+    try:
+        from dolfin_adjoint import Constant, Function
+    except ImportError:
+        from dolfin import Function, Constant
+
+    from pulse import DeformationGradient, Jacobian, MechanicsProblem
 
 
     class CompressibleProblem(MechanicsProblem):
-	"""
-	This class implements a compressbile model with a penalized
-	compressibility term, solving for the displacement only.
+        """
+        This class implements a compressbile model with a penalized
+        compressibility term, solving for the displacement only.
 
-	"""
-	def _init_spaces(self):
+        """
 
-	    mesh = self.geometry.mesh
+        def _init_spaces(self):
 
-	    element = dolfin.VectorElement("P", mesh.ufl_cell(), 1)
-	    self.state_space = dolfin.FunctionSpace(mesh, element)
-	    self.state = dolfin.Function(self.state_space)
-	    self.state_test = dolfin.TestFunction(self.state_space)
+            mesh = self.geometry.mesh
 
-	    # Add penalty factor
-	    self.kappa = dolfin.Constant(1e3)
+            element = dolfin.VectorElement("P", mesh.ufl_cell(), 1)
+            self.state_space = dolfin.FunctionSpace(mesh, element)
+            self.state = Function(self.state_space)
+            self.state_test = dolfin.TestFunction(self.state_space)
 
-	def _init_forms(self):
+            # Add penalty factor
+            self.kappa = Constant(1e3)
 
-	    u = self.state
-	    v = self.state_test
+        def _init_forms(self):
 
-	    F = dolfin.variable(DeformationGradient(u))
-	    J = Jacobian(F)
+            u = self.state
+            v = self.state_test
 
-	    dx = self.geometry.dx
+            F = dolfin.variable(DeformationGradient(u))
+            J = Jacobian(F)
 
-	    # Add penalty term
-	    internal_energy = self.material.strain_energy(F) \
-		+ self.kappa * (J * dolfin.ln(J) - J + 1)
+            dx = self.geometry.dx
 
-	    self._virtual_work \
-		= dolfin.derivative(internal_energy * dx,
-				    self.state, self.state_test)
+            # Add penalty term
+            internal_energy = self.material.strain_energy(F) + self.kappa * (
+                J * dolfin.ln(J) - J + 1
+            )
 
-	    self._virtual_work += self._external_work(u, v)
+            self._virtual_work = dolfin.derivative(
+                internal_energy * dx, self.state, self.state_test
+            )
 
-	    self._jacobian \
-		= dolfin.derivative(self._virtual_work, self.state,
-				    dolfin.TrialFunction(self.state_space))
+            self._virtual_work += self._external_work(u, v)
 
-	    self._set_dirichlet_bc()
+            self._jacobian = dolfin.derivative(
+                self._virtual_work, self.state, dolfin.TrialFunction(self.state_space)
+            )
+
+            self._set_dirichlet_bc()
+
 
 
 Plot
@@ -161,8 +160,6 @@ Plot
 .. code:: shell
 
     python demo.py
-    
+
 
 .. image:: compressible_model.png
-
-

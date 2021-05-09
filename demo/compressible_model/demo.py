@@ -1,21 +1,34 @@
+r"""
+Compressible model
+==================
+
+In this demo we show how to make a custom model e.g a compressible
+model. The default model in `pulse` is an incompressible model
+implemented using a two-field variational approach with Taylor-Hood
+finite elements. In this demo we use a pentaly-based compressible
+model where the term
+
+.. math::
+
+   \kappa (J \mathrm{ln}J - J + 1)
+
+is added as a penalty to the strain energy denisty function, and we
+use :math:`\mathbb{P}1` elements for the displacement
+
+"""
 import dolfin
 
 import pulse
 
+# Make sure to use dolfin-adjoint version of object if using dolfin_adjoint
 try:
-    from dolfin_adjoint import Constant, DirichletBC, Function, Mesh
+    from dolfin_adjoint import Constant, DirichletBC, Function
 except ImportError:
-    from dolfin import Function, Constant, DirichletBC, Mesh
+    from dolfin import Function, Constant, DirichletBC
 
 from problem import CompressibleProblem
 
 geometry = pulse.Geometry.from_file(pulse.mesh_paths["simple_ellipsoid"])
-# Plot geometry
-# dolfin.plot(geometry.mesh, edgecolor="k", color="w")
-# ax = plt.gca()
-# ax.view_init(elev=-67, azim=-179)
-# ax.set_axis_off()
-# plt.show()
 
 activation = Function(dolfin.FunctionSpace(geometry.mesh, "R", 0))
 activation.assign(Constant(0.2))
@@ -71,18 +84,5 @@ problem.solve()
 
 # Get the solution
 u = problem.state
-
-# Move mesh accoring to displacement
-mesh = Mesh(geometry.mesh)
-dolfin.ALE.move(mesh, u)
-
-# fig = plt.figure()
-# # Plot the result on to of the original
-# dolfin.plot(geometry.mesh, alpha=0.1, edgecolor='k', color='w')
-# dolfin.plot(mesh, color="r")
-
-# ax = plt.gca()
-# ax.view_init(elev=-67, azim=-179)
-# ax.set_axis_off()
-
-# fig.savefig('compressible_model.png')
+# Dump file that can be viewed in paraview
+dolfin.File("displacement.pvd") << u

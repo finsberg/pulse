@@ -1,3 +1,15 @@
+"""
+Contracting cube
+================
+
+In this demo we simulate a unit cube that is fixed
+at :math:`x = 0` and free at :math:`x = 1`. We use
+a transversally isotropic material with fiber oriented
+in the :math:`x`-direction.
+
+The cube is contracting a
+"""
+
 import dolfin
 
 try:
@@ -5,7 +17,6 @@ try:
         Constant,
         DirichletBC,
         Expression,
-        Mesh,
         UnitCubeMesh,
         interpolate,
     )
@@ -13,7 +24,6 @@ except ImportError:
     from dolfin import (
         Constant,
         DirichletBC,
-        Mesh,
         interpolate,
         Expression,
         UnitCubeMesh,
@@ -117,12 +127,3 @@ problem.solve()
 u, p = problem.state.split(deepcopy=True)
 
 # Plot
-u_int = interpolate(u, dolfin.VectorFunctionSpace(geometry.mesh, "CG", 1))
-mesh = Mesh(geometry.mesh)
-dolfin.ALE.move(mesh, u_int)
-# dolfin.plot(geometry.mesh, alpha=0.5, edgecolor='k', title="original")
-# dolfin.plot(mesh, edgecolor='g', alpha=0.7, title='Contracting cube')
-# ax = plt.gca()
-# ax.view_init(elev=2, azim=-92)
-# # plt.show()
-# plt.savefig('unit_cube_demo.png')
