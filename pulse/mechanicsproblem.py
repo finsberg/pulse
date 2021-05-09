@@ -231,7 +231,9 @@ class MechanicsProblem(object):
             internal_energy * dx, self.state, self.state_test
         )
 
-        self._virtual_work += self._external_work(u, v)
+        external_work = self._external_work(u, v)
+        if external_work is not None:
+            self._virtual_work += external_work
 
         self._set_dirichlet_bc()
 
@@ -283,8 +285,8 @@ class MechanicsProblem(object):
 
         if len(external_work) > 0:
             return list_sum(external_work)
-        else:
-            return Constant(0.0) * dx
+
+        return None
 
     def reinit(self, state, annotate=False):
         """Reinitialze state"""
