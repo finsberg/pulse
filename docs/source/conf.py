@@ -19,12 +19,16 @@
 
 
 import shutil
+import sys
 
 # -- Project information -----------------------------------------------------
 from pathlib import Path
 from textwrap import dedent
+from unittest import mock
 
-import pulse
+sys.modules["dolfin"] = mock.Mock()
+
+import pulse  # noqa: E402
 
 HERE = Path(__file__).absolute().parent
 
