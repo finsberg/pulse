@@ -32,13 +32,13 @@ try:
 except ImportError:
     from dolfin import DirichletBC
 
-from . import kinematics, parameters
+from . import kinematics
 from .dolfin_utils import list_sum
 from .geometry import Geometry, HeartGeometry
 from .material import Material
-from .utils import get_lv_marker, make_logger, set_default_none
+from .utils import get_lv_marker, getLogger, set_default_none
 
-logger = make_logger(__name__, parameters["log_level"])
+logger = getLogger(__name__)
 
 BoundaryConditions = namedtuple(
     "BoundaryConditions", ["dirichlet", "neumann", "robin", "body_force"]
@@ -304,7 +304,9 @@ class MechanicsProblem(object):
 
     @staticmethod
     def defaul_solver_parameters():
-        return dolfin.NonlinearVariationalSolver.default_parameters()
+        params = dolfin.NonlinearVariationalSolver.default_parameters()
+        params["newton_solver"]["linear_solver"] = "mumps"
+        return params
 
     def solve(self):
         r"""

@@ -17,9 +17,9 @@ except ImportError:
 from . import numpy_mpi, parameters
 from .dolfin_utils import get_constant
 from .mechanicsproblem import SolverDidNotConverge
-from .utils import make_logger, value_size
+from .utils import getLogger, value_size
 
-logger = make_logger(__name__, parameters["log_level"])
+logger = getLogger(__name__)
 
 
 class Enlisted(tuple):

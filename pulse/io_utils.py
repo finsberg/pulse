@@ -1,11 +1,12 @@
 import os
-import h5py
+
 import dolfin
+import h5py
 
-from .utils import make_logger, mpi_comm_world
-from . import parameters
+from .utils import getLogger, mpi_comm_world
 
-logger = make_logger(__name__, parameters["log_level"])
+logger = getLogger(__name__)
+
 
 parallel_h5py = h5py.h5.get_config().mpi
 
@@ -17,8 +18,6 @@ except ImportError:
     has_mpi4py = False
     if parallel_h5py:
         raise ImportError
-else:
-    from mpi4py import MPI as mpi4py_MPI
 
 try:
     import petsc4py

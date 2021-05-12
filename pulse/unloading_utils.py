@@ -6,14 +6,14 @@ import dolfin
 import h5py
 import numpy as np
 
-from . import annotation, numpy_mpi, parameters
+from . import annotation, numpy_mpi
 from .dolfin_utils import get_pressure
 from .io_utils import check_and_delete
 from .iterate import iterate
 from .iterate import logger as logger_it
-from .utils import make_logger, mpi_comm_world
+from .utils import getLogger, mpi_comm_world
 
-logger = make_logger(__name__, parameters["log_level"])
+logger = getLogger(__name__)
 
 
 class ResidualCalculator(object):

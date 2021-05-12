@@ -15,10 +15,10 @@ try:
 except ImportError:
     from dolfin import Mesh
 
-from . import io_utils, parameters
-from .utils import DOLFIN_VERSION_MAJOR, make_logger, mpi_comm_world
+from . import io_utils
+from .utils import DOLFIN_VERSION_MAJOR, getLogger, mpi_comm_world
 
-logger = make_logger(__name__, parameters["log_level"])
+logger = getLogger(__name__)
 
 
 def move(mesh, u, factor=1.0):

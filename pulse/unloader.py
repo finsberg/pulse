@@ -24,12 +24,12 @@ except ImportError:
     from dolfin import Function, interpolate
 
 # from . import numpy_mpi
-from . import parameters
 from . import unloading_utils as utils
 from .mechanicsproblem import MechanicsProblem, cardiac_boundary_conditions
-from .utils import make_logger, mpi_comm_world
+from .utils import getLogger, mpi_comm_world
 
-logger = make_logger(__name__, parameters["log_level"])
+logger = getLogger(__name__)
+
 
 # try:
 #     dolfin.parameters["adjoint"]["stop_annotating"] = True

@@ -9,14 +9,13 @@ try:
 except ImportError:
     from dolfin import Mesh
 
-from . import numpy_mpi, parameters
+from . import numpy_mpi
 from .dolfin_utils import compute_meshvolume, get_cavity_volume, map_vector_field
-from .geometry_utils import load_geometry_from_h5
-from .geometry_utils import logger as logger_utils
-from .geometry_utils import move, save_geometry_to_h5
-from .utils import make_logger, mpi_comm_world, set_default_none
+from .geometry_utils import load_geometry_from_h5, move, save_geometry_to_h5
+from .utils import getLogger, mpi_comm_world, set_default_none
 
-logger = make_logger(__name__, parameters["log_level"])
+logger = getLogger(__name__)
+
 
 # f0 - fibers, s0 - sheets, n0 - cross-sheets
 Microstructure = namedtuple("Microstructure", ["f0", "s0", "n0"])
@@ -90,9 +89,6 @@ class Geometry(object):
             geo = Geometry.from_file("geometry.h5")
 
     """
-
-    logger.setLevel(parameters["log_level"])
-    logger_utils.setLevel(parameters["log_level"])
 
     def __init__(
         self,

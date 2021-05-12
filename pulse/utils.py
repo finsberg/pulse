@@ -1,16 +1,47 @@
 #!/usr/bin/env python
 
-import os
 import logging
+import os
 
 import dolfin
-from . import parameters
 
-if dolfin.__version__.startswith("20"):
-    # Year based versioning
-    DOLFIN_VERSION_MAJOR = float(dolfin.__version__.split(".")[0])
-else:
-    DOLFIN_VERSION_MAJOR = float(".".join(dolfin.__version__.split(".")[:2]))
+
+def log_if_process0(record):
+
+    if dolfin.MPI.rank(mpi_comm_world()) == 0:
+        return 1
+    else:
+        return 0
+
+
+mpi_filt = lambda: None
+mpi_filt.filter = log_if_process0
+
+
+def getLogger(name):
+    import daiquiri
+
+    logger = daiquiri.getLogger(__name__)
+    logger.logger.addFilter(mpi_filt)
+    return logger
+
+
+logger = getLogger(__name__)
+
+
+def get_dolfin_version():
+    if dolfin.__version__.startswith("20"):
+        # Year based versioning
+        return float(dolfin.__version__.split(".")[0])
+    else:
+        return float(".".join(dolfin.__version__.split(".")[:2]))
+
+
+try:
+    DOLFIN_VERSION_MAJOR = get_dolfin_version()
+except AttributeError:
+    # Just assume the lastest one
+    DOLFIN_VERSION_MAJOR = 2019.0
 
 
 class Annotation(object):
@@ -46,7 +77,10 @@ class Annotation(object):
         self._annotate = annotate
 
 
-annotation = Annotation()
+try:
+    annotation = Annotation()
+except Exception:
+    annotation = None
 
 
 def mpi_comm_world():
@@ -74,45 +108,6 @@ def set_default_none(NamedTuple, default=None):
 # Dummy object
 class Object(object):
     pass
-
-
-def make_logger(name, level=parameters["log_level"]):
-    def log_if_process0(record):
-        if dolfin.MPI.rank(mpi_comm_world()) == 0:
-            return 1
-        else:
-            return 0
-
-    mpi_filt = Object()
-    mpi_filt.filter = log_if_process0
-
-    logger = logging.getLogger(name)
-    logger.setLevel(level)
-
-    ch = logging.StreamHandler()
-    ch.setLevel(0)
-    # formatter = logging.Formatter('%(message)s')
-    formatter = logging.Formatter(
-        ("%(asctime)s - " "%(name)s - " "%(levelname)s - " "%(message)s")
-    )
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
-    logger.addFilter(mpi_filt)
-
-    dolfin.set_log_level(logging.WARNING)
-
-    ffc_logger = logging.getLogger("FFC")
-    ffc_logger.setLevel(logging.WARNING)
-    ffc_logger.addFilter(mpi_filt)
-
-    ufl_logger = logging.getLogger("UFL")
-    ufl_logger.setLevel(logging.WARNING)
-    ufl_logger.addFilter(mpi_filt)
-
-    return logger
-
-
-logger = make_logger(__name__)
 
 
 def number_of_passive_controls(params):

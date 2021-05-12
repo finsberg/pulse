@@ -21,7 +21,9 @@ except ImportError:
     )
 
 from . import numpy_mpi, utils
-from .utils import DOLFIN_VERSION_MAJOR, logger, mpi_comm_world
+from .utils import DOLFIN_VERSION_MAJOR, getLogger, mpi_comm_world
+
+logger = getLogger(__name__)
 
 
 def map_vector_field(f0, new_mesh, u=None, name="fiber", normalize=True):
