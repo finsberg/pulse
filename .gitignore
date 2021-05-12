@@ -6,6 +6,11 @@ tmp*
 jitfailure*
 tests/jitfailure*
 *.log
+*.png
+*.xdmf
+*.h5
+.vscode/*
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

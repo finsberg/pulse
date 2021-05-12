@@ -18,8 +18,11 @@
 # sys.path.insert(0, os.path.abspath('../pulse'))
 
 
+import shutil
+
 # -- Project information -----------------------------------------------------
 from pathlib import Path
+from textwrap import dedent
 
 import pulse
 
@@ -39,32 +42,61 @@ release = pulse.__version__
 demo_dir = HERE.joinpath("../../demo")
 
 demoes = [
-    demo_dir.joinpath("benchmark")
-    .joinpath("problem1")
-    .joinpath("problem1.py")
-    .as_posix(),
-    demo_dir.joinpath("benchmark")
-    .joinpath("problem2")
-    .joinpath("problem2.py")
-    .as_posix(),
-    demo_dir.joinpath("benchmark")
-    .joinpath("problem3")
-    .joinpath("problem3.py")
-    .as_posix(),
-    demo_dir.joinpath("biaxial_stress_test")
-    .joinpath("biaxial_stress_test.py")
-    .as_posix(),
-    [
-        demo_dir.joinpath("compressible_model").joinpath("demo.py").as_posix(),
-        demo_dir.joinpath("compressible_model").joinpath("problem.py").as_posix(),
-    ],
-    demo_dir.joinpath("compute_stress_strain").joinpath("demo.py").as_posix(),
-    demo_dir.joinpath("from_xml").joinpath("demo.py").as_posix(),
-    demo_dir.joinpath("klotz_curve").joinpath("demo.py").as_posix(),
-    demo_dir.joinpath("simple_ellipsoid").joinpath("lv_demo.py").as_posix(),
-    demo_dir.joinpath("unit_cube").joinpath("unit_cube_demo.py").as_posix(),
-    demo_dir.joinpath("unloading").joinpath("demo_fixedpointunloader.py").as_posix(),
+    demo_dir.joinpath("benchmark").joinpath("problem1").joinpath("problem1.ipynb"),
+    demo_dir.joinpath("benchmark").joinpath("problem2").joinpath("problem2.ipynb"),
+    demo_dir.joinpath("benchmark").joinpath("problem3").joinpath("problem3.ipynb"),
+    demo_dir.joinpath("biaxial_stress_test").joinpath("biaxial_stress_test.ipynb"),
+    demo_dir.joinpath("shear_experiment").joinpath("shear_experiment.ipynb"),
+    demo_dir.joinpath("compressible_model").joinpath("compressible_model.ipynb"),
+    demo_dir.joinpath("compute_stress_strain").joinpath("compute_stress_strain.ipynb"),
+    demo_dir.joinpath("from_xml").joinpath("from_xml.ipynb"),
+    demo_dir.joinpath("klotz_curve").joinpath("klotz_curve.ipynb"),
+    demo_dir.joinpath("simple_ellipsoid").joinpath("simple_ellipsoid.ipynb"),
+    demo_dir.joinpath("unit_cube").joinpath("unit_cube_demo.ipynb"),
+    demo_dir.joinpath("unloading").joinpath("demo_fixedpointunloader.ipynb"),
 ]
+
+
+demo_docs = HERE.joinpath("demos")
+demo_docs.mkdir(exist_ok=True, parents=True)
+
+for f in demo_docs.iterdir():
+    if f.suffix == ".ipynb":
+        f.unlink()
+
+for notebook in demoes:
+    src = notebook
+    dst = notebook.name
+
+    shutil.copy2(src, demo_docs.joinpath(dst))
+
+with open(demo_docs.joinpath("demos.rst"), "w+") as f:
+    f.write(
+        dedent(
+            """
+    .. _demos
+
+
+    Demos
+    =====
+
+    Here you will find all the demos. These are all found in the main
+    repository in the `demo folder <https://github.com/finsberg/pulse/tree/master/demo>`_
+
+    .. toctree::
+       :titlesonly:
+       :maxdepth: 1
+
+    """
+        )
+    )
+    for i in demoes:
+        f.write("   " + i.stem + "\n")
+
+
+# for demo in demoes:
+
+
 # -- General configuration ---------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -81,7 +113,30 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.githubpages",
     "sphinx.ext.napoleon",
+    "nbsphinx",
 ]
+
+# Enable plotly figure in the docs
+nbsphinx_prolog = r"""
+.. raw:: html
+
+    <script src='http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js'></script>
+    <script>require=requirejs;</script>
+    <script src="https://cdn.plot.ly/plotly-1.2.0.min.js"></script>
+
+"""
+nbsphinx_timeout = -1
+
+
+autosummary_generate = True
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+    "dolfin": ("https://fenicsproject.org/olddocs/dolfin/latest/python", None),
+    "ufl": ("https://fenics.readthedocs.io/projects/ufl/en/latest/", None),
+}
+inheritance_node_attrs = dict(
+    shape="ellipse", fontsize=12, color="orange", style="filled"
+)
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -110,7 +165,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
 
-
+todo_include_todos = False
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
