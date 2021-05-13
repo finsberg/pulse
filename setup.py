@@ -29,8 +29,22 @@ REQUIRED = ["h5py", "numpy", "scipy", "daiquiri"]
 
 # What packages are optional?
 EXTRAS = {
-    # 'fancy feature': ['django'],
+    "test": ["jupytext", "flake8", "pytest", "pytest-cov", "black", "mypy"],
+    "plot": ["matplotlib", "fenics-plotly"],
+    "docs": ["pandoc", "Sphinx", "sphinx_rtd_theme", "nbsphinx"],
+    "dev": [
+        "pre-commit",
+        "bump2version",
+        "isort",
+        "flake8",
+        "black",
+        "mypy",
+        "ipython",
+    ],
 }
+
+EXTRAS.update({"all": list(set([val for values in EXTRAS.values() for val in values]))})
+
 
 # The rest you shouldn't have to touch too much :)
 # ------------------------------------------------
