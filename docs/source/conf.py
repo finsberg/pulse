@@ -26,6 +26,8 @@ from pathlib import Path
 from textwrap import dedent
 from unittest import mock
 
+import plotly  # noqa: F401
+
 sys.modules["dolfin"] = mock.Mock()
 
 import pulse  # noqa: E402
