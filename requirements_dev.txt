@@ -6,9 +6,7 @@ isort
 coverage
 Sphinx
 pytest
-pytest-runner
 pytest-cov
-pytest-xdist
 pytest-sugar
 black
 pre-commit
@@ -18,3 +16,6 @@ sphinx_rtd_theme
 nbsphinx
 jupytext
 pandoc
+wheel
+watchdog
+twine
