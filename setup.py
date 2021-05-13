@@ -25,7 +25,7 @@ REQUIRES_PYTHON = ">=3.6"
 VERSION = "2020.2"
 
 # What packages are required for this module to be executed?
-REQUIRED = ["h5py", "numpy", "scipy", "daiquiri", "fenics-ufl"]
+REQUIRED = ["h5py", "numpy", "scipy", "daiquiri"]
 
 # What packages are optional?
 EXTRAS = {
