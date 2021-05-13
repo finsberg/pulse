@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt install -y pandoc
-          python -m pip install fenics-ufl
+          python3 -m pip install fenics-ufl
           make dev
 
       - name: Build docs

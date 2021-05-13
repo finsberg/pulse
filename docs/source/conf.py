@@ -132,9 +132,9 @@ nbsphinx_prolog = r"""
 nbsphinx_timeout = -1
 
 
-nbsphinx_execute = "always"
+# nbsphinx_execute = "always"
+nbsphinx_execute = "never"
 nbsphinx_allow_errors = True
-nbsphinx_kernel_name = "python"
 
 
 autosummary_generate = True
