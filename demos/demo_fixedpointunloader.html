@@ -459,7 +459,7 @@ div.rendered_html tbody tr:hover {
 <script src="https://cdn.plot.ly/plotly-1.2.0.min.js"></script><div class="section" id="Finding-the-unloaded-geometry">
 <h1>Finding the unloaded geometry<a class="headerlink" href="#Finding-the-unloaded-geometry" title="Permalink to this headline">¶</a></h1>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -484,7 +484,7 @@ div.rendered_html tbody tr:hover {
 <span class="c1"># Suppose geometry is loaded with a pressure of 1 kPa</span>
 <span class="c1"># and create the unloader</span>
 <span class="n">unloader</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">FixedPointUnloader</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">problem</span><span class="p">,</span>
-                                    <span class="n">pressure</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+                                    <span class="n">pressure</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
 
 <span class="c1"># Unload the geometry</span>
 <span class="n">unloader</span><span class="o">.</span><span class="n">unload</span><span class="p">()</span>
@@ -494,324 +494,146 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-2019-05-22 07:49:36,245 - pulse.geometry_utils - INFO -
+2021-05-13 08:21:41,611 [72502] INFO     pulse.utils:
 Load mesh from h5
-2019-05-22 07:49:36,392 - pulse.unloader - INFO -
+2021-05-13 08:21:41,767 [72502] INFO     pulse.utils:
 
 -------------------------- Unloading options ---------------------------
 
-        Target pressure: 1.0
+        Target pressure: 0.1
         maxiter = 10
         tolerance = 0.0001
         regenerate_fibers (serial only)= False
 
 ------------------------------------------------------------------------
 
-2019-05-22 07:49:36,393 - pulse.unloader - INFO - ------------------------------------------------------------------------
-2019-05-22 07:49:36,394 - pulse.unloader - INFO - ----------------------------Start unloading-----------------------------
-2019-05-22 07:49:36,394 - pulse.unloader - INFO - ------------------------------------------------------------------------
-2019-05-22 07:49:36,399 - pulse.unloader - INFO -
+2021-05-13 08:21:41,767 [72502] INFO     pulse.utils: ------------------------------------------------------------------------
+2021-05-13 08:21:41,768 [72502] INFO     pulse.utils: ----------------------------Start unloading-----------------------------
+2021-05-13 08:21:41,768 [72502] INFO     pulse.utils: ------------------------------------------------------------------------
+2021-05-13 08:21:41,770 [72502] INFO     pulse.utils:
 LV Volume of original geometry = 2.511 ml
-2019-05-22 07:49:36,435 - pulse.unloader - INFO -
+2021-05-13 08:21:41,773 [72502] INFO     pulse.utils:
 Do an intial solve
-2019-05-22 07:49:36,855 - pulse.iterate - INFO - Control: [0.0]
-2019-05-22 07:49:36,856 - pulse.iterate - INFO - Target: [1.0]
-2019-05-22 07:49:36,857 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:36,857 - pulse.iterate - INFO - Maximum difference: 1.000e+00
-2019-05-22 07:49:36,858 - pulse.iterate - INFO - Try new control
-2019-05-22 07:49:36,859 - pulse.iterate - INFO - Current control: 0.200
-2019-05-22 07:49:37,482 - pulse.iterate - INFO -
-SUCCESFULL STEP:
-2019-05-22 07:49:37,483 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:37,484 - pulse.iterate - INFO - Maximum difference: 8.000e-01
-2019-05-22 07:49:37,485 - pulse.iterate - INFO - Adapt step size. New step size: 0.300
-2019-05-22 07:49:37,486 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:37,487 - pulse.iterate - INFO - Maximum difference: 8.000e-01
-2019-05-22 07:49:37,488 - pulse.iterate - INFO - Try new control
-2019-05-22 07:49:37,489 - pulse.iterate - INFO - Current control: 0.500
-2019-05-22 07:49:38,036 - pulse.iterate - INFO -
-SUCCESFULL STEP:
-2019-05-22 07:49:38,037 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:38,038 - pulse.iterate - INFO - Maximum difference: 5.000e-01
-2019-05-22 07:49:38,038 - pulse.iterate - INFO - Adapt step size. New step size: 0.450
-2019-05-22 07:49:38,040 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:38,041 - pulse.iterate - INFO - Maximum difference: 5.000e-01
-2019-05-22 07:49:38,041 - pulse.iterate - INFO - Try new control
-2019-05-22 07:49:38,042 - pulse.iterate - INFO - Current control: 0.950
-2019-05-22 07:49:38,732 - pulse.iterate - INFO -
-SUCCESFULL STEP:
-2019-05-22 07:49:38,733 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:38,734 - pulse.iterate - INFO - Maximum difference: 5.000e-02
-2019-05-22 07:49:38,735 - pulse.iterate - INFO - Adapt step size. New step size: 0.675
-2019-05-22 07:49:38,736 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:38,737 - pulse.iterate - INFO - Maximum difference: 5.000e-02
-2019-05-22 07:49:38,737 - pulse.iterate - INFO - Change step size for final iteration
-2019-05-22 07:49:38,738 - pulse.iterate - INFO - Try new control
-2019-05-22 07:49:38,739 - pulse.iterate - INFO - Current control: 1.000
-2019-05-22 07:49:39,143 - pulse.iterate - INFO -
-SUCCESFULL STEP:
-2019-05-22 07:49:39,144 - pulse.iterate - INFO - Check target reached: YES!
-2019-05-22 07:49:39,146 - pulse.iterate - INFO - Check target reached: YES!
-2019-05-22 07:49:39,155 - pulse.unloader - INFO -
+2021-05-13 08:21:42,953 [72502] INFO     pulse.utils: Iterating....
+2021-05-13 08:21:42,953 [72502] INFO     pulse.utils: Current control: 0.000
+2021-05-13 08:21:42,954 [72502] INFO     pulse.utils: Target: 0.100
+2021-05-13 08:21:46,010 [72502] INFO     pulse.utils:
 Iteration: 0
-2019-05-22 07:49:40,399 - pulse.unloading_utils - INFO -
-LV Volume of original geometry = 1.755 ml
-2019-05-22 07:49:40,437 - pulse.iterate - INFO - Control: [0.0]
-2019-05-22 07:49:40,438 - pulse.iterate - INFO - Target: [1.0]
-2019-05-22 07:49:40,439 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:40,440 - pulse.iterate - INFO - Maximum difference: 1.000e+00
-2019-05-22 07:49:40,441 - pulse.iterate - INFO - Try new control
-2019-05-22 07:49:40,441 - pulse.iterate - INFO - Current control: 0.200
-2019-05-22 07:49:40,989 - pulse.iterate - INFO -
-SUCCESFULL STEP:
-2019-05-22 07:49:40,990 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:40,991 - pulse.iterate - INFO - Maximum difference: 8.000e-01
-2019-05-22 07:49:40,991 - pulse.iterate - INFO - Adapt step size. New step size: 0.300
-2019-05-22 07:49:40,992 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:40,993 - pulse.iterate - INFO - Maximum difference: 8.000e-01
-2019-05-22 07:49:40,994 - pulse.iterate - INFO - Try new control
-2019-05-22 07:49:40,994 - pulse.iterate - INFO - Current control: 0.500
-2019-05-22 07:49:41,523 - pulse.iterate - INFO -
-SUCCESFULL STEP:
-2019-05-22 07:49:41,524 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:41,525 - pulse.iterate - INFO - Maximum difference: 5.000e-01
-2019-05-22 07:49:41,525 - pulse.iterate - INFO - Adapt step size. New step size: 0.450
-2019-05-22 07:49:41,526 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:41,527 - pulse.iterate - INFO - Maximum difference: 5.000e-01
-2019-05-22 07:49:41,528 - pulse.iterate - INFO - Try new control
-2019-05-22 07:49:41,529 - pulse.iterate - INFO - Current control: 0.950
-2019-05-22 07:49:42,191 - pulse.iterate - INFO -
-SUCCESFULL STEP:
-2019-05-22 07:49:42,191 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:42,192 - pulse.iterate - INFO - Maximum difference: 5.000e-02
-2019-05-22 07:49:42,193 - pulse.iterate - INFO - Adapt step size. New step size: 0.675
-2019-05-22 07:49:42,194 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:42,195 - pulse.iterate - INFO - Maximum difference: 5.000e-02
-2019-05-22 07:49:42,196 - pulse.iterate - INFO - Change step size for final iteration
-2019-05-22 07:49:42,197 - pulse.iterate - INFO - Try new control
-2019-05-22 07:49:42,197 - pulse.iterate - INFO - Current control: 1.000
-2019-05-22 07:49:42,588 - pulse.iterate - INFO -
-SUCCESFULL STEP:
-2019-05-22 07:49:42,589 - pulse.iterate - INFO - Check target reached: YES!
-2019-05-22 07:49:42,590 - pulse.iterate - INFO - Check target reached: YES!
-2019-05-22 07:49:42,604 - pulse.unloading_utils - INFO -
-LV Volume of inflated geometry = 1.755 ml
-2019-05-22 07:49:43,805 - pulse.unloading_utils - INFO -
-LV Volume of new reference geometry = 2.382 ml
-2019-05-22 07:49:43,813 - pulse.unloader - INFO -
-Residual:       0.022215441356976378
+2021-05-13 08:21:47,203 [72502] INFO     pulse.utils:
+LV Volume of original geometry = 2.371 ml
+2021-05-13 08:21:47,254 [72502] INFO     pulse.utils: Iterating....
+2021-05-13 08:21:47,255 [72502] INFO     pulse.utils: Current control: 0.000
+2021-05-13 08:21:47,256 [72502] INFO     pulse.utils: Target: 0.100
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">RuntimeError</span>                              Traceback (most recent call last)
+<span class="ansi-green-fg">~/local/src/pulse/pulse/mechanicsproblem.py</span> in <span class="ansi-cyan-fg">solve</span><span class="ansi-blue-fg">(self)</span>
+<span class="ansi-green-intense-fg ansi-bold">    345</span>             logger<span class="ansi-blue-fg">.</span>debug<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#34;Try to solve&#34;</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">--&gt; 346</span><span class="ansi-red-fg">             </span>nliter<span class="ansi-blue-fg">,</span> nlconv <span class="ansi-blue-fg">=</span> solver<span class="ansi-blue-fg">.</span>solve<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    347</span>             <span class="ansi-green-fg">if</span> <span class="ansi-green-fg">not</span> nlconv<span class="ansi-blue-fg">:</span>
 
-2019-05-22 07:49:43,814 - pulse.unloader - INFO -
-Iteration: 1
-2019-05-22 07:49:44,905 - pulse.unloading_utils - INFO -
-LV Volume of original geometry = 1.862 ml
-2019-05-22 07:49:44,941 - pulse.iterate - INFO - Control: [0.0]
-2019-05-22 07:49:44,942 - pulse.iterate - INFO - Target: [1.0]
-2019-05-22 07:49:44,943 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:44,944 - pulse.iterate - INFO - Maximum difference: 1.000e+00
-2019-05-22 07:49:44,945 - pulse.iterate - INFO - Try new control
-2019-05-22 07:49:44,946 - pulse.iterate - INFO - Current control: 0.200
-2019-05-22 07:49:45,489 - pulse.iterate - INFO -
-SUCCESFULL STEP:
-2019-05-22 07:49:45,490 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:45,491 - pulse.iterate - INFO - Maximum difference: 8.000e-01
-2019-05-22 07:49:45,491 - pulse.iterate - INFO - Adapt step size. New step size: 0.300
-2019-05-22 07:49:45,493 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:45,493 - pulse.iterate - INFO - Maximum difference: 8.000e-01
-2019-05-22 07:49:45,494 - pulse.iterate - INFO - Try new control
-2019-05-22 07:49:45,495 - pulse.iterate - INFO - Current control: 0.500
-2019-05-22 07:49:46,010 - pulse.iterate - INFO -
-SUCCESFULL STEP:
-2019-05-22 07:49:46,011 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:46,012 - pulse.iterate - INFO - Maximum difference: 5.000e-01
-2019-05-22 07:49:46,012 - pulse.iterate - INFO - Adapt step size. New step size: 0.450
-2019-05-22 07:49:46,014 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:46,015 - pulse.iterate - INFO - Maximum difference: 5.000e-01
-2019-05-22 07:49:46,016 - pulse.iterate - INFO - Try new control
-2019-05-22 07:49:46,016 - pulse.iterate - INFO - Current control: 0.950
-2019-05-22 07:49:46,674 - pulse.iterate - INFO -
-SUCCESFULL STEP:
-2019-05-22 07:49:46,675 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:46,675 - pulse.iterate - INFO - Maximum difference: 5.000e-02
-2019-05-22 07:49:46,676 - pulse.iterate - INFO - Adapt step size. New step size: 0.675
-2019-05-22 07:49:46,677 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:46,678 - pulse.iterate - INFO - Maximum difference: 5.000e-02
-2019-05-22 07:49:46,678 - pulse.iterate - INFO - Change step size for final iteration
-2019-05-22 07:49:46,679 - pulse.iterate - INFO - Try new control
-2019-05-22 07:49:46,679 - pulse.iterate - INFO - Current control: 1.000
-2019-05-22 07:49:47,108 - pulse.iterate - INFO -
-SUCCESFULL STEP:
-2019-05-22 07:49:47,109 - pulse.iterate - INFO - Check target reached: YES!
-2019-05-22 07:49:47,110 - pulse.iterate - INFO - Check target reached: YES!
-2019-05-22 07:49:47,126 - pulse.unloading_utils - INFO -
-LV Volume of inflated geometry = 1.862 ml
-2019-05-22 07:49:48,354 - pulse.unloading_utils - INFO -
-LV Volume of new reference geometry = 2.529 ml
-2019-05-22 07:49:48,362 - pulse.unloader - INFO -
-Residual:       0.0036360722069058216
+<span class="ansi-red-fg">RuntimeError</span>:
 
-2019-05-22 07:49:48,362 - pulse.unloader - INFO -
-Iteration: 2
-2019-05-22 07:49:49,571 - pulse.unloading_utils - INFO -
-LV Volume of original geometry = 1.847 ml
-2019-05-22 07:49:49,611 - pulse.iterate - INFO - Control: [0.0]
-2019-05-22 07:49:49,611 - pulse.iterate - INFO - Target: [1.0]
-2019-05-22 07:49:49,612 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:49,613 - pulse.iterate - INFO - Maximum difference: 1.000e+00
-2019-05-22 07:49:49,613 - pulse.iterate - INFO - Try new control
-2019-05-22 07:49:49,614 - pulse.iterate - INFO - Current control: 0.200
-2019-05-22 07:49:50,296 - pulse.iterate - INFO -
-SUCCESFULL STEP:
-2019-05-22 07:49:50,297 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:50,298 - pulse.iterate - INFO - Maximum difference: 8.000e-01
-2019-05-22 07:49:50,298 - pulse.iterate - INFO - Adapt step size. New step size: 0.300
-2019-05-22 07:49:50,299 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:50,300 - pulse.iterate - INFO - Maximum difference: 8.000e-01
-2019-05-22 07:49:50,301 - pulse.iterate - INFO - Try new control
-2019-05-22 07:49:50,301 - pulse.iterate - INFO - Current control: 0.500
-2019-05-22 07:49:50,866 - pulse.iterate - INFO -
-SUCCESFULL STEP:
-2019-05-22 07:49:50,867 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:50,867 - pulse.iterate - INFO - Maximum difference: 5.000e-01
-2019-05-22 07:49:50,868 - pulse.iterate - INFO - Adapt step size. New step size: 0.450
-2019-05-22 07:49:50,869 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:50,870 - pulse.iterate - INFO - Maximum difference: 5.000e-01
-2019-05-22 07:49:50,870 - pulse.iterate - INFO - Try new control
-2019-05-22 07:49:50,871 - pulse.iterate - INFO - Current control: 0.950
-2019-05-22 07:49:51,566 - pulse.iterate - INFO -
-SUCCESFULL STEP:
-2019-05-22 07:49:51,567 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:51,567 - pulse.iterate - INFO - Maximum difference: 5.000e-02
-2019-05-22 07:49:51,568 - pulse.iterate - INFO - Adapt step size. New step size: 0.675
-2019-05-22 07:49:51,569 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:51,569 - pulse.iterate - INFO - Maximum difference: 5.000e-02
-2019-05-22 07:49:51,570 - pulse.iterate - INFO - Change step size for final iteration
-2019-05-22 07:49:51,571 - pulse.iterate - INFO - Try new control
-2019-05-22 07:49:51,572 - pulse.iterate - INFO - Current control: 1.000
-2019-05-22 07:49:52,011 - pulse.iterate - INFO -
-SUCCESFULL STEP:
-2019-05-22 07:49:52,012 - pulse.iterate - INFO - Check target reached: YES!
-2019-05-22 07:49:52,013 - pulse.iterate - INFO - Check target reached: YES!
-2019-05-22 07:49:52,028 - pulse.unloading_utils - INFO -
-LV Volume of inflated geometry = 1.847 ml
-2019-05-22 07:49:53,295 - pulse.unloading_utils - INFO -
-LV Volume of new reference geometry = 2.509 ml
-2019-05-22 07:49:53,304 - pulse.unloader - INFO -
-Residual:       0.00059109345652087
+*** -------------------------------------------------------------------------
+*** DOLFIN encountered an error. If you are not able to resolve this issue
+*** using the information listed below, you can ask for help at
+***
+***     fenics-support@googlegroups.com
+***
+*** Remember to include the error message listed below and, if possible,
+*** include a *minimal* running example to reproduce the error.
+***
+*** -------------------------------------------------------------------------
+*** Error:   Unable to solve nonlinear system with NewtonSolver.
+*** Reason:  Newton solver did not converge because maximum number of iterations reached.
+*** Where:   This error was encountered inside NewtonSolver.cpp.
+*** Process: 0
+***
+*** DOLFIN version: 2019.1.0
+*** Git changeset:
+*** -------------------------------------------------------------------------
 
-2019-05-22 07:49:53,305 - pulse.unloader - INFO -
-Iteration: 3
-2019-05-22 07:49:54,518 - pulse.unloading_utils - INFO -
-LV Volume of original geometry = 1.849 ml
-2019-05-22 07:49:54,558 - pulse.iterate - INFO - Control: [0.0]
-2019-05-22 07:49:54,558 - pulse.iterate - INFO - Target: [1.0]
-2019-05-22 07:49:54,560 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:54,560 - pulse.iterate - INFO - Maximum difference: 1.000e+00
-2019-05-22 07:49:54,561 - pulse.iterate - INFO - Try new control
-2019-05-22 07:49:54,561 - pulse.iterate - INFO - Current control: 0.200
-2019-05-22 07:49:55,248 - pulse.iterate - INFO -
-SUCCESFULL STEP:
-2019-05-22 07:49:55,249 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:55,249 - pulse.iterate - INFO - Maximum difference: 8.000e-01
-2019-05-22 07:49:55,250 - pulse.iterate - INFO - Adapt step size. New step size: 0.300
-2019-05-22 07:49:55,251 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:55,251 - pulse.iterate - INFO - Maximum difference: 8.000e-01
-2019-05-22 07:49:55,252 - pulse.iterate - INFO - Try new control
-2019-05-22 07:49:55,253 - pulse.iterate - INFO - Current control: 0.500
-2019-05-22 07:49:55,830 - pulse.iterate - INFO -
-SUCCESFULL STEP:
-2019-05-22 07:49:55,831 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:55,832 - pulse.iterate - INFO - Maximum difference: 5.000e-01
-2019-05-22 07:49:55,832 - pulse.iterate - INFO - Adapt step size. New step size: 0.450
-2019-05-22 07:49:55,833 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:55,834 - pulse.iterate - INFO - Maximum difference: 5.000e-01
-2019-05-22 07:49:55,835 - pulse.iterate - INFO - Try new control
-2019-05-22 07:49:55,835 - pulse.iterate - INFO - Current control: 0.950
-2019-05-22 07:49:56,553 - pulse.iterate - INFO -
-SUCCESFULL STEP:
-2019-05-22 07:49:56,554 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:56,555 - pulse.iterate - INFO - Maximum difference: 5.000e-02
-2019-05-22 07:49:56,555 - pulse.iterate - INFO - Adapt step size. New step size: 0.675
-2019-05-22 07:49:56,556 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:56,557 - pulse.iterate - INFO - Maximum difference: 5.000e-02
-2019-05-22 07:49:56,557 - pulse.iterate - INFO - Change step size for final iteration
-2019-05-22 07:49:56,558 - pulse.iterate - INFO - Try new control
-2019-05-22 07:49:56,559 - pulse.iterate - INFO - Current control: 1.000
-2019-05-22 07:49:57,019 - pulse.iterate - INFO -
-SUCCESFULL STEP:
-2019-05-22 07:49:57,019 - pulse.iterate - INFO - Check target reached: YES!
-2019-05-22 07:49:57,021 - pulse.iterate - INFO - Check target reached: YES!
-2019-05-22 07:49:57,036 - pulse.unloading_utils - INFO -
-LV Volume of inflated geometry = 1.849 ml
-2019-05-22 07:49:58,336 - pulse.unloading_utils - INFO -
-LV Volume of new reference geometry = 2.512 ml
-2019-05-22 07:49:58,346 - pulse.unloader - INFO -
-Residual:       0.0001030256253301169
 
-2019-05-22 07:49:58,346 - pulse.unloader - INFO -
-Iteration: 4
-2019-05-22 07:49:59,609 - pulse.unloading_utils - INFO -
-LV Volume of original geometry = 1.849 ml
-2019-05-22 07:49:59,650 - pulse.iterate - INFO - Control: [0.0]
-2019-05-22 07:49:59,651 - pulse.iterate - INFO - Target: [1.0]
-2019-05-22 07:49:59,652 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:49:59,653 - pulse.iterate - INFO - Maximum difference: 1.000e+00
-2019-05-22 07:49:59,653 - pulse.iterate - INFO - Try new control
-2019-05-22 07:49:59,654 - pulse.iterate - INFO - Current control: 0.200
-2019-05-22 07:50:00,232 - pulse.iterate - INFO -
-SUCCESFULL STEP:
-2019-05-22 07:50:00,233 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:50:00,234 - pulse.iterate - INFO - Maximum difference: 8.000e-01
-2019-05-22 07:50:00,234 - pulse.iterate - INFO - Adapt step size. New step size: 0.300
-2019-05-22 07:50:00,235 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:50:00,236 - pulse.iterate - INFO - Maximum difference: 8.000e-01
-2019-05-22 07:50:00,236 - pulse.iterate - INFO - Try new control
-2019-05-22 07:50:00,237 - pulse.iterate - INFO - Current control: 0.500
-2019-05-22 07:50:00,818 - pulse.iterate - INFO -
-SUCCESFULL STEP:
-2019-05-22 07:50:00,818 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:50:00,819 - pulse.iterate - INFO - Maximum difference: 5.000e-01
-2019-05-22 07:50:00,819 - pulse.iterate - INFO - Adapt step size. New step size: 0.450
-2019-05-22 07:50:00,820 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:50:00,821 - pulse.iterate - INFO - Maximum difference: 5.000e-01
-2019-05-22 07:50:00,822 - pulse.iterate - INFO - Try new control
-2019-05-22 07:50:00,822 - pulse.iterate - INFO - Current control: 0.950
-2019-05-22 07:50:01,531 - pulse.iterate - INFO -
-SUCCESFULL STEP:
-2019-05-22 07:50:01,532 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:50:01,532 - pulse.iterate - INFO - Maximum difference: 5.000e-02
-2019-05-22 07:50:01,533 - pulse.iterate - INFO - Adapt step size. New step size: 0.675
-2019-05-22 07:50:01,534 - pulse.iterate - INFO - Check target reached: NO
-2019-05-22 07:50:01,534 - pulse.iterate - INFO - Maximum difference: 5.000e-02
-2019-05-22 07:50:01,535 - pulse.iterate - INFO - Change step size for final iteration
-2019-05-22 07:50:01,535 - pulse.iterate - INFO - Try new control
-2019-05-22 07:50:01,536 - pulse.iterate - INFO - Current control: 1.000
-2019-05-22 07:50:01,986 - pulse.iterate - INFO -
-SUCCESFULL STEP:
-2019-05-22 07:50:01,986 - pulse.iterate - INFO - Check target reached: YES!
-2019-05-22 07:50:01,988 - pulse.iterate - INFO - Check target reached: YES!
-2019-05-22 07:50:02,003 - pulse.unloading_utils - INFO -
-LV Volume of inflated geometry = 1.849 ml
-2019-05-22 07:50:03,292 - pulse.unloading_utils - INFO -
-LV Volume of new reference geometry = 2.511 ml
-2019-05-22 07:50:03,303 - pulse.unloader - INFO -
-Residual:       1.7348365912202567e-05
+During handling of the above exception, another exception occurred:
 
-2019-05-22 07:50:03,305 - pulse.unloader - INFO - ########################################################################
-Unloading suceeding
+<span class="ansi-red-fg">KeyboardInterrupt</span>                         Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-3-e4a8e5d8eee2&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-intense-fg ansi-bold">     23</span>
+<span class="ansi-green-intense-fg ansi-bold">     24</span> <span class="ansi-red-fg"># Unload the geometry</span>
+<span class="ansi-green-fg">---&gt; 25</span><span class="ansi-red-fg"> </span>unloader<span class="ansi-blue-fg">.</span>unload<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">     26</span>
+<span class="ansi-green-intense-fg ansi-bold">     27</span> <span class="ansi-red-fg"># Get the unloaded geometry</span>
+
+<span class="ansi-green-fg">~/local/src/pulse/pulse/unloader.py</span> in <span class="ansi-cyan-fg">unload</span><span class="ansi-blue-fg">(self, save)</span>
+<span class="ansi-green-intense-fg ansi-bold">    203</span>         self<span class="ansi-blue-fg">.</span>U <span class="ansi-blue-fg">=</span> Function<span class="ansi-blue-fg">(</span>u<span class="ansi-blue-fg">.</span>function_space<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    204</span>
+<span class="ansi-green-fg">--&gt; 205</span><span class="ansi-red-fg">         </span>self<span class="ansi-blue-fg">.</span>unload_step<span class="ansi-blue-fg">(</span>u<span class="ansi-blue-fg">,</span> residual<span class="ansi-blue-fg">,</span> save<span class="ansi-blue-fg">=</span>save<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    206</span>
+<span class="ansi-green-intense-fg ansi-bold">    207</span>         logger<span class="ansi-blue-fg">.</span>info<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#34;&#34;</span><span class="ansi-blue-fg">.</span>center<span class="ansi-blue-fg">(</span><span class="ansi-cyan-fg">72</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">&#34;#&#34;</span><span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">+</span> <span class="ansi-blue-fg">&#34;\nUnloading suceeding&#34;</span><span class="ansi-blue-fg">)</span>
+
+<span class="ansi-green-fg">~/local/src/pulse/pulse/unloader.py</span> in <span class="ansi-cyan-fg">unload_step</span><span class="ansi-blue-fg">(self, u, residual, save, it)</span>
+<span class="ansi-green-intense-fg ansi-bold">    412</span>
+<span class="ansi-green-intense-fg ansi-bold">    413</span>             <span class="ansi-red-fg"># Solve</span>
+<span class="ansi-green-fg">--&gt; 414</span><span class="ansi-red-fg">             u = utils.inflate_to_pressure(
+</span><span class="ansi-green-intense-fg ansi-bold">    415</span>                 self<span class="ansi-blue-fg">.</span>pressure<span class="ansi-blue-fg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    416</span>                 problem<span class="ansi-blue-fg">,</span>
+
+<span class="ansi-green-fg">~/local/src/pulse/pulse/unloading_utils.py</span> in <span class="ansi-cyan-fg">inflate_to_pressure</span><span class="ansi-blue-fg">(target_pressure, problem, ntries, n, annotate)</span>
+<span class="ansi-green-intense-fg ansi-bold">    126</span>     logger<span class="ansi-blue-fg">.</span>debug<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#34;\nInflate geometry to p = {} kPa&#34;</span><span class="ansi-blue-fg">.</span>format<span class="ansi-blue-fg">(</span>target_pressure<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    127</span>     pressure <span class="ansi-blue-fg">=</span> get_pressure<span class="ansi-blue-fg">(</span>problem<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">--&gt; 128</span><span class="ansi-red-fg">     </span>solve<span class="ansi-blue-fg">(</span>target_pressure<span class="ansi-blue-fg">,</span> problem<span class="ansi-blue-fg">,</span> pressure<span class="ansi-blue-fg">,</span> ntries<span class="ansi-blue-fg">,</span> n<span class="ansi-blue-fg">,</span> annotate<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    129</span>
+<span class="ansi-green-intense-fg ansi-bold">    130</span>     <span class="ansi-green-fg">return</span> problem<span class="ansi-blue-fg">.</span>get_displacement<span class="ansi-blue-fg">(</span>annotate<span class="ansi-blue-fg">=</span>annotate<span class="ansi-blue-fg">)</span>
+
+<span class="ansi-green-fg">~/local/src/pulse/pulse/unloading_utils.py</span> in <span class="ansi-cyan-fg">solve</span><span class="ansi-blue-fg">(target_pressure, problem, pressure, ntries, n, annotate)</span>
+<span class="ansi-green-intense-fg ansi-bold">    153</span>     logger_it<span class="ansi-blue-fg">.</span>setLevel<span class="ansi-blue-fg">(</span>logging<span class="ansi-blue-fg">.</span>WARNING<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    154</span>
+<span class="ansi-green-fg">--&gt; 155</span><span class="ansi-red-fg">     </span>iterate<span class="ansi-blue-fg">(</span>problem<span class="ansi-blue-fg">,</span> pressure<span class="ansi-blue-fg">,</span> target_pressure<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    156</span>
+<span class="ansi-green-intense-fg ansi-bold">    157</span>     annotation<span class="ansi-blue-fg">.</span>annotate <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">True</span>
+
+<span class="ansi-green-fg">~/local/src/pulse/pulse/iterate.py</span> in <span class="ansi-cyan-fg">iterate</span><span class="ansi-blue-fg">(problem, control, target, continuation, max_adapt_iter, adapt_step, old_states, old_controls, max_nr_crash, max_iters, initial_number_of_steps, reinit_each_step)</span>
+<span class="ansi-green-intense-fg ansi-bold">    326</span>         reinit_each_step<span class="ansi-blue-fg">=</span>reinit_each_step<span class="ansi-blue-fg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    327</span>     ) as iterator:
+<span class="ansi-green-fg">--&gt; 328</span><span class="ansi-red-fg">         </span>res <span class="ansi-blue-fg">=</span> iterator<span class="ansi-blue-fg">.</span>solve<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    329</span>
+<span class="ansi-green-intense-fg ansi-bold">    330</span>     <span class="ansi-green-fg">return</span> res
+
+<span class="ansi-green-fg">~/local/src/pulse/pulse/iterate.py</span> in <span class="ansi-cyan-fg">solve</span><span class="ansi-blue-fg">(self)</span>
+<span class="ansi-green-intense-fg ansi-bold">    442</span>
+<span class="ansi-green-intense-fg ansi-bold">    443</span>             <span class="ansi-green-fg">try</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">--&gt; 444</span><span class="ansi-red-fg">                 </span>nliter<span class="ansi-blue-fg">,</span> nlconv <span class="ansi-blue-fg">=</span> self<span class="ansi-blue-fg">.</span>problem<span class="ansi-blue-fg">.</span>solve<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    445</span>
+<span class="ansi-green-intense-fg ansi-bold">    446</span>             <span class="ansi-green-fg">except</span> SolverDidNotConverge <span class="ansi-green-fg">as</span> ex<span class="ansi-blue-fg">:</span>
+
+<span class="ansi-green-fg">~/local/src/pulse/pulse/mechanicsproblem.py</span> in <span class="ansi-cyan-fg">solve</span><span class="ansi-blue-fg">(self)</span>
+<span class="ansi-green-intense-fg ansi-bold">    344</span>         <span class="ansi-green-fg">try</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    345</span>             logger<span class="ansi-blue-fg">.</span>debug<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#34;Try to solve&#34;</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">--&gt; 346</span><span class="ansi-red-fg">             </span>nliter<span class="ansi-blue-fg">,</span> nlconv <span class="ansi-blue-fg">=</span> solver<span class="ansi-blue-fg">.</span>solve<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    347</span>             <span class="ansi-green-fg">if</span> <span class="ansi-green-fg">not</span> nlconv<span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    348</span>                 logger<span class="ansi-blue-fg">.</span>debug<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#34;Failed&#34;</span><span class="ansi-blue-fg">)</span>
+
+<span class="ansi-red-fg">KeyboardInterrupt</span>:
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">fenics_plotly</span> <span class="kn">import</span> <span class="n">plot</span>
+<span></span><span class="kn">from</span> <span class="nn">fenics_plotly</span> <span class="kn">import</span> <span class="n">plot</span><span class="p">,</span> <span class="n">set_renderer</span>
+<span class="n">set_renderer</span><span class="p">(</span><span class="s1">&#39;notebook&#39;</span><span class="p">)</span>
 <span class="n">fig</span> <span class="o">=</span> <span class="n">plot</span><span class="p">(</span><span class="n">geometry</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">fig</span><span class="o">.</span><span class="n">add_plot</span><span class="p">(</span><span class="n">plot</span><span class="p">(</span><span class="n">unloaded_geometry</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 <span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -822,8 +644,18 @@ Unloading suceeding
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/demos_demo_fixedpointunloader_2_0.png" src="../_images/demos_demo_fixedpointunloader_2_0.png" />
-</div>
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-1-1cc0d8d571d3&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> <span class="ansi-green-fg">from</span> fenics_plotly <span class="ansi-green-fg">import</span> plot<span class="ansi-blue-fg">,</span> set_renderer
+<span class="ansi-green-intense-fg ansi-bold">      2</span> set_renderer<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#39;notebook&#39;</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">----&gt; 3</span><span class="ansi-red-fg"> </span>fig <span class="ansi-blue-fg">=</span> plot<span class="ansi-blue-fg">(</span>geometry<span class="ansi-blue-fg">.</span>mesh<span class="ansi-blue-fg">,</span> show<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">False</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">      4</span> fig<span class="ansi-blue-fg">.</span>add_plot<span class="ansi-blue-fg">(</span>plot<span class="ansi-blue-fg">(</span>unloaded_geometry<span class="ansi-blue-fg">.</span>mesh<span class="ansi-blue-fg">,</span> color<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#34;red&#34;</span><span class="ansi-blue-fg">,</span> show<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">False</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">      5</span> fig<span class="ansi-blue-fg">.</span>show<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;geometry&#39; is not defined
+</pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
