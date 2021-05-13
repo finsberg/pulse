@@ -22,7 +22,9 @@ jobs:
           python3 -m pip install --upgrade pip
 
       - name: Install dependencies
-        run: make dev
+        run: |
+          sudo apt install -y pandoc
+          make dev
 
       - name: Build docs
         run: make docs
