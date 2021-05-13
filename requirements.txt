@@ -5,3 +5,4 @@ numpy
 matplotlib
 --no-binary=h5py
 h5py
+fenics_plotly
