@@ -124,9 +124,8 @@ extensions = [
 nbsphinx_prolog = r"""
 .. raw:: html
 
-    <script src='http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js'></script>
     <script>require=requirejs;</script>
-    <script src="https://cdn.plot.ly/plotly-1.2.0.min.js"></script>
 
 """
 nbsphinx_timeout = -1
