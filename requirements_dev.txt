@@ -17,3 +17,4 @@ ipython
 sphinx_rtd_theme
 nbsphinx
 jupytext
+pandoc
