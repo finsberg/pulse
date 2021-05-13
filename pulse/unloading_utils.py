@@ -149,7 +149,7 @@ def solve(target_pressure, problem, pressure, ntries=5, n=2, annotate=False):
 
     annotation.annotate = False
 
-    level = logger_it.level
+    level = logger_it.logger.level
     logger_it.setLevel(logging.WARNING)
 
     iterate(problem, pressure, target_pressure)

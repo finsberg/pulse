@@ -13,8 +13,9 @@ except:
 _warnings.filterwarnings("ignore", category=FutureWarning)
 _warnings.filterwarnings("ignore", category=UserWarning)
 
-from . import setup_parameters
 from .setup_parameters import parameters
+from . import setup_parameters
+
 from .utils import annotation
 
 try:
@@ -26,48 +27,57 @@ from collections import namedtuple
 
 Patient = namedtuple("Patient", ["geometry", "data"])
 
-import logging as _logging
+from . import utils
+from . import dolfin_utils
+from . import io_utils
+from . import numpy_mpi
+from . import kinematics
+from . import mechanicsproblem
+from . import iterate
+from . import unloader
 
-import daiquiri as _daiquiri
-import dolfin as _dolfin
-from daiquiri import set_default_log_levels as set_log_level
+# Subpackages
+from . import material
+from .material import *
 
+
+from .unloader import MeshUnloader, RaghavanUnloader, FixedPointUnloader
+from .geometry import (
+    Geometry,
+    CRLBasis,
+    HeartGeometry,
+    Microstructure,
+    MarkerFunctions,
+)
+from .example_meshes import mesh_paths
 from pulse.mechanicsproblem import (
-    BoundaryConditions,
     MechanicsProblem,
+    BoundaryConditions,
     NeumannBC,
     RobinBC,
 )
+from .dolfin_utils import QuadratureSpace, MixedParameter, RegionalParameter
 
-# Subpackages
-from . import (
-    dolfin_utils,
-    io_utils,
-    iterate,
-    kinematics,
-    material,
-    mechanicsproblem,
-    numpy_mpi,
-    unloader,
-    utils,
-)
-from .dolfin_utils import MixedParameter, QuadratureSpace, RegionalParameter
-from .example_meshes import mesh_paths
-from .geometry import CRLBasis, Geometry, HeartGeometry, MarkerFunctions, Microstructure
 from .kinematics import (
-    DeformationGradient,
-    EulerAlmansiStrain,
-    GreenLagrangeStrain,
-    Invariants,
-    InversePiolaTransform,
-    Jacobian,
-    LeftCauchyGreen,
-    PiolaTransform,
-    RightCauchyGreen,
     SecondOrderIdentity,
+    DeformationGradient,
+    Jacobian,
+    GreenLagrangeStrain,
+    LeftCauchyGreen,
+    RightCauchyGreen,
+    EulerAlmansiStrain,
+    Invariants,
+    PiolaTransform,
+    InversePiolaTransform,
 )
-from .material import *
-from .unloader import FixedPointUnloader, MeshUnloader, RaghavanUnloader
+
+
+import logging as _logging
+import dolfin as _dolfin
+
+
+import daiquiri as _daiquiri
+from daiquiri import set_default_log_levels as set_log_level
 
 _daiquiri.setup(level=_logging.INFO)
 
