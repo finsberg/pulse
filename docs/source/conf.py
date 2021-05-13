@@ -132,7 +132,7 @@ nbsphinx_prolog = r"""
 nbsphinx_timeout = -1
 
 
-nbsphinx_execute = "allways"
+nbsphinx_execute = "always"
 nbsphinx_allow_errors = True
 
 

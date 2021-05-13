@@ -32,11 +32,11 @@ repos:
         types: [python]
         exclude: pulse/__init__.py
 
-      - id: mypy
-        name: mypy
-        stages: [commit]
-        language: system
-        entry: python -m mypy
-        types: [python]
-        exclude: pulse/__init__.py
-        pass_filenames: false
+      # - id: mypy
+      #   name: mypy
+      #   stages: [commit]
+      #   language: system
+      #   entry: python -m mypy
+      #   types: [python]
+      #   exclude: pulse/__init__.py
+      #   pass_filenames: false
