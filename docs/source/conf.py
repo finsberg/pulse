@@ -126,9 +126,14 @@ nbsphinx_prolog = r"""
 
     <script src='https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js'></script>
     <script>require=requirejs;</script>
+    <script src="https://cdn.plot.ly/plotly-1.2.0.min.js"></script>
 
 """
 nbsphinx_timeout = -1
+
+
+nbsphinx_execute = "allways"
+nbsphinx_allow_errors = True
 
 
 autosummary_generate = True
