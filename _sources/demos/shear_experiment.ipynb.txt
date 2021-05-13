@@ -1,0 +1,460 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "lines_to_next_cell": 2
+   },
+   "source": [
+    "# Shear experiment \n",
+    "Attempt to reproduce Figure 8 in [1].\n",
+    "\n",
+    "\n",
+    "> [1] Holzapfel, Gerhard A., and Ray W. Ogden.\n",
+    "    \"Constitutive modelling of passive myocardium:\n",
+    "    a structurally based framework for material characterization.\n",
+    "    \"Philosophical Transactions of the Royal Society of London A:\n",
+    "    Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "import dolfin\n",
+    "import pulse"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "try:\n",
+    "    from dolfin_adjoint import (\n",
+    "        Constant,\n",
+    "        DirichletBC,\n",
+    "        Expression,\n",
+    "        Mesh,\n",
+    "        UnitCubeMesh,\n",
+    "        interpolate,\n",
+    "    )\n",
+    "except ImportError:\n",
+    "    from dolfin import (\n",
+    "        Constant,\n",
+    "        DirichletBC,\n",
+    "        Mesh,\n",
+    "        interpolate,\n",
+    "        Expression,\n",
+    "        UnitCubeMesh,\n",
+    "    )"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "lines_to_next_cell": 2
+   },
+   "outputs": [],
+   "source": [
+    "# Create mesh\n",
+    "N = 2\n",
+    "mesh = UnitCubeMesh(N, N, N)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Create a facet fuction in order to mark the subdomains\n",
+    "ffun = dolfin.MeshFunction(\"size_t\", mesh, 2)\n",
+    "ffun.set_all(0)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Mark subdomains\n",
+    "xlow = dolfin.CompiledSubDomain(\"near(x[0], 0) && on_boundary\")\n",
+    "xlow_marker = 1\n",
+    "xlow.mark(ffun, xlow_marker)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "xhigh = dolfin.CompiledSubDomain(\"near(x[0], 1.0) && on_boundary\")\n",
+    "xhigh_marker = 2\n",
+    "xhigh.mark(ffun, xhigh_marker)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "ylow = dolfin.CompiledSubDomain(\"near(x[0], 0) && on_boundary\")\n",
+    "ylow_marker = 3\n",
+    "ylow.mark(ffun, ylow_marker)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {
+    "lines_to_next_cell": 2
+   },
+   "outputs": [],
+   "source": [
+    "yhigh = dolfin.CompiledSubDomain(\"near(x[1], 1) && on_boundary\")\n",
+    "yhigh_marker = 4\n",
+    "yhigh.mark(ffun, yhigh_marker)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {
+    "lines_to_next_cell": 2
+   },
+   "outputs": [],
+   "source": [
+    "# Collect the functions containing the markers\n",
+    "marker_functions = pulse.MarkerFunctions(ffun=ffun)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Create mictrotructure\n",
+    "V_f = pulse.QuadratureSpace(mesh, 4)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Fibers\n",
+    "f0 = interpolate(Expression((\"1.0\", \"0.0\", \"0.0\"), degree=1), V_f)\n",
+    "# Sheets\n",
+    "s0 = interpolate(Expression((\"0.0\", \"1.0\", \"0.0\"), degree=1), V_f)\n",
+    "# Fiber-sheet normal\n",
+    "n0 = interpolate(Expression((\"0.0\", \"0.0\", \"1.0\"), degree=1), V_f)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Collect the mictrotructure\n",
+    "microstructure = pulse.Microstructure(f0=f0, s0=s0, n0=n0)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Create the geometry\n",
+    "geometry = pulse.Geometry(\n",
+    "    mesh=mesh,\n",
+    "    marker_functions=marker_functions,\n",
+    "    microstructure=microstructure,\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Use the default material parameters\n",
+    "material_parameters = {\"a\": 2.28, \"b\": 9.726, \"a_f\": 1.685, \"b_f\": 15.779}"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {
+    "lines_to_next_cell": 2
+   },
+   "outputs": [],
+   "source": [
+    "# Create material\n",
+    "material = pulse.HolzapfelOgden(parameters=material_parameters)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Eff / Ess strain ratio\n",
+    "strain_ratio = Constant(1.0)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Create costants defined for the dirichlet BC\n",
+    "u0 = Constant(0.0)\n",
+    "x_strain = u0 * strain_ratio / 2\n",
+    "y_strain = u0 * (1 / strain_ratio) / 2"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Make Dirichlet boundary conditions\n",
+    "def dirichlet_bc(W):\n",
+    "    V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)\n",
+    "    return [\n",
+    "        DirichletBC(V.sub(0), Constant(-x_strain), xlow),\n",
+    "        DirichletBC(V.sub(0), Constant(x_strain), xhigh),\n",
+    "        DirichletBC(V.sub(1), Constant(-y_strain), ylow),\n",
+    "        DirichletBC(V.sub(1), Constant(y_strain), yhigh),\n",
+    "    ]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Collect Boundary Conditions\n",
+    "bcs = pulse.BoundaryConditions(dirichlet=(dirichlet_bc,))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Create problem\n",
+    "problem = pulse.MechanicsProblem(geometry, material, bcs)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "2021-05-11 20:33:40,185 - pulse.iterate - INFO - Iterating....\n",
+      "2021-05-11 20:33:40,186 - pulse.iterate - INFO - Current control: 0.000\n",
+      "2021-05-11 20:33:40,187 - pulse.iterate - INFO - Target: 0.000\n",
+      "2021-05-11 20:33:40,240 - pulse.iterate - INFO - Iterating....\n",
+      "2021-05-11 20:33:40,241 - pulse.iterate - INFO - Current control: 0.000\n",
+      "2021-05-11 20:33:40,241 - pulse.iterate - INFO - Target: 0.011\n",
+      "2021-05-11 20:34:17,588 - pulse.iterate - INFO - Iterating....\n",
+      "2021-05-11 20:34:17,589 - pulse.iterate - INFO - Current control: 0.011\n",
+      "2021-05-11 20:34:17,589 - pulse.iterate - INFO - Target: 0.022\n",
+      "2021-05-11 20:34:18,785 - pulse.iterate - INFO - Iterating....\n",
+      "2021-05-11 20:34:18,785 - pulse.iterate - INFO - Current control: 0.022\n",
+      "2021-05-11 20:34:18,786 - pulse.iterate - INFO - Target: 0.033\n",
+      "2021-05-11 20:34:19,095 - pulse.iterate - INFO - Iterating....\n",
+      "2021-05-11 20:34:19,096 - pulse.iterate - INFO - Current control: 0.033\n",
+      "2021-05-11 20:34:19,097 - pulse.iterate - INFO - Target: 0.044\n",
+      "2021-05-11 20:34:20,377 - pulse.iterate - INFO - Iterating....\n",
+      "2021-05-11 20:34:20,377 - pulse.iterate - INFO - Current control: 0.044\n",
+      "2021-05-11 20:34:20,378 - pulse.iterate - INFO - Target: 0.056\n",
+      "2021-05-11 20:34:21,667 - pulse.iterate - INFO - Iterating....\n",
+      "2021-05-11 20:34:21,667 - pulse.iterate - INFO - Current control: 0.056\n",
+      "2021-05-11 20:34:21,668 - pulse.iterate - INFO - Target: 0.067\n",
+      "2021-05-11 20:34:21,972 - pulse.iterate - INFO - Iterating....\n",
+      "2021-05-11 20:34:21,973 - pulse.iterate - INFO - Current control: 0.067\n",
+      "2021-05-11 20:34:21,973 - pulse.iterate - INFO - Target: 0.078\n",
+      "2021-05-11 20:34:22,308 - pulse.iterate - INFO - Iterating....\n",
+      "2021-05-11 20:34:22,309 - pulse.iterate - INFO - Current control: 0.078\n",
+      "2021-05-11 20:34:22,309 - pulse.iterate - INFO - Target: 0.089\n",
+      "2021-05-11 20:34:22,642 - pulse.iterate - INFO - Iterating....\n",
+      "2021-05-11 20:34:22,643 - pulse.iterate - INFO - Current control: 0.089\n",
+      "2021-05-11 20:34:22,643 - pulse.iterate - INFO - Target: 0.100\n",
+      "2021-05-11 20:34:22,985 - pulse.iterate - INFO - Iterating....\n",
+      "2021-05-11 20:34:22,985 - pulse.iterate - INFO - Current control: 0.100\n",
+      "2021-05-11 20:34:22,986 - pulse.iterate - INFO - Target: 0.000\n",
+      "2021-05-11 20:34:34,000 - pulse.iterate - INFO - Iterating....\n",
+      "2021-05-11 20:34:34,001 - pulse.iterate - INFO - Current control: 0.000\n",
+      "2021-05-11 20:34:34,002 - pulse.iterate - INFO - Target: 0.011\n",
+      "2021-05-11 20:34:34,360 - pulse.iterate - INFO - Iterating....\n",
+      "2021-05-11 20:34:34,361 - pulse.iterate - INFO - Current control: 0.011\n",
+      "2021-05-11 20:34:34,361 - pulse.iterate - INFO - Target: 0.022\n",
+      "2021-05-11 20:34:34,764 - pulse.iterate - INFO - Iterating....\n",
+      "2021-05-11 20:34:34,765 - pulse.iterate - INFO - Current control: 0.022\n",
+      "2021-05-11 20:34:34,766 - pulse.iterate - INFO - Target: 0.033\n",
+      "2021-05-11 20:34:36,266 - pulse.iterate - INFO - Iterating....\n",
+      "2021-05-11 20:34:36,267 - pulse.iterate - INFO - Current control: 0.033\n",
+      "2021-05-11 20:34:36,268 - pulse.iterate - INFO - Target: 0.044\n",
+      "2021-05-11 20:34:36,670 - pulse.iterate - INFO - Iterating....\n",
+      "2021-05-11 20:34:36,671 - pulse.iterate - INFO - Current control: 0.044\n",
+      "2021-05-11 20:34:36,672 - pulse.iterate - INFO - Target: 0.056\n",
+      "2021-05-11 20:34:38,401 - pulse.iterate - INFO - Iterating....\n",
+      "2021-05-11 20:34:38,402 - pulse.iterate - INFO - Current control: 0.056\n",
+      "2021-05-11 20:34:38,403 - pulse.iterate - INFO - Target: 0.067\n",
+      "2021-05-11 20:34:38,811 - pulse.iterate - INFO - Iterating....\n",
+      "2021-05-11 20:34:38,812 - pulse.iterate - INFO - Current control: 0.067\n",
+      "2021-05-11 20:34:38,812 - pulse.iterate - INFO - Target: 0.078\n",
+      "2021-05-11 20:34:39,227 - pulse.iterate - INFO - Iterating....\n",
+      "2021-05-11 20:34:39,228 - pulse.iterate - INFO - Current control: 0.078\n",
+      "2021-05-11 20:34:39,228 - pulse.iterate - INFO - Target: 0.089\n",
+      "2021-05-11 20:34:39,645 - pulse.iterate - INFO - Iterating....\n",
+      "2021-05-11 20:34:39,646 - pulse.iterate - INFO - Current control: 0.089\n",
+      "2021-05-11 20:34:39,646 - pulse.iterate - INFO - Target: 0.100\n",
+      "2021-05-11 20:34:40,086 - pulse.iterate - INFO - Iterating....\n",
+      "2021-05-11 20:34:40,086 - pulse.iterate - INFO - Current control: 0.100\n",
+      "2021-05-11 20:34:40,087 - pulse.iterate - INFO - Target: 0.000\n"
+     ]
+    },
+    {
+     "ename": "SolverDidNotConverge",
+     "evalue": "",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m--------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mSolverDidNotConverge\u001b[0m               Traceback (most recent call last)",
+      "\u001b[0;32m<ipython-input-24-66b06ae58ab6>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m     10\u001b[0m     \u001b[0mSsss\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;34m[\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     11\u001b[0m     \u001b[0;32mfor\u001b[0m \u001b[0mxi\u001b[0m \u001b[0;32min\u001b[0m \u001b[0mnp\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mlinspace\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m0\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;36m0.1\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;36m10\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 12\u001b[0;31m         \u001b[0mpulse\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0miterate\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0miterate\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mproblem\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mu0\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mConstant\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mxi\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mreinit_each_step\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;32mTrue\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     13\u001b[0m         \u001b[0mS\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mproblem\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mSecondPiolaStress\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     14\u001b[0m         \u001b[0mE\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mproblem\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mGreenLagrangeStrain\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m~/local/src/pulse/pulse/iterate.py\u001b[0m in \u001b[0;36miterate\u001b[0;34m(problem, control, target, continuation, max_adapt_iter, adapt_step, old_states, old_controls, max_nr_crash, max_iters, initial_number_of_steps, reinit_each_step)\u001b[0m\n\u001b[1;32m    326\u001b[0m         \u001b[0mreinit_each_step\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mreinit_each_step\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    327\u001b[0m     ) as iterator:\n\u001b[0;32m--> 328\u001b[0;31m         \u001b[0mres\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0miterator\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0msolve\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    329\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    330\u001b[0m     \u001b[0;32mreturn\u001b[0m \u001b[0mres\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m~/local/src/pulse/pulse/iterate.py\u001b[0m in \u001b[0;36msolve\u001b[0;34m(self)\u001b[0m\n\u001b[1;32m    422\u001b[0m                 \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0massign_control\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0menlist\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mcontrol_values\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;36m0\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    423\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 424\u001b[0;31m                 \u001b[0;32mraise\u001b[0m \u001b[0mSolverDidNotConverge\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    425\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    426\u001b[0m             \u001b[0mprev_state\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mprev_states\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m-\u001b[0m\u001b[0;36m1\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;31mSolverDidNotConverge\u001b[0m: "
+     ]
+    },
+    {
+     "data": {
+      "image/png": "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\n",
+      "text/plain": [
+       "<Figure size 432x288 with 2 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "# Solve problem\n",
+    "fig, ax = plt.subplots(1, 2)\n",
+    "u0s = [0.045, 0.6, 0.8]\n",
+    "markers = [\"^\", \"s\", \"o\"]\n",
+    "for i, sr in enumerate([2.05, 1.02, 0.48]):\n",
+    "    strain_ratio.assign(sr)\n",
+    "    Effs = []\n",
+    "    Sffs = []\n",
+    "    Esss = []\n",
+    "    Ssss = []\n",
+    "    for xi in np.linspace(0, 0.1, 10):\n",
+    "        pulse.iterate.iterate(problem, u0, Constant(xi), reinit_each_step=True)\n",
+    "        S = problem.SecondPiolaStress()\n",
+    "        E = problem.GreenLagrangeStrain()\n",
+    "\n",
+    "        Sff = dolfin.assemble(dolfin.inner(f0, S * f0) * dolfin.dx)\n",
+    "        Eff = dolfin.assemble(dolfin.inner(f0, E * f0) * dolfin.dx)\n",
+    "\n",
+    "        Effs.append(Eff)\n",
+    "        Sffs.append(Sff)\n",
+    "\n",
+    "        Sss = dolfin.assemble(dolfin.inner(s0, S * s0) * dolfin.dx)\n",
+    "        Ess = dolfin.assemble(dolfin.inner(s0, E * s0) * dolfin.dx)\n",
+    "\n",
+    "        Esss.append(Ess)\n",
+    "        Ssss.append(Sss)\n",
+    "\n",
+    "    ax[0].plot(Effs, Sffs, marker=markers[i], label=f\"SR: {sr:.2f}\")\n",
+    "    ax[1].plot(Esss, Ssss, marker=markers[i], label=f\"SR: {sr:.2f}\")\n",
+    "ax[0].set_ylabel(\"$S_{ff}$ (kPa)\")\n",
+    "ax[1].set_ylabel(\"$S_{ss}$ (kPa)\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "ax[0].set_xlabel(\"$E_{ff}$\")\n",
+    "ax[1].set_xlabel(\"$E_{ss}$\")\n",
+    "for axi in ax:\n",
+    "    axi.legend()\n",
+    "fig.savefig(\"biaxial_test\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "jupytext": {
+   "cell_metadata_filter": "-all",
+   "main_language": "python",
+   "notebook_metadata_filter": "-all"
+  },
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.0"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

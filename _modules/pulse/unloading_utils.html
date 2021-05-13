@@ -1,0 +1,518 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>pulse.unloading_utils &mdash; pulse 2020.2 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> pulse
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2020.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Demos</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../demos/demos.html">Demos</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Programmers reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">pulse</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">pulse</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>pulse.unloading_utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pulse.unloading_utils</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">dolfin</span>
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">annotation</span><span class="p">,</span> <span class="n">numpy_mpi</span>
+<span class="kn">from</span> <span class="nn">.dolfin_utils</span> <span class="kn">import</span> <span class="n">get_pressure</span>
+<span class="kn">from</span> <span class="nn">.io_utils</span> <span class="kn">import</span> <span class="n">check_and_delete</span>
+<span class="kn">from</span> <span class="nn">.iterate</span> <span class="kn">import</span> <span class="n">iterate</span>
+<span class="kn">from</span> <span class="nn">.iterate</span> <span class="kn">import</span> <span class="n">logger</span> <span class="k">as</span> <span class="n">logger_it</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">getLogger</span><span class="p">,</span> <span class="n">mpi_comm_world</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ResidualCalculator"><a class="viewcode-back" href="../../pulse.html#pulse.unloading_utils.ResidualCalculator">[docs]</a><span class="k">class</span> <span class="nc">ResidualCalculator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh</span><span class="p">):</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">spatial</span>
+
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="s2">&quot;Scipy is not install. Residual in the unloading &quot;</span>
+                    <span class="s2">&quot;algorithm cannot be computed. Please install &quot;</span>
+                    <span class="s1">&#39;scipy &quot;pip install scipy&quot; if you want to compute &#39;</span>
+                    <span class="s2">&quot;the residual&quot;</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bbtree</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span> <span class="o">=</span> <span class="n">mesh</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">topology</span><span class="p">()</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span>
+            <span class="n">local_points</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">point</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">vertices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">)]</span>
+            <span class="n">coords</span> <span class="o">=</span> <span class="p">[(</span><span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">p</span><span class="o">.</span><span class="n">y</span><span class="p">(),</span> <span class="n">p</span><span class="o">.</span><span class="n">z</span><span class="p">())</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">local_points</span><span class="p">]</span>
+
+            <span class="c1"># FIXME</span>
+            <span class="n">coords</span> <span class="o">=</span> <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">gather_broadcast</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+            <span class="n">coords</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span> <span class="o">/</span> <span class="n">d</span><span class="p">),</span> <span class="n">d</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">bbtree</span> <span class="o">=</span> <span class="n">spatial</span><span class="o">.</span><span class="n">KDTree</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ResidualCalculator.calculate_residual"><a class="viewcode-back" href="../../pulse.html#pulse.unloading_utils.ResidualCalculator.calculate_residual">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh2</span><span class="p">):</span>
+        <span class="n">boundmesh</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">BoundaryMesh</span><span class="p">(</span><span class="n">mesh2</span><span class="p">,</span> <span class="s2">&quot;exterior&quot;</span><span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bbtree</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">dolfin</span><span class="o">.</span><span class="n">Vertex</span><span class="p">(</span><span class="n">boundmesh</span><span class="p">,</span> <span class="n">v_idx</span><span class="p">)</span><span class="o">.</span><span class="n">point</span><span class="p">()</span><span class="o">.</span><span class="n">array</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">v_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">boundmesh</span><span class="o">.</span><span class="n">num_vertices</span><span class="p">())</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">mpi_comm_world</span><span class="p">(),</span> <span class="n">d</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="save"><a class="viewcode-back" href="../../pulse.html#pulse.unloading_utils.save">[docs]</a><span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">h5name</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">h5group</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Save object to and HDF file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    obj : dolfin.Mesh or dolfin.Function</span>
+<span class="sd">        The object you want to save</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the object</span>
+<span class="sd">    h5group : str</span>
+<span class="sd">        The folder you want to save the object</span>
+<span class="sd">        withing the HDF file. Default: &#39;&#39;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">group</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">h5group</span><span class="p">,</span> <span class="n">name</span><span class="p">])</span>
+    <span class="n">file_mode</span> <span class="o">=</span> <span class="s2">&quot;a&quot;</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">h5name</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;w&quot;</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">h5name</span><span class="p">):</span>
+        <span class="n">check_and_delete</span><span class="p">(</span><span class="n">h5name</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span>
+        <span class="n">file_mode</span> <span class="o">=</span> <span class="s2">&quot;a&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">file_mode</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Save </span><span class="si">{0}</span><span class="s2"> to </span><span class="si">{1}</span><span class="s2">:</span><span class="si">{2}</span><span class="s2">/</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">h5name</span><span class="p">,</span> <span class="n">h5group</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">family</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;Quadrature&quot;</span><span class="p">:</span>
+
+        <span class="n">quad_to_xdmf</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">h5name</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">file_mode</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">HDF5File</span><span class="p">(</span><span class="n">mpi_comm_world</span><span class="p">(),</span> <span class="n">h5name</span><span class="p">,</span> <span class="n">file_mode</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5file</span><span class="p">:</span>
+            <span class="n">h5file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="quad_to_xdmf"><a class="viewcode-back" href="../../pulse.html#pulse.unloading_utils.quad_to_xdmf">[docs]</a><span class="k">def</span> <span class="nf">quad_to_xdmf</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">h5name</span><span class="p">,</span> <span class="n">h5group</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">file_mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">):</span>
+
+    <span class="n">V</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
+    <span class="n">gx</span><span class="p">,</span> <span class="n">gy</span><span class="p">,</span> <span class="n">gz</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">deepcopy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">W</span> <span class="o">=</span> <span class="n">V</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">collapse</span><span class="p">()</span>
+    <span class="c1"># FIXME</span>
+    <span class="n">coords_tmp</span> <span class="o">=</span> <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">gather_broadcast</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">tabulate_dof_coordinates</span><span class="p">())</span>
+    <span class="n">coords</span> <span class="o">=</span> <span class="n">coords_tmp</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">gather_vector</span><span class="p">(</span><span class="n">gx</span><span class="o">.</span><span class="n">vector</span><span class="p">())</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">gather_vector</span><span class="p">(</span><span class="n">gy</span><span class="o">.</span><span class="n">vector</span><span class="p">())</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">gather_vector</span><span class="p">(</span><span class="n">gz</span><span class="o">.</span><span class="n">vector</span><span class="p">())</span>
+    <span class="n">vecs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+    <span class="kn">from</span> <span class="nn">..io_utils</span> <span class="kn">import</span> <span class="n">open_h5py</span><span class="p">,</span> <span class="n">parallel_h5py</span>
+
+    <span class="k">with</span> <span class="n">open_h5py</span><span class="p">(</span><span class="n">h5name</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5file</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">parallel_h5py</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">mpi_comm_world</span><span class="p">()</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+
+                <span class="n">h5file</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">h5group</span><span class="p">,</span> <span class="s2">&quot;coordinates&quot;</span><span class="p">]),</span> <span class="n">data</span><span class="o">=</span><span class="n">coords</span><span class="p">)</span>
+                <span class="n">h5file</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">h5group</span><span class="p">,</span> <span class="s2">&quot;vector&quot;</span><span class="p">]),</span> <span class="n">data</span><span class="o">=</span><span class="n">vecs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">h5file</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">h5group</span><span class="p">,</span> <span class="s2">&quot;coordinates&quot;</span><span class="p">]),</span> <span class="n">data</span><span class="o">=</span><span class="n">coords</span><span class="p">)</span>
+            <span class="n">h5file</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">h5group</span><span class="p">,</span> <span class="s2">&quot;vector&quot;</span><span class="p">]),</span> <span class="n">data</span><span class="o">=</span><span class="n">vecs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="inflate_to_pressure"><a class="viewcode-back" href="../../pulse.html#pulse.unloading_utils.inflate_to_pressure">[docs]</a><span class="k">def</span> <span class="nf">inflate_to_pressure</span><span class="p">(</span><span class="n">target_pressure</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">ntries</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">annotate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Inflate geometry to p = </span><span class="si">{}</span><span class="s2"> kPa&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">target_pressure</span><span class="p">))</span>
+    <span class="n">pressure</span> <span class="o">=</span> <span class="n">get_pressure</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+    <span class="n">solve</span><span class="p">(</span><span class="n">target_pressure</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">pressure</span><span class="p">,</span> <span class="n">ntries</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">annotate</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">problem</span><span class="o">.</span><span class="n">get_displacement</span><span class="p">(</span><span class="n">annotate</span><span class="o">=</span><span class="n">annotate</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="print_volumes"><a class="viewcode-back" href="../../pulse.html#pulse.unloading_utils.print_volumes">[docs]</a><span class="k">def</span> <span class="nf">print_volumes</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span> <span class="n">txt</span><span class="o">=</span><span class="s2">&quot;original&quot;</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">LV Volume of </span><span class="si">{}</span><span class="s2"> geometry = </span><span class="si">{:.3f}</span><span class="s2"> ml&quot;</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">txt</span><span class="p">,</span> <span class="n">geometry</span><span class="o">.</span><span class="n">cavity_volume</span><span class="p">(</span><span class="n">chamber</span><span class="o">=</span><span class="s2">&quot;lv&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">geometry</span><span class="o">.</span><span class="n">is_biv</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="p">(</span><span class="s2">&quot;RV Volume of </span><span class="si">{}</span><span class="s2"> geometry = </span><span class="si">{:.3f}</span><span class="s2"> ml&quot;</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">txt</span><span class="p">,</span> <span class="n">geometry</span><span class="o">.</span><span class="n">cavity_volume</span><span class="p">(</span><span class="n">chamber</span><span class="o">=</span><span class="s2">&quot;rv&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="solve"><a class="viewcode-back" href="../../pulse.html#pulse.unloading_utils.solve">[docs]</a><span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="n">target_pressure</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">pressure</span><span class="p">,</span> <span class="n">ntries</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">annotate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+    <span class="n">annotation</span><span class="o">.</span><span class="n">annotate</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">level</span> <span class="o">=</span> <span class="n">logger_it</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">level</span>
+    <span class="n">logger_it</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+
+    <span class="n">iterate</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">pressure</span><span class="p">,</span> <span class="n">target_pressure</span><span class="p">)</span>
+
+    <span class="n">annotation</span><span class="o">.</span><span class="n">annotate</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="c1"># Only record the last solve, otherwise it becomes too</span>
+    <span class="c1"># expensive memorywise.</span>
+    <span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+
+    <span class="n">logger_it</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deepcopy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">w</span></div>
+
+
+<div class="viewcode-block" id="update_material_parameters"><a class="viewcode-back" href="../../pulse.html#pulse.unloading_utils.update_material_parameters">[docs]</a><span class="k">def</span> <span class="nf">update_material_parameters</span><span class="p">(</span><span class="n">material_parameters</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">merge_control_str</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+
+    <span class="kn">from</span> <span class="nn">..setup_optimization</span> <span class="kn">import</span> <span class="n">RegionalParameter</span><span class="p">,</span> <span class="n">merge_control</span>
+
+    <span class="n">new_matparams</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">material_parameters</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">RegionalParameter</span><span class="p">):</span>
+            <span class="n">geo</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span>
+            <span class="n">geo</span><span class="o">.</span><span class="n">mesh</span> <span class="o">=</span> <span class="n">mesh</span>
+            <span class="n">geo</span><span class="o">.</span><span class="n">sfun</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">MeshFunction</span><span class="p">(</span><span class="s2">&quot;size_t&quot;</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">domains</span><span class="p">())</span>
+            <span class="n">sfun</span> <span class="o">=</span> <span class="n">merge_control</span><span class="p">(</span><span class="n">geo</span><span class="p">,</span> <span class="n">merge_control_str</span><span class="p">)</span>
+
+            <span class="n">v_new</span> <span class="o">=</span> <span class="n">RegionalParameter</span><span class="p">(</span><span class="n">sfun</span><span class="p">)</span>
+            <span class="n">v_arr</span> <span class="o">=</span> <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">gather_vector</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">vector</span><span class="p">())</span>
+
+            <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">assign_to_vector</span><span class="p">(</span><span class="n">v_new</span><span class="o">.</span><span class="n">vector</span><span class="p">(),</span> <span class="n">v_arr</span><span class="p">)</span>
+            <span class="n">new_matparams</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_new</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">):</span>
+            <span class="n">v_new</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span>
+                <span class="n">dolfin</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">())</span>
+            <span class="p">)</span>
+            <span class="n">v_arr</span> <span class="o">=</span> <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">gather_vector</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">vector</span><span class="p">())</span>
+            <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">assign_to_vector</span><span class="p">(</span><span class="n">v_new</span><span class="o">.</span><span class="n">vector</span><span class="p">(),</span> <span class="n">v_arr</span><span class="p">)</span>
+            <span class="n">new_matparams</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_new</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_matparams</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+
+    <span class="k">return</span> <span class="n">new_matparams</span></div>
+
+
+<div class="viewcode-block" id="load_opt_target"><a class="viewcode-back" href="../../pulse.html#pulse.unloading_utils.load_opt_target">[docs]</a><span class="k">def</span> <span class="nf">load_opt_target</span><span class="p">(</span><span class="n">h5name</span><span class="p">,</span> <span class="n">h5group</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;volume&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s2">&quot;simulated&quot;</span><span class="p">):</span>
+
+    <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">h5name</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">vols</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="p">[:][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">f</span><span class="p">[</span><span class="n">h5group</span><span class="p">][</span><span class="s2">&quot;passive_inflation&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">][</span><span class="n">data</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+
+    <span class="k">return</span> <span class="n">vols</span></div>
+
+
+<div class="viewcode-block" id="save_unloaded_geometry"><a class="viewcode-back" href="../../pulse.html#pulse.unloading_utils.save_unloaded_geometry">[docs]</a><span class="k">def</span> <span class="nf">save_unloaded_geometry</span><span class="p">(</span><span class="n">new_geometry</span><span class="p">,</span> <span class="n">h5name</span><span class="p">,</span> <span class="n">h5group</span><span class="p">,</span> <span class="n">backward_displacement</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;fiber&quot;</span><span class="p">,</span> <span class="s2">&quot;sheet&quot;</span><span class="p">,</span> <span class="s2">&quot;sheet_normal&quot;</span><span class="p">]</span>
+    <span class="n">local_basis</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;circumferential&quot;</span><span class="p">,</span> <span class="s2">&quot;radial&quot;</span><span class="p">,</span> <span class="s2">&quot;longitudinal&quot;</span><span class="p">]</span>
+
+    <span class="n">new_fields</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">fattr</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">new_geometry</span><span class="p">,</span> <span class="n">fattr</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">new_geometry</span><span class="p">,</span> <span class="n">fattr</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">new_geometry</span><span class="p">,</span> <span class="n">fattr</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">fattr</span><span class="p">,</span> <span class="s2">&quot;microstructure&quot;</span><span class="p">)</span>
+            <span class="n">new_fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+            <span class="n">new_local_basis</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">fattr</span> <span class="ow">in</span> <span class="n">local_basis</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">new_geometry</span><span class="p">,</span> <span class="n">fattr</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">new_geometry</span><span class="p">,</span> <span class="n">fattr</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">new_geometry</span><span class="p">,</span> <span class="n">fattr</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">fattr</span><span class="p">,</span> <span class="s2">&quot;local_basis_function&quot;</span><span class="p">)</span>
+            <span class="n">new_local_basis</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Save geometry to </span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5name</span><span class="p">,</span> <span class="n">h5group</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">backward_displacement</span><span class="p">:</span>
+        <span class="n">other_functions</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;backward_displacement&quot;</span><span class="p">:</span> <span class="n">backward_displacement</span><span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">other_functions</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="kn">from</span> <span class="nn">mesh_generation.mesh_utils</span> <span class="kn">import</span> <span class="n">save_geometry_to_h5</span>
+
+    <span class="n">save_geometry_to_h5</span><span class="p">(</span>
+        <span class="n">new_geometry</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span>
+        <span class="n">h5name</span><span class="p">,</span>
+        <span class="n">h5group</span><span class="p">,</span>
+        <span class="n">new_geometry</span><span class="o">.</span><span class="n">markers</span><span class="p">,</span>
+        <span class="n">new_fields</span><span class="p">,</span>
+        <span class="n">new_local_basis</span><span class="p">,</span>
+        <span class="n">other_functions</span><span class="o">=</span><span class="n">other_functions</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="continuation_step"><a class="viewcode-back" href="../../pulse.html#pulse.unloading_utils.continuation_step">[docs]</a><span class="k">def</span> <span class="nf">continuation_step</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">it_</span><span class="p">,</span> <span class="n">paramvec</span><span class="p">):</span>
+
+    <span class="c1"># Use data from the two prevoious steps and continuation</span>
+    <span class="c1"># to get a good next gues</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">vols</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">v_target</span> <span class="o">=</span> <span class="n">load_opt_target</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;sim_file&quot;</span><span class="p">],</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;volume&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">it_</span><span class="p">):</span>
+        <span class="n">p_tmp</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">paramvec</span><span class="o">.</span><span class="n">function_space</span><span class="p">())</span>
+        <span class="n">load_material_parameter</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;sim_file&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">it</span><span class="p">),</span> <span class="n">p_tmp</span><span class="p">)</span>
+
+        <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">numpy_mpi</span><span class="o">.</span><span class="n">gather_vector</span><span class="p">(</span><span class="n">p_tmp</span><span class="o">.</span><span class="n">vector</span><span class="p">()))</span>
+
+        <span class="n">v</span> <span class="o">=</span> <span class="n">load_opt_target</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;sim_file&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">it</span><span class="p">),</span> <span class="s2">&quot;volume&quot;</span><span class="p">,</span> <span class="s2">&quot;simulated&quot;</span><span class="p">)</span>
+        <span class="n">vols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+    <span class="n">ed_vols</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">vols</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="c1"># Make continuation approximation</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="p">(</span><span class="n">v_target</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">ed_vols</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">ed_vols</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">ed_vols</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">a_cont</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">delta</span><span class="p">)</span> <span class="o">*</span> <span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">delta</span> <span class="o">*</span> <span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">a_prev</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Make sure next step is not to far away</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">a_cont</span><span class="p">,</span> <span class="s2">&quot;__len__&quot;</span><span class="p">):</span>
+
+        <span class="n">a_next</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">a_cont</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">a_prev</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="n">a_prev</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a_cont</span><span class="p">))</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Just make sure that we are within the given bounds</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="nb">min</span><span class="p">(</span>
+                    <span class="nb">max</span><span class="p">(</span><span class="n">a_next</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;Optimization_parameters&quot;</span><span class="p">][</span><span class="s2">&quot;matparams_min&quot;</span><span class="p">]),</span>
+                    <span class="n">params</span><span class="p">[</span><span class="s2">&quot;Optimization_parameters&quot;</span><span class="p">][</span><span class="s2">&quot;matparams_max&quot;</span><span class="p">],</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a_cont</span><span class="p">))</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="n">a_next</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">a_cont</span><span class="p">,</span> <span class="n">a_prev</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="n">a_prev</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># Just make sure that we are within the given bounds</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+            <span class="nb">max</span><span class="p">(</span><span class="n">a_next</span><span class="p">,</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;Optimization_parameters&quot;</span><span class="p">][</span><span class="s2">&quot;matparams_min&quot;</span><span class="p">]),</span>
+            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;Optimization_parameters&quot;</span><span class="p">][</span><span class="s2">&quot;matparams_max&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+
+    <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">assign_to_vector</span><span class="p">(</span><span class="n">paramvec</span><span class="o">.</span><span class="n">vector</span><span class="p">(),</span> <span class="n">a</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="load_material_parameter"><a class="viewcode-back" href="../../pulse.html#pulse.unloading_utils.load_material_parameter">[docs]</a><span class="k">def</span> <span class="nf">load_material_parameter</span><span class="p">(</span><span class="n">h5name</span><span class="p">,</span> <span class="n">h5group</span><span class="p">,</span> <span class="n">paramvec</span><span class="p">):</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Load </span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5name</span><span class="p">,</span> <span class="n">h5group</span><span class="p">))</span>
+    <span class="n">group</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">h5group</span><span class="p">,</span> <span class="s2">&quot;passive_inflation&quot;</span><span class="p">,</span> <span class="s2">&quot;optimal_control&quot;</span><span class="p">])</span>
+    <span class="k">with</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">HDF5File</span><span class="p">(</span><span class="n">mpi_comm_world</span><span class="p">(),</span> <span class="n">h5name</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5file</span><span class="p">:</span>
+        <span class="n">h5file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">paramvec</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Henrik Finsberg.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

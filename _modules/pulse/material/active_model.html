@@ -1,0 +1,342 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>pulse.material.active_model &mdash; pulse 2020.2 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> pulse
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2020.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Demos</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../demos/demos.html">Demos</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Programmers reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">pulse</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pulse</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../material.html">pulse.material</a> &raquo;</li>
+        
+      <li>pulse.material.active_model</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pulse.material.active_model</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># c) 2001-2017 Simula Research Laboratory ALL RIGHTS RESERVED</span>
+<span class="c1"># Authors: Henrik Finsberg</span>
+<span class="c1"># END-USER LICENSE AGREEMENT</span>
+<span class="c1"># PLEASE READ THIS DOCUMENT CAREFULLY. By installing or using this</span>
+<span class="c1"># software you agree with the terms and conditions of this license</span>
+<span class="c1"># agreement. If you do not accept the terms of this license agreement</span>
+<span class="c1"># you may not install or use this software.</span>
+
+<span class="c1"># Permission to use, copy, modify and distribute any part of this</span>
+<span class="c1"># software for non-profit educational and research purposes, without</span>
+<span class="c1"># fee, and without a written agreement is hereby granted, provided</span>
+<span class="c1"># that the above copyright notice, and this license agreement in its</span>
+<span class="c1"># entirety appear in all copies. Those desiring to use this software</span>
+<span class="c1"># for commercial purposes should contact Simula Research Laboratory AS:</span>
+<span class="c1"># post@simula.no</span>
+<span class="c1">#</span>
+<span class="c1"># IN NO EVENT SHALL SIMULA RESEARCH LABORATORY BE LIABLE TO ANY PARTY</span>
+<span class="c1"># FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES,</span>
+<span class="c1"># INCLUDING LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE</span>
+<span class="c1"># &quot;PULSE-ADJOINT&quot; EVEN IF SIMULA RESEARCH LABORATORY HAS BEEN ADVISED</span>
+<span class="c1"># OF THE POSSIBILITY OF SUCH DAMAGE. THE SOFTWARE PROVIDED HEREIN IS</span>
+<span class="c1"># ON AN &quot;AS IS&quot; BASIS, AND SIMULA RESEARCH LABORATORY HAS NO OBLIGATION</span>
+<span class="c1"># TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.</span>
+<span class="c1"># SIMULA RESEARCH LABORATORY MAKES NO REPRESENTATIONS AND EXTENDS NO</span>
+<span class="c1"># WARRANTIES OF ANY KIND, EITHER IMPLIED OR EXPRESSED, INCLUDING, BUT</span>
+<span class="c1"># NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">dolfin_adjoint</span> <span class="kn">import</span> <span class="n">Constant</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">dolfin</span> <span class="kn">import</span> <span class="n">Constant</span>
+
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">kinematics</span>
+<span class="kn">from</span> <span class="nn">..dolfin_utils</span> <span class="kn">import</span> <span class="n">RegionalParameter</span>
+
+
+<div class="viewcode-block" id="ActiveModel"><a class="viewcode-back" href="../../../pulse.material.html#pulse.material.active_model.ActiveModel">[docs]</a><span class="k">class</span> <span class="nc">ActiveModel</span><span class="p">(</span><span class="n">kinematics</span><span class="o">.</span><span class="n">Invariants</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">activation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">f0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">s0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">n0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">T_ref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">isochoric</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+
+        <span class="c1"># Fiber system</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f0</span> <span class="o">=</span> <span class="n">f0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s0</span> <span class="o">=</span> <span class="n">s0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n0</span> <span class="o">=</span> <span class="n">n0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_activation</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">Constant</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;activation&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">activation</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">activation</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">T_ref</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">Constant</span><span class="p">(</span><span class="n">T_ref</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;T_ref&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">T_ref</span> <span class="k">else</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;T_ref&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">kinematics</span><span class="o">.</span><span class="n">Invariants</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isochoric</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">model_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
+
+<div class="viewcode-block" id="ActiveModel.Wactive"><a class="viewcode-back" href="../../../pulse.material.html#pulse.material.active_model.ActiveModel.Wactive">[docs]</a>    <span class="k">def</span> <span class="nf">Wactive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">0</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">eta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">activation_field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the activation field.</span>
+<span class="sd">        If regional, this will return a piecewise</span>
+<span class="sd">        constant function (DG_0)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Activation</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_activation</span><span class="p">,</span> <span class="n">RegionalParameter</span><span class="p">):</span>
+            <span class="c1"># This means a regional activation</span>
+            <span class="c1"># Could probably make this a bit more clean</span>
+            <span class="n">activation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_activation</span><span class="o">.</span><span class="n">function</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">activation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_activation</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">T_ref</span> <span class="o">*</span> <span class="n">activation</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">activation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the activation paramter.</span>
+<span class="sd">        If regional, this will return one parameter</span>
+<span class="sd">        for each segment.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_activation</span>
+
+    <span class="nd">@activation</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">activation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_activation</span> <span class="o">=</span> <span class="n">f</span>
+
+<div class="viewcode-block" id="ActiveModel.I1"><a class="viewcode-back" href="../../../pulse.material.html#pulse.material.active_model.ActiveModel.I1">[docs]</a>    <span class="k">def</span> <span class="nf">I1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">F</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_I1</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Fe</span><span class="p">(</span><span class="n">F</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="ActiveModel.I2"><a class="viewcode-back" href="../../../pulse.material.html#pulse.material.active_model.ActiveModel.I2">[docs]</a>    <span class="k">def</span> <span class="nf">I2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">F</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_I2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Fe</span><span class="p">(</span><span class="n">F</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="ActiveModel.I3"><a class="viewcode-back" href="../../../pulse.material.html#pulse.material.active_model.ActiveModel.I3">[docs]</a>    <span class="k">def</span> <span class="nf">I3</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">F</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_I3</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Fe</span><span class="p">(</span><span class="n">F</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="ActiveModel.I4"><a class="viewcode-back" href="../../../pulse.material.html#pulse.material.active_model.ActiveModel.I4">[docs]</a>    <span class="k">def</span> <span class="nf">I4</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">a0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_I4</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Fe</span><span class="p">(</span><span class="n">F</span><span class="p">),</span> <span class="n">a0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ActiveModel.I5"><a class="viewcode-back" href="../../../pulse.material.html#pulse.material.active_model.ActiveModel.I5">[docs]</a>    <span class="k">def</span> <span class="nf">I5</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">a0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_I5</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Fe</span><span class="p">(</span><span class="n">F</span><span class="p">),</span> <span class="n">a0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ActiveModel.I6"><a class="viewcode-back" href="../../../pulse.material.html#pulse.material.active_model.ActiveModel.I6">[docs]</a>    <span class="k">def</span> <span class="nf">I6</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">a0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_I6</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Fe</span><span class="p">(</span><span class="n">F</span><span class="p">),</span> <span class="n">a0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ActiveModel.I7"><a class="viewcode-back" href="../../../pulse.material.html#pulse.material.active_model.ActiveModel.I7">[docs]</a>    <span class="k">def</span> <span class="nf">I7</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">a0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_I7</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Fe</span><span class="p">(</span><span class="n">F</span><span class="p">),</span> <span class="n">a0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ActiveModel.I8"><a class="viewcode-back" href="../../../pulse.material.html#pulse.material.active_model.ActiveModel.I8">[docs]</a>    <span class="k">def</span> <span class="nf">I8</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">b0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_I8</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Fe</span><span class="p">(</span><span class="n">F</span><span class="p">),</span> <span class="n">a0</span><span class="p">,</span> <span class="n">b0</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Henrik Finsberg.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

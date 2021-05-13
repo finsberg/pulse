@@ -1,0 +1,267 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>pulse.setup_parameters &mdash; pulse 2020.2 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> pulse
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2020.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Demos</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../demos/demos.html">Demos</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Programmers reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">pulse</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">pulse</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>pulse.setup_parameters</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pulse.setup_parameters</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="kn">import</span> <span class="nn">dolfin</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">parameters</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Parameters</span><span class="p">(</span><span class="s2">&quot;Pulse_parameters&quot;</span><span class="p">)</span>
+<span class="n">parameters</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;log_level&quot;</span><span class="p">,</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">get_log_level</span><span class="p">())</span>
+
+
+<div class="viewcode-block" id="setup_general_parameters"><a class="viewcode-back" href="../../pulse.html#pulse.setup_parameters.setup_general_parameters">[docs]</a><span class="k">def</span> <span class="nf">setup_general_parameters</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters to speed up the compiler</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Parameter for the compiler</span>
+    <span class="n">flags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-O3&quot;</span><span class="p">,</span> <span class="s2">&quot;-ffast-math&quot;</span><span class="p">,</span> <span class="s2">&quot;-march=native&quot;</span><span class="p">]</span>
+    <span class="n">dolfin</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;form_compiler&quot;</span><span class="p">][</span><span class="s2">&quot;quadrature_degree&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">dolfin</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;form_compiler&quot;</span><span class="p">][</span><span class="s2">&quot;representation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;uflacs&quot;</span>
+    <span class="n">dolfin</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;form_compiler&quot;</span><span class="p">][</span><span class="s2">&quot;cpp_optimize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">dolfin</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;form_compiler&quot;</span><span class="p">][</span><span class="s2">&quot;cpp_optimize_flags&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">flags</span><span class="p">)</span>
+
+    <span class="c1"># dolfin.set_log_active(False)</span>
+    <span class="n">dolfin</span><span class="o">.</span><span class="n">set_log_level</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="setup_unloading_parameters"><a class="viewcode-back" href="../../pulse.html#pulse.setup_parameters.setup_unloading_parameters">[docs]</a><span class="k">def</span> <span class="nf">setup_unloading_parameters</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters for coupled unloading/material parameter</span>
+<span class="sd">    estimation.</span>
+
+<span class="sd">    For info about the different parameters,</span>
+<span class="sd">    see the unloading module.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">params</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Parameters</span><span class="p">(</span><span class="s2">&quot;Unloading_parameters&quot;</span><span class="p">)</span>
+
+    <span class="n">params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;method&quot;</span><span class="p">,</span> <span class="s2">&quot;fixed_point&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;fixed_point&quot;</span><span class="p">,</span> <span class="s2">&quot;raghavan&quot;</span><span class="p">])</span>
+    <span class="c1"># Terminate if difference in reference (unloaded) volume</span>
+    <span class="c1"># is less than tol</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;tol&quot;</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">)</span>
+    <span class="c1"># Maximum number of coupled iterations</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;maxiter&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="c1"># Apply conitinuation step</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;continuation&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># Estimate initial guess based on loaded configuration</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;estimate_initial_guess&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">unload_options</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Parameters</span><span class="p">(</span><span class="s2">&quot;unload_options&quot;</span><span class="p">)</span>
+    <span class="n">unload_options</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;maxiter&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="n">unload_options</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;tol&quot;</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)</span>
+    <span class="n">unload_options</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;ub&quot;</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+    <span class="n">unload_options</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;lb&quot;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">unload_options</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;regen_fibers&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">unload_options</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">params</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Henrik Finsberg.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
