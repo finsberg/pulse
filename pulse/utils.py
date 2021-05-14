@@ -4,6 +4,7 @@ import logging
 import os
 
 import dolfin
+import numpy as np
 
 
 def log_if_process0(record):
@@ -81,6 +82,32 @@ try:
     annotation = Annotation()
 except Exception:
     annotation = None
+
+
+class Enlisted(tuple):
+    pass
+
+
+def enlist(x, force_enlist=False):
+    if isinstance(x, Enlisted):
+        return x
+    elif isinstance(x, (list, tuple, np.ndarray)):
+        if force_enlist:
+            return Enlisted([x])
+        else:
+            return Enlisted(x)
+    else:
+        return Enlisted([x])
+
+
+def delist(x):
+    if isinstance(x, Enlisted):
+        if len(x) == 1:
+            return x[0]
+        else:
+            return x
+    else:
+        return x
 
 
 def mpi_comm_world():

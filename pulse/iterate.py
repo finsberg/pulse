@@ -17,35 +17,9 @@ except ImportError:
 from . import numpy_mpi, parameters
 from .dolfin_utils import get_constant
 from .mechanicsproblem import SolverDidNotConverge
-from .utils import getLogger, value_size
+from .utils import Enlisted, delist, enlist, getLogger, value_size
 
 logger = getLogger(__name__)
-
-
-class Enlisted(tuple):
-    pass
-
-
-def enlist(x, force_enlist=False):
-    if isinstance(x, Enlisted):
-        return x
-    elif isinstance(x, (list, tuple, np.ndarray)):
-        if force_enlist:
-            return Enlisted([x])
-        else:
-            return Enlisted(x)
-    else:
-        return Enlisted([x])
-
-
-def delist(x):
-    if isinstance(x, Enlisted):
-        if len(x) == 1:
-            return x[0]
-        else:
-            return x
-    else:
-        return x
 
 
 def copy(f, deepcopy=True, name="copied_function"):
