@@ -6,23 +6,11 @@ import dolfin
 import ufl
 
 try:
-    from dolfin_adjoint import (
-        Constant,
-        Function,
-        FunctionAssigner,
-        NonlinearVariationalProblem,
-        NonlinearVariationalSolver,
-    )
+    from dolfin_adjoint import Constant, Function, FunctionAssigner
 
     has_dolfin_adjoint = True
 except ImportError:
-    from dolfin import (
-        Constant,
-        Function,
-        FunctionAssigner,
-        NonlinearVariationalProblem,
-        NonlinearVariationalSolver,
-    )
+    from dolfin import Constant, Function, FunctionAssigner
 
     has_dolfin_adjoint = False
 
@@ -36,6 +24,7 @@ from . import kinematics
 from .dolfin_utils import list_sum
 from .geometry import Geometry, HeartGeometry
 from .material import Material
+from .solver import NonlinearProblem, NonLinearSolver
 from .utils import get_lv_marker, getLogger, set_default_none
 
 logger = getLogger(__name__)
@@ -188,7 +177,7 @@ class MechanicsProblem(object):
 
         self._init_spaces()
         self._init_forms()
-        self.solver_parameters = MechanicsProblem.defaul_solver_parameters()
+        self.solver_parameters = MechanicsProblem.default_solver_parameters()
         if solver_parameters is not None:
             self.solver_parameters.update(**solver_parameters)
 
@@ -236,6 +225,13 @@ class MechanicsProblem(object):
             self._virtual_work += external_work
 
         self._set_dirichlet_bc()
+        self._jacobian = dolfin.derivative(
+            self._virtual_work, self.state, dolfin.TrialFunction(self.state_space)
+        )
+        self._problem = NonlinearProblem(
+            J=self._jacobian, F=self._virtual_work, bcs=self._dirichlet_bc
+        )
+        self.solver = NonLinearSolver(self._problem, self.state)
 
     def _set_dirichlet_bc(self):
         # DirichletBC
@@ -303,7 +299,7 @@ class MechanicsProblem(object):
         self._init_forms()
 
     @staticmethod
-    def defaul_solver_parameters():
+    def default_solver_parameters():
         params = dolfin.NonlinearVariationalSolver.default_parameters()
         params["newton_solver"]["linear_solver"] = "mumps"
         return params
@@ -318,10 +314,6 @@ class MechanicsProblem(object):
 
         """
 
-        self._jacobian = dolfin.derivative(
-            self._virtual_work, self.state, dolfin.TrialFunction(self.state_space)
-        )
-
         logger.debug("Solving variational problem")
         # Get old state in case of non-convergence
         if has_dolfin_adjoint:
@@ -334,16 +326,11 @@ class MechanicsProblem(object):
 
         else:
             old_state = self.state.copy(deepcopy=True)
-        problem = NonlinearVariationalProblem(
-            self._virtual_work, self.state, self._dirichlet_bc, self._jacobian
-        )
-
-        solver = NonlinearVariationalSolver(problem)
-        solver.parameters.update(self.solver_parameters)
 
         try:
             logger.debug("Try to solve")
-            nliter, nlconv = solver.solve()
+            nliter, nlconv = self.solver.solve()
+
             if not nlconv:
                 logger.debug("Failed")
                 raise SolverDidNotConverge("Solver did not converge...")

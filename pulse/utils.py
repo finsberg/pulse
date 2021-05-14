@@ -22,7 +22,7 @@ mpi_filt.filter = log_if_process0
 def getLogger(name):
     import daiquiri
 
-    logger = daiquiri.getLogger(__name__)
+    logger = daiquiri.getLogger(name)
     logger.logger.addFilter(mpi_filt)
     return logger
 
@@ -72,7 +72,7 @@ class Annotation(object):
                 # Dolfin-adjoint is most likely not installed
                 pass
             else:
-                _stop_annotating = not annotate
+                _stop_annotating = not annotate  # noqa: F841,F811
 
         # Update local variable
         self._annotate = annotate
