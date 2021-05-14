@@ -46,7 +46,7 @@ jobs:
       - run:
           name: run tests
           command: |
-            python3 -m pytest -v tests
+            python3 -m pytest
 
       - save_cache:
           key: v2-dolfin-jit-cache
