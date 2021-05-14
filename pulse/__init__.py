@@ -32,9 +32,11 @@ from . import dolfin_utils
 from . import io_utils
 from . import numpy_mpi
 from . import kinematics
+from . import solver
 from . import mechanicsproblem
 from . import iterate
 from . import unloader
+
 
 # Subpackages
 from . import material
@@ -50,12 +52,14 @@ from .geometry import (
     MarkerFunctions,
 )
 from .example_meshes import mesh_paths
-from pulse.mechanicsproblem import (
+from .solver import NonlinearProblem, NonlinearSolver
+from .mechanicsproblem import (
     MechanicsProblem,
     BoundaryConditions,
     NeumannBC,
     RobinBC,
 )
+
 from .dolfin_utils import QuadratureSpace, MixedParameter, RegionalParameter
 
 from .kinematics import (

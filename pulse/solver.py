@@ -1,14 +1,19 @@
 import sys
 import time
 
-import dolfin as df
+import dolfin
+
+try:
+    from dolfin_adjoint import as_backend_type, assemble
+except ImportError:
+    from dolfin import assemble, as_backend_type
 
 from .utils import enlist, getLogger, mpi_comm_world
 
 logger = getLogger(__name__)
 
 
-class NonlinearProblem(df.NonlinearProblem):
+class NonlinearProblem(dolfin.NonlinearProblem):
     def __init__(
         self, J, F, bcs, output_matrix=False, output_matrix_path="output", **kwargs
     ):
@@ -23,19 +28,19 @@ class NonlinearProblem(df.NonlinearProblem):
         self.n = 0
 
     def F(self, b, x):
-        df.assemble(self.linear_form, tensor=b)
+        assemble(self.linear_form, tensor=b)
         for bc in self.bcs:
             bc.apply(b, x)
 
     def J(self, A, x):
-        df.assemble(self.bilinear_form, tensor=A)
+        assemble(self.bilinear_form, tensor=A)
         for bc in self.bcs:
             bc.apply(A)
 
         if self.output_matrix:
             filename = "{}/J_{:04d}.mtx".format(self.output_matrix_path, self.n)
             with open(filename, "w") as f:
-                mat = df.as_backend_type(A).mat()
+                mat = as_backend_type(A).mat()
                 (num_rows, num_columns) = mat.size
                 (ai, aj, av) = mat.getValuesCSR()
                 num_nonzeros = len(av)
@@ -51,7 +56,7 @@ class NonlinearProblem(df.NonlinearProblem):
             self.n = self.n + 1
 
 
-class NonLinearSolver:
+class NonlinearSolver:
     def __init__(
         self, problem: NonlinearProblem, state, parameters=None, verbose=False
     ):
@@ -60,7 +65,7 @@ class NonLinearSolver:
         self._problem = problem
         self._state = state
 
-        self._solver = df.PETScSNESSolver(mpi_comm_world())
+        self._solver = dolfin.PETScSNESSolver(mpi_comm_world())
         self._solver.parameters.update(self.parameters)
         self._snes = self._solver.snes()
         self._snes.setConvergenceHistory()
@@ -72,19 +77,19 @@ class NonLinearSolver:
         logger.info(f" Size          : {self._state.function_space().dim()}")
 
     def _handle_parameters(self, parameters, verbose):
-        ps = NonLinearSolver.default_solver_parameters()
+        ps = NonlinearSolver.default_solver_parameters()
         if parameters is not None:
             ps.update(parameters)
         petsc = ps.pop("petsc")
         for k, v in petsc.items():
             if v is not None:
-                df.PETScOptions.set(k, v)
+                dolfin.PETScOptions.set(k, v)
         if verbose:
-            df.PETScOptions.set("ksp_monitor")
-            df.PETScOptions.set("log_view")
-            df.PETScOptions.set("ksp_view")
-            df.PETScOptions.set("pc_view")
-            df.PETScOptions.set("mat_superlu_dist_statprint", True)
+            dolfin.PETScOptions.set("ksp_monitor")
+            dolfin.PETScOptions.set("log_view")
+            dolfin.PETScOptions.set("ksp_view")
+            dolfin.PETScOptions.set("pc_view")
+            dolfin.PETScOptions.set("mat_superlu_dist_statprint", True)
             ps["lu_solver"]["report"] = True
             ps["lu_solver"]["vebose"] = True
             ps["report"] = True

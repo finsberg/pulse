@@ -24,7 +24,7 @@ from . import kinematics
 from .dolfin_utils import list_sum
 from .geometry import Geometry, HeartGeometry
 from .material import Material
-from .solver import NonlinearProblem, NonLinearSolver
+from .solver import NonlinearProblem, NonlinearSolver
 from .utils import get_lv_marker, getLogger, set_default_none
 
 logger = getLogger(__name__)
@@ -231,7 +231,7 @@ class MechanicsProblem(object):
         self._problem = NonlinearProblem(
             J=self._jacobian, F=self._virtual_work, bcs=self._dirichlet_bc
         )
-        self.solver = NonLinearSolver(self._problem, self.state)
+        self.solver = NonlinearSolver(self._problem, self.state)
 
     def _set_dirichlet_bc(self):
         # DirichletBC
