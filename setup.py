@@ -31,7 +31,7 @@ REQUIRED = ["h5py", "numpy", "scipy", "daiquiri"]
 EXTRAS = {
     "test": ["jupytext", "flake8", "pytest", "pytest-cov", "black", "mypy"],
     "plot": ["matplotlib", "fenics-plotly"],
-    "docs": ["pandoc", "Sphinx", "sphinx_rtd_theme", "nbsphinx"],
+    "docs": ["pandoc", "Sphinx", "sphinx_rtd_theme", "nbsphinx", "sphinx-gallery"],
     "dev": [
         "pre-commit",
         "bump2version",

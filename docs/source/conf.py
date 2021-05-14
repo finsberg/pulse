@@ -126,24 +126,22 @@ extensions = [
     "sphinx_gallery.load_style",
     "IPython.sphinxext.ipython_console_highlighting",
     "sphinx.ext.graphviz",  # Dependency diagrams
-    "notfound.extension",
-    "hoverxref.extension",
-    "myst_parser",
+    # "myst_parser",
 ]
 
-# Hoverxref Extension
-hoverxref_auto_ref = True
-hoverxref_mathjax = True
-hoverxref_domains = ["py"]
-hoverxref_role_types = {
-    "hoverxref": "modal",
-    "ref": "modal",  # for hoverxref_auto_ref config
-    "confval": "tooltip",  # for custom object
-    "mod": "tooltip",  # for Python Sphinx Domain
-    "class": "tooltip",  # for Python Sphinx Domain
-    "meth": "tooltip",
-    "obj": "tooltip",
-}
+# # Hoverxref Extension
+# hoverxref_auto_ref = True
+# hoverxref_mathjax = True
+# hoverxref_domains = ["py"]
+# hoverxref_role_types = {
+#     "hoverxref": "modal",
+#     "ref": "modal",  # for hoverxref_auto_ref config
+#     "confval": "tooltip",  # for custom object
+#     "mod": "tooltip",  # for Python Sphinx Domain
+#     "class": "tooltip",  # for Python Sphinx Domain
+#     "meth": "tooltip",
+#     "obj": "tooltip",
+# }
 
 try:
     import matplotlib.sphinxext.plot_directive  # noqa: F401
