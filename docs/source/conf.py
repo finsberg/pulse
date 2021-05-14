@@ -26,6 +26,8 @@ from pathlib import Path
 from textwrap import dedent
 from unittest import mock
 
+import sphinx_rtd_theme  # noqa: E401
+
 sys.modules["dolfin"] = mock.Mock()
 
 import pulse  # noqa: E402
@@ -121,7 +123,27 @@ extensions = [
     "sphinx.ext.githubpages",
     "sphinx.ext.napoleon",
     "nbsphinx",
+    "sphinx_gallery.load_style",
+    "IPython.sphinxext.ipython_console_highlighting",
+    "sphinx.ext.graphviz",  # Dependency diagrams
+    "notfound.extension",
+    "hoverxref.extension",
+    "myst_parser",
 ]
+
+# Hoverxref Extension
+hoverxref_auto_ref = True
+hoverxref_mathjax = True
+hoverxref_domains = ["py"]
+hoverxref_role_types = {
+    "hoverxref": "modal",
+    "ref": "modal",  # for hoverxref_auto_ref config
+    "confval": "tooltip",  # for custom object
+    "mod": "tooltip",  # for Python Sphinx Domain
+    "class": "tooltip",  # for Python Sphinx Domain
+    "meth": "tooltip",
+    "obj": "tooltip",
+}
 
 try:
     import matplotlib.sphinxext.plot_directive  # noqa: F401
@@ -134,14 +156,14 @@ except ImportError:
 
 
 # Enable plotly figure in the docs
-nbsphinx_prolog = r"""
-.. raw:: html
+# nbsphinx_prolog = r"""
+# .. raw:: html
 
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js'></script>
-    <script>require=requirejs;</script>
-    <script src="https://cdn.plot.ly/plotly-1.2.0.min.js"></script>
+#     <script src='https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js'></script>
+#     <script>require=requirejs;</script>
+#     <script src="https://cdn.plot.ly/plotly-1.2.0.min.js"></script>
 
-"""
+# """
 nbsphinx_timeout = -1
 
 
@@ -150,11 +172,22 @@ nbsphinx_execute = "never"
 nbsphinx_allow_errors = True
 
 
+def setup(app):
+    # https://docs.readthedocs.io/en/latest/guides/adding-custom-css.html
+    # https://www.sphinx-doc.org/en/master/extdev/appapi.html#sphinx.application.Sphinx.add_js_file
+    app.add_js_file(
+        "https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"
+    )
+
+
 autosummary_generate = True
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "dolfin": ("https://fenicsproject.org/olddocs/dolfin/latest/python", None),
     "ufl": ("https://fenics.readthedocs.io/projects/ufl/en/latest/", None),
+    "numpy": ("https://docs.scipy.org/doc/numpy/", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
+    "matplotlib": ("https://matplotlib.org", None),
 }
 inheritance_node_attrs = dict(
     shape="ellipse", fontsize=12, color="orange", style="filled"
@@ -195,6 +228,7 @@ todo_include_todos = False
 # a list of builtin themes.
 #
 html_theme = "sphinx_rtd_theme"
+html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
