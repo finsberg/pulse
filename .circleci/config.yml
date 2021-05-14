@@ -14,6 +14,9 @@ executors:
   fenics-2017:
     docker:
       - image: finsberg/fenics2017
+  fenics-finsberg:
+    docker:
+      - image: finsberg/fenics
 
 jobs:
   test:
@@ -66,7 +69,13 @@ workflows:
       - test:
           matrix:
             parameters:
-              fenics: [fenics-latest, fenics-2017, fenics-adjoint-latest]
+              fenics:
+                [
+                  fenics-latest,
+                  fenics-2017,
+                  fenics-adjoint-latest,
+                  fenics-finsberg,
+                ]
           filters:
             branches:
               only: master

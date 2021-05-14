@@ -130,6 +130,8 @@ try:
 except ImportError:
     pass
 
+# https://stackoverflow.com/questions/46269345/embed-plotly-graph-in-a-sphinx-doc
+
 
 # Enable plotly figure in the docs
 nbsphinx_prolog = r"""
