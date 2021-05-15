@@ -132,7 +132,7 @@ class NonlinearSolver:
                 "pc_hypre_type": None,
             },
             "verbose": False,
-            "linear_solver": "superlu_dist",
+            "linear_solver": linear_solver,
             "preconditioner": "lu",
             "error_on_nonconvergence": False,
             "relative_tolerance": 1e-5,
