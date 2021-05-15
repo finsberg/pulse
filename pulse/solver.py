@@ -110,7 +110,7 @@ class NonlinearSolver:
     def default_solver_parameters():
         linear_solver = "superlu_dist"
         if linear_solver not in dolfin.linear_solver_methods():
-            linear_solver = "mumps"
+            linear_solver = "default"
         return {
             "petsc": {
                 "ksp_type": "preonly",
