@@ -77,11 +77,11 @@ class NonlinearSolver:
         self._snes = self._solver.snes()
         self._snes.setConvergenceHistory()
 
-        logger.info(f"Linear Solver : {self._solver.parameters['linear_solver']}")
-        logger.info(f"Preconditioner:  {self._solver.parameters['preconditioner']}")
-        logger.info(f"atol: {self._solver.parameters['absolute_tolerance']}")
-        logger.info(f"rtol: {self._solver.parameters['relative_tolerance']}")
-        logger.info(f" Size          : {self._state.function_space().dim()}")
+        logger.debug(f"Linear Solver : {self._solver.parameters['linear_solver']}")
+        logger.debug(f"Preconditioner:  {self._solver.parameters['preconditioner']}")
+        logger.debug(f"atol: {self._solver.parameters['absolute_tolerance']}")
+        logger.debug(f"rtol: {self._solver.parameters['relative_tolerance']}")
+        logger.debug(f" Size          : {self._state.function_space().dim()}")
 
     def update_parameters(self, parameters):
         ps = NonlinearSolver.default_solver_parameters()
@@ -108,6 +108,9 @@ class NonlinearSolver:
 
     @staticmethod
     def default_solver_parameters():
+        linear_solver = "superlu_dist"
+        if linear_solver not in dolfin.linear_solver_methods():
+            linear_solver = "mumps"
         return {
             "petsc": {
                 "ksp_type": "preonly",
@@ -125,6 +128,7 @@ class NonlinearSolver:
                 "mat_superlu_dist_replacetinypivot": True,
                 "mat_superlu_dist_fact": "DOFACT",
                 "mat_superlu_dist_iterrefine": True,
+                "mat_mumps_icntl_29": 2,
                 "pc_hypre_type": None,
             },
             "verbose": False,
@@ -154,18 +158,18 @@ class NonlinearSolver:
             of the performed computation.
         """
 
-        logger.info(" Solving NonLinearProblem ...")
+        logger.debug(" Solving NonLinearProblem ...")
 
         start = time.time()
         self._solver.solve(self._problem, self._state.vector())
         end = time.time()
 
-        logger.info(f" ... Done in [{end - start:.3f} s")
+        logger.debug(f" ... Done in [{end - start:.3f} s")
 
         residuals = self._snes.getConvergenceHistory()[0]
         num_iterations = self._snes.getLinearSolveIterations()
-        logger.info(f"Iterations    : {num_iterations}")
+        logger.debug(f"Iterations    : {num_iterations}")
         if num_iterations > 0:
-            logger.info(f"Resiudal      : {residuals[-1]}")
+            logger.debug(f"Resiudal      : {residuals[-1]}")
 
         return num_iterations, self._snes.converged
