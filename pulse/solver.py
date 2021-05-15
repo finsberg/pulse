@@ -68,8 +68,6 @@ class NonlinearSolver:
         state,
         parameters=None,
     ):
-
-        print(parameters)
         self.update_parameters(parameters)
         self._problem = problem
         self._state = state
