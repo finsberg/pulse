@@ -175,11 +175,12 @@ class MechanicsProblem(object):
         for attr in ("f0", "s0", "n0"):
             setattr(self.material, attr, getattr(self.geometry, attr))
 
-        self._init_spaces()
-        self._init_forms()
-        self.solver_parameters = MechanicsProblem.default_solver_parameters()
+        self.solver_parameters = NonlinearSolver.default_solver_parameters()
         if solver_parameters is not None:
             self.solver_parameters.update(**solver_parameters)
+
+        self._init_spaces()
+        self._init_forms()
 
     @staticmethod
     def default_bcs_parameters():
@@ -228,10 +229,15 @@ class MechanicsProblem(object):
         self._jacobian = dolfin.derivative(
             self._virtual_work, self.state, dolfin.TrialFunction(self.state_space)
         )
+        self._init_solver()
+
+    def _init_solver(self):
         self._problem = NonlinearProblem(
             J=self._jacobian, F=self._virtual_work, bcs=self._dirichlet_bc
         )
-        self.solver = NonlinearSolver(self._problem, self.state)
+        self.solver = NonlinearSolver(
+            self._problem, self.state, parameters=self.solver_parameters
+        )
 
     def _set_dirichlet_bc(self):
         # DirichletBC
@@ -300,9 +306,7 @@ class MechanicsProblem(object):
 
     @staticmethod
     def default_solver_parameters():
-        params = dolfin.NonlinearVariationalSolver.default_parameters()
-        params["newton_solver"]["linear_solver"] = "mumps"
-        return params
+        return NonlinearSolver.default_solver_parameters()
 
     def solve(self):
         r"""
