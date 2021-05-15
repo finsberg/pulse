@@ -110,7 +110,7 @@ class NonlinearSolver:
     def default_solver_parameters():
         linear_solver = "superlu_dist"
         if linear_solver not in dolfin.linear_solver_methods():
-            linear_solver = "default"
+            linear_solver = "lu"
         return {
             "petsc": {
                 "ksp_type": "preonly",
@@ -128,7 +128,6 @@ class NonlinearSolver:
                 "mat_superlu_dist_replacetinypivot": True,
                 "mat_superlu_dist_fact": "DOFACT",
                 "mat_superlu_dist_iterrefine": True,
-                "mat_mumps_icntl_29": 2,
                 "pc_hypre_type": None,
             },
             "verbose": False,
