@@ -78,4 +78,5 @@ workflows:
                 ]
           filters:
             branches:
-              only: master
+              ignore:
+                - gh-pages
