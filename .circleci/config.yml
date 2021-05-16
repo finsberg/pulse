@@ -69,12 +69,11 @@ workflows:
       - test:
           matrix:
             parameters:
-              fenics:
-                [
+              fenics: [
                   fenics-latest,
                   fenics-2017,
                   fenics-adjoint-latest,
-                  fenics-finsberg,
+                  # fenics-finsberg,
                 ]
           filters:
             branches:
