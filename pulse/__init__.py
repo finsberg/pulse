@@ -12,16 +12,21 @@ except:
 
 _warnings.filterwarnings("ignore", category=FutureWarning)
 _warnings.filterwarnings("ignore", category=UserWarning)
+import dolfin as _dolfin
 
-from .setup_parameters import parameters
-from . import setup_parameters
+flags = ["-O3", "-ffast-math", "-march=native"]
+_dolfin.parameters["form_compiler"]["quadrature_degree"] = 4
+_dolfin.parameters["form_compiler"]["representation"] = "uflacs"
+_dolfin.parameters["form_compiler"]["cpp_optimize"] = True
+_dolfin.parameters["form_compiler"]["cpp_optimize_flags"] = " ".join(flags)
+
 
 from .utils import annotation
 
-try:
-    setup_parameters.setup_general_parameters()
-except Exception:
-    pass
+# try:
+#     setup_parameters.setup_general_parameters()
+# except Exception:
+#     pass
 
 from collections import namedtuple
 
@@ -36,6 +41,8 @@ from . import solver
 from . import mechanicsproblem
 from . import iterate
 from . import unloader
+from . import geometry
+from . import geometry_utils
 
 
 # Subpackages
@@ -77,11 +84,27 @@ from .kinematics import (
 
 
 import logging as _logging
-import dolfin as _dolfin
-
 
 import daiquiri as _daiquiri
-from daiquiri import set_default_log_levels as set_log_level
+
+
+def set_log_level(level):
+    from daiquiri import set_default_log_levels
+
+    for logger in [
+        utils.logger,
+        dolfin_utils.logger,
+        io_utils.logger,
+        numpy_mpi.logger,
+        solver.logger,
+        mechanicsproblem.logger,
+        iterate.logger,
+        unloader.logger,
+        geometry.logger,
+        geometry_utils.logger,
+    ]:
+        pass
+
 
 _daiquiri.setup(level=_logging.INFO)
 
@@ -106,7 +129,6 @@ __maintainer__ = "Henrik Finsberg"
 __email__ = "henriknf@simula.no"
 
 __all__ = [
-    "parameters",
     "setup_parameters",
     "annotation",
     "utils",

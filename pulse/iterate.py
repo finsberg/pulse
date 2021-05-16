@@ -14,7 +14,7 @@ except ImportError:
     has_dolfin_adjoint = False
 
 
-from . import numpy_mpi, parameters
+from . import numpy_mpi
 from .dolfin_utils import get_constant
 from .mechanicsproblem import SolverDidNotConverge
 from .utils import Enlisted, delist, enlist, getLogger, value_size
@@ -314,8 +314,6 @@ class Iterator(object):
     def __init__(
         self, problem, control, target, old_states=None, old_controls=None, **params
     ):
-
-        logger.setLevel(parameters["log_level"])
         self.parameters = Iterator.default_parameters()
         self.parameters.update(params)
 
