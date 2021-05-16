@@ -1,36 +1,5 @@
-import warnings as _warnings
-
-try:
-    from ffc.quadrature.deprecation import QuadratureRepresentationDeprecationWarning
-
-    _warnings.filterwarnings(
-        "ignore", category=QuadratureRepresentationDeprecationWarning
-    )
-    _warnings.filterwarnings("ignore", category=DeprecationWarning)
-except:
-    pass
-
-_warnings.filterwarnings("ignore", category=FutureWarning)
-_warnings.filterwarnings("ignore", category=UserWarning)
-import dolfin as _dolfin
-
-flags = ["-O3", "-ffast-math", "-march=native"]
-_dolfin.parameters["form_compiler"]["quadrature_degree"] = 4
-_dolfin.parameters["form_compiler"]["representation"] = "uflacs"
-_dolfin.parameters["form_compiler"]["cpp_optimize"] = True
-_dolfin.parameters["form_compiler"]["cpp_optimize_flags"] = " ".join(flags)
-
-
+from .__version__ import __version__
 from .utils import annotation
-
-# try:
-#     setup_parameters.setup_general_parameters()
-# except Exception:
-#     pass
-
-from collections import namedtuple
-
-Patient = namedtuple("Patient", ["geometry", "data"])
 
 from . import utils
 from . import dolfin_utils
@@ -43,11 +12,7 @@ from . import iterate
 from . import unloader
 from . import geometry
 from . import geometry_utils
-
-
-# Subpackages
 from . import material
-from .material import *
 
 
 from .unloader import MeshUnloader, RaghavanUnloader, FixedPointUnloader
@@ -81,6 +46,17 @@ from .kinematics import (
     PiolaTransform,
     InversePiolaTransform,
 )
+from .material import (
+    LinearElastic,
+    NeoHookean,
+    HolzapfelOgden,
+    Guccione,
+    StVenantKirchhoff,
+    ActiveModel,
+    ActiveStrain,
+    ActiveStress,
+    Material,
+)
 
 
 import logging as _logging
@@ -91,7 +67,7 @@ import daiquiri as _daiquiri
 def set_log_level(level):
     from daiquiri import set_default_log_levels
 
-    for logger in [
+    loggers = [
         utils.logger,
         dolfin_utils.logger,
         io_utils.logger,
@@ -102,14 +78,12 @@ def set_log_level(level):
         unloader.logger,
         geometry.logger,
         geometry_utils.logger,
-    ]:
-        pass
+    ]
+    set_default_log_levels((logger, level) for logger in loggers)
 
 
 _daiquiri.setup(level=_logging.INFO)
 
-
-_dolfin.set_log_level(_logging.WARNING)
 
 ffc_logger = _logging.getLogger("FFC")
 ffc_logger.setLevel(_logging.WARNING)
@@ -119,9 +93,6 @@ ufl_logger = _logging.getLogger("UFL")
 ufl_logger.setLevel(_logging.WARNING)
 ufl_logger.addFilter(utils.mpi_filt)
 
-
-from .__version__ import __version__
-
 __author__ = "Henrik Finsberg"
 __credits__ = ["Henrik Finsberg"]
 __license__ = "LGPL-3.0-or-later"
@@ -129,7 +100,6 @@ __maintainer__ = "Henrik Finsberg"
 __email__ = "henriknf@simula.no"
 
 __all__ = [
-    "setup_parameters",
     "annotation",
     "utils",
     "dolfin_utils",
@@ -157,6 +127,7 @@ __all__ = [
     "RobinBC",
     "ActiveStrain",
     "ActiveStress",
+    "ActiveModel",
     "Material",
     "HolzapfelOgden",
     "Guccione",
@@ -175,6 +146,10 @@ __all__ = [
     "InversePiolaTransform",
     "set_log_level",
     "__version__",
+    "solver",
+    "mesh_paths",
+    "NonlinearProblem",
+    "NonlinearSolver",
 ]
 
 __author__ = "Henrik Finsberg"
