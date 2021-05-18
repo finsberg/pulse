@@ -28,7 +28,7 @@ from unittest import mock
 
 import sphinx_rtd_theme  # noqa: E401
 
-sys.modules["dolfin"] = mock.Mock()
+sys.modules["dolfin"] = mock.MagicMock()
 
 import pulse  # noqa: E402
 
