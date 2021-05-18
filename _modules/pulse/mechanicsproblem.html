@@ -151,6 +151,8 @@
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
+          <li><a href="../pulse.html">pulse</a> &raquo;</li>
+        
       <li>pulse.mechanicsproblem</li>
     
     
@@ -175,23 +177,11 @@
 <span class="kn">import</span> <span class="nn">ufl</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">dolfin_adjoint</span> <span class="kn">import</span> <span class="p">(</span>
-        <span class="n">Constant</span><span class="p">,</span>
-        <span class="n">Function</span><span class="p">,</span>
-        <span class="n">FunctionAssigner</span><span class="p">,</span>
-        <span class="n">NonlinearVariationalProblem</span><span class="p">,</span>
-        <span class="n">NonlinearVariationalSolver</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">dolfin_adjoint</span> <span class="kn">import</span> <span class="n">Constant</span><span class="p">,</span> <span class="n">Function</span><span class="p">,</span> <span class="n">FunctionAssigner</span>
 
     <span class="n">has_dolfin_adjoint</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">dolfin</span> <span class="kn">import</span> <span class="p">(</span>
-        <span class="n">Constant</span><span class="p">,</span>
-        <span class="n">Function</span><span class="p">,</span>
-        <span class="n">FunctionAssigner</span><span class="p">,</span>
-        <span class="n">NonlinearVariationalProblem</span><span class="p">,</span>
-        <span class="n">NonlinearVariationalSolver</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">dolfin</span> <span class="kn">import</span> <span class="n">Constant</span><span class="p">,</span> <span class="n">Function</span><span class="p">,</span> <span class="n">FunctionAssigner</span>
 
     <span class="n">has_dolfin_adjoint</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -205,6 +195,7 @@
 <span class="kn">from</span> <span class="nn">.dolfin_utils</span> <span class="kn">import</span> <span class="n">list_sum</span>
 <span class="kn">from</span> <span class="nn">.geometry</span> <span class="kn">import</span> <span class="n">Geometry</span><span class="p">,</span> <span class="n">HeartGeometry</span>
 <span class="kn">from</span> <span class="nn">.material</span> <span class="kn">import</span> <span class="n">Material</span>
+<span class="kn">from</span> <span class="nn">.solver</span> <span class="kn">import</span> <span class="n">NonlinearProblem</span><span class="p">,</span> <span class="n">NonlinearSolver</span>
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">get_lv_marker</span><span class="p">,</span> <span class="n">getLogger</span><span class="p">,</span> <span class="n">set_default_none</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -355,11 +346,12 @@
         <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;f0&quot;</span><span class="p">,</span> <span class="s2">&quot;s0&quot;</span><span class="p">,</span> <span class="s2">&quot;n0&quot;</span><span class="p">):</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span> <span class="n">attr</span><span class="p">))</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_init_spaces</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_init_forms</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span> <span class="o">=</span> <span class="n">MechanicsProblem</span><span class="o">.</span><span class="n">defaul_solver_parameters</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span> <span class="o">=</span> <span class="n">NonlinearSolver</span><span class="o">.</span><span class="n">default_solver_parameters</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">solver_parameters</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">solver_parameters</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_spaces</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_forms</span><span class="p">()</span>
 
 <div class="viewcode-block" id="MechanicsProblem.default_bcs_parameters"><a class="viewcode-back" href="../../pulse.html#pulse.mechanicsproblem.MechanicsProblem.default_bcs_parameters">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">default_bcs_parameters</span><span class="p">():</span>
@@ -405,6 +397,18 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_virtual_work</span> <span class="o">+=</span> <span class="n">external_work</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_dirichlet_bc</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_jacobian</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">derivative</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_virtual_work</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">TrialFunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_space</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_solver</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_init_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_problem</span> <span class="o">=</span> <span class="n">NonlinearProblem</span><span class="p">(</span>
+            <span class="n">J</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_jacobian</span><span class="p">,</span> <span class="n">F</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_virtual_work</span><span class="p">,</span> <span class="n">bcs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dirichlet_bc</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="n">NonlinearSolver</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_problem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_set_dirichlet_bc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># DirichletBC</span>
@@ -471,11 +475,9 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_forms</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="MechanicsProblem.defaul_solver_parameters"><a class="viewcode-back" href="../../pulse.html#pulse.mechanicsproblem.MechanicsProblem.defaul_solver_parameters">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">defaul_solver_parameters</span><span class="p">():</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">NonlinearVariationalSolver</span><span class="o">.</span><span class="n">default_parameters</span><span class="p">()</span>
-        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;newton_solver&quot;</span><span class="p">][</span><span class="s2">&quot;linear_solver&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mumps&quot;</span>
-        <span class="k">return</span> <span class="n">params</span></div>
+<div class="viewcode-block" id="MechanicsProblem.default_solver_parameters"><a class="viewcode-back" href="../../pulse.html#pulse.mechanicsproblem.MechanicsProblem.default_solver_parameters">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">default_solver_parameters</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">NonlinearSolver</span><span class="o">.</span><span class="n">default_solver_parameters</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="MechanicsProblem.solve"><a class="viewcode-back" href="../../pulse.html#pulse.mechanicsproblem.MechanicsProblem.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -486,10 +488,6 @@
 <span class="sd">           \delta W = 0</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_jacobian</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">derivative</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_virtual_work</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">TrialFunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_space</span><span class="p">)</span>
-        <span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Solving variational problem&quot;</span><span class="p">)</span>
         <span class="c1"># Get old state in case of non-convergence</span>
@@ -503,16 +501,11 @@
 
         <span class="k">else</span><span class="p">:</span>
             <span class="n">old_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deepcopy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">problem</span> <span class="o">=</span> <span class="n">NonlinearVariationalProblem</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_virtual_work</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dirichlet_bc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jacobian</span>
-        <span class="p">)</span>
-
-        <span class="n">solver</span> <span class="o">=</span> <span class="n">NonlinearVariationalSolver</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
-        <span class="n">solver</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Try to solve&quot;</span><span class="p">)</span>
-            <span class="n">nliter</span><span class="p">,</span> <span class="n">nlconv</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+            <span class="n">nliter</span><span class="p">,</span> <span class="n">nlconv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+
             <span class="k">if</span> <span class="ow">not</span> <span class="n">nlconv</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Failed&quot;</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="n">SolverDidNotConverge</span><span class="p">(</span><span class="s2">&quot;Solver did not converge...&quot;</span><span class="p">)</span>

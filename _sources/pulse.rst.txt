@@ -77,10 +77,10 @@ pulse.numpy\_mpi module
    :undoc-members:
    :show-inheritance:
 
-pulse.setup\_parameters module
-------------------------------
+pulse.solver module
+-------------------
 
-.. automodule:: pulse.setup_parameters
+.. automodule:: pulse.solver
    :members:
    :undoc-members:
    :show-inheritance:

@@ -119,7 +119,7 @@
 <li class="toctree-l3"><a class="reference internal" href="pulse.html#module-pulse.kinematics">pulse.kinematics module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pulse.html#module-pulse.mechanicsproblem">pulse.mechanicsproblem module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pulse.html#module-pulse.numpy_mpi">pulse.numpy_mpi module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pulse.html#module-pulse.setup_parameters">pulse.setup_parameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pulse.html#module-pulse.solver">pulse.solver module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pulse.html#module-pulse.unloader">pulse.unloader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pulse.html#module-pulse.unloading_utils">pulse.unloading_utils module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pulse.html#module-pulse.utils">pulse.utils module</a></li>
@@ -791,10 +791,460 @@ constant function (DG_0)</p>
 </div>
 <div class="section" id="module-pulse.material">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pulse.material" title="Permalink to this headline">¶</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="pulse.material.get_material_model">
-<span class="sig-prename descclassname"><span class="pre">pulse.material.</span></span><span class="sig-name descname"><span class="pre">get_material_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">material_model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material.html#get_material_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.get_material_model" title="Permalink to this definition">¶</a></dt>
+<dl class="py class">
+<dt class="sig sig-object py" id="pulse.material.ActiveModel">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pulse.material.</span></span><span class="sig-name descname"><span class="pre">ActiveModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T_ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isochoric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/active_model.html#ActiveModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.ActiveModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pulse.html#pulse.kinematics.Invariants" title="pulse.kinematics.Invariants"><code class="xref py py-class docutils literal notranslate"><span class="pre">pulse.kinematics.Invariants</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.ActiveModel.I1">
+<span class="sig-name descname"><span class="pre">I1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/active_model.html#ActiveModel.I1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.ActiveModel.I1" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.ActiveModel.I2">
+<span class="sig-name descname"><span class="pre">I2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/active_model.html#ActiveModel.I2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.ActiveModel.I2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.ActiveModel.I3">
+<span class="sig-name descname"><span class="pre">I3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/active_model.html#ActiveModel.I3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.ActiveModel.I3" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.ActiveModel.I4">
+<span class="sig-name descname"><span class="pre">I4</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/active_model.html#ActiveModel.I4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.ActiveModel.I4" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.ActiveModel.I5">
+<span class="sig-name descname"><span class="pre">I5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/active_model.html#ActiveModel.I5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.ActiveModel.I5" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.ActiveModel.I6">
+<span class="sig-name descname"><span class="pre">I6</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/active_model.html#ActiveModel.I6"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.ActiveModel.I6" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.ActiveModel.I7">
+<span class="sig-name descname"><span class="pre">I7</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/active_model.html#ActiveModel.I7"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.ActiveModel.I7" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.ActiveModel.I8">
+<span class="sig-name descname"><span class="pre">I8</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/active_model.html#ActiveModel.I8"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.ActiveModel.I8" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.ActiveModel.Wactive">
+<span class="sig-name descname"><span class="pre">Wactive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/active_model.html#ActiveModel.Wactive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.ActiveModel.Wactive" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pulse.material.ActiveModel.activation">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">activation</span></span><a class="headerlink" href="#pulse.material.ActiveModel.activation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the activation paramter.
+If regional, this will return one parameter
+for each segment.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pulse.material.ActiveModel.activation_field">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">activation_field</span></span><a class="headerlink" href="#pulse.material.ActiveModel.activation_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the activation field.
+If regional, this will return a piecewise
+constant function (DG_0)</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pulse.material.ActiveModel.eta">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">eta</span></span><a class="headerlink" href="#pulse.material.ActiveModel.eta" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pulse.material.ActiveModel.model_type">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">model_type</span></span><a class="headerlink" href="#pulse.material.ActiveModel.model_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pulse.material.ActiveStrain">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pulse.material.</span></span><span class="sig-name descname"><span class="pre">ActiveStrain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T_ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isochoric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/active_strain.html#ActiveStrain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.ActiveStrain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pulse.material.active_model.ActiveModel" title="pulse.material.active_model.ActiveModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">pulse.material.active_model.ActiveModel</span></code></a></p>
+<p>This class implements the elastic invariants within
+the active strain framework</p>
+<p>Assuming transversally isotropic material for now</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="pulse.material.ActiveStrain.Fa">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">Fa</span></span><a class="headerlink" href="#pulse.material.ActiveStrain.Fa" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.ActiveStrain.Fe">
+<span class="sig-name descname"><span class="pre">Fe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/active_strain.html#ActiveStrain.Fe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.ActiveStrain.Fe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pulse.material.ActiveStress">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pulse.material.</span></span><span class="sig-name descname"><span class="pre">ActiveStress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/active_stress.html#ActiveStress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.ActiveStress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pulse.material.active_model.ActiveModel" title="pulse.material.active_model.ActiveModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">pulse.material.active_model.ActiveModel</span></code></a></p>
+<p>Active stress model</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="pulse.material.ActiveStress.Fa">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">Fa</span></span><a class="headerlink" href="#pulse.material.ActiveStress.Fa" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.ActiveStress.Fe">
+<span class="sig-name descname"><span class="pre">Fe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/active_stress.html#ActiveStress.Fe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.ActiveStress.Fe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.ActiveStress.Wactive">
+<span class="sig-name descname"><span class="pre">Wactive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/active_stress.html#ActiveStress.Wactive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.ActiveStress.Wactive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Active stress energy</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pulse.material.ActiveStress.eta">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">eta</span></span><a class="headerlink" href="#pulse.material.ActiveStress.eta" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pulse.material.ActiveStress.type">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">type</span></span><a class="headerlink" href="#pulse.material.ActiveStress.type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pulse.material.Guccione">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pulse.material.</span></span><span class="sig-name descname"><span class="pre">Guccione</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'active_strain'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T_ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isochoric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressible_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'incompressible'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geometry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/guccione.html#Guccione"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.Guccione" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pulse.material.material_model.Material" title="pulse.material.material_model.Material"><code class="xref py py-class docutils literal notranslate"><span class="pre">pulse.material.material_model.Material</span></code></a></p>
+<p>Guccione material model.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.Guccione.SecondPiolaStress">
+<span class="sig-name descname"><span class="pre">SecondPiolaStress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/guccione.html#Guccione.SecondPiolaStress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.Guccione.SecondPiolaStress" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.Guccione.default_parameters">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">default_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/guccione.html#Guccione.default_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.Guccione.default_parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.Guccione.is_isotropic">
+<span class="sig-name descname"><span class="pre">is_isotropic</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/guccione.html#Guccione.is_isotropic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.Guccione.is_isotropic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the material is isotropic.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pulse.material.Guccione.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'guccione'</span></em><a class="headerlink" href="#pulse.material.Guccione.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.Guccione.strain_energy">
+<span class="sig-name descname"><span class="pre">strain_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/guccione.html#Guccione.strain_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.Guccione.strain_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>UFL form of the strain energy.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pulse.material.HolzapfelOgden">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pulse.material.</span></span><span class="sig-name descname"><span class="pre">HolzapfelOgden</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'active_strain'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T_ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isochoric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressible_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'incompressible'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geometry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/holzapfelogden.html#HolzapfelOgden"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.HolzapfelOgden" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pulse.material.material_model.Material" title="pulse.material.material_model.Material"><code class="xref py py-class docutils literal notranslate"><span class="pre">pulse.material.material_model.Material</span></code></a></p>
+<p>Transversally isotropic version of the
+Holzapfel and Ogden material model</p>
+<div class="math notranslate nohighlight">
+\[\mathcal{W}(I_1, I_{4f_0})
+= \frac{a}{2 b} \left( e^{ b (I_1 - 3)}  -1 \right)
++ \frac{a_f}{2 b_f} \left( e^{ b_f (I_{4f_0} - 1)_+^2} -1 \right)\]</div>
+<p>where</p>
+<div class="math notranslate nohighlight">
+\[(\cdot)_+ = \max\{x,0\}\]</div>
+<p class="rubric">Reference</p>
+<p>[1] Holzapfel, Gerhard A., and Ray W. Ogden.
+“Constitutive modelling of passive myocardium:
+a structurally based framework for material characterization.
+“Philosophical Transactions of the Royal Society of London A:
+Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.HolzapfelOgden.W_1">
+<span class="sig-name descname"><span class="pre">W_1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">I1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/holzapfelogden.html#HolzapfelOgden.W_1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.HolzapfelOgden.W_1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Isotropic contribution.</p>
+<p>If <cite>diff = 0</cite>, return</p>
+<div class="math notranslate nohighlight">
+\[\frac{a}{2 b} \left( e^{ b (I_1 - 3)}  -1 \right)\]</div>
+<p>If <cite>diff = 1</cite>, return</p>
+<div class="math notranslate nohighlight">
+\[\frac{a}{b} e^{ b (I_1 - 3)}\]</div>
+<p>If <cite>diff = 2</cite>, return</p>
+<div class="math notranslate nohighlight">
+\[\frac{a b}{2}  e^{ b (I_1 - 3)}\]</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.HolzapfelOgden.W_4">
+<span class="sig-name descname"><span class="pre">W_4</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">I4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_heaviside</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/holzapfelogden.html#HolzapfelOgden.W_4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.HolzapfelOgden.W_4" title="Permalink to this definition">¶</a></dt>
+<dd><p>Anisotropic contribution.</p>
+<p>If <cite>diff = 0</cite>, return</p>
+<div class="math notranslate nohighlight">
+\[\frac{a_f}{2 b_f} \left( e^{ b_f (I_{4f_0} - 1)_+^2} -1 \right)\]</div>
+<p>If <cite>diff = 1</cite>, return</p>
+<div class="math notranslate nohighlight">
+\[a_f (I_{4f_0} - 1)_+ e^{ b_f (I_{4f_0} - 1)^2}\]</div>
+<p>If <cite>diff = 2</cite>, return</p>
+<div class="math notranslate nohighlight">
+\[a_f h(I_{4f_0} - 1) (1 + 2b(I_{4f_0} - 1))
+e^{ b_f (I_{4f_0} - 1)_+^2}\]</div>
+<p>where</p>
+<div class="math notranslate nohighlight">
+\[h(x) = \frac{\mathrm{d}}{\mathrm{d}x} \max\{x,0\}\]</div>
+<p>is the Heaviside function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.HolzapfelOgden.W_8">
+<span class="sig-name descname"><span class="pre">W_8</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">I8</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/holzapfelogden.html#HolzapfelOgden.W_8"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.HolzapfelOgden.W_8" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cross fiber-sheet contribution.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.HolzapfelOgden.default_parameters">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">default_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/holzapfelogden.html#HolzapfelOgden.default_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.HolzapfelOgden.default_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default matereial parameter for the Holzapfel Ogden model</p>
+<p>Taken from Table 1 row 3 of [1]</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pulse.material.HolzapfelOgden.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'holzapfel_ogden'</span></em><a class="headerlink" href="#pulse.material.HolzapfelOgden.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.HolzapfelOgden.strain_energy">
+<span class="sig-name descname"><span class="pre">strain_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/holzapfelogden.html#HolzapfelOgden.strain_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.HolzapfelOgden.strain_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Strain-energy density function.</p>
+<div class="math notranslate nohighlight">
+\[\mathcal{W} = \mathcal{W}_1 + \mathcal{W}_{4f}
++ \mathcal{W}_{\mathrm{active}}\]</div>
+<p>where</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\mathcal{W}_{\mathrm{active}} =
+\begin{cases}
+  0 &amp; \text{if acitve strain} \\
+  \gamma I_{4f} &amp; \text{if active stress}
+\end{cases}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>F</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dolfin.Function</span></code>) – Deformation gradient</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pulse.material.LinearElastic">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pulse.material.</span></span><span class="sig-name descname"><span class="pre">LinearElastic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'active_strain'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T_ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isochoric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressible_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'incompressible'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geometry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/linearelastic.html#LinearElastic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.LinearElastic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pulse.material.material_model.Material" title="pulse.material.material_model.Material"><code class="xref py py-class docutils literal notranslate"><span class="pre">pulse.material.material_model.Material</span></code></a></p>
+<p>Class for linear elastic material</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.LinearElastic.default_parameters">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">default_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/linearelastic.html#LinearElastic.default_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.LinearElastic.default_parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pulse.material.LinearElastic.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'linear_elastic'</span></em><a class="headerlink" href="#pulse.material.LinearElastic.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.LinearElastic.strain_energy">
+<span class="sig-name descname"><span class="pre">strain_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/linearelastic.html#LinearElastic.strain_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.LinearElastic.strain_energy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pulse.material.Material">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pulse.material.</span></span><span class="sig-name descname"><span class="pre">Material</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'active_strain'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T_ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isochoric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressible_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'incompressible'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geometry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/material_model.html#Material"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.Material" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></a></p>
+<p>Initialize material model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f0</strong> (<em>:py:class`dolfin.Function`</em>) – Fiber field</p></li>
+<li><p><strong>gamma</strong> (<em>:py:class`dolfin.Function`</em>) – Activation parameter</p></li>
+<li><p><strong>params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – Material parameters</p></li>
+<li><p><strong>active_model</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Active model - active strain or active stress</p></li>
+<li><p><strong>s0</strong> (<em>:py:class`dolfin.Function`</em>) – Sheets</p></li>
+<li><p><strong>n0</strong> (<em>:py:class`dolfin.Function`</em>) – Sheet - normal</p></li>
+<li><p><strong>T_ref</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Scale factor for activation parameter (default = 1.0)</p></li>
+<li><p><strong>dev_iso_split</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Decouple deformation into deviatoric and isochoric deformations</p></li>
+<li><p><strong>eta</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Fraction of transverse active tesion for active stress formulation.
+0 = active only along fiber, 1 = equal forces in all directions
+(default=0.0).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.Material.CauchyStress">
+<span class="sig-name descname"><span class="pre">CauchyStress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deviatoric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/material_model.html#Material.CauchyStress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.Material.CauchyStress" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.Material.FirstPiolaStress">
+<span class="sig-name descname"><span class="pre">FirstPiolaStress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/material_model.html#Material.FirstPiolaStress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.Material.FirstPiolaStress" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.Material.SecondPiolaStress">
+<span class="sig-name descname"><span class="pre">SecondPiolaStress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deviatoric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/material_model.html#Material.SecondPiolaStress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.Material.SecondPiolaStress" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pulse.material.Material.activation">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">activation</span></span><a class="headerlink" href="#pulse.material.Material.activation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the activation paramter.
+If regional, this will return one parameter
+for each segment.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pulse.material.Material.activation_field">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">activation_field</span></span><a class="headerlink" href="#pulse.material.Material.activation_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the contraciton paramter.
+If regional, this will return a piecewise
+constant function (DG_0)</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pulse.material.Material.active_model">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">active_model</span></span><a class="headerlink" href="#pulse.material.Material.active_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.Material.compressibility">
+<span class="sig-name descname"><span class="pre">compressibility</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/material_model.html#Material.compressibility"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.Material.compressibility" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.Material.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geometry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/material_model.html#Material.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.Material.copy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pulse.material.Material.f0">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">f0</span></span><a class="headerlink" href="#pulse.material.Material.f0" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pulse.material.Material.is_isochoric">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">is_isochoric</span></span><a class="headerlink" href="#pulse.material.Material.is_isochoric" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pulse.material.Material.material_model">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">material_model</span></span><a class="headerlink" href="#pulse.material.Material.material_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pulse.material.Material.n0">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">n0</span></span><a class="headerlink" href="#pulse.material.Material.n0" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pulse.material.Material.name">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#pulse.material.Material.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pulse.material.Material.s0">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">s0</span></span><a class="headerlink" href="#pulse.material.Material.s0" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.Material.strain_energy">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">strain_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/material_model.html#Material.strain_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.Material.strain_energy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.Material.update_geometry">
+<span class="sig-name descname"><span class="pre">update_geometry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geometry</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/material_model.html#Material.update_geometry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.Material.update_geometry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pulse.material.NeoHookean">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pulse.material.</span></span><span class="sig-name descname"><span class="pre">NeoHookean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'active_strain'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T_ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isochoric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressible_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'incompressible'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geometry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/neohookean.html#NeoHookean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.NeoHookean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pulse.material.material_model.Material" title="pulse.material.material_model.Material"><code class="xref py py-class docutils literal notranslate"><span class="pre">pulse.material.material_model.Material</span></code></a></p>
+<p>Class for Neo Hookean material</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.NeoHookean.W_1">
+<span class="sig-name descname"><span class="pre">W_1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">I_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/neohookean.html#NeoHookean.W_1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.NeoHookean.W_1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.NeoHookean.default_parameters">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">default_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/neohookean.html#NeoHookean.default_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.NeoHookean.default_parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pulse.material.NeoHookean.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'neo_hookean'</span></em><a class="headerlink" href="#pulse.material.NeoHookean.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.NeoHookean.strain_energy">
+<span class="sig-name descname"><span class="pre">strain_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/neohookean.html#NeoHookean.strain_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.NeoHookean.strain_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Strain-energy density function.</p>
+<div class="math notranslate nohighlight">
+\[\mathcal{W} = \mathcal{W}_1 + \mathcal{W}_{4f}
++ \mathcal{W}_{\mathrm{active}}\]</div>
+<p>where</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\mathcal{W}_{\mathrm{active}} =
+\begin{cases}
+  0 &amp; \text{if acitve strain} \\
+  \gamma I_{4f} &amp; \text{if active stress}
+\end{cases}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>F</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dolfin.Function</span></code>) – Deformation gradient</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pulse.material.StVenantKirchhoff">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pulse.material.</span></span><span class="sig-name descname"><span class="pre">StVenantKirchhoff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'active_strain'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T_ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isochoric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressible_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'incompressible'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geometry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/stvenantkirchhoff.html#StVenantKirchhoff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.StVenantKirchhoff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pulse.material.material_model.Material" title="pulse.material.material_model.Material"><code class="xref py py-class docutils literal notranslate"><span class="pre">pulse.material.material_model.Material</span></code></a></p>
+<p>Class for linear elastic material</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.StVenantKirchhoff.default_parameters">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">default_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/stvenantkirchhoff.html#StVenantKirchhoff.default_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.StVenantKirchhoff.default_parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pulse.material.StVenantKirchhoff.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'saint_venant_kirchhoff'</span></em><a class="headerlink" href="#pulse.material.StVenantKirchhoff.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.material.StVenantKirchhoff.strain_energy">
+<span class="sig-name descname"><span class="pre">strain_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/stvenantkirchhoff.html#StVenantKirchhoff.strain_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.material.StVenantKirchhoff.strain_energy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
 
 </div>
 </div>

@@ -120,7 +120,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#module-pulse.kinematics">pulse.kinematics module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pulse.mechanicsproblem">pulse.mechanicsproblem module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pulse.numpy_mpi">pulse.numpy_mpi module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-pulse.setup_parameters">pulse.setup_parameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pulse.solver">pulse.solver module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pulse.unloader">pulse.unloader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pulse.unloading_utils">pulse.unloading_utils module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pulse.utils">pulse.utils module</a></li>
@@ -282,7 +282,7 @@ dim = 3 would be a vector function.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pulse.dolfin_utils.compute_meshvolume">
-<span class="sig-prename descclassname"><span class="pre">pulse.dolfin_utils.</span></span><span class="sig-name descname"><span class="pre">compute_meshvolume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">domain=None</span></em>, <em class="sig-param"><span class="pre">dx=&lt;Mock</span> <span class="pre">name='mock.dx'</span> <span class="pre">id='140412670938848'&gt;</span></em>, <em class="sig-param"><span class="pre">subdomain_id=None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/dolfin_utils.html#compute_meshvolume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.dolfin_utils.compute_meshvolume" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pulse.dolfin_utils.</span></span><span class="sig-name descname"><span class="pre">compute_meshvolume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">domain=None</span></em>, <em class="sig-param"><span class="pre">dx=&lt;MagicMock</span> <span class="pre">name='mock.dx'</span> <span class="pre">id='139803502746112'&gt;</span></em>, <em class="sig-param"><span class="pre">subdomain_id=None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/dolfin_utils.html#compute_meshvolume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.dolfin_utils.compute_meshvolume" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -297,7 +297,7 @@ dim = 3 would be a vector function.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pulse.dolfin_utils.get_constant">
-<span class="sig-prename descclassname"><span class="pre">pulse.dolfin_utils.</span></span><span class="sig-name descname"><span class="pre">get_constant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">val</span></em>, <em class="sig-param"><span class="pre">value_size=None</span></em>, <em class="sig-param"><span class="pre">value_rank=0</span></em>, <em class="sig-param"><span class="pre">constant=&lt;Mock</span> <span class="pre">name='mock.Constant'</span> <span class="pre">id='140412672750784'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/dolfin_utils.html#get_constant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.dolfin_utils.get_constant" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pulse.dolfin_utils.</span></span><span class="sig-name descname"><span class="pre">get_constant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">val</span></em>, <em class="sig-param"><span class="pre">value_size=None</span></em>, <em class="sig-param"><span class="pre">value_rank=0</span></em>, <em class="sig-param"><span class="pre">constant=&lt;MagicMock</span> <span class="pre">name='mock.Constant'</span> <span class="pre">id='139803502607952'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/dolfin_utils.html#get_constant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.dolfin_utils.get_constant" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -376,7 +376,7 @@ map the vector field.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pulse.dolfin_utils.read_hdf5">
-<span class="sig-prename descclassname"><span class="pre">pulse.dolfin_utils.</span></span><span class="sig-name descname"><span class="pre">read_hdf5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">h5name</span></em>, <em class="sig-param"><span class="pre">func</span></em>, <em class="sig-param"><span class="pre">h5group=''</span></em>, <em class="sig-param"><span class="pre">comm=&lt;Mock</span> <span class="pre">name='mock.MPI.comm_world'</span> <span class="pre">id='140412674762448'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/dolfin_utils.html#read_hdf5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.dolfin_utils.read_hdf5" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pulse.dolfin_utils.</span></span><span class="sig-name descname"><span class="pre">read_hdf5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">h5name</span></em>, <em class="sig-param"><span class="pre">func</span></em>, <em class="sig-param"><span class="pre">h5group=''</span></em>, <em class="sig-param"><span class="pre">comm=&lt;MagicMock</span> <span class="pre">name='mock.MPI.comm_world'</span> <span class="pre">id='139803502717584'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/dolfin_utils.html#read_hdf5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.dolfin_utils.read_hdf5" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -773,11 +773,6 @@ mainly used to ensure version compatability.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pulse.geometry_utils.generate_fibers_old">
-<span class="sig-prename descclassname"><span class="pre">pulse.geometry_utils.</span></span><span class="sig-name descname"><span class="pre">generate_fibers_old</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fiber_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry_utils.html#generate_fibers_old"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.geometry_utils.generate_fibers_old" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="pulse.geometry_utils.generate_local_basis_functions">
 <span class="sig-prename descclassname"><span class="pre">pulse.geometry_utils.</span></span><span class="sig-name descname"><span class="pre">generate_local_basis_functions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">focal_point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'lv'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry_utils.html#generate_local_basis_functions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.geometry_utils.generate_local_basis_functions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -832,7 +827,7 @@ This is the default markers for fiberrules.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pulse.geometry_utils.load_geometry_from_h5">
-<span class="sig-prename descclassname"><span class="pre">pulse.geometry_utils.</span></span><span class="sig-name descname"><span class="pre">load_geometry_from_h5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">h5name</span></em>, <em class="sig-param"><span class="pre">h5group=''</span></em>, <em class="sig-param"><span class="pre">fendo=None</span></em>, <em class="sig-param"><span class="pre">fepi=None</span></em>, <em class="sig-param"><span class="pre">include_sheets=True</span></em>, <em class="sig-param"><span class="pre">comm=&lt;Mock</span> <span class="pre">name='mock.MPI.comm_world'</span> <span class="pre">id='140412674762448'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry_utils.html#load_geometry_from_h5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.geometry_utils.load_geometry_from_h5" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pulse.geometry_utils.</span></span><span class="sig-name descname"><span class="pre">load_geometry_from_h5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">h5name</span></em>, <em class="sig-param"><span class="pre">h5group=''</span></em>, <em class="sig-param"><span class="pre">fendo=None</span></em>, <em class="sig-param"><span class="pre">fepi=None</span></em>, <em class="sig-param"><span class="pre">include_sheets=True</span></em>, <em class="sig-param"><span class="pre">comm=&lt;MagicMock</span> <span class="pre">name='mock.MPI.comm_world'</span> <span class="pre">id='139803502717584'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/geometry_utils.html#load_geometry_from_h5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.geometry_utils.load_geometry_from_h5" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load geometry and other mesh data from
 a h5file to an object.
 If the file contains muliple fiber fields
@@ -1001,7 +996,7 @@ T belongs to</p>
 <span id="pulse-io-utils-module"></span><h2>pulse.io_utils module<a class="headerlink" href="#module-pulse.io_utils" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="pulse.io_utils.check_and_delete">
-<span class="sig-prename descclassname"><span class="pre">pulse.io_utils.</span></span><span class="sig-name descname"><span class="pre">check_and_delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">h5name</span></em>, <em class="sig-param"><span class="pre">h5group</span></em>, <em class="sig-param"><span class="pre">comm=&lt;Mock</span> <span class="pre">name='mock.MPI.comm_world'</span> <span class="pre">id='140412674762448'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/io_utils.html#check_and_delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.io_utils.check_and_delete" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pulse.io_utils.</span></span><span class="sig-name descname"><span class="pre">check_and_delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">h5name</span></em>, <em class="sig-param"><span class="pre">h5group</span></em>, <em class="sig-param"><span class="pre">comm=&lt;MagicMock</span> <span class="pre">name='mock.MPI.comm_world'</span> <span class="pre">id='139803502717584'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/io_utils.html#check_and_delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.io_utils.check_and_delete" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -1011,7 +1006,7 @@ T belongs to</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pulse.io_utils.check_h5group">
-<span class="sig-prename descclassname"><span class="pre">pulse.io_utils.</span></span><span class="sig-name descname"><span class="pre">check_h5group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">h5name</span></em>, <em class="sig-param"><span class="pre">h5group</span></em>, <em class="sig-param"><span class="pre">delete=False</span></em>, <em class="sig-param"><span class="pre">comm=&lt;Mock</span> <span class="pre">name='mock.MPI.comm_world'</span> <span class="pre">id='140412674762448'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/io_utils.html#check_h5group"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.io_utils.check_h5group" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pulse.io_utils.</span></span><span class="sig-name descname"><span class="pre">check_h5group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">h5name</span></em>, <em class="sig-param"><span class="pre">h5group</span></em>, <em class="sig-param"><span class="pre">delete=False</span></em>, <em class="sig-param"><span class="pre">comm=&lt;MagicMock</span> <span class="pre">name='mock.MPI.comm_world'</span> <span class="pre">id='139803502717584'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/io_utils.html#check_h5group"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.io_utils.check_h5group" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -1021,7 +1016,7 @@ T belongs to</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pulse.io_utils.open_h5py">
-<span class="sig-prename descclassname"><span class="pre">pulse.io_utils.</span></span><span class="sig-name descname"><span class="pre">open_h5py</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">h5name</span></em>, <em class="sig-param"><span class="pre">file_mode='a'</span></em>, <em class="sig-param"><span class="pre">comm=&lt;Mock</span> <span class="pre">name='mock.MPI.comm_world'</span> <span class="pre">id='140412674762448'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/io_utils.html#open_h5py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.io_utils.open_h5py" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pulse.io_utils.</span></span><span class="sig-name descname"><span class="pre">open_h5py</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">h5name</span></em>, <em class="sig-param"><span class="pre">file_mode='a'</span></em>, <em class="sig-param"><span class="pre">comm=&lt;MagicMock</span> <span class="pre">name='mock.MPI.comm_world'</span> <span class="pre">id='139803502717584'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/io_utils.html#open_h5py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.io_utils.open_h5py" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -1032,12 +1027,6 @@ T belongs to</p>
 </div>
 <div class="section" id="module-pulse.iterate">
 <span id="pulse-iterate-module"></span><h2>pulse.iterate module<a class="headerlink" href="#module-pulse.iterate" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="pulse.iterate.Enlisted">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pulse.iterate.</span></span><span class="sig-name descname"><span class="pre">Enlisted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#Enlisted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.iterate.Enlisted" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></p>
-</dd></dl>
-
 <dl class="py class">
 <dt class="sig sig-object py" id="pulse.iterate.Iterator">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pulse.iterate.</span></span><span class="sig-name descname"><span class="pre">Iterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">problem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_controls</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#Iterator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.iterate.Iterator" title="Permalink to this definition">¶</a></dt>
@@ -1116,16 +1105,6 @@ reached in the next iteration</p>
 <dd><p>Copy a function. This is to ease the integration
 with dolfin adjoint where copied fuctions are annotated.</p>
 </dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="pulse.iterate.delist">
-<span class="sig-prename descclassname"><span class="pre">pulse.iterate.</span></span><span class="sig-name descname"><span class="pre">delist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#delist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.iterate.delist" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="pulse.iterate.enlist">
-<span class="sig-prename descclassname"><span class="pre">pulse.iterate.</span></span><span class="sig-name descname"><span class="pre">enlist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_enlist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/iterate.html#enlist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.iterate.enlist" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pulse.iterate.get_delta">
@@ -1328,13 +1307,13 @@ then adapt control step. Default: 8</p></li>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pulse.mechanicsproblem.MechanicsProblem.defaul_solver_parameters">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">defaul_solver_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/mechanicsproblem.html#MechanicsProblem.defaul_solver_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.mechanicsproblem.MechanicsProblem.defaul_solver_parameters" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pulse.mechanicsproblem.MechanicsProblem.default_bcs_parameters">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">default_bcs_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/mechanicsproblem.html#MechanicsProblem.default_bcs_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.mechanicsproblem.MechanicsProblem.default_bcs_parameters" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pulse.mechanicsproblem.MechanicsProblem.default_bcs_parameters">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">default_bcs_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/mechanicsproblem.html#MechanicsProblem.default_bcs_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.mechanicsproblem.MechanicsProblem.default_bcs_parameters" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pulse.mechanicsproblem.MechanicsProblem.default_solver_parameters">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">default_solver_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/mechanicsproblem.html#MechanicsProblem.default_solver_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.mechanicsproblem.MechanicsProblem.default_solver_parameters" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1472,22 +1451,43 @@ cbcpost <a class="reference external" href="https://bitbucket.org/simula_cbc/cbc
 <dd></dd></dl>
 
 </div>
-<div class="section" id="module-pulse.setup_parameters">
-<span id="pulse-setup-parameters-module"></span><h2>pulse.setup_parameters module<a class="headerlink" href="#module-pulse.setup_parameters" title="Permalink to this headline">¶</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="pulse.setup_parameters.setup_general_parameters">
-<span class="sig-prename descclassname"><span class="pre">pulse.setup_parameters.</span></span><span class="sig-name descname"><span class="pre">setup_general_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/setup_parameters.html#setup_general_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.setup_parameters.setup_general_parameters" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parameters to speed up the compiler</p>
+<div class="section" id="module-pulse.solver">
+<span id="pulse-solver-module"></span><h2>pulse.solver module<a class="headerlink" href="#module-pulse.solver" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pulse.solver.NonlinearSolver">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pulse.solver.</span></span><span class="sig-name descname"><span class="pre">NonlinearSolver</span></span><a class="reference internal" href="_modules/pulse/solver.html#NonlinearSolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.solver.NonlinearSolver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.solver.NonlinearSolver.default_solver_parameters">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">default_solver_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/solver.html#NonlinearSolver.default_solver_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.solver.NonlinearSolver.default_solver_parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.solver.NonlinearSolver.solve">
+<span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/solver.html#NonlinearSolver.solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.solver.NonlinearSolver.solve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solve the problem.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>residual</strong> – A measure of the accuracy (convergence and error)
+of the performed computation.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>_solver.snes (???)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.solver.NonlinearSolver.update_parameters">
+<span class="sig-name descname"><span class="pre">update_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/solver.html#NonlinearSolver.update_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.solver.NonlinearSolver.update_parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pulse.setup_parameters.setup_unloading_parameters">
-<span class="sig-prename descclassname"><span class="pre">pulse.setup_parameters.</span></span><span class="sig-name descname"><span class="pre">setup_unloading_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/setup_parameters.html#setup_unloading_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.setup_parameters.setup_unloading_parameters" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parameters for coupled unloading/material parameter
-estimation.</p>
-<p>For info about the different parameters,
-see the unloading module.</p>
-</dd></dl>
+<dt class="sig sig-object py" id="pulse.solver.dump_matrix_to_mtx">
+<span class="sig-prename descclassname"><span class="pre">pulse.solver.</span></span><span class="sig-name descname"><span class="pre">dump_matrix_to_mtx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A:</span> <span class="pre">&lt;MagicMock</span> <span class="pre">name='mock.PETScMatrix'</span> <span class="pre">id='139803298822032'&gt;</span></em>, <em class="sig-param"><span class="pre">filename:</span> <span class="pre">pathlib.Path</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a><a class="reference internal" href="_modules/pulse/solver.html#dump_matrix_to_mtx"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.solver.dump_matrix_to_mtx" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 <div class="section" id="module-pulse.unloader">
@@ -1638,6 +1638,15 @@ arterial aneurysms.” Annals of biomedical engineering 34.9
 
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="pulse.unloader.setup_unloading_parameters">
+<span class="sig-prename descclassname"><span class="pre">pulse.unloader.</span></span><span class="sig-name descname"><span class="pre">setup_unloading_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/unloader.html#setup_unloading_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.unloader.setup_unloading_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parameters for coupled unloading/material parameter
+estimation.</p>
+<p>For info about the different parameters,
+see the unloading module.</p>
+</dd></dl>
+
 </div>
 <div class="section" id="module-pulse.unloading_utils">
 <span id="pulse-unloading-utils-module"></span><h2>pulse.unloading_utils module<a class="headerlink" href="#module-pulse.unloading_utils" title="Permalink to this headline">¶</a></h2>
@@ -1674,43 +1683,12 @@ arterial aneurysms.” Annals of biomedical engineering 34.9
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pulse.unloading_utils.print_volumes">
-<span class="sig-prename descclassname"><span class="pre">pulse.unloading_utils.</span></span><span class="sig-name descname"><span class="pre">print_volumes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">geometry</span></em>, <em class="sig-param"><span class="pre">logger=&lt;KeywordArgumentAdapter</span> <span class="pre">pulse.utils</span> <span class="pre">(INFO)&gt;</span></em>, <em class="sig-param"><span class="pre">txt='original'</span></em>, <em class="sig-param"><span class="pre">u=None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/unloading_utils.html#print_volumes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.unloading_utils.print_volumes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="pulse.unloading_utils.quad_to_xdmf">
-<span class="sig-prename descclassname"><span class="pre">pulse.unloading_utils.</span></span><span class="sig-name descname"><span class="pre">quad_to_xdmf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h5name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h5group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'w'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/unloading_utils.html#quad_to_xdmf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.unloading_utils.quad_to_xdmf" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="pulse.unloading_utils.save">
-<span class="sig-prename descclassname"><span class="pre">pulse.unloading_utils.</span></span><span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h5name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h5group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/unloading_utils.html#save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.unloading_utils.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save object to and HDF file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>obj</strong> (<em>dolfin.Mesh</em><em> or </em><em>dolfin.Function</em>) – The object you want to save</p></li>
-<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Name of the object</p></li>
-<li><p><strong>h5group</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The folder you want to save the object
-withing the HDF file. Default: ‘’</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="pulse.unloading_utils.save_unloaded_geometry">
-<span class="sig-prename descclassname"><span class="pre">pulse.unloading_utils.</span></span><span class="sig-name descname"><span class="pre">save_unloaded_geometry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_geometry</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h5name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h5group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backward_displacement</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/unloading_utils.html#save_unloaded_geometry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.unloading_utils.save_unloaded_geometry" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pulse.unloading_utils.</span></span><span class="sig-name descname"><span class="pre">print_volumes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">geometry</span></em>, <em class="sig-param"><span class="pre">logger=&lt;KeywordArgumentAdapter</span> <span class="pre">pulse.unloading_utils</span> <span class="pre">(INFO)&gt;</span></em>, <em class="sig-param"><span class="pre">txt='original'</span></em>, <em class="sig-param"><span class="pre">u=None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/unloading_utils.html#print_volumes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.unloading_utils.print_volumes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pulse.unloading_utils.solve">
 <span class="sig-prename descclassname"><span class="pre">pulse.unloading_utils.</span></span><span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_pressure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">problem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ntries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/unloading_utils.html#solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.unloading_utils.solve" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="pulse.unloading_utils.update_material_parameters">
-<span class="sig-prename descclassname"><span class="pre">pulse.unloading_utils.</span></span><span class="sig-name descname"><span class="pre">update_material_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">material_parameters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_control_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/unloading_utils.html#update_material_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.unloading_utils.update_material_parameters" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -1733,6 +1711,12 @@ withing the HDF file. Default: ‘’</p></li>
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pulse.utils.</span></span><span class="sig-name descname"><span class="pre">AutoVivification</span></span><a class="reference internal" href="_modules/pulse/utils.html#AutoVivification"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.utils.AutoVivification" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
 <p>Implementation of perl’s autovivification feature.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pulse.utils.Enlisted">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pulse.utils.</span></span><span class="sig-name descname"><span class="pre">Enlisted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/utils.html#Enlisted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.utils.Enlisted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></p>
 </dd></dl>
 
 <dl class="py class">
@@ -1818,6 +1802,16 @@ withing the HDF file. Default: ‘’</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="pulse.utils.delist">
+<span class="sig-prename descclassname"><span class="pre">pulse.utils.</span></span><span class="sig-name descname"><span class="pre">delist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/utils.html#delist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.utils.delist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pulse.utils.enlist">
+<span class="sig-prename descclassname"><span class="pre">pulse.utils.</span></span><span class="sig-name descname"><span class="pre">enlist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_enlist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/utils.html#enlist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.utils.enlist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="pulse.utils.getLogger">
 <span class="sig-prename descclassname"><span class="pre">pulse.utils.</span></span><span class="sig-name descname"><span class="pre">getLogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/utils.html#getLogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.utils.getLogger" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1885,6 +1879,83 @@ withing the HDF file. Default: ‘’</p></li>
 </div>
 <div class="section" id="module-pulse">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pulse" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pulse.ActiveModel">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pulse.</span></span><span class="sig-name descname"><span class="pre">ActiveModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T_ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isochoric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/active_model.html#ActiveModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.ActiveModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pulse.kinematics.Invariants" title="pulse.kinematics.Invariants"><code class="xref py py-class docutils literal notranslate"><span class="pre">pulse.kinematics.Invariants</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.ActiveModel.I1">
+<span class="sig-name descname"><span class="pre">I1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/active_model.html#ActiveModel.I1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.ActiveModel.I1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.ActiveModel.I2">
+<span class="sig-name descname"><span class="pre">I2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/active_model.html#ActiveModel.I2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.ActiveModel.I2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.ActiveModel.I3">
+<span class="sig-name descname"><span class="pre">I3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/active_model.html#ActiveModel.I3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.ActiveModel.I3" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.ActiveModel.I4">
+<span class="sig-name descname"><span class="pre">I4</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/active_model.html#ActiveModel.I4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.ActiveModel.I4" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.ActiveModel.I5">
+<span class="sig-name descname"><span class="pre">I5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/active_model.html#ActiveModel.I5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.ActiveModel.I5" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.ActiveModel.I6">
+<span class="sig-name descname"><span class="pre">I6</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/active_model.html#ActiveModel.I6"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.ActiveModel.I6" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.ActiveModel.I7">
+<span class="sig-name descname"><span class="pre">I7</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/active_model.html#ActiveModel.I7"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.ActiveModel.I7" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.ActiveModel.I8">
+<span class="sig-name descname"><span class="pre">I8</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/active_model.html#ActiveModel.I8"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.ActiveModel.I8" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.ActiveModel.Wactive">
+<span class="sig-name descname"><span class="pre">Wactive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/active_model.html#ActiveModel.Wactive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.ActiveModel.Wactive" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pulse.ActiveModel.activation">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">activation</span></span><a class="headerlink" href="#pulse.ActiveModel.activation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the activation paramter.
+If regional, this will return one parameter
+for each segment.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pulse.ActiveModel.activation_field">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">activation_field</span></span><a class="headerlink" href="#pulse.ActiveModel.activation_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the activation field.
+If regional, this will return a piecewise
+constant function (DG_0)</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pulse.ActiveModel.eta">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">eta</span></span><a class="headerlink" href="#pulse.ActiveModel.eta" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pulse.ActiveModel.model_type">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">model_type</span></span><a class="headerlink" href="#pulse.ActiveModel.model_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="pulse.ActiveStrain">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pulse.</span></span><span class="sig-name descname"><span class="pre">ActiveStrain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T_ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isochoric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/material/active_strain.html#ActiveStrain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.ActiveStrain" title="Permalink to this definition">¶</a></dt>
@@ -2606,13 +2677,13 @@ constant function (DG_0)</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pulse.MechanicsProblem.defaul_solver_parameters">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">defaul_solver_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/mechanicsproblem.html#MechanicsProblem.defaul_solver_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.MechanicsProblem.defaul_solver_parameters" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pulse.MechanicsProblem.default_bcs_parameters">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">default_bcs_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/mechanicsproblem.html#MechanicsProblem.default_bcs_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.MechanicsProblem.default_bcs_parameters" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pulse.MechanicsProblem.default_bcs_parameters">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">default_bcs_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/mechanicsproblem.html#MechanicsProblem.default_bcs_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.MechanicsProblem.default_bcs_parameters" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pulse.MechanicsProblem.default_solver_parameters">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">default_solver_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/mechanicsproblem.html#MechanicsProblem.default_solver_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.MechanicsProblem.default_solver_parameters" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -2780,6 +2851,37 @@ withing the HDF file. Default: ‘’</p></li>
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="pulse.NonlinearSolver">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pulse.</span></span><span class="sig-name descname"><span class="pre">NonlinearSolver</span></span><a class="reference internal" href="_modules/pulse/solver.html#NonlinearSolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.NonlinearSolver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.NonlinearSolver.default_solver_parameters">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">default_solver_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/solver.html#NonlinearSolver.default_solver_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.NonlinearSolver.default_solver_parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.NonlinearSolver.solve">
+<span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/solver.html#NonlinearSolver.solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.NonlinearSolver.solve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solve the problem.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>residual</strong> – A measure of the accuracy (convergence and error)
+of the performed computation.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>_solver.snes (???)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pulse.NonlinearSolver.update_parameters">
+<span class="sig-name descname"><span class="pre">update_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/solver.html#NonlinearSolver.update_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.NonlinearSolver.update_parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="pulse.PiolaTransform">
 <span class="sig-prename descclassname"><span class="pre">pulse.</span></span><span class="sig-name descname"><span class="pre">PiolaTransform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">F</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse/kinematics.html#PiolaTransform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.PiolaTransform" title="Permalink to this definition">¶</a></dt>
@@ -2928,14 +3030,8 @@ arterial aneurysms.” Annals of biomedical engineering 34.9
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pulse.set_log_level">
-<span class="sig-prename descclassname"><span class="pre">pulse.</span></span><span class="sig-name descname"><span class="pre">set_log_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loggers_and_log_levels</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pulse.set_log_level" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set default log levels for some loggers.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>loggers_and_log_levels</strong> – List of tuple (logger name, level).</p>
-</dd>
-</dl>
-</dd></dl>
+<span class="sig-prename descclassname"><span class="pre">pulse.</span></span><span class="sig-name descname"><span class="pre">set_log_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pulse.html#set_log_level"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pulse.set_log_level" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 </div>

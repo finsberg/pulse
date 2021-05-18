@@ -151,6 +151,8 @@
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
+          <li><a href="../pulse.html">pulse</a> &raquo;</li>
+        
       <li>pulse.utils</li>
     
     
@@ -173,6 +175,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 
 <span class="kn">import</span> <span class="nn">dolfin</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
 <div class="viewcode-block" id="log_if_process0"><a class="viewcode-back" href="../../pulse.html#pulse.utils.log_if_process0">[docs]</a><span class="k">def</span> <span class="nf">log_if_process0</span><span class="p">(</span><span class="n">record</span><span class="p">):</span>
@@ -190,7 +193,7 @@
 <div class="viewcode-block" id="getLogger"><a class="viewcode-back" href="../../pulse.html#pulse.utils.getLogger">[docs]</a><span class="k">def</span> <span class="nf">getLogger</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
     <span class="kn">import</span> <span class="nn">daiquiri</span>
 
-    <span class="n">logger</span> <span class="o">=</span> <span class="n">daiquiri</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">daiquiri</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">addFilter</span><span class="p">(</span><span class="n">mpi_filt</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">logger</span></div>
 
@@ -240,7 +243,7 @@
                 <span class="c1"># Dolfin-adjoint is most likely not installed</span>
                 <span class="k">pass</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">_stop_annotating</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">annotate</span>
+                <span class="n">_stop_annotating</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">annotate</span>  <span class="c1"># noqa: F841,F811</span>
 
         <span class="c1"># Update local variable</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_annotate</span> <span class="o">=</span> <span class="n">annotate</span></div>
@@ -250,6 +253,32 @@
     <span class="n">annotation</span> <span class="o">=</span> <span class="n">Annotation</span><span class="p">()</span>
 <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
     <span class="n">annotation</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="Enlisted"><a class="viewcode-back" href="../../pulse.html#pulse.utils.Enlisted">[docs]</a><span class="k">class</span> <span class="nc">Enlisted</span><span class="p">(</span><span class="nb">tuple</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="enlist"><a class="viewcode-back" href="../../pulse.html#pulse.utils.enlist">[docs]</a><span class="k">def</span> <span class="nf">enlist</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">force_enlist</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Enlisted</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">x</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">force_enlist</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Enlisted</span><span class="p">([</span><span class="n">x</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Enlisted</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Enlisted</span><span class="p">([</span><span class="n">x</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="delist"><a class="viewcode-back" href="../../pulse.html#pulse.utils.delist">[docs]</a><span class="k">def</span> <span class="nf">delist</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Enlisted</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">x</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">x</span></div>
 
 
 <div class="viewcode-block" id="mpi_comm_world"><a class="viewcode-back" href="../../pulse.html#pulse.utils.mpi_comm_world">[docs]</a><span class="k">def</span> <span class="nf">mpi_comm_world</span><span class="p">():</span>

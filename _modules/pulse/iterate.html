@@ -151,6 +151,8 @@
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
+          <li><a href="../pulse.html">pulse</a> &raquo;</li>
+        
       <li>pulse.iterate</li>
     
     
@@ -183,38 +185,12 @@
     <span class="n">has_dolfin_adjoint</span> <span class="o">=</span> <span class="kc">False</span>
 
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">numpy_mpi</span><span class="p">,</span> <span class="n">parameters</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">numpy_mpi</span>
 <span class="kn">from</span> <span class="nn">.dolfin_utils</span> <span class="kn">import</span> <span class="n">get_constant</span>
 <span class="kn">from</span> <span class="nn">.mechanicsproblem</span> <span class="kn">import</span> <span class="n">SolverDidNotConverge</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">getLogger</span><span class="p">,</span> <span class="n">value_size</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">Enlisted</span><span class="p">,</span> <span class="n">delist</span><span class="p">,</span> <span class="n">enlist</span><span class="p">,</span> <span class="n">getLogger</span><span class="p">,</span> <span class="n">value_size</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-
-
-<div class="viewcode-block" id="Enlisted"><a class="viewcode-back" href="../../pulse.html#pulse.iterate.Enlisted">[docs]</a><span class="k">class</span> <span class="nc">Enlisted</span><span class="p">(</span><span class="nb">tuple</span><span class="p">):</span>
-    <span class="k">pass</span></div>
-
-
-<div class="viewcode-block" id="enlist"><a class="viewcode-back" href="../../pulse.html#pulse.iterate.enlist">[docs]</a><span class="k">def</span> <span class="nf">enlist</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">force_enlist</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Enlisted</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">x</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
-        <span class="k">if</span> <span class="n">force_enlist</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">Enlisted</span><span class="p">([</span><span class="n">x</span><span class="p">])</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">Enlisted</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">Enlisted</span><span class="p">([</span><span class="n">x</span><span class="p">])</span></div>
-
-
-<div class="viewcode-block" id="delist"><a class="viewcode-back" href="../../pulse.html#pulse.iterate.delist">[docs]</a><span class="k">def</span> <span class="nf">delist</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Enlisted</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">x</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">x</span></div>
 
 
 <div class="viewcode-block" id="copy"><a class="viewcode-back" href="../../pulse.html#pulse.iterate.copy">[docs]</a><span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">deepcopy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;copied_function&quot;</span><span class="p">):</span>
@@ -509,8 +485,6 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">control</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">old_states</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">old_controls</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span>
     <span class="p">):</span>
-
-        <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;log_level&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">Iterator</span><span class="o">.</span><span class="n">default_parameters</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
 
