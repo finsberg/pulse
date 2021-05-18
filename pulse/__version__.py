@@ -1,4 +1,4 @@
-__version__ = "2020.2.0"
+__version__ = "2020.2.1"
 import logging as _logging
 import warnings as _warnings
 
