@@ -34,7 +34,7 @@ def problem():
 
 def test_iterate_pressure(problem):
 
-    target_pressure = 1.0
+    target_pressure = 0.1
     plv = [p.traction for p in problem.bcs.neumann if p.name == "lv"]
     pressure = plv[0]
 
@@ -56,7 +56,7 @@ def test_iterate_pressure(problem):
 
 def test_iterate_gamma(problem):
 
-    target_gamma = 0.1
+    target_gamma = 0.001
     gamma = problem.material.activation
 
     if has_dolfin_adjoint:
@@ -76,7 +76,7 @@ def test_iterate_gamma_regional():
     problem = make_lv_mechanics_problem("regional")
     target_gamma = problem.material.activation.vector().get_local()
     for i in range(len(target_gamma)):
-        target_gamma[i] = 0.1 - i * 0.001
+        target_gamma[i] = 0.01 - i * 0.001
     print(target_gamma)
 
     gamma = problem.material.activation
@@ -100,7 +100,7 @@ def test_iterate_gamma_cg1(continuation):
 
     problem = make_lv_mechanics_problem("CG_1")
     V = problem.material.activation.function_space()
-    target_gamma = dolfin.interpolate(dolfin.Expression("0.1 * x[0]", degree=1), V)
+    target_gamma = dolfin.interpolate(dolfin.Expression("0.01 * x[0]", degree=1), V)
     gamma = problem.material.activation
 
     if has_dolfin_adjoint:
@@ -123,7 +123,7 @@ def test_iterate_gamma_pressure(problem):
     plv = [p.traction for p in problem.bcs.neumann if p.name == "lv"]
     pressure = plv[0]
 
-    target_gamma = 0.1
+    target_gamma = 0.01
     gamma = problem.material.activation
 
     if has_dolfin_adjoint:
@@ -145,10 +145,10 @@ def test_iterate_regional_gamma_pressure():
     problem = make_lv_mechanics_problem("regional")
     target_gamma = problem.material.activation.vector().get_local()
     for i in range(len(target_gamma)):
-        target_gamma[i] = 0.1 - i * 0.001
+        target_gamma[i] = 0.01 - i * 0.001
     gamma = problem.material.activation
 
-    target_pressure = 1.0
+    target_pressure = 0.1
     plv = [p.traction for p in problem.bcs.neumann if p.name == "lv"]
     pressure = plv[0]
 

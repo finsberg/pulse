@@ -3,9 +3,7 @@ from unittest import mock
 import pytest
 from utils import make_mechanics_problem
 
-from pulse import FixedPointUnloader, HeartGeometry, mesh_paths, parameters
-
-parameters["log_level"] = 20
+from pulse import FixedPointUnloader, HeartGeometry, mesh_paths
 
 
 @pytest.fixture

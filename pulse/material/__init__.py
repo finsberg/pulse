@@ -1,9 +1,12 @@
-from .material_model import Material
-
 # Material models
-from .holzapfelogden import HolzapfelOgden
+# Active models
+from .active_model import ActiveModel
+from .active_strain import ActiveStrain
+from .active_stress import ActiveStress
 from .guccione import Guccione
+from .holzapfelogden import HolzapfelOgden
 from .linearelastic import LinearElastic
+from .material_model import Material
 from .neohookean import NeoHookean
 from .stvenantkirchhoff import StVenantKirchhoff
 
@@ -32,6 +35,14 @@ def get_material_model(material_model):
     )
 
 
-# Active models
-from .active_strain import ActiveStrain
-from .active_stress import ActiveStress
+__all__ = [
+    "Material",
+    "HolzapfelOgden",
+    "Guccione",
+    "NeoHookean",
+    "LinearElastic",
+    "StVenantKirchhoff",
+    "ActiveModel",
+    "ActiveStrain",
+    "ActiveStress",
+]
