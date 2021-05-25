@@ -21,7 +21,9 @@ except ImportError:
     )
 
 from . import numpy_mpi, utils
-from .utils import DOLFIN_VERSION_MAJOR, logger, mpi_comm_world
+from .utils import DOLFIN_VERSION_MAJOR, getLogger, mpi_comm_world
+
+logger = getLogger(__name__)
 
 
 def map_vector_field(f0, new_mesh, u=None, name="fiber", normalize=True):
@@ -31,7 +33,7 @@ def map_vector_field(f0, new_mesh, u=None, name="fiber", normalize=True):
     displacement (u). In that case we will just a Piola transform to
     map the vector field.
     """
-
+    representation = dolfin.parameters["form_compiler"]["representation"]
     if DOLFIN_VERSION_MAJOR > 2016:
         dolfin.parameters["form_compiler"]["representation"] = "quadrature"
 
@@ -68,7 +70,7 @@ def map_vector_field(f0, new_mesh, u=None, name="fiber", normalize=True):
         f0_new.vector()[:] = f0.vector()
 
     if DOLFIN_VERSION_MAJOR > 2016:
-        dolfin.parameters["form_compiler"]["representation"] = "uflacs"
+        dolfin.parameters["form_compiler"]["representation"] = representation
 
     return f0_new
 

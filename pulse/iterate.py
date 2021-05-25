@@ -14,38 +14,12 @@ except ImportError:
     has_dolfin_adjoint = False
 
 
-from . import numpy_mpi, parameters
+from . import numpy_mpi
 from .dolfin_utils import get_constant
 from .mechanicsproblem import SolverDidNotConverge
-from .utils import make_logger, value_size
+from .utils import Enlisted, delist, enlist, getLogger, value_size
 
-logger = make_logger(__name__, parameters["log_level"])
-
-
-class Enlisted(tuple):
-    pass
-
-
-def enlist(x, force_enlist=False):
-    if isinstance(x, Enlisted):
-        return x
-    elif isinstance(x, (list, tuple, np.ndarray)):
-        if force_enlist:
-            return Enlisted([x])
-        else:
-            return Enlisted(x)
-    else:
-        return Enlisted([x])
-
-
-def delist(x):
-    if isinstance(x, Enlisted):
-        if len(x) == 1:
-            return x[0]
-        else:
-            return x
-    else:
-        return x
+logger = getLogger(__name__)
 
 
 def copy(f, deepcopy=True, name="copied_function"):
@@ -340,8 +314,6 @@ class Iterator(object):
     def __init__(
         self, problem, control, target, old_states=None, old_controls=None, **params
     ):
-
-        logger.setLevel(parameters["log_level"])
         self.parameters = Iterator.default_parameters()
         self.parameters.update(params)
 

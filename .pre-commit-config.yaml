@@ -2,9 +2,9 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.3.0
     hooks:
-    -   id: check-yaml
-    -   id: end-of-file-fixer
-    -   id: trailing-whitespace
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
 
   - repo: local
     hooks:
@@ -14,7 +14,7 @@ repos:
         language: system
         entry: python -m isort
         types: [python]
-        exclude: setup.py, pulse/__init__.py
+        exclude: pulse/__init__.py
 
       - id: black
         name: black
@@ -22,7 +22,7 @@ repos:
         language: system
         entry: python -m black
         types: [python]
-        exclude: setup.py, pulse/__init__.py
+        exclude: pulse/__init__.py
 
       - id: flake8
         name: flake8
@@ -30,12 +30,13 @@ repos:
         language: system
         entry: python -m flake8
         types: [python]
-        exclude: setup.py, pulse/__init__.py
+        exclude: pulse/__init__.py
 
-      - id: mypy
-        name: mypy
-        stages: [commit]
-        language: system
-        entry: python -m mypy
-        types: [python]
-        pass_filenames: false
+      # - id: mypy
+      #   name: mypy
+      #   stages: [commit]
+      #   language: system
+      #   entry: python -m mypy
+      #   types: [python]
+      #   exclude: pulse/__init__.py
+      #   pass_filenames: false

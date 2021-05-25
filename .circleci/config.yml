@@ -14,6 +14,9 @@ executors:
   fenics-2017:
     docker:
       - image: finsberg/fenics2017
+  fenics-finsberg:
+    docker:
+      - image: finsberg/fenics
 
 jobs:
   test:
@@ -24,29 +27,16 @@ jobs:
     steps:
       - checkout
 
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "requirements.txt" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
-
       - run:
           name: install dependencies
           command: |
             python3 -m pip install --upgrade pip
             python3 -m pip install h5py --no-binary=h5py
-            python3 -m pip install -r requirements.txt
 
       - run:
           name: install package
           command: |
-            python3 -m pip install .
-
-      - save_cache:
-          paths:
-            - ./venv
-          key: v1-dependencies-{{ checksum "requirements.txt" }}
+            python3 -m pip install ".[all]"
 
       - restore_cache:
           keys:
@@ -56,7 +46,7 @@ jobs:
       - run:
           name: run tests
           command: |
-            python3 -m pytest -v tests
+            python3 -m pytest
 
       - save_cache:
           key: v2-dolfin-jit-cache
@@ -65,8 +55,13 @@ jobs:
             - ~/.cache/dijitso
 
       - store_artifacts:
-          path: test-reports
-          destination: test-reports
+          path: htmlcov
+          destination: htmlcov
+
+      - run:
+          name: codecov
+          command: |
+            bash <(curl -s https://codecov.io/bash)
 
 workflows:
   all-tests:
@@ -74,4 +69,13 @@ workflows:
       - test:
           matrix:
             parameters:
-              fenics: [fenics-latest, fenics-2017, fenics-adjoint-latest]
+              fenics: [
+                  fenics-latest,
+                  fenics-2017,
+                  fenics-adjoint-latest,
+                  # fenics-finsberg,
+                ]
+          filters:
+            branches:
+              ignore:
+                - gh-pages

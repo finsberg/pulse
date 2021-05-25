@@ -1,16 +1,15 @@
 import dolfin
 
 try:
-    from dolfin_adjoint import Constant, Function
+    from dolfin_adjoint import Function
 except ImportError:
-    from dolfin import Constant, Function
+    from dolfin import Function
 
-from pulse.material import HolzapfelOgden, NeoHookean
-from pulse.dolfin_utils import RegionalParameter, get_constant
-from pulse.utils import get_lv_marker
-from pulse.geometry import HeartGeometry
+from pulse.dolfin_utils import RegionalParameter
 from pulse.example_meshes import mesh_paths
-from pulse.mechanicsproblem import MechanicsProblem, cardiac_boundary_conditions
+from pulse.geometry import HeartGeometry
+from pulse.material import NeoHookean
+from pulse.mechanicsproblem import MechanicsProblem
 
 
 def make_lv_mechanics_problem(space="R_0"):
@@ -21,8 +20,8 @@ def make_lv_mechanics_problem(space="R_0"):
 
 def make_mechanics_problem(geometry, space="R_0"):
 
-    # Material = NeoHookean
-    Material = HolzapfelOgden
+    Material = NeoHookean
+    # Material = HolzapfelOgden
 
     if space == "regional":
         activation = RegionalParameter(geometry.cfun)

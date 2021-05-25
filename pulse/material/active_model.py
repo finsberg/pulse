@@ -105,25 +105,25 @@ class ActiveModel(kinematics.Invariants):
         self._activation = f
 
     def I1(self, F):
-        return self._I1(F)
+        return self._I1(self.Fe(F))
 
     def I2(self, F):
-        return self._I2(F)
+        return self._I2(self.Fe(F))
 
     def I3(self, F):
-        return self._I3(F)
+        return self._I3(self.Fe(F))
 
     def I4(self, F, a0):
-        return self._I4(F, a0)
+        return self._I4(self.Fe(F), a0)
 
     def I5(self, F, a0):
-        return self._I5(F, a0)
+        return self._I5(self.Fe(F), a0)
 
     def I6(self, F, a0):
-        return self._I6(F, a0)
+        return self._I6(self.Fe(F), a0)
 
     def I7(self, F, a0):
-        return self._I7(F, a0)
+        return self._I7(self.Fe(F), a0)
 
     def I8(self, F, a0, b0):
-        return self._I8(F, a0, b0)
+        return self._I8(self.Fe(F), a0, b0)

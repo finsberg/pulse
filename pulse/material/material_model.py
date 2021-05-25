@@ -7,6 +7,8 @@
 # agreement. If you do not accept the terms of this license agreement
 # you may not install or use this software.
 
+from abc import ABC, abstractmethod
+
 # Permission to use, copy, modify and distribute any part of this
 # software for non-profit educational and research purposes, without
 # fee, and without a written agreement is hereby granted, provided
@@ -48,7 +50,7 @@ def incompressible(p, J):
     return -p * (J - 1.0)
 
 
-class Material(object):
+class Material(ABC):
     """
     Initialize material model
 
@@ -156,6 +158,10 @@ class Material(object):
                     v = v_new
 
                 setattr(self, k, v)
+
+    @abstractmethod
+    def strain_energy(self, F):
+        pass
 
     def update_geometry(self, geometry):
 

@@ -1,19 +1,17 @@
 #!/usr/bin/env python
 import logging
-import os
 
 import dolfin
 import h5py
 import numpy as np
 
-from . import annotation, numpy_mpi, parameters
+from . import annotation, numpy_mpi
 from .dolfin_utils import get_pressure
-from .io_utils import check_and_delete
 from .iterate import iterate
 from .iterate import logger as logger_it
-from .utils import make_logger, mpi_comm_world
+from .utils import getLogger, mpi_comm_world
 
-logger = make_logger(__name__, parameters["log_level"])
+logger = getLogger(__name__)
 
 
 class ResidualCalculator(object):
@@ -58,69 +56,6 @@ class ResidualCalculator(object):
         return dolfin.MPI.max(mpi_comm_world(), d)
 
 
-def save(obj, h5name, name, h5group=""):
-    """
-    Save object to and HDF file.
-
-    Parameters
-    ----------
-
-    obj : dolfin.Mesh or dolfin.Function
-        The object you want to save
-    name : str
-        Name of the object
-    h5group : str
-        The folder you want to save the object
-        withing the HDF file. Default: ''
-
-    """
-    group = "/".join([h5group, name])
-    file_mode = "a" if os.path.isfile(h5name) else "w"
-
-    if os.path.isfile(h5name):
-        check_and_delete(h5name, group)
-        file_mode = "a"
-    else:
-        file_mode = "w"
-
-    logger.debug("Save {0} to {1}:{2}/{0}".format(name, h5name, h5group))
-
-    if isinstance(obj, dolfin.Function) and obj.ufl_element().family() == "Quadrature":
-
-        quad_to_xdmf(obj, h5name, group, file_mode)
-
-    else:
-        with dolfin.HDF5File(mpi_comm_world(), h5name, file_mode) as h5file:
-            h5file.write(obj, group)
-
-
-def quad_to_xdmf(obj, h5name, h5group="", file_mode="w"):
-
-    V = obj.function_space()
-    gx, gy, gz = obj.split(deepcopy=True)
-
-    W = V.sub(0).collapse()
-    # FIXME
-    coords_tmp = numpy_mpi.gather_broadcast(W.tabulate_dof_coordinates())
-    coords = coords_tmp.reshape((-1, 3))
-    u = numpy_mpi.gather_vector(gx.vector())
-    v = numpy_mpi.gather_vector(gy.vector())
-    w = numpy_mpi.gather_vector(gz.vector())
-    vecs = np.array([u, v, w]).T
-    from ..io_utils import open_h5py, parallel_h5py
-
-    with open_h5py(h5name) as h5file:
-
-        if not parallel_h5py:
-            if mpi_comm_world().rank == 0:
-
-                h5file.create_dataset("/".join([h5group, "coordinates"]), data=coords)
-                h5file.create_dataset("/".join([h5group, "vector"]), data=vecs)
-        else:
-            h5file.create_dataset("/".join([h5group, "coordinates"]), data=coords)
-            h5file.create_dataset("/".join([h5group, "vector"]), data=vecs)
-
-
 def inflate_to_pressure(target_pressure, problem, ntries=5, n=2, annotate=False):
 
     logger.debug("\nInflate geometry to p = {} kPa".format(target_pressure))
@@ -149,7 +84,7 @@ def solve(target_pressure, problem, pressure, ntries=5, n=2, annotate=False):
 
     annotation.annotate = False
 
-    level = logger_it.level
+    level = logger_it.logger.level
     logger_it.setLevel(logging.WARNING)
 
     iterate(problem, pressure, target_pressure)
@@ -164,83 +99,12 @@ def solve(target_pressure, problem, pressure, ntries=5, n=2, annotate=False):
     return w
 
 
-def update_material_parameters(material_parameters, mesh, merge_control_str=""):
-
-    from ..setup_optimization import RegionalParameter, merge_control
-
-    new_matparams = {}
-    for k, v in material_parameters.iteritems():
-        if isinstance(v, RegionalParameter):
-            geo = lambda: None
-            geo.mesh = mesh
-            geo.sfun = dolfin.MeshFunction("size_t", mesh, 3, mesh.domains())
-            sfun = merge_control(geo, merge_control_str)
-
-            v_new = RegionalParameter(sfun)
-            v_arr = numpy_mpi.gather_vector(v.vector())
-
-            numpy_mpi.assign_to_vector(v_new.vector(), v_arr)
-            new_matparams[k] = v_new
-
-        elif isinstance(v, dolfin.Function):
-            v_new = dolfin.Function(
-                dolfin.FunctionSpace(mesh, v.function_space().ufl_element())
-            )
-            v_arr = numpy_mpi.gather_vector(v.vector())
-            numpy_mpi.assign_to_vector(v_new.vector(), v_arr)
-            new_matparams[k] = v_new
-
-        else:
-            new_matparams[k] = v
-
-    return new_matparams
-
-
 def load_opt_target(h5name, h5group, key="volume", data="simulated"):
 
     with h5py.File(h5name) as f:
         vols = [a[:][0] for a in f[h5group]["passive_inflation"][key][data].values()]
 
     return vols
-
-
-def save_unloaded_geometry(new_geometry, h5name, h5group, backward_displacement=None):
-
-    fields = ["fiber", "sheet", "sheet_normal"]
-    local_basis = ["circumferential", "radial", "longitudinal"]
-
-    new_fields = []
-    for fattr in fields:
-        if hasattr(new_geometry, fattr) and getattr(new_geometry, fattr) is not None:
-            f = getattr(new_geometry, fattr).copy()
-            f.rename(fattr, "microstructure")
-            new_fields.append(f)
-
-            new_local_basis = []
-    for fattr in local_basis:
-        if hasattr(new_geometry, fattr) and getattr(new_geometry, fattr) is not None:
-            f = getattr(new_geometry, fattr).copy()
-            f.rename(fattr, "local_basis_function")
-            new_local_basis.append(f)
-
-    logger.debug("Save geometry to {}:{}".format(h5name, h5group))
-
-    if backward_displacement:
-        other_functions = {"backward_displacement": backward_displacement}
-    else:
-        other_functions = {}
-
-    from mesh_generation.mesh_utils import save_geometry_to_h5
-
-    save_geometry_to_h5(
-        new_geometry.mesh,
-        h5name,
-        h5group,
-        new_geometry.markers,
-        new_fields,
-        new_local_basis,
-        other_functions=other_functions,
-    )
 
 
 def continuation_step(params, it_, paramvec):

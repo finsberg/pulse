@@ -1,6 +1,7 @@
 import itertools
 
 import dolfin
+import numpy as np
 import pytest
 
 try:
@@ -25,7 +26,7 @@ except ImportError:
 from pulse import kinematics
 from pulse.dolfin_utils import QuadratureSpace
 from pulse.geometry import Geometry, MarkerFunctions, Microstructure
-from pulse.material import material_models
+from pulse.material import HolzapfelOgden, material_models
 from pulse.mechanicsproblem import BoundaryConditions, MechanicsProblem, NeumannBC
 from pulse.utils import mpi_comm_world
 
@@ -193,6 +194,31 @@ def test_material(unitcube_geometry, Material, active_model, isochoric):
 
         else:
             assert all(abs(p.vector().get_local()) < tol)
+
+
+@pytest.mark.parametrize("active_model", ("active_strain", "active_stress"))
+def test_active_contraction_yield_displacement(unitcube_geometry, active_model):
+
+    activation = Constant(0.001)
+
+    def dirichlet_bc(W):
+        V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
+        return DirichletBC(V, Constant((0.0, 0.0, 0.0)), fixed)
+
+    bcs = BoundaryConditions(dirichlet=(dirichlet_bc,))
+
+    matparams = HolzapfelOgden.default_parameters()
+
+    material = HolzapfelOgden(
+        activation=activation,
+        parameters=matparams,
+        active_model=active_model,
+    )
+
+    problem = MechanicsProblem(unitcube_geometry, material, bcs)
+    problem.solve()
+    u, p = problem.state.split(deepcopy=True)
+    assert np.linalg.norm(u.vector().get_local()) > 0
 
 
 if __name__ == "__main__":

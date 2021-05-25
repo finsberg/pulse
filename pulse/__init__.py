@@ -1,41 +1,18 @@
-import warnings as _warnings
-
-try:
-    from ffc.quadrature.deprecation import QuadratureRepresentationDeprecationWarning
-
-    _warnings.filterwarnings(
-        "ignore", category=QuadratureRepresentationDeprecationWarning
-    )
-    _warnings.filterwarnings("ignore", category=DeprecationWarning)
-except:
-    pass
-
-_warnings.filterwarnings("ignore", category=FutureWarning)
-_warnings.filterwarnings("ignore", category=UserWarning)
-
-from .setup_parameters import parameters
-from . import setup_parameters
-
+from .__version__ import __version__
 from .utils import annotation
-
-setup_parameters.setup_general_parameters()
-
-from collections import namedtuple
-
-Patient = namedtuple("Patient", ["geometry", "data"])
 
 from . import utils
 from . import dolfin_utils
 from . import io_utils
 from . import numpy_mpi
 from . import kinematics
+from . import solver
 from . import mechanicsproblem
 from . import iterate
 from . import unloader
-
-# Subpackages
+from . import geometry
+from . import geometry_utils
 from . import material
-from .material import *
 
 
 from .unloader import MeshUnloader, RaghavanUnloader, FixedPointUnloader
@@ -47,12 +24,14 @@ from .geometry import (
     MarkerFunctions,
 )
 from .example_meshes import mesh_paths
-from pulse.mechanicsproblem import (
+from .solver import NonlinearProblem, NonlinearSolver
+from .mechanicsproblem import (
     MechanicsProblem,
     BoundaryConditions,
     NeumannBC,
     RobinBC,
 )
+
 from .dolfin_utils import QuadratureSpace, MixedParameter, RegionalParameter
 
 from .kinematics import (
@@ -67,7 +46,52 @@ from .kinematics import (
     PiolaTransform,
     InversePiolaTransform,
 )
-from .__version__ import __version__
+from .material import (
+    LinearElastic,
+    NeoHookean,
+    HolzapfelOgden,
+    Guccione,
+    StVenantKirchhoff,
+    ActiveModel,
+    ActiveStrain,
+    ActiveStress,
+    Material,
+)
+
+
+import logging as _logging
+
+import daiquiri as _daiquiri
+
+
+def set_log_level(level):
+    from daiquiri import set_default_log_levels
+
+    loggers = [
+        utils.logger,
+        dolfin_utils.logger,
+        io_utils.logger,
+        numpy_mpi.logger,
+        solver.logger,
+        mechanicsproblem.logger,
+        iterate.logger,
+        unloader.logger,
+        geometry.logger,
+        geometry_utils.logger,
+    ]
+    set_default_log_levels((logger, level) for logger in loggers)
+
+
+_daiquiri.setup(level=_logging.INFO)
+
+
+ffc_logger = _logging.getLogger("FFC")
+ffc_logger.setLevel(_logging.WARNING)
+ffc_logger.addFilter(utils.mpi_filt)
+
+ufl_logger = _logging.getLogger("UFL")
+ufl_logger.setLevel(_logging.WARNING)
+ufl_logger.addFilter(utils.mpi_filt)
 
 __author__ = "Henrik Finsberg"
 __credits__ = ["Henrik Finsberg"]
@@ -76,8 +100,6 @@ __maintainer__ = "Henrik Finsberg"
 __email__ = "henriknf@simula.no"
 
 __all__ = [
-    "parameters",
-    "setup_parameters",
     "annotation",
     "utils",
     "dolfin_utils",
@@ -105,6 +127,7 @@ __all__ = [
     "RobinBC",
     "ActiveStrain",
     "ActiveStress",
+    "ActiveModel",
     "Material",
     "HolzapfelOgden",
     "Guccione",
@@ -121,7 +144,12 @@ __all__ = [
     "Invariants",
     "PiolaTransform",
     "InversePiolaTransform",
+    "set_log_level",
     "__version__",
+    "solver",
+    "mesh_paths",
+    "NonlinearProblem",
+    "NonlinearSolver",
 ]
 
 __author__ = "Henrik Finsberg"
