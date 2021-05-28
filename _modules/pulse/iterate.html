@@ -550,9 +550,13 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">ncrashes</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">niters</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Iterating....&quot;</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">print_control</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="p">,</span> <span class="s2">&quot;Current control: &quot;</span><span class="p">))</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">print_control</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;Target: &quot;</span><span class="p">))</span>
+        <span class="c1">#print(type(self.control))</span>
+        <span class="n">control_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Iterating to target control (</span><span class="si">{</span><span class="n">control_name</span><span class="si">}</span><span class="s2">)...&quot;</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Current control: </span><span class="si">{</span><span class="n">control_name</span><span class="si">}</span><span class="s2"> = &quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">print_control</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="p">,</span> <span class="n">msg</span><span class="p">))</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Target: &quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">print_control</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">msg</span><span class="p">))</span>
         <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_reached</span><span class="p">():</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">niters</span> <span class="o">+=</span> <span class="mi">1</span>

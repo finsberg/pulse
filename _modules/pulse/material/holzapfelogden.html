@@ -177,15 +177,15 @@
 
 <div class="viewcode-block" id="HolzapfelOgden"><a class="viewcode-back" href="../../../pulse.material.html#pulse.HolzapfelOgden">[docs]</a><span class="k">class</span> <span class="nc">HolzapfelOgden</span><span class="p">(</span><span class="n">Material</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Transversally isotropic version of the</span>
-<span class="sd">    Holzapfel and Ogden material model</span>
+<span class="sd">    Orthotropic model by Holzapfel and Ogden</span>
 
 <span class="sd">    .. math::</span>
 
 <span class="sd">       \mathcal{W}(I_1, I_{4f_0})</span>
 <span class="sd">       = \frac{a}{2 b} \left( e^{ b (I_1 - 3)}  -1 \right)</span>
 <span class="sd">       + \frac{a_f}{2 b_f} \left( e^{ b_f (I_{4f_0} - 1)_+^2} -1 \right)</span>
-
+<span class="sd">       + \frac{a_s}{2 b_s} \left( e^{ b_s (I_{4s_0} - 1)_+^2} -1 \right)</span>
+<span class="sd">       + \frac{a_fs}{2 b_fs} \left( e^{ b_fs I_{8fs}^2} -1 \right)</span>
 <span class="sd">    where</span>
 
 <span class="sd">    .. math::</span>
