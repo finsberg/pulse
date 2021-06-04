@@ -237,16 +237,15 @@
     <span class="kn">from</span> <span class="nn">daiquiri</span> <span class="kn">import</span> <span class="n">set_default_log_levels</span>
 
     <span class="n">loggers</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">utils</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-        <span class="n">dolfin_utils</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-        <span class="n">io_utils</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-        <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-        <span class="n">solver</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-        <span class="n">mechanicsproblem</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-        <span class="n">iterate</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-        <span class="n">unloader</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-        <span class="n">geometry</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-        <span class="n">geometry_utils</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+        <span class="s2">&quot;pulse.utils.logger&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pulse.dolfin_utils.logger&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pulse.io_utils.logger&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pulse.solver.logger&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pulse.mechanicsproblem.logger&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pulse.iterate.logger&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pulse.unloader.logger&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pulse.geometry.logger&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pulse.geometry_utils.logger&quot;</span><span class="p">,</span>
     <span class="p">]</span>
     <span class="n">set_default_log_levels</span><span class="p">((</span><span class="n">logger</span><span class="p">,</span> <span class="n">level</span><span class="p">)</span> <span class="k">for</span> <span class="n">logger</span> <span class="ow">in</span> <span class="n">loggers</span><span class="p">)</span></div>
 
