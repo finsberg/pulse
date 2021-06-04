@@ -68,16 +68,15 @@ def set_log_level(level):
     from daiquiri import set_default_log_levels
 
     loggers = [
-        utils.logger,
-        dolfin_utils.logger,
-        io_utils.logger,
-        numpy_mpi.logger,
-        solver.logger,
-        mechanicsproblem.logger,
-        iterate.logger,
-        unloader.logger,
-        geometry.logger,
-        geometry_utils.logger,
+        "pulse.utils.logger",
+        "pulse.dolfin_utils.logger",
+        "pulse.io_utils.logger",
+        "pulse.solver.logger",
+        "pulse.mechanicsproblem.logger",
+        "pulse.iterate.logger",
+        "pulse.unloader.logger",
+        "pulse.geometry.logger",
+        "pulse.geometry_utils.logger",
     ]
     set_default_log_levels((logger, level) for logger in loggers)
 
