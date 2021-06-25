@@ -68,11 +68,14 @@ class NonlinearSolver:
         state,
         parameters=None,
     ):
+        dolfin.PETScOptions.clear()
         self.update_parameters(parameters)
         self._problem = problem
         self._state = state
 
         self._solver = dolfin.PETScSNESSolver(mpi_comm_world())
+        self._solver.set_from_options()
+
         self._solver.parameters.update(self.parameters)
         self._snes = self._solver.snes()
         self._snes.setConvergenceHistory()
@@ -82,6 +85,7 @@ class NonlinearSolver:
         logger.debug(f"atol: {self._solver.parameters['absolute_tolerance']}")
         logger.debug(f"rtol: {self._solver.parameters['relative_tolerance']}")
         logger.debug(f" Size          : {self._state.function_space().dim()}")
+        dolfin.PETScOptions.clear()
 
     def update_parameters(self, parameters):
         ps = NonlinearSolver.default_solver_parameters()
@@ -90,6 +94,7 @@ class NonlinearSolver:
         if parameters is not None:
             ps.update(parameters)
         petsc = ps.pop("petsc")
+
         for k, v in petsc.items():
             if v is not None:
                 dolfin.PETScOptions.set(k, v)
@@ -163,7 +168,7 @@ class NonlinearSolver:
         self._solver.solve(self._problem, self._state.vector())
         end = time.time()
 
-        logger.debug(f" ... Done in [{end - start:.3f} s")
+        logger.debug(f" ... Done in {end - start:.3f} s")
 
         residuals = self._snes.getConvergenceHistory()[0]
         num_iterations = self._snes.getLinearSolveIterations()
