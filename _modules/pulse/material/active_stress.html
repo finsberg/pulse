@@ -176,7 +176,7 @@
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">dolfin</span> <span class="kn">import</span> <span class="n">Constant</span>
 
-<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">kinematics</span>
+
 <span class="kn">from</span> <span class="nn">.active_model</span> <span class="kn">import</span> <span class="n">ActiveModel</span>
 
 
@@ -329,18 +329,7 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">diff</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation_field</span></div>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;ActiveStress&quot;</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">Fa</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">SecondOrderIdentity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f0</span><span class="p">)</span>
-
-<div class="viewcode-block" id="ActiveStress.Fe"><a class="viewcode-back" href="../../../pulse.material.html#pulse.ActiveStress.Fe">[docs]</a>    <span class="k">def</span> <span class="nf">Fe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">F</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">F</span></div></div>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation_field</span></div></div>
 </pre></div>
 
            </div>
