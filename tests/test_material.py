@@ -26,7 +26,7 @@ except ImportError:
 from pulse import kinematics
 from pulse.dolfin_utils import QuadratureSpace
 from pulse.geometry import Geometry, MarkerFunctions, Microstructure
-from pulse.material import HolzapfelOgden, material_models
+from pulse.material import ActiveStrain, HolzapfelOgden, NeoHookean, material_models
 from pulse.mechanicsproblem import BoundaryConditions, MechanicsProblem, NeumannBC
 from pulse.utils import mpi_comm_world
 
@@ -213,6 +213,29 @@ def test_active_contraction_yield_displacement(unitcube_geometry, active_model):
         activation=activation,
         parameters=matparams,
         active_model=active_model,
+    )
+
+    problem = MechanicsProblem(unitcube_geometry, material, bcs)
+    problem.solve()
+    u, p = problem.state.split(deepcopy=True)
+    assert np.linalg.norm(u.vector().get_local()) > 0
+
+
+def test_pass_active_model_as_object(unitcube_geometry):
+
+    activation = Constant(0.001)
+
+    def dirichlet_bc(W):
+        V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
+        return DirichletBC(V, Constant((0.0, 0.0, 0.0)), fixed)
+
+    bcs = BoundaryConditions(dirichlet=(dirichlet_bc,))
+
+    matparams = NeoHookean.default_parameters()
+
+    material = NeoHookean(
+        parameters=matparams,
+        active_model=ActiveStrain(activation=activation),
     )
 
     problem = MechanicsProblem(unitcube_geometry, material, bcs)

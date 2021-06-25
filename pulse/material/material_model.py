@@ -6,9 +6,6 @@
 # software you agree with the terms and conditions of this license
 # agreement. If you do not accept the terms of this license agreement
 # you may not install or use this software.
-
-from abc import ABC, abstractmethod
-
 # Permission to use, copy, modify and distribute any part of this
 # software for non-profit educational and research purposes, without
 # fee, and without a written agreement is hereby granted, provided
@@ -27,7 +24,11 @@ from abc import ABC, abstractmethod
 # SIMULA RESEARCH LABORATORY MAKES NO REPRESENTATIONS AND EXTENDS NO
 # WARRANTIES OF ANY KIND, EITHER IMPLIED OR EXPRESSED, INCLUDING, BUT
 # NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
+from abc import ABC, abstractmethod
+from typing import Optional, Union
+
 import dolfin
+import ufl
 
 try:
     from dolfin_adjoint import Constant, Function
@@ -36,6 +37,7 @@ except ImportError:
 
 from .. import kinematics, numpy_mpi
 from ..dolfin_utils import RegionalParameter, update_function
+from .active_model import ActiveModel
 from .active_strain import ActiveStrain
 from .active_stress import ActiveStress
 
@@ -48,6 +50,26 @@ def compressibility(model, *args, **kwargs):
 
 def incompressible(p, J):
     return -p * (J - 1.0)
+
+
+def handle_active_model(
+    active_model, activation, f0, s0, n0, T_ref, isochoric, eta, **kwargs
+):
+    if isinstance(active_model, str):
+        assert active_model in [
+            "active_stress",
+            "active_strain",
+        ], "The active model '{}' is not implemented.".format(active_model)
+
+        active_args = (activation, f0, s0, n0, T_ref, isochoric)
+        # Activation
+        if active_model == "active_stress":
+            return ActiveStress(*active_args, eta=eta, **kwargs)
+        else:
+            return ActiveStrain(*active_args)
+    else:
+        assert isinstance(active_model, ActiveModel)
+        return active_model
 
 
 class Material(ABC):
@@ -81,12 +103,12 @@ class Material(ABC):
 
     def __init__(
         self,
-        activation=None,
+        activation: Optional[ufl.Coefficient] = None,
         parameters=None,
-        active_model="active_strain",
-        T_ref=None,
-        eta=0.0,
-        isochoric=True,
+        active_model: Union[ActiveModel, str] = "active_strain",
+        T_ref: Optional[float] = None,
+        eta: Optional[float] = 0.0,
+        isochoric: bool = True,
         compressible_model="incompressible",
         geometry=None,
         f0=None,
@@ -103,20 +125,15 @@ class Material(ABC):
         self._set_parameter_attrs(geometry)
 
         # Active model
-        assert active_model in [
-            "active_stress",
-            "active_strain",
-        ], "The active model '{}' is not implemented.".format(active_model)
-
-        active_args = (activation, f0, s0, n0, T_ref, isochoric)
-        # Activation
-        if active_model == "active_stress":
-            self.active = ActiveStress(*active_args, eta=eta, **kwargs)
-        else:
-            self.active = ActiveStrain(*active_args)
+        self.active = handle_active_model(
+            active_model, activation, f0, s0, n0, T_ref, isochoric, eta, **kwargs
+        )
 
         self.compressible_model = compressible_model
+        self._update_activation(activation, geometry)
 
+    def _update_activation(self, activation, geometry):
+        # FIXME: Do we need this function?
         try:
             activation_element = self.activation.ufl_element()
             cell = activation_element.cell()

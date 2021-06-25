@@ -100,6 +100,13 @@ class ActiveModel(kinematics.Invariants):
         """
         return self._activation
 
+    @property
+    def Fa(self):
+        return kinematics.SecondOrderIdentity(self.f0)
+
+    def Fe(self, F):
+        return F
+
     @activation.setter
     def activation(self, f):
         self._activation = f

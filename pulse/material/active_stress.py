@@ -5,7 +5,7 @@ try:
 except ImportError:
     from dolfin import Constant
 
-from .. import kinematics
+
 from .active_model import ActiveModel
 
 
@@ -159,14 +159,3 @@ class ActiveStress(ActiveModel):
 
         elif diff == 1:
             return self.activation_field
-
-    @property
-    def type(self):
-        return "ActiveStress"
-
-    @property
-    def Fa(self):
-        return kinematics.SecondOrderIdentity(self.f0)
-
-    def Fe(self, F):
-        return F
