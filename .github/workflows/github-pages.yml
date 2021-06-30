@@ -26,10 +26,11 @@ jobs:
           sudo apt install -y pandoc
           python -m pip install fenics-ufl
           make dev
-          python -m pip install "Sphinx==4.0.1" "sphinxcontrib-serializinghtml==1.1.4" "sphinxcontrib-htmlhelp==1.0.3"
 
       - name: Build docs
-        run: make docs
+        run: |
+          make docs
+          curl -o docs/build/html/demos/plotly.js  https://cdn.plot.ly/plotly-latest.min.js
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
