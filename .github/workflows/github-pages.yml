@@ -25,8 +25,8 @@ jobs:
         run: |
           sudo apt install -y pandoc
           python -m pip install fenics-ufl
-          python -m pip install requirements-pages.txt
-          python -m pip install -e .
+          make dev
+          python -m pip install "Sphinx==4.0.1" "sphinxcontrib-serializinghtml==1.1.4" "sphinxcontrib-htmlhelp==1.0.3"
 
       - name: Build docs
         run: make docs
