@@ -3,9 +3,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8">
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Welcome to pulse’s documentation! &mdash; pulse 2020.2.2 documentation</title>
   
@@ -21,10 +22,7 @@
 
   
   
-
   
-  
-
   
 
   
@@ -60,7 +58,7 @@
           
 
           
-            <a href="#" class="icon icon-home"> pulse
+            <a href="#" class="icon icon-home" alt="Documentation Home"> pulse
           
 
           
@@ -142,8 +140,6 @@
 
 
 
-
-
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -155,7 +151,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-          
+            
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -193,7 +189,7 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="welcome-to-pulse-s-documentation">
+<section id="welcome-to-pulse-s-documentation">
 <h1>Welcome to pulse’s documentation!<a class="headerlink" href="#welcome-to-pulse-s-documentation" title="Permalink to this headline">¶</a></h1>
 <p><cite>pulse</cite> is a python library based on <a class="reference external" href="https://fenicsproject.org">FEniCS</a>
 that aims to solve problems in continuum mechanics.
@@ -207,13 +203,13 @@ old repository has now migrated to a now <cite>pulse-adjoint</cite> repository
 at
 <a class="reference external" href="https://github.com/finsberg/pulse_adjoint">github.com/finsberg/pulse_adjoint</a>
 which works as an extension to this library.</p>
-<div class="section" id="overview">
+<section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p><cite>pulse</cite> is a software based on <a class="reference external" href="https://fenicsproject.org">FEniCS</a>  that aims to solve problems in cardiac mechanics (but is easily extended to solve more general problems in continuum mechanics). <cite>pulse</cite> is a results of the author’s <a class="reference external" href="https://www.duo.uio.no/handle/10852/62015">PhD thesis</a>, where most of the relevant background for the code can be found.</p>
 <p>While FEniCS offers a general framework for solving PDEs, <cite>pulse</cite> specifically targets problems in continuum mechanics. Therefore, most of the code for applying compatible boundary conditions, formulating the governing equations, choosing appropriate spaces for the solutions and applying iterative strategies etc. are already implemented, so that the user can focus on the actual problem he/she wants to solve rather than implementing all the necessary code for formulating and solving the underlying equations.</p>
 <p>The user can pick any of the built-in meshes or choose a custom user defined mesh. The user also need to provide appropriate markers for the boundaries where the boundary conditions will be applied, as well as microstructural information (i.e information about muscle fiber orientations) if an anisotropic model is to be used. Examples of how to create custom idealized geometries as well as appropriate microstructure can be found in another repository called <a class="reference external" href="https://github.com/finsberg/ldrb">ldrb</a> which uses the Laplace-Dirichlet Rule-Based (LDRB) algorithm for assigning myocardial fiber orientations.</p>
-</div>
-<div class="section" id="installation">
+</section>
+<section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>In order to install the software you need to have installed <a class="reference external" href="https://fenicsproject.org">FEniCS</a> verision
 2016.x or 2017.x.  The <cite>pulse</cite> package can be installed with <cite>pip</cite></p>
@@ -233,8 +229,8 @@ which works as an extension to this library.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">pull</span> <span class="n">finsberg</span><span class="o">/</span><span class="n">pulse</span><span class="p">:</span><span class="n">latest</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="source-code">
+</section>
+<section id="source-code">
 <h2>Source code<a class="headerlink" href="#source-code" title="Permalink to this headline">¶</a></h2>
 <p>Source code is available at GitHub <a class="reference external" href="https://github.com/finsberg/pulse">https://github.com/finsberg/pulse</a></p>
 <div class="toctree-wrapper compound">
@@ -283,52 +279,59 @@ which works as an extension to this library.</p>
 </li>
 </ul>
 </div>
-</div>
-</div>
-<div class="section" id="indices-and-tables">
+</section>
+</section>
+<section id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
-</div>
-<div class="section" id="license">
+</section>
+<section id="license">
 <h1>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h1>
 <p>LGPL version 3 or later</p>
-</div>
-<div class="section" id="contributors">
+</section>
+<section id="contributors">
 <h1>Contributors<a class="headerlink" href="#contributors" title="Permalink to this headline">¶</a></h1>
 <p>For questions please contact Henrik Finsberg (<a class="reference external" href="mailto:henriknf&#37;&#52;&#48;simula&#46;no">henriknf<span>&#64;</span>simula<span>&#46;</span>no</a>)</p>
-</div>
+</section>
 
 
            </div>
            
           </div>
           <footer>
+  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="demos/demos.html" class="btn btn-neutral float-right" title="Demos" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+      
+        <a href="demos/demos.html" class="btn btn-neutral float-right" title="Demos" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
     </div>
+  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2020, Henrik Finsberg.
+        
+        &copy; Copyright 2020, Henrik Finsberg
 
     </p>
   </div>
     
     
     
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
+
         </div>
       </div>
 
