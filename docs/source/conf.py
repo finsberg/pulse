@@ -60,6 +60,7 @@ demoes = [
     demo_dir.joinpath("simple_ellipsoid").joinpath("simple_ellipsoid.ipynb"),
     demo_dir.joinpath("unit_cube").joinpath("unit_cube_demo.ipynb"),
     demo_dir.joinpath("unloading").joinpath("demo_fixedpointunloader.ipynb"),
+    demo_dir.joinpath("rigid_motion").joinpath("rigid_motion.ipynb"),
 ]
 
 
