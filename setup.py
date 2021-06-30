@@ -34,7 +34,7 @@ EXTRAS = {
     "docs": [
         "pandoc",
         "Sphinx",
-        "sphinx_rtd_theme",
+        "sphinx_rtd_theme==0.5.0",
         "nbsphinx",
         "sphinx-gallery",
         "ipywidgets",
