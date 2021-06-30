@@ -176,6 +176,7 @@ def setup(app):
     app.add_js_file(
         "https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"
     )
+    app.add_js_file("https://cdn.plot.ly/plotly-1.2.0.min.js")
 
 
 autosummary_generate = True
