@@ -30,7 +30,6 @@ jobs:
       - name: Build docs
         run: |
           make docs
-          curl -o docs/build/html/demos/plotly.js  https://cdn.plot.ly/plotly-latest.min.js
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3

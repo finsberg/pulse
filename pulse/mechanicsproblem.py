@@ -150,26 +150,7 @@ class MechanicsProblem(object):
         self.geometry = geometry
         self.material = material
 
-        if bcs is None:
-            if isinstance(geometry, HeartGeometry):
-                self.bcs_parameters = MechanicsProblem.default_bcs_parameters()
-                if bcs_parameters is not None:
-                    self.bcs_parameters.update(**bcs_parameters)
-            else:
-                raise ValueError(
-                    ("Please provive boundary conditions " "to MechanicsProblem")
-                )
-
-            self.bcs = cardiac_boundary_conditions(geometry, **self.bcs_parameters)
-
-        else:
-            self.bcs = bcs
-
-            # TODO: FIX THIS or require this
-            # Just store this as well in case both is provided
-            self.bcs_parameters = MechanicsProblem.default_bcs_parameters()
-            if bcs_parameters is not None:
-                self.bcs_parameters.update(**bcs_parameters)
+        self._handle_bcs(bcs=bcs, bcs_parameters=bcs_parameters)
 
         # Make sure that the material has microstructure information
         for attr in ("f0", "s0", "n0"):
@@ -181,6 +162,28 @@ class MechanicsProblem(object):
 
         self._init_spaces()
         self._init_forms()
+
+    def _handle_bcs(self, bcs, bcs_parameters):
+        if bcs is None:
+            if isinstance(self.geometry, HeartGeometry):
+                self.bcs_parameters = MechanicsProblem.default_bcs_parameters()
+                if bcs_parameters is not None:
+                    self.bcs_parameters.update(**bcs_parameters)
+            else:
+                raise ValueError(
+                    ("Please provive boundary conditions " "to MechanicsProblem")
+                )
+
+            self.bcs = cardiac_boundary_conditions(self.geometry, **self.bcs_parameters)
+
+        else:
+            self.bcs = bcs
+
+            # TODO: FIX THIS or require this
+            # Just store this as well in case both is provided
+            self.bcs_parameters = MechanicsProblem.default_bcs_parameters()
+            if bcs_parameters is not None:
+                self.bcs_parameters.update(**bcs_parameters)
 
     @staticmethod
     def default_bcs_parameters():

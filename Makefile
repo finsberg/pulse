@@ -72,6 +72,9 @@ docs: ## generate Sphinx HTML documentation, including API docs
 	sphinx-apidoc -o docs/source pulse
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
+
+	curl -o docs/build/html/plotly.tar -L https://github.com/plotly/plotly.js/archive/refs/tags/v2.2.0.tar.gz
+	cd docs/build/html/ && tar -xvf plotly.tar && mv plotly.js-2.2.0/* . &&  mv dist/* demos/.
 	# $(BROWSER) docs/build/html/index.html
 	# python -m http.server --directory docs/build/html
 
