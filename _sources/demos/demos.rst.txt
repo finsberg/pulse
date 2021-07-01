@@ -24,3 +24,4 @@ repository in the `demo folder <https://github.com/finsberg/pulse/tree/master/de
    simple_ellipsoid
    unit_cube_demo
    demo_fixedpointunloader
+   rigid_motion

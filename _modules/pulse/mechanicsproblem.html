@@ -316,26 +316,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span> <span class="o">=</span> <span class="n">geometry</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">material</span> <span class="o">=</span> <span class="n">material</span>
 
-        <span class="k">if</span> <span class="n">bcs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">HeartGeometry</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">bcs_parameters</span> <span class="o">=</span> <span class="n">MechanicsProblem</span><span class="o">.</span><span class="n">default_bcs_parameters</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">bcs_parameters</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">bcs_parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">bcs_parameters</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="p">(</span><span class="s2">&quot;Please provive boundary conditions &quot;</span> <span class="s2">&quot;to MechanicsProblem&quot;</span><span class="p">)</span>
-                <span class="p">)</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">bcs</span> <span class="o">=</span> <span class="n">cardiac_boundary_conditions</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">bcs_parameters</span><span class="p">)</span>
-
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">bcs</span> <span class="o">=</span> <span class="n">bcs</span>
-
-            <span class="c1"># TODO: FIX THIS or require this</span>
-            <span class="c1"># Just store this as well in case both is provided</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">bcs_parameters</span> <span class="o">=</span> <span class="n">MechanicsProblem</span><span class="o">.</span><span class="n">default_bcs_parameters</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">bcs_parameters</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">bcs_parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">bcs_parameters</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handle_bcs</span><span class="p">(</span><span class="n">bcs</span><span class="o">=</span><span class="n">bcs</span><span class="p">,</span> <span class="n">bcs_parameters</span><span class="o">=</span><span class="n">bcs_parameters</span><span class="p">)</span>
 
         <span class="c1"># Make sure that the material has microstructure information</span>
         <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;f0&quot;</span><span class="p">,</span> <span class="s2">&quot;s0&quot;</span><span class="p">,</span> <span class="s2">&quot;n0&quot;</span><span class="p">):</span>
@@ -347,6 +328,28 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_spaces</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_forms</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_handle_bcs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bcs</span><span class="p">,</span> <span class="n">bcs_parameters</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">bcs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span> <span class="n">HeartGeometry</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bcs_parameters</span> <span class="o">=</span> <span class="n">MechanicsProblem</span><span class="o">.</span><span class="n">default_bcs_parameters</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">bcs_parameters</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">bcs_parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">bcs_parameters</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="p">(</span><span class="s2">&quot;Please provive boundary conditions &quot;</span> <span class="s2">&quot;to MechanicsProblem&quot;</span><span class="p">)</span>
+                <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">bcs</span> <span class="o">=</span> <span class="n">cardiac_boundary_conditions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">bcs_parameters</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bcs</span> <span class="o">=</span> <span class="n">bcs</span>
+
+            <span class="c1"># TODO: FIX THIS or require this</span>
+            <span class="c1"># Just store this as well in case both is provided</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bcs_parameters</span> <span class="o">=</span> <span class="n">MechanicsProblem</span><span class="o">.</span><span class="n">default_bcs_parameters</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">bcs_parameters</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bcs_parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">bcs_parameters</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MechanicsProblem.default_bcs_parameters"><a class="viewcode-back" href="../../pulse.html#pulse.mechanicsproblem.MechanicsProblem.default_bcs_parameters">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">default_bcs_parameters</span><span class="p">():</span>
