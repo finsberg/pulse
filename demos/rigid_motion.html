@@ -459,8 +459,9 @@ div.rendered_html tbody tr:hover {
 <h1>Rigid motion<a class="headerlink" href="#Rigid-motion" title="Permalink to this headline">¶</a></h1>
 <p>In this example we show to use a Lagrange Multiplier Formuations to enforce a solution that is free of rigid motions as explained in [1]</p>
 <blockquote>
-<div><p>Kuchta, Miroslav, Kent‐Andre Mardal, and Mikael Mortensen. “On the singular Neumann problem in linear elasticity.” Numerical Linear Algebra with Applications 26.1 (2019): e2212.</p>
+<div><p>[1] Kuchta, M., Mardal, K. A., &amp; Mortensen, M. (2019). On the singular Neumann problem in linear elasticity. Numerical Linear Algebra with Applications, 26(1), e2212.</p>
 </div></blockquote>
+<p>Credits to <a class="reference external" href="https://github.com/aashildte">Aashild Telle</a></p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -471,11 +472,20 @@ div.rendered_html tbody tr:hover {
 
 <span class="c1"># Make sure to use dolfin-adjoint version of object if using dolfin_adjoint</span>
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">dolfin_adjoint</span> <span class="kn">import</span> <span class="n">Constant</span><span class="p">,</span> <span class="n">DirichletBC</span><span class="p">,</span> <span class="n">Function</span><span class="p">,</span> <span class="n">Mesh</span><span class="p">,</span> <span class="n">UnitCubeMesh</span><span class="p">,</span> <span class="n">interpolate</span><span class="p">,</span> <span class="n">Expression</span>
+    <span class="kn">from</span> <span class="nn">dolfin_adjoint</span> <span class="kn">import</span> <span class="n">Constant</span><span class="p">,</span> <span class="n">Function</span><span class="p">,</span> <span class="n">Mesh</span><span class="p">,</span> <span class="n">UnitCubeMesh</span><span class="p">,</span> <span class="n">interpolate</span><span class="p">,</span> <span class="n">Expression</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">dolfin</span> <span class="kn">import</span> <span class="n">Function</span><span class="p">,</span> <span class="n">Constant</span><span class="p">,</span> <span class="n">DirichletBC</span><span class="p">,</span> <span class="n">Mesh</span><span class="p">,</span> <span class="n">UnitCubeMesh</span><span class="p">,</span> <span class="n">interpolate</span><span class="p">,</span> <span class="n">Expression</span>
+    <span class="kn">from</span> <span class="nn">dolfin</span> <span class="kn">import</span> <span class="n">Function</span><span class="p">,</span> <span class="n">Constant</span><span class="p">,</span> <span class="n">Mesh</span><span class="p">,</span> <span class="n">UnitCubeMesh</span><span class="p">,</span> <span class="n">interpolate</span><span class="p">,</span> <span class="n">Expression</span>
 
-<span class="kn">from</span> <span class="nn">pulse</span> <span class="kn">import</span> <span class="n">DeformationGradient</span><span class="p">,</span> <span class="n">Jacobian</span><span class="p">,</span> <span class="n">MechanicsProblem</span>
+<span class="kn">from</span> <span class="nn">pulse</span> <span class="kn">import</span> <span class="n">DeformationGradient</span><span class="p">,</span> <span class="n">Jacobian</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre>
+<span></span>
 </pre></div>
 </div>
 </div>

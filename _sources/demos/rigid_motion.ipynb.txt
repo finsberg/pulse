@@ -7,7 +7,9 @@
     "# Rigid motion\n",
     "In this example we show to use a Lagrange Multiplier Formuations to enforce a solution that is free of rigid motions as explained in [1]\n",
     "\n",
-    "> Kuchta, Miroslav, Kent‐Andre Mardal, and Mikael Mortensen. \"On the singular Neumann problem in linear elasticity.\" Numerical Linear Algebra with Applications 26.1 (2019): e2212."
+    "> [1] Kuchta, M., Mardal, K. A., & Mortensen, M. (2019). On the singular Neumann problem in linear elasticity. Numerical Linear Algebra with Applications, 26(1), e2212.\n",
+    "\n",
+    "Credits to [Aashild Telle](https://github.com/aashildte)"
    ]
   },
   {
@@ -21,12 +23,19 @@
     "\n",
     "# Make sure to use dolfin-adjoint version of object if using dolfin_adjoint\n",
     "try:\n",
-    "    from dolfin_adjoint import Constant, DirichletBC, Function, Mesh, UnitCubeMesh, interpolate, Expression\n",
+    "    from dolfin_adjoint import Constant, Function, Mesh, UnitCubeMesh, interpolate, Expression\n",
     "except ImportError:\n",
-    "    from dolfin import Function, Constant, DirichletBC, Mesh, UnitCubeMesh, interpolate, Expression\n",
+    "    from dolfin import Function, Constant, Mesh, UnitCubeMesh, interpolate, Expression\n",
     "    \n",
-    "from pulse import DeformationGradient, Jacobian, MechanicsProblem"
+    "from pulse import DeformationGradient, Jacobian"
    ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
   },
   {
    "cell_type": "code",
