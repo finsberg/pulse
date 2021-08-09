@@ -17,11 +17,12 @@ build:
 requirements:
   build:
     - python
-
     - pip
     - h5py
     - fenics
     - scipy
+    - numpy
+    - daiquiri
     - matplotlib
   run:
     - python
@@ -29,6 +30,8 @@ requirements:
     - fenics
     - scipy
     - matplotlib
+    - numpy
+    - daiquiri
 test:
   imports:
     - pulse
