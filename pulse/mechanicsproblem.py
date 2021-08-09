@@ -348,7 +348,7 @@ class MechanicsProblem(object):
 
             self.reinit(old_state)
 
-            raise SolverDidNotConverge(ex)
+            raise SolverDidNotConverge(ex) from ex
         else:
             logger.debug("Sucess")
 
