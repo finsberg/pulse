@@ -4,13 +4,11 @@ import pytest
 
 from pulse.dolfin_utils import QuadratureSpace
 from pulse.example_meshes import mesh_paths
-from pulse.geometry import (
-    CRLBasis,
-    Geometry,
-    HeartGeometry,
-    MarkerFunctions,
-    Microstructure,
-)
+from pulse.geometry import CRLBasis
+from pulse.geometry import Geometry
+from pulse.geometry import HeartGeometry
+from pulse.geometry import MarkerFunctions
+from pulse.geometry import Microstructure
 
 
 class Free(dolfin.SubDomain):
@@ -121,7 +119,7 @@ def test_mesvolumes(unitcube_geometry):
         [
             (float(f) - 0.125) < dolfin.DOLFIN_EPS_LARGE
             for f in unitcube_geometry.meshvols
-        ]
+        ],
     )
     assert unitcube_geometry.nregions == 8
 

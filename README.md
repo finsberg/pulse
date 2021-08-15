@@ -8,7 +8,6 @@
 # pulse
 
 A software for solving problems in cardiac mechanics.
-The code in this repository used to be part of [pulse-adjoint](https://bitbucket.org/finsberg/pulse_adjoint), but now works as a standalone mechanics solver without the need for dolfin-adjoint.
 
 ## Overview
 `pulse` is a software based on [FEniCS](https://fenicsproject.org) that aims to solve problems in cardiac mechanics (but is easily extended to solve more general problems in continuum mechanics). `pulse` is a results of the author's [PhD thesis](https://www.duo.uio.no/handle/10852/62015), where most of the relevant background for the code can be found.
@@ -20,19 +19,15 @@ While FEniCS offers a general framework for solving PDEs, `pulse` specifically t
 ### Install with pip
 `pulse` can be installed directly from [PyPI](https://pypi.org/project/fenics-pulse/)
 ```
-pip install fenics-pulse
+python3  -m pip install fenics-pulse
 ```
 or you can install the most recent development version
 ```
-pip install git+https://github.com/finsberg/pulse.git
+python3 -m pip install git+https://github.com/finsberg/pulse.git
 ```
 
 ### Install with conda
 You can also install the package using `conda`
-```
-conda install -c finsberg pulse
-```
-`pulse` is also available on conda-forge
 ```
 conda install -c conda-forge pulse
 ```
@@ -51,13 +46,14 @@ Note that if you install FEniCS using anaconda then you will not get support for
 see e.g [this issue](https://github.com/conda-forge/hdf5-feedstock/issues/51).
 
 ## Getting started
-Check out the demos in the demo folder.
+Check out the demos in the demo folder. These demos are currently in jupyter notebook format.
+If you want to run them as python files you can convert the notebooks to `.py` files using e.g [jupytext](https://jupytext.readthedocs.io/en/latest/)
 
 ## Automated test
 Test are provided in the folder [`tests`](tests). You can run the test
 with `pytest`
 ```
-python -m pytest tests -vv
+python3 -m pytest tests -vv
 ```
 
 
@@ -89,5 +85,5 @@ If you use `pulse` in your own research, please cite the [JOSS paper](https://jo
 ## Known issues
 * If you encounter errors with `h5py` try to uninstall it (`pip uninstall h5py`) and then re-install it without installing any binary packages, i.e
 ```
-pip install h5py --no-binary=h5py
+python3 -m pip install h5py --no-binary=h5py
 ```

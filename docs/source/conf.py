@@ -5,9 +5,7 @@
 # This file does only contain a selection of the most common options. For a
 # full list see the documentation:
 # http://www.sphinx-doc.org/en/master/config
-
 # -- Path setup --------------------------------------------------------------
-
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -16,17 +14,15 @@
 # import sys
 # print(sys.path)
 # sys.path.insert(0, os.path.abspath('../pulse'))
-
-
 import shutil
 import sys
-
-# -- Project information -----------------------------------------------------
 from pathlib import Path
 from textwrap import dedent
 from unittest import mock
 
 import sphinx_rtd_theme  # noqa: E401
+
+# -- Project information -----------------------------------------------------
 
 sys.modules["dolfin"] = mock.MagicMock()
 
@@ -94,8 +90,8 @@ with open(demo_docs.joinpath("demos.rst"), "w+") as f:
        :titlesonly:
        :maxdepth: 1
 
-    """
-        )
+    """,
+        ),
     )
     for i in demoes:
         f.write("   " + i.stem + "\n")
@@ -175,7 +171,7 @@ def setup(app):
     # https://docs.readthedocs.io/en/latest/guides/adding-custom-css.html
     # https://www.sphinx-doc.org/en/master/extdev/appapi.html#sphinx.application.Sphinx.add_js_file
     app.add_js_file(
-        "https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"
+        "https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js",
     )
 
 
@@ -189,7 +185,10 @@ intersphinx_mapping = {
     "matplotlib": ("https://matplotlib.org", None),
 }
 inheritance_node_attrs = dict(
-    shape="ellipse", fontsize=12, color="orange", style="filled"
+    shape="ellipse",
+    fontsize=12,
+    color="orange",
+    style="filled",
 )
 
 # Add any paths that contain templates here, relative to this directory.

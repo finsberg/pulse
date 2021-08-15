@@ -1,6 +1,8 @@
 import dolfin
 
-from ..dolfin_utils import get_dimesion, heaviside, subplus
+from ..dolfin_utils import get_dimesion
+from ..dolfin_utils import heaviside
+from ..dolfin_utils import subplus
 from .material_model import Material
 
 

@@ -3,7 +3,9 @@ from unittest import mock
 import pytest
 from utils import make_mechanics_problem
 
-from pulse import FixedPointUnloader, HeartGeometry, mesh_paths
+from pulse import FixedPointUnloader
+from pulse import HeartGeometry
+from pulse import mesh_paths
 
 
 @pytest.fixture
@@ -15,7 +17,9 @@ def problem():
 def test_fixedpointunloader(problem):
 
     unloader = FixedPointUnloader(
-        problem=problem, pressure=0.1, options=dict(maxiter=2)
+        problem=problem,
+        pressure=0.1,
+        options=dict(maxiter=2),
     )
 
     with mock.patch("pulse.mechanicsproblem.MechanicsProblem.solve") as solve_mock:

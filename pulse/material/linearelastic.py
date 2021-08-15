@@ -1,4 +1,5 @@
 import dolfin
+
 from ..dolfin_utils import get_dimesion
 from .material_model import Material
 
@@ -22,7 +23,7 @@ class LinearElastic(Material):
         gradu = F - dolfin.Identity(dim)
         epsilon = 0.5 * (gradu + gradu.T)
         W = self.lmbda / 2 * (dolfin.tr(epsilon) ** 2) + self.mu * dolfin.tr(
-            epsilon * epsilon
+            epsilon * epsilon,
         )
 
         # Active stress

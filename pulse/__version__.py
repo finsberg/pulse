@@ -6,7 +6,8 @@ try:
     from ffc.quadrature.deprecation import QuadratureRepresentationDeprecationWarning
 
     _warnings.filterwarnings(
-        "ignore", category=QuadratureRepresentationDeprecationWarning
+        "ignore",
+        category=QuadratureRepresentationDeprecationWarning,
     )
     _warnings.filterwarnings("ignore", category=DeprecationWarning)
 except ImportError:

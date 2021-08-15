@@ -103,7 +103,8 @@ def get_delta(new_control, c0, c1):
 
     elif isinstance(new_control, (dolfin.Function, Function)):
         new_control_arr = numpy_mpi.gather_vector(
-            new_control.vector(), new_control.function_space().dim()
+            new_control.vector(),
+            new_control.function_space().dim(),
         )
         c0_arr = numpy_mpi.gather_vector(c0.vector(), c0.function_space().dim())
         c1_arr = numpy_mpi.gather_vector(c1.vector(), c1.function_space().dim())
@@ -111,7 +112,7 @@ def get_delta(new_control, c0, c1):
 
     else:
         msg = ("Unexpected type for new_crontrol in get_delta" "Got {}").format(
-            type(delta)
+            type(delta),
         )
         raise TypeError(msg)
 
@@ -130,7 +131,9 @@ def print_control(cs, msg):
 
     if len(controls) > 3:
         msg += ("\n\tMin:{:.2f}\tMean:{:.2f}\tMax:{:.2f}" "").format(
-            np.min(controls), np.mean(controls), np.max(controls)
+            np.min(controls),
+            np.mean(controls),
+            np.max(controls),
         )
     else:
         cs = []
@@ -155,7 +158,8 @@ def get_diff(current, target):
         diff = np.subtract(constant2float(target), constant2float(current))
     elif isinstance(target, (tuple, list)):
         diff = np.subtract(
-            [constant2float(t) for t in target], [constant2float(c) for c in current]
+            [constant2float(t) for t in target],
+            [constant2float(c) for c in current],
         )
     else:
         try:
@@ -163,7 +167,7 @@ def get_diff(current, target):
         except Exception as ex:
             logger.error(ex)
             raise ValueError(
-                ("Unable to compute diff with type {}" "").format(type(current))
+                ("Unable to compute diff with type {}" "").format(type(current)),
             )
 
     return squeeze(diff)
@@ -202,7 +206,7 @@ def get_initial_step(current, target, nsteps=5):
         step = diff / float(nsteps)
 
     logger.debug(
-        ("Intial number of steps: {} with step size {}" "").format(nsteps, step)
+        ("Intial number of steps: {} with step size {}" "").format(nsteps, step),
     )
     return step
 
@@ -220,7 +224,8 @@ def step_too_large(current, target, step):
 
     if isinstance(current, (dolfin.Function, Function)):
         current = numpy_mpi.gather_vector(
-            current.vector(), current.function_space().dim()
+            current.vector(),
+            current.function_space().dim(),
         )
     elif isinstance(current, (Constant, dolfin.Constant)):
         current = constant2float(current)
@@ -325,14 +330,16 @@ class Iterator(object):
         self._check_target(target)
 
         self.control_values = [
-            copy(delist(self.control), deepcopy=True, name="previous control")
+            copy(delist(self.control), deepcopy=True, name="previous control"),
         ]
         self.prev_states = [
-            copy(self.problem.state, deepcopy=True, name="previous state")
+            copy(self.problem.state, deepcopy=True, name="previous state"),
         ]
 
         self.step = get_initial_step(
-            self.control, self.target, self.parameters["initial_number_of_steps"]
+            self.control,
+            self.target,
+            self.parameters["initial_number_of_steps"],
         )
 
     def __enter__(self):
@@ -379,7 +386,7 @@ class Iterator(object):
 
         self.ncrashes = 0
         self.niters = 0
-        #print(type(self.control))
+        # print(type(self.control))
         control_name = self.control[0].name()
         logger.info(f"Iterating to target control ({control_name})...")
         msg = f"Current control: {control_name} = "
@@ -404,7 +411,9 @@ class Iterator(object):
 
             # Check if we are close
             if step_too_large(
-                delist(prev_control), delist(self.target), delist(self.step)
+                delist(prev_control),
+                delist(self.target),
+                delist(self.step),
             ):
                 self.change_step_for_final_iteration(delist(prev_control))
 
@@ -443,17 +452,17 @@ class Iterator(object):
                     ):
                         self.change_step_size(1.5)
                         msg = "Adapt step size. New step size: {}".format(
-                            np2str(self.step)
+                            np2str(self.step),
                         )
                         # print_control(enlist(self.step), msg)
                         logger.debug(msg)
 
                 self.control_values.append(
-                    delist(copy(self.control, deepcopy=True, name="Previous control"))
+                    delist(copy(self.control, deepcopy=True, name="Previous control")),
                 )
 
                 self.prev_states.append(
-                    copy(self.problem.state, deepcopy=True, name="Previous state")
+                    copy(self.problem.state, deepcopy=True, name="Previous state"),
                 )
         return self.prev_states, self.control_values
 
@@ -535,13 +544,14 @@ class Iterator(object):
         elif isinstance(target, (list, np.ndarray, tuple)):
             if isinstance(prev_control, (dolfin.Function, Function)):
                 prev = numpy_mpi.gather_vector(
-                    prev_control.vector(), prev_control.function_space().dim()
+                    prev_control.vector(),
+                    prev_control.function_space().dim(),
                 )
             else:
                 prev = prev_control
 
             step = np.array(
-                [constant2float(t) - constant2float(c) for (t, c) in zip(target, prev)]
+                [constant2float(t) - constant2float(c) for (t, c) in zip(target, prev)],
             )
         elif isinstance(target, (dolfin.Constant, Constant)):
             step = constant2float(target) - constant2float(prev_control)
@@ -561,7 +571,7 @@ class Iterator(object):
                 t = get_constant(tar)
             except TypeError:
                 msg = ("Unable to convert target for type {} " "to a constant").format(
-                    type(target)
+                    type(target),
                 )
                 raise TypeError(msg)
             targets.append(t)
@@ -584,7 +594,8 @@ class Iterator(object):
         # a constant
         for c in control:
             msg = ("Expected control parameters to be of type {}, " "got {}").format(
-                self._control_types, type(c)
+                self._control_types,
+                type(c),
             )
             assert isinstance(c, self._control_types), msg
 

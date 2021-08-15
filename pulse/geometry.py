@@ -113,7 +113,8 @@ class Geometry(object):
                 args.append(attr)
 
         return ("{self.__class__.__name__}" "({self.mesh}), " "{args})").format(
-            self=self, args=", ".join(args)
+            self=self,
+            args=", ".join(args),
         )
 
     @classmethod
@@ -296,8 +297,8 @@ class Geometry(object):
                 # FIXME
                 regions = set(
                     numpy_mpi.gather_broadcast(self.dx.subdomain_data().array()).astype(
-                        int
-                    )
+                        int,
+                    ),
                 )
                 self._regions = {int(i) for i in regions}
             except AttributeError:
@@ -406,7 +407,7 @@ class HeartGeometry(Geometry):
         if "ENDO_RV" in self.markers:
             # FIXME
             return self.markers["ENDO_RV"][0] in set(
-                numpy_mpi.gather_broadcast(self.ffun.array())
+                numpy_mpi.gather_broadcast(self.ffun.array()),
             )
 
         return False

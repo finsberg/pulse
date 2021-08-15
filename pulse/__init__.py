@@ -1,67 +1,58 @@
-from .__version__ import __version__
-from .utils import annotation
-
-from . import utils
-from . import dolfin_utils
-from . import io_utils
-from . import numpy_mpi
-from . import kinematics
-from . import solver
-from . import mechanicsproblem
-from . import iterate
-from . import unloader
-from . import geometry
-from . import geometry_utils
-from . import material
-
-
-from .unloader import MeshUnloader, RaghavanUnloader, FixedPointUnloader
-from .geometry import (
-    Geometry,
-    CRLBasis,
-    HeartGeometry,
-    Microstructure,
-    MarkerFunctions,
-)
-from .example_meshes import mesh_paths
-from .solver import NonlinearProblem, NonlinearSolver
-from .mechanicsproblem import (
-    MechanicsProblem,
-    BoundaryConditions,
-    NeumannBC,
-    RobinBC,
-)
-
-from .dolfin_utils import QuadratureSpace, MixedParameter, RegionalParameter
-
-from .kinematics import (
-    SecondOrderIdentity,
-    DeformationGradient,
-    Jacobian,
-    GreenLagrangeStrain,
-    LeftCauchyGreen,
-    RightCauchyGreen,
-    EulerAlmansiStrain,
-    Invariants,
-    PiolaTransform,
-    InversePiolaTransform,
-)
-from .material import (
-    LinearElastic,
-    NeoHookean,
-    HolzapfelOgden,
-    Guccione,
-    StVenantKirchhoff,
-    ActiveModel,
-    ActiveStrain,
-    ActiveStress,
-    Material,
-)
-
-
 import logging as _logging
 
 import daiquiri as _daiquiri
+
+from . import dolfin_utils
+from . import geometry
+from . import geometry_utils
+from . import io_utils
+from . import iterate
+from . import kinematics
+from . import material
+from . import mechanicsproblem
+from . import numpy_mpi
+from . import solver
+from . import unloader
+from . import utils
+from .__version__ import __version__
+from .dolfin_utils import MixedParameter
+from .dolfin_utils import QuadratureSpace
+from .dolfin_utils import RegionalParameter
+from .example_meshes import mesh_paths
+from .geometry import CRLBasis
+from .geometry import Geometry
+from .geometry import HeartGeometry
+from .geometry import MarkerFunctions
+from .geometry import Microstructure
+from .kinematics import DeformationGradient
+from .kinematics import EulerAlmansiStrain
+from .kinematics import GreenLagrangeStrain
+from .kinematics import Invariants
+from .kinematics import InversePiolaTransform
+from .kinematics import Jacobian
+from .kinematics import LeftCauchyGreen
+from .kinematics import PiolaTransform
+from .kinematics import RightCauchyGreen
+from .kinematics import SecondOrderIdentity
+from .material import ActiveModel
+from .material import ActiveStrain
+from .material import ActiveStress
+from .material import Guccione
+from .material import HolzapfelOgden
+from .material import LinearElastic
+from .material import Material
+from .material import NeoHookean
+from .material import StVenantKirchhoff
+from .mechanicsproblem import BoundaryConditions
+from .mechanicsproblem import MechanicsProblem
+from .mechanicsproblem import NeumannBC
+from .mechanicsproblem import RobinBC
+from .solver import NonlinearProblem
+from .solver import NonlinearSolver
+from .unloader import FixedPointUnloader
+from .unloader import MeshUnloader
+from .unloader import RaghavanUnloader
+from .utils import annotation
 
 
 def set_log_level(level):
@@ -149,6 +140,8 @@ __all__ = [
     "mesh_paths",
     "NonlinearProblem",
     "NonlinearSolver",
+    "geometry",
+    "geometry_utils",
 ]
 
 __author__ = "Henrik Finsberg"

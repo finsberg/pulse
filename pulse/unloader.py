@@ -219,16 +219,16 @@ class MeshUnloader(object):
             (
                 "\nLV Volume of original geometry = "
                 "{:.3f} ml".format(self.problem.geometry.cavity_volume(chamber="lv"))
-            )
+            ),
         )
         if self.problem.geometry.is_biv:
             logger.info(
                 (
                     "RV Volume of original geometry = "
                     "{:.3f} ml".format(
-                        self.problem.geometry.cavity_volume(chamber="rv")
+                        self.problem.geometry.cavity_volume(chamber="rv"),
                     )
-                )
+                ),
             )
 
         residual = utils.ResidualCalculator(self.problem.geometry.mesh)
@@ -441,7 +441,9 @@ class FixedPointUnloader(MeshUnloader):
                 geometry=new_geometry, **self.problem.bcs_parameters
             )
             problem = MechanicsProblem(
-                geometry=new_geometry, material=material, bcs=bcs
+                geometry=new_geometry,
+                material=material,
+                bcs=bcs,
             )
 
             # Solve

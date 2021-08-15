@@ -30,7 +30,8 @@ from .utils import get_lv_marker, getLogger, set_default_none
 logger = getLogger(__name__)
 
 BoundaryConditions = namedtuple(
-    "BoundaryConditions", ["dirichlet", "neumann", "robin", "body_force"]
+    "BoundaryConditions",
+    ["dirichlet", "neumann", "robin", "body_force"],
 )
 set_default_none(BoundaryConditions, ())
 
@@ -66,7 +67,9 @@ def cardiac_boundary_conditions(
     # Neumann BC
     lv_marker = get_lv_marker(geometry)
     lv_pressure = NeumannBC(
-        traction=Constant(0.0, name="lv_pressure"), marker=lv_marker, name="lv"
+        traction=Constant(0.0, name="lv_pressure"),
+        marker=lv_marker,
+        name="lv",
     )
     neumann_bc = [lv_pressure]
 
@@ -85,8 +88,9 @@ def cardiac_boundary_conditions(
 
         robin_bc = [
             RobinBC(
-                value=Constant(pericardium_spring), marker=geometry.markers["EPI"][0]
-            )
+                value=Constant(pericardium_spring),
+                marker=geometry.markers["EPI"][0],
+            ),
         ]
 
     else:
@@ -95,7 +99,7 @@ def cardiac_boundary_conditions(
     # Apply a linear sprint robin type BC to limit motion
     if base_spring > 0.0:
         robin_bc += [
-            RobinBC(value=Constant(base_spring), marker=geometry.markers["BASE"][0])
+            RobinBC(value=Constant(base_spring), marker=geometry.markers["BASE"][0]),
         ]
 
     # Dirichlet BC
@@ -106,7 +110,7 @@ def cardiac_boundary_conditions(
                 dirichlet_fix_base,
                 ffun=geometry.ffun,
                 marker=geometry.markers["BASE"][0],
-            )
+            ),
         ]
 
     elif base_bc == "fix_x":
@@ -116,13 +120,15 @@ def cardiac_boundary_conditions(
                 dirichlet_fix_base_directional,
                 ffun=geometry.ffun,
                 marker=geometry.markers["BASE"][0],
-            )
+            ),
         ]
     else:
         raise ValueError("Unknown base bc {}".format(base_bc))
 
     boundary_conditions = BoundaryConditions(
-        dirichlet=dirichlet_bc, neumann=neumann_bc, robin=robin_bc
+        dirichlet=dirichlet_bc,
+        neumann=neumann_bc,
+        robin=robin_bc,
     )
 
     return boundary_conditions
@@ -171,7 +177,7 @@ class MechanicsProblem(object):
                     self.bcs_parameters.update(**bcs_parameters)
             else:
                 raise ValueError(
-                    ("Please provive boundary conditions " "to MechanicsProblem")
+                    ("Please provive boundary conditions " "to MechanicsProblem"),
                 )
 
             self.bcs = cardiac_boundary_conditions(self.geometry, **self.bcs_parameters)
@@ -216,12 +222,17 @@ class MechanicsProblem(object):
         J = kinematics.Jacobian(F)
         dx = self.geometry.dx
 
-        internal_energy = self.material.strain_energy(
-            F
-        ) + self.material.compressibility(p, J)
+        internal_energy = (
+            self.material.strain_energy(
+                F,
+            )
+            + self.material.compressibility(p, J)
+        )
 
         self._virtual_work = dolfin.derivative(
-            internal_energy * dx, self.state, self.state_test
+            internal_energy * dx,
+            self.state,
+            self.state_test,
         )
 
         external_work = self._external_work(u, v)
@@ -230,16 +241,22 @@ class MechanicsProblem(object):
 
         self._set_dirichlet_bc()
         self._jacobian = dolfin.derivative(
-            self._virtual_work, self.state, dolfin.TrialFunction(self.state_space)
+            self._virtual_work,
+            self.state,
+            dolfin.TrialFunction(self.state_space),
         )
         self._init_solver()
 
     def _init_solver(self):
         self._problem = NonlinearProblem(
-            J=self._jacobian, F=self._virtual_work, bcs=self._dirichlet_bc
+            J=self._jacobian,
+            F=self._virtual_work,
+            bcs=self._dirichlet_bc,
         )
         self.solver = NonlinearSolver(
-            self._problem, self.state, parameters=self.solver_parameters
+            self._problem,
+            self.state,
+            parameters=self.solver_parameters,
         )
 
     def _set_dirichlet_bc(self):
@@ -285,7 +302,7 @@ class MechanicsProblem(object):
         for body_force in self.bcs.body_force:
 
             external_work.append(
-                -dolfin.derivative(dolfin.inner(body_force, u) * dx, u, v)
+                -dolfin.derivative(dolfin.inner(body_force, u) * dx, u, v),
             )
 
         if len(external_work) > 0:

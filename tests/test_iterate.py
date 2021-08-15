@@ -110,7 +110,7 @@ def test_iterate_gamma_cg1(continuation):
     iterate(problem, gamma, target_gamma, continuation=continuation)
 
     assert np.all(
-        gamma.vector().get_local() - target_gamma.vector().get_local() < 1e-12
+        gamma.vector().get_local() - target_gamma.vector().get_local() < 1e-12,
     )
     assert dolfin.norm(problem.state.vector()) > 0
 

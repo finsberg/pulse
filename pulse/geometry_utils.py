@@ -156,7 +156,8 @@ def load_geometry_from_h5(
     # the geometry in the given h5group
     if not io_utils.check_h5group(h5name, mgroup, delete=False, comm=comm):
         msg = ("Warning!\nGroup: '{}' does not exist in file:" "\n{}").format(
-            mgroup, h5name
+            mgroup,
+            h5name,
         )
 
         with h5py.File(h5name) as h:
@@ -481,7 +482,8 @@ def generate_fibers(mesh, fiber_params, ffun=None):
         p = fiber_params
 
     angles = dict(
-        alpha_endo_lv=p.get("fiber_angle_endo"), alpha_epi_lv=p.get("fiber_angle_epi")
+        alpha_endo_lv=p.get("fiber_angle_endo"),
+        alpha_epi_lv=p.get("fiber_angle_epi"),
     )
     for name, a in angles.items():
         if isinstance(a, dolfin.cpp.parameter.Parameter):
@@ -867,7 +869,8 @@ def strain_region_number(T, regions):
 def get_level(regions, mu):
 
     A = np.intersect1d(
-        np.where((regions.T[3] <= mu))[0], np.where((mu <= regions.T[0]))[0]
+        np.where((regions.T[3] <= mu))[0],
+        np.where((mu <= regions.T[0]))[0],
     )
     if len(A) == 0:
         return [np.shape(regions)[0] + 1]

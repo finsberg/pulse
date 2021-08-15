@@ -1,5 +1,5 @@
-import numpy as np
 import dolfin
+import numpy as np
 
 from pulse import dolfin_utils
 
@@ -11,7 +11,9 @@ def test_get_constant():
 
             vals = np.zeros(value_size)
             constant = dolfin_utils.get_constant(
-                val=1, value_size=value_size, value_rank=value_rank
+                val=1,
+                value_size=value_size,
+                value_rank=value_rank,
             )
             constant.eval(vals, np.zeros(3))
             assert np.all((vals == 1))
