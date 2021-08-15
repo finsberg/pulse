@@ -385,16 +385,16 @@
             <span class="p">(</span>
                 <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">LV Volume of original geometry = &quot;</span>
                 <span class="s2">&quot;</span><span class="si">{:.3f}</span><span class="s2"> ml&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">cavity_volume</span><span class="p">(</span><span class="n">chamber</span><span class="o">=</span><span class="s2">&quot;lv&quot;</span><span class="p">))</span>
-            <span class="p">)</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">is_biv</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                 <span class="p">(</span>
                     <span class="s2">&quot;RV Volume of original geometry = &quot;</span>
                     <span class="s2">&quot;</span><span class="si">{:.3f}</span><span class="s2"> ml&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">cavity_volume</span><span class="p">(</span><span class="n">chamber</span><span class="o">=</span><span class="s2">&quot;rv&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">cavity_volume</span><span class="p">(</span><span class="n">chamber</span><span class="o">=</span><span class="s2">&quot;rv&quot;</span><span class="p">),</span>
                     <span class="p">)</span>
-                <span class="p">)</span>
+                <span class="p">),</span>
             <span class="p">)</span>
 
         <span class="n">residual</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">ResidualCalculator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span>
@@ -607,7 +607,9 @@
                 <span class="n">geometry</span><span class="o">=</span><span class="n">new_geometry</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">bcs_parameters</span>
             <span class="p">)</span>
             <span class="n">problem</span> <span class="o">=</span> <span class="n">MechanicsProblem</span><span class="p">(</span>
-                <span class="n">geometry</span><span class="o">=</span><span class="n">new_geometry</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">material</span><span class="p">,</span> <span class="n">bcs</span><span class="o">=</span><span class="n">bcs</span>
+                <span class="n">geometry</span><span class="o">=</span><span class="n">new_geometry</span><span class="p">,</span>
+                <span class="n">material</span><span class="o">=</span><span class="n">material</span><span class="p">,</span>
+                <span class="n">bcs</span><span class="o">=</span><span class="n">bcs</span><span class="p">,</span>
             <span class="p">)</span>
 
             <span class="c1"># Solve</span>

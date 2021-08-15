@@ -172,7 +172,8 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">dolfin</span> <span class="kn">import</span> <span class="n">MPI</span>
 
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">DOLFIN_VERSION_MAJOR</span><span class="p">,</span> <span class="n">mpi_comm_world</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">DOLFIN_VERSION_MAJOR</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">mpi_comm_world</span>
 
 
 <div class="viewcode-block" id="gather_vector"><a class="viewcode-back" href="../../pulse.html#pulse.numpy_mpi.gather_vector">[docs]</a><span class="k">def</span> <span class="nf">gather_vector</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -252,7 +253,8 @@
 <span class="s2">            }</span>
 <span class="s2">            &quot;&quot;&quot;</span>
         <span class="n">cpp_module</span> <span class="o">=</span> <span class="n">compile_extension_module</span><span class="p">(</span>
-            <span class="n">cpp_code</span><span class="p">,</span> <span class="n">additional_system_headers</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;dolfin/common/MPI.h&quot;</span><span class="p">]</span>
+            <span class="n">cpp_code</span><span class="p">,</span>
+            <span class="n">additional_system_headers</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;dolfin/common/MPI.h&quot;</span><span class="p">],</span>
         <span class="p">)</span>
 
         <span class="n">broadcast</span><span class="o">.</span><span class="n">cpp_module</span> <span class="o">=</span> <span class="n">cpp_module</span>
@@ -309,7 +311,8 @@
 <span class="s2">            }</span>
 <span class="s2">            &quot;&quot;&quot;</span>
         <span class="n">gather</span><span class="o">.</span><span class="n">cpp_module</span> <span class="o">=</span> <span class="n">compile_extension_module</span><span class="p">(</span>
-            <span class="n">cpp_code</span><span class="p">,</span> <span class="n">additional_system_headers</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;dolfin/common/MPI.h&quot;</span><span class="p">]</span>
+            <span class="n">cpp_code</span><span class="p">,</span>
+            <span class="n">additional_system_headers</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;dolfin/common/MPI.h&quot;</span><span class="p">],</span>
         <span class="p">)</span>
 
     <span class="n">cpp_module</span> <span class="o">=</span> <span class="n">gather</span><span class="o">.</span><span class="n">cpp_module</span>
@@ -359,7 +362,8 @@
 <span class="s2">            }</span>
 <span class="s2">            &quot;&quot;&quot;</span>
         <span class="n">distribution</span><span class="o">.</span><span class="n">cpp_module</span> <span class="o">=</span> <span class="n">compile_extension_module</span><span class="p">(</span>
-            <span class="n">cpp_code</span><span class="p">,</span> <span class="n">additional_system_headers</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;dolfin/common/MPI.h&quot;</span><span class="p">]</span>
+            <span class="n">cpp_code</span><span class="p">,</span>
+            <span class="n">additional_system_headers</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;dolfin/common/MPI.h&quot;</span><span class="p">],</span>
         <span class="p">)</span>
 
     <span class="n">cpp_module</span> <span class="o">=</span> <span class="n">distribution</span><span class="o">.</span><span class="n">cpp_module</span>

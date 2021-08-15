@@ -172,7 +172,6 @@
 <span class="c1"># software you agree with the terms and conditions of this license</span>
 <span class="c1"># agreement. If you do not accept the terms of this license agreement</span>
 <span class="c1"># you may not install or use this software.</span>
-
 <span class="c1"># Permission to use, copy, modify and distribute any part of this</span>
 <span class="c1"># software for non-profit educational and research purposes, without</span>
 <span class="c1"># fee, and without a written agreement is hereby granted, provided</span>
@@ -266,16 +265,16 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_activation</span>
 
+    <span class="nd">@activation</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">activation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_activation</span> <span class="o">=</span> <span class="n">f</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">Fa</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">SecondOrderIdentity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f0</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ActiveModel.Fe"><a class="viewcode-back" href="../../../pulse.material.html#pulse.ActiveModel.Fe">[docs]</a>    <span class="k">def</span> <span class="nf">Fe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">F</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">F</span></div>
-
-    <span class="nd">@activation</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">activation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_activation</span> <span class="o">=</span> <span class="n">f</span>
 
 <div class="viewcode-block" id="ActiveModel.I1"><a class="viewcode-back" href="../../../pulse.material.html#pulse.ActiveModel.I1">[docs]</a>    <span class="k">def</span> <span class="nf">I1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">F</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_I1</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Fe</span><span class="p">(</span><span class="n">F</span><span class="p">))</span></div>

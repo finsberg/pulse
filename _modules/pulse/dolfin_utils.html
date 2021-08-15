@@ -314,7 +314,7 @@
                 <span class="s2">&quot;Something went wrong when reading file &quot;</span>
                 <span class="s2">&quot;</span><span class="si">{h5name}</span><span class="s2"> into function </span><span class="si">{func}</span><span class="s2"> from group &quot;</span>
                 <span class="s2">&quot;</span><span class="si">{h5group}</span><span class="s2">&quot;</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5name</span><span class="o">=</span><span class="n">h5name</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="n">h5group</span><span class="o">=</span><span class="n">h5group</span><span class="p">)</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5name</span><span class="o">=</span><span class="n">h5name</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="n">h5group</span><span class="o">=</span><span class="n">h5group</span><span class="p">),</span>
         <span class="p">)</span>
         <span class="k">raise</span> <span class="n">ex</span></div>
 
@@ -338,8 +338,8 @@
 <div class="viewcode-block" id="compute_meshvolume"><a class="viewcode-back" href="../../pulse.html#pulse.dolfin_utils.compute_meshvolume">[docs]</a><span class="k">def</span> <span class="nf">compute_meshvolume</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="n">dolfin</span><span class="o">.</span><span class="n">dx</span><span class="p">,</span> <span class="n">subdomain_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">Constant</span><span class="p">(</span>
         <span class="n">dolfin</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span>
-            <span class="n">dolfin</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">dx</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">,</span> <span class="n">subdomain_id</span><span class="o">=</span><span class="n">subdomain_id</span><span class="p">)</span>
-        <span class="p">)</span>
+            <span class="n">dolfin</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">dx</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">,</span> <span class="n">subdomain_id</span><span class="o">=</span><span class="n">subdomain_id</span><span class="p">),</span>
+        <span class="p">),</span>
     <span class="p">)</span></div>
 
 

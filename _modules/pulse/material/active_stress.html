@@ -269,7 +269,7 @@
             <span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">I4f</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="n">I8fs</span><span class="p">,</span> <span class="n">I8fn</span><span class="p">),</span>
             <span class="p">(</span><span class="n">I8fs</span><span class="p">,</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">I4s</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="n">I8sn</span><span class="p">),</span>
             <span class="p">(</span><span class="n">I8fn</span><span class="p">,</span> <span class="n">I8sn</span><span class="p">,</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">I4n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)),</span>
-        <span class="p">)</span>
+        <span class="p">),</span>
     <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">A</span><span class="p">)</span></div>
@@ -306,18 +306,29 @@
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_isotropy</span> <span class="o">==</span> <span class="s2">&quot;transversally&quot;</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">Wactive_transversally</span><span class="p">(</span>
-                    <span class="n">Ta</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">activation_field</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="n">C</span><span class="p">,</span> <span class="n">f0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">f0</span><span class="p">,</span> <span class="n">eta</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eta</span>
+                    <span class="n">Ta</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">activation_field</span><span class="p">,</span>
+                    <span class="n">C</span><span class="o">=</span><span class="n">C</span><span class="p">,</span>
+                    <span class="n">f0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">f0</span><span class="p">,</span>
+                    <span class="n">eta</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eta</span><span class="p">,</span>
                 <span class="p">)</span>
 
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_isotropy</span> <span class="o">==</span> <span class="s2">&quot;orthotropic&quot;</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">Wactive_orthotropic</span><span class="p">(</span>
-                    <span class="n">Ta</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">activation_field</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="n">C</span><span class="p">,</span> <span class="n">f0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">f0</span><span class="p">,</span> <span class="n">s0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">s0</span><span class="p">,</span> <span class="n">n0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n0</span>
+                    <span class="n">Ta</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">activation_field</span><span class="p">,</span>
+                    <span class="n">C</span><span class="o">=</span><span class="n">C</span><span class="p">,</span>
+                    <span class="n">f0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">f0</span><span class="p">,</span>
+                    <span class="n">s0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">s0</span><span class="p">,</span>
+                    <span class="n">n0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n0</span><span class="p">,</span>
                 <span class="p">)</span>
 
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_isotropy</span> <span class="o">==</span> <span class="s2">&quot;fully_anisotropic&quot;</span><span class="p">:</span>
 
                 <span class="k">return</span> <span class="n">Wactive_anisotropic</span><span class="p">(</span>
-                    <span class="n">Ta</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">activation_field</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="n">C</span><span class="p">,</span> <span class="n">f0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">f0</span><span class="p">,</span> <span class="n">s0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">s0</span><span class="p">,</span> <span class="n">n0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n0</span>
+                    <span class="n">Ta</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">activation_field</span><span class="p">,</span>
+                    <span class="n">C</span><span class="o">=</span><span class="n">C</span><span class="p">,</span>
+                    <span class="n">f0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">f0</span><span class="p">,</span>
+                    <span class="n">s0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">s0</span><span class="p">,</span>
+                    <span class="n">n0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n0</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Unknown acitve isotropy &quot;</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">active_isotropy</span><span class="p">)</span>

@@ -165,24 +165,24 @@
             
   <h1>Source code for pulse.utils</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python</span>
-
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">dolfin</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
-<div class="viewcode-block" id="log_if_process0"><a class="viewcode-back" href="../../pulse.html#pulse.utils.log_if_process0">[docs]</a><span class="k">def</span> <span class="nf">log_if_process0</span><span class="p">(</span><span class="n">record</span><span class="p">):</span>
+<div class="viewcode-block" id="MPIFilt"><a class="viewcode-back" href="../../pulse.html#pulse.utils.MPIFilt">[docs]</a><span class="k">class</span> <span class="nc">MPIFilt</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Filter</span><span class="p">):</span>
+<div class="viewcode-block" id="MPIFilt.filter"><a class="viewcode-back" href="../../pulse.html#pulse.utils.MPIFilt.filter">[docs]</a>    <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
 
-    <span class="k">if</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">rank</span><span class="p">(</span><span class="n">mpi_comm_world</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">return</span> <span class="mi">1</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="mi">0</span></div>
+        <span class="k">if</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">rank</span><span class="p">(</span><span class="n">mpi_comm_world</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span></div></div>
 
 
-<span class="n">mpi_filt</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span>
-<span class="n">mpi_filt</span><span class="o">.</span><span class="n">filter</span> <span class="o">=</span> <span class="n">log_if_process0</span>
+<span class="n">mpi_filt</span> <span class="o">=</span> <span class="n">MPIFilt</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="getLogger"><a class="viewcode-back" href="../../pulse.html#pulse.utils.getLogger">[docs]</a><span class="k">def</span> <span class="nf">getLogger</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
@@ -245,7 +245,7 @@
 
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="n">annotation</span> <span class="o">=</span> <span class="n">Annotation</span><span class="p">()</span>
+    <span class="n">annotation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]</span> <span class="o">=</span> <span class="n">Annotation</span><span class="p">()</span>
 <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
     <span class="n">annotation</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -437,9 +437,10 @@
             <span class="p">[</span>
                 <span class="s2">&quot;{&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">:</span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span>
                 <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
-                    <span class="n">fldmap</span><span class="p">[</span><span class="mi">0</span> <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">fldmap</span><span class="p">)</span> <span class="p">:</span> <span class="mi">2</span><span class="p">],</span> <span class="n">fldmap</span><span class="p">[</span><span class="mi">1</span> <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">fldmap</span><span class="p">)</span> <span class="p">:</span> <span class="mi">2</span><span class="p">]</span>
+                    <span class="n">fldmap</span><span class="p">[</span><span class="mi">0</span> <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">fldmap</span><span class="p">)</span> <span class="p">:</span> <span class="mi">2</span><span class="p">],</span>
+                    <span class="n">fldmap</span><span class="p">[</span><span class="mi">1</span> <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">fldmap</span><span class="p">)</span> <span class="p">:</span> <span class="mi">2</span><span class="p">],</span>
                 <span class="p">)</span>
-            <span class="p">]</span>
+            <span class="p">],</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="TablePrint.print_head"><a class="viewcode-back" href="../../pulse.html#pulse.utils.TablePrint.print_head">[docs]</a>    <span class="k">def</span> <span class="nf">print_head</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

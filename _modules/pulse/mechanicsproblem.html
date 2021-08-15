@@ -196,7 +196,8 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">BoundaryConditions</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span>
-    <span class="s2">&quot;BoundaryConditions&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;dirichlet&quot;</span><span class="p">,</span> <span class="s2">&quot;neumann&quot;</span><span class="p">,</span> <span class="s2">&quot;robin&quot;</span><span class="p">,</span> <span class="s2">&quot;body_force&quot;</span><span class="p">]</span>
+    <span class="s2">&quot;BoundaryConditions&quot;</span><span class="p">,</span>
+    <span class="p">[</span><span class="s2">&quot;dirichlet&quot;</span><span class="p">,</span> <span class="s2">&quot;neumann&quot;</span><span class="p">,</span> <span class="s2">&quot;robin&quot;</span><span class="p">,</span> <span class="s2">&quot;body_force&quot;</span><span class="p">],</span>
 <span class="p">)</span>
 <span class="n">set_default_none</span><span class="p">(</span><span class="n">BoundaryConditions</span><span class="p">,</span> <span class="p">())</span>
 
@@ -232,7 +233,9 @@
     <span class="c1"># Neumann BC</span>
     <span class="n">lv_marker</span> <span class="o">=</span> <span class="n">get_lv_marker</span><span class="p">(</span><span class="n">geometry</span><span class="p">)</span>
     <span class="n">lv_pressure</span> <span class="o">=</span> <span class="n">NeumannBC</span><span class="p">(</span>
-        <span class="n">traction</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;lv_pressure&quot;</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="n">lv_marker</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;lv&quot;</span>
+        <span class="n">traction</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;lv_pressure&quot;</span><span class="p">),</span>
+        <span class="n">marker</span><span class="o">=</span><span class="n">lv_marker</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;lv&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">neumann_bc</span> <span class="o">=</span> <span class="p">[</span><span class="n">lv_pressure</span><span class="p">]</span>
 
@@ -251,8 +254,9 @@
 
         <span class="n">robin_bc</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">RobinBC</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="n">pericardium_spring</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="n">geometry</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="s2">&quot;EPI&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-            <span class="p">)</span>
+                <span class="n">value</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="n">pericardium_spring</span><span class="p">),</span>
+                <span class="n">marker</span><span class="o">=</span><span class="n">geometry</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="s2">&quot;EPI&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+            <span class="p">),</span>
         <span class="p">]</span>
 
     <span class="k">else</span><span class="p">:</span>
@@ -261,7 +265,7 @@
     <span class="c1"># Apply a linear sprint robin type BC to limit motion</span>
     <span class="k">if</span> <span class="n">base_spring</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
         <span class="n">robin_bc</span> <span class="o">+=</span> <span class="p">[</span>
-            <span class="n">RobinBC</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="n">base_spring</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="n">geometry</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="s2">&quot;BASE&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">RobinBC</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="n">base_spring</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="n">geometry</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="s2">&quot;BASE&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
         <span class="p">]</span>
 
     <span class="c1"># Dirichlet BC</span>
@@ -272,7 +276,7 @@
                 <span class="n">dirichlet_fix_base</span><span class="p">,</span>
                 <span class="n">ffun</span><span class="o">=</span><span class="n">geometry</span><span class="o">.</span><span class="n">ffun</span><span class="p">,</span>
                 <span class="n">marker</span><span class="o">=</span><span class="n">geometry</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="s2">&quot;BASE&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
-            <span class="p">)</span>
+            <span class="p">),</span>
         <span class="p">]</span>
 
     <span class="k">elif</span> <span class="n">base_bc</span> <span class="o">==</span> <span class="s2">&quot;fix_x&quot;</span><span class="p">:</span>
@@ -282,13 +286,15 @@
                 <span class="n">dirichlet_fix_base_directional</span><span class="p">,</span>
                 <span class="n">ffun</span><span class="o">=</span><span class="n">geometry</span><span class="o">.</span><span class="n">ffun</span><span class="p">,</span>
                 <span class="n">marker</span><span class="o">=</span><span class="n">geometry</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="s2">&quot;BASE&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
-            <span class="p">)</span>
+            <span class="p">),</span>
         <span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown base bc </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">base_bc</span><span class="p">))</span>
 
     <span class="n">boundary_conditions</span> <span class="o">=</span> <span class="n">BoundaryConditions</span><span class="p">(</span>
-        <span class="n">dirichlet</span><span class="o">=</span><span class="n">dirichlet_bc</span><span class="p">,</span> <span class="n">neumann</span><span class="o">=</span><span class="n">neumann_bc</span><span class="p">,</span> <span class="n">robin</span><span class="o">=</span><span class="n">robin_bc</span>
+        <span class="n">dirichlet</span><span class="o">=</span><span class="n">dirichlet_bc</span><span class="p">,</span>
+        <span class="n">neumann</span><span class="o">=</span><span class="n">neumann_bc</span><span class="p">,</span>
+        <span class="n">robin</span><span class="o">=</span><span class="n">robin_bc</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">boundary_conditions</span></div>
@@ -337,7 +343,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">bcs_parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">bcs_parameters</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="p">(</span><span class="s2">&quot;Please provive boundary conditions &quot;</span> <span class="s2">&quot;to MechanicsProblem&quot;</span><span class="p">)</span>
+                    <span class="p">(</span><span class="s2">&quot;Please provive boundary conditions &quot;</span> <span class="s2">&quot;to MechanicsProblem&quot;</span><span class="p">),</span>
                 <span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">bcs</span> <span class="o">=</span> <span class="n">cardiac_boundary_conditions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">bcs_parameters</span><span class="p">)</span>
@@ -382,12 +388,17 @@
         <span class="n">J</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">Jacobian</span><span class="p">(</span><span class="n">F</span><span class="p">)</span>
         <span class="n">dx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">dx</span>
 
-        <span class="n">internal_energy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">strain_energy</span><span class="p">(</span>
-            <span class="n">F</span>
-        <span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">compressibility</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">J</span><span class="p">)</span>
+        <span class="n">internal_energy</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">strain_energy</span><span class="p">(</span>
+                <span class="n">F</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">compressibility</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">J</span><span class="p">)</span>
+        <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_virtual_work</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">derivative</span><span class="p">(</span>
-            <span class="n">internal_energy</span> <span class="o">*</span> <span class="n">dx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_test</span>
+            <span class="n">internal_energy</span> <span class="o">*</span> <span class="n">dx</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state_test</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="n">external_work</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_external_work</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
@@ -396,16 +407,22 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_dirichlet_bc</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_jacobian</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">derivative</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_virtual_work</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">TrialFunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_space</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_virtual_work</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
+            <span class="n">dolfin</span><span class="o">.</span><span class="n">TrialFunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_space</span><span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_solver</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_init_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_problem</span> <span class="o">=</span> <span class="n">NonlinearProblem</span><span class="p">(</span>
-            <span class="n">J</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_jacobian</span><span class="p">,</span> <span class="n">F</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_virtual_work</span><span class="p">,</span> <span class="n">bcs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dirichlet_bc</span>
+            <span class="n">J</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_jacobian</span><span class="p">,</span>
+            <span class="n">F</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_virtual_work</span><span class="p">,</span>
+            <span class="n">bcs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dirichlet_bc</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="n">NonlinearSolver</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_problem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_problem</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_set_dirichlet_bc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -451,7 +468,7 @@
         <span class="k">for</span> <span class="n">body_force</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bcs</span><span class="o">.</span><span class="n">body_force</span><span class="p">:</span>
 
             <span class="n">external_work</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="o">-</span><span class="n">dolfin</span><span class="o">.</span><span class="n">derivative</span><span class="p">(</span><span class="n">dolfin</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="n">body_force</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span> <span class="o">*</span> <span class="n">dx</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                <span class="o">-</span><span class="n">dolfin</span><span class="o">.</span><span class="n">derivative</span><span class="p">(</span><span class="n">dolfin</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="n">body_force</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span> <span class="o">*</span> <span class="n">dx</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">external_work</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>

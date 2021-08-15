@@ -279,7 +279,8 @@
                 <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">{self.__class__.__name__}</span><span class="s2">&quot;</span> <span class="s2">&quot;(</span><span class="si">{self.mesh}</span><span class="s2">), &quot;</span> <span class="s2">&quot;</span><span class="si">{args}</span><span class="s2">)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="p">),</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Geometry.from_file"><a class="viewcode-back" href="../../pulse.html#pulse.geometry.Geometry.from_file">[docs]</a>    <span class="nd">@classmethod</span>
@@ -462,8 +463,8 @@
                 <span class="c1"># FIXME</span>
                 <span class="n">regions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
                     <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">gather_broadcast</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span><span class="o">.</span><span class="n">subdomain_data</span><span class="p">()</span><span class="o">.</span><span class="n">array</span><span class="p">())</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
-                        <span class="nb">int</span>
-                    <span class="p">)</span>
+                        <span class="nb">int</span><span class="p">,</span>
+                    <span class="p">),</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_regions</span> <span class="o">=</span> <span class="p">{</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">regions</span><span class="p">}</span>
             <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
@@ -572,7 +573,7 @@
         <span class="k">if</span> <span class="s2">&quot;ENDO_RV&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">markers</span><span class="p">:</span>
             <span class="c1"># FIXME</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="s2">&quot;ENDO_RV&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span>
-                <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">gather_broadcast</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ffun</span><span class="o">.</span><span class="n">array</span><span class="p">())</span>
+                <span class="n">numpy_mpi</span><span class="o">.</span><span class="n">gather_broadcast</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ffun</span><span class="o">.</span><span class="n">array</span><span class="p">()),</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="kc">False</span>

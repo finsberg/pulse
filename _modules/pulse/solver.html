@@ -281,7 +281,7 @@
     <span class="k">def</span> <span class="nf">default_solver_parameters</span><span class="p">():</span>
         <span class="n">linear_solver</span> <span class="o">=</span> <span class="s2">&quot;superlu_dist&quot;</span>
         <span class="k">if</span> <span class="n">linear_solver</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">linear_solver_methods</span><span class="p">():</span>
-            <span class="n">linear_solver</span> <span class="o">=</span> <span class="s2">&quot;superlu&quot;</span>
+            <span class="n">linear_solver</span> <span class="o">=</span> <span class="s2">&quot;lu&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;petsc&quot;</span><span class="p">:</span> <span class="p">{</span>
                 <span class="s2">&quot;ksp_type&quot;</span><span class="p">:</span> <span class="s2">&quot;preonly&quot;</span><span class="p">,</span>

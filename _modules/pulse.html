@@ -162,70 +162,61 @@
            <div itemprop="articleBody">
             
   <h1>Source code for pulse</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">.__version__</span> <span class="kn">import</span> <span class="n">__version__</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">annotation</span>
-
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">dolfin_utils</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">io_utils</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">numpy_mpi</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">kinematics</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">solver</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">mechanicsproblem</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">iterate</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">unloader</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">geometry</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">geometry_utils</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">material</span>
-
-
-<span class="kn">from</span> <span class="nn">.unloader</span> <span class="kn">import</span> <span class="n">MeshUnloader</span><span class="p">,</span> <span class="n">RaghavanUnloader</span><span class="p">,</span> <span class="n">FixedPointUnloader</span>
-<span class="kn">from</span> <span class="nn">.geometry</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Geometry</span><span class="p">,</span>
-    <span class="n">CRLBasis</span><span class="p">,</span>
-    <span class="n">HeartGeometry</span><span class="p">,</span>
-    <span class="n">Microstructure</span><span class="p">,</span>
-    <span class="n">MarkerFunctions</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.example_meshes</span> <span class="kn">import</span> <span class="n">mesh_paths</span>
-<span class="kn">from</span> <span class="nn">.solver</span> <span class="kn">import</span> <span class="n">NonlinearProblem</span><span class="p">,</span> <span class="n">NonlinearSolver</span>
-<span class="kn">from</span> <span class="nn">.mechanicsproblem</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">MechanicsProblem</span><span class="p">,</span>
-    <span class="n">BoundaryConditions</span><span class="p">,</span>
-    <span class="n">NeumannBC</span><span class="p">,</span>
-    <span class="n">RobinBC</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="kn">from</span> <span class="nn">.dolfin_utils</span> <span class="kn">import</span> <span class="n">QuadratureSpace</span><span class="p">,</span> <span class="n">MixedParameter</span><span class="p">,</span> <span class="n">RegionalParameter</span>
-
-<span class="kn">from</span> <span class="nn">.kinematics</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">SecondOrderIdentity</span><span class="p">,</span>
-    <span class="n">DeformationGradient</span><span class="p">,</span>
-    <span class="n">Jacobian</span><span class="p">,</span>
-    <span class="n">GreenLagrangeStrain</span><span class="p">,</span>
-    <span class="n">LeftCauchyGreen</span><span class="p">,</span>
-    <span class="n">RightCauchyGreen</span><span class="p">,</span>
-    <span class="n">EulerAlmansiStrain</span><span class="p">,</span>
-    <span class="n">Invariants</span><span class="p">,</span>
-    <span class="n">PiolaTransform</span><span class="p">,</span>
-    <span class="n">InversePiolaTransform</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.material</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">LinearElastic</span><span class="p">,</span>
-    <span class="n">NeoHookean</span><span class="p">,</span>
-    <span class="n">HolzapfelOgden</span><span class="p">,</span>
-    <span class="n">Guccione</span><span class="p">,</span>
-    <span class="n">StVenantKirchhoff</span><span class="p">,</span>
-    <span class="n">ActiveModel</span><span class="p">,</span>
-    <span class="n">ActiveStrain</span><span class="p">,</span>
-    <span class="n">ActiveStress</span><span class="p">,</span>
-    <span class="n">Material</span><span class="p">,</span>
-<span class="p">)</span>
-
-
-<span class="kn">import</span> <span class="nn">logging</span> <span class="k">as</span> <span class="nn">_logging</span>
+<span></span><span class="kn">import</span> <span class="nn">logging</span> <span class="k">as</span> <span class="nn">_logging</span>
 
 <span class="kn">import</span> <span class="nn">daiquiri</span> <span class="k">as</span> <span class="nn">_daiquiri</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">dolfin_utils</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">geometry</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">geometry_utils</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">io_utils</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">iterate</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">kinematics</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">material</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">mechanicsproblem</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">numpy_mpi</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">solver</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">unloader</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">.__version__</span> <span class="kn">import</span> <span class="n">__version__</span>
+<span class="kn">from</span> <span class="nn">.dolfin_utils</span> <span class="kn">import</span> <span class="n">MixedParameter</span>
+<span class="kn">from</span> <span class="nn">.dolfin_utils</span> <span class="kn">import</span> <span class="n">QuadratureSpace</span>
+<span class="kn">from</span> <span class="nn">.dolfin_utils</span> <span class="kn">import</span> <span class="n">RegionalParameter</span>
+<span class="kn">from</span> <span class="nn">.example_meshes</span> <span class="kn">import</span> <span class="n">mesh_paths</span>
+<span class="kn">from</span> <span class="nn">.geometry</span> <span class="kn">import</span> <span class="n">CRLBasis</span>
+<span class="kn">from</span> <span class="nn">.geometry</span> <span class="kn">import</span> <span class="n">Geometry</span>
+<span class="kn">from</span> <span class="nn">.geometry</span> <span class="kn">import</span> <span class="n">HeartGeometry</span>
+<span class="kn">from</span> <span class="nn">.geometry</span> <span class="kn">import</span> <span class="n">MarkerFunctions</span>
+<span class="kn">from</span> <span class="nn">.geometry</span> <span class="kn">import</span> <span class="n">Microstructure</span>
+<span class="kn">from</span> <span class="nn">.kinematics</span> <span class="kn">import</span> <span class="n">DeformationGradient</span>
+<span class="kn">from</span> <span class="nn">.kinematics</span> <span class="kn">import</span> <span class="n">EulerAlmansiStrain</span>
+<span class="kn">from</span> <span class="nn">.kinematics</span> <span class="kn">import</span> <span class="n">GreenLagrangeStrain</span>
+<span class="kn">from</span> <span class="nn">.kinematics</span> <span class="kn">import</span> <span class="n">Invariants</span>
+<span class="kn">from</span> <span class="nn">.kinematics</span> <span class="kn">import</span> <span class="n">InversePiolaTransform</span>
+<span class="kn">from</span> <span class="nn">.kinematics</span> <span class="kn">import</span> <span class="n">Jacobian</span>
+<span class="kn">from</span> <span class="nn">.kinematics</span> <span class="kn">import</span> <span class="n">LeftCauchyGreen</span>
+<span class="kn">from</span> <span class="nn">.kinematics</span> <span class="kn">import</span> <span class="n">PiolaTransform</span>
+<span class="kn">from</span> <span class="nn">.kinematics</span> <span class="kn">import</span> <span class="n">RightCauchyGreen</span>
+<span class="kn">from</span> <span class="nn">.kinematics</span> <span class="kn">import</span> <span class="n">SecondOrderIdentity</span>
+<span class="kn">from</span> <span class="nn">.material</span> <span class="kn">import</span> <span class="n">ActiveModel</span>
+<span class="kn">from</span> <span class="nn">.material</span> <span class="kn">import</span> <span class="n">ActiveStrain</span>
+<span class="kn">from</span> <span class="nn">.material</span> <span class="kn">import</span> <span class="n">ActiveStress</span>
+<span class="kn">from</span> <span class="nn">.material</span> <span class="kn">import</span> <span class="n">Guccione</span>
+<span class="kn">from</span> <span class="nn">.material</span> <span class="kn">import</span> <span class="n">HolzapfelOgden</span>
+<span class="kn">from</span> <span class="nn">.material</span> <span class="kn">import</span> <span class="n">LinearElastic</span>
+<span class="kn">from</span> <span class="nn">.material</span> <span class="kn">import</span> <span class="n">Material</span>
+<span class="kn">from</span> <span class="nn">.material</span> <span class="kn">import</span> <span class="n">NeoHookean</span>
+<span class="kn">from</span> <span class="nn">.material</span> <span class="kn">import</span> <span class="n">StVenantKirchhoff</span>
+<span class="kn">from</span> <span class="nn">.mechanicsproblem</span> <span class="kn">import</span> <span class="n">BoundaryConditions</span>
+<span class="kn">from</span> <span class="nn">.mechanicsproblem</span> <span class="kn">import</span> <span class="n">MechanicsProblem</span>
+<span class="kn">from</span> <span class="nn">.mechanicsproblem</span> <span class="kn">import</span> <span class="n">NeumannBC</span>
+<span class="kn">from</span> <span class="nn">.mechanicsproblem</span> <span class="kn">import</span> <span class="n">RobinBC</span>
+<span class="kn">from</span> <span class="nn">.solver</span> <span class="kn">import</span> <span class="n">NonlinearProblem</span>
+<span class="kn">from</span> <span class="nn">.solver</span> <span class="kn">import</span> <span class="n">NonlinearSolver</span>
+<span class="kn">from</span> <span class="nn">.unloader</span> <span class="kn">import</span> <span class="n">FixedPointUnloader</span>
+<span class="kn">from</span> <span class="nn">.unloader</span> <span class="kn">import</span> <span class="n">MeshUnloader</span>
+<span class="kn">from</span> <span class="nn">.unloader</span> <span class="kn">import</span> <span class="n">RaghavanUnloader</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">annotation</span>
 
 
 <div class="viewcode-block" id="set_log_level"><a class="viewcode-back" href="../pulse.html#pulse.set_log_level">[docs]</a><span class="k">def</span> <span class="nf">set_log_level</span><span class="p">(</span><span class="n">level</span><span class="p">):</span>
@@ -313,6 +304,8 @@
     <span class="s2">&quot;mesh_paths&quot;</span><span class="p">,</span>
     <span class="s2">&quot;NonlinearProblem&quot;</span><span class="p">,</span>
     <span class="s2">&quot;NonlinearSolver&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;geometry&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;geometry_utils&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 <span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Henrik Finsberg&quot;</span>
