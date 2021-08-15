@@ -81,7 +81,9 @@ def unitcube_geometry():
 
 
 cases = itertools.product(
-    material_models, ("active_strain", "active_stress"), (True, False)
+    material_models,
+    ("active_strain", "active_stress"),
+    (True, False),
 )
 
 
@@ -148,7 +150,7 @@ def test_material(unitcube_geometry, Material, active_model, isochoric):
                 assert all(abs(p.vector().get_local() - material.parameters["a"]) < tol)
             elif material.name == "neo_hookean":
                 assert all(
-                    abs(p.vector().get_local() - material.parameters["mu"]) < tol
+                    abs(p.vector().get_local() - material.parameters["mu"]) < tol,
                 )
             else:
                 raise TypeError("Unkown material {}".format(material.name))
@@ -187,7 +189,7 @@ def test_material(unitcube_geometry, Material, active_model, isochoric):
                 assert all(abs(p.vector().get_local() - material.parameters["a"]) < tol)
             elif material.name == "neo_hookean":
                 assert all(
-                    abs(p.vector().get_local() - material.parameters["mu"]) < tol
+                    abs(p.vector().get_local() - material.parameters["mu"]) < tol,
                 )
             else:
                 raise TypeError("Unkown material {}".format(material.name))

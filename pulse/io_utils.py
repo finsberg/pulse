@@ -3,7 +3,8 @@ import os
 import dolfin
 import h5py
 
-from .utils import getLogger, mpi_comm_world
+from .utils import getLogger
+from .utils import mpi_comm_world
 
 logger = getLogger(__name__)
 
@@ -91,7 +92,7 @@ def check_h5group(h5name, h5group, delete=False, comm=mpi_comm_world()):
         filemode = "r"
         if delete:
             logger.warning(
-                ("You do not have write access to file " "{}").format(h5name)
+                ("You do not have write access to file " "{}").format(h5name),
             )
             delete = False
 
@@ -106,7 +107,7 @@ def check_h5group(h5name, h5group, delete=False, comm=mpi_comm_world()):
                 else:
                     if dolfin.MPI.rank(comm) == 0:
                         logger.debug(
-                            ("Deleting existing group: " "'{}'").format(h5group)
+                            ("Deleting existing group: " "'{}'").format(h5group),
                         )
                         del h5file[h5group]
 

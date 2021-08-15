@@ -30,8 +30,9 @@ def get_material_model(material_model):
 
     raise ValueError(
         ("Material model {} does not exist. " "Please use one of {}").format(
-            material_model, material_model_names
-        )
+            material_model,
+            material_model_names,
+        ),
     )
 
 

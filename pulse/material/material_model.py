@@ -24,8 +24,11 @@
 # SIMULA RESEARCH LABORATORY MAKES NO REPRESENTATIONS AND EXTENDS NO
 # WARRANTIES OF ANY KIND, EITHER IMPLIED OR EXPRESSED, INCLUDING, BUT
 # NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
-from abc import ABC, abstractmethod
-from typing import Optional, Union
+from abc import ABC
+from abc import abstractmethod
+from abc import abstractstaticmethod
+from typing import Optional
+from typing import Union
 
 import dolfin
 import ufl
@@ -119,7 +122,7 @@ class Material(ABC):
     ):
 
         # Parameters
-        self.parameters = self.default_parameters()
+        self.parameters = self.__class__.default_parameters()
         if parameters is not None:
             self.parameters.update(parameters)
         self._set_parameter_attrs(geometry)
@@ -158,7 +161,8 @@ class Material(ABC):
 
                     v_new = RegionalParameter(geometry.sfun)
                     numpy_mpi.assign_to_vector(
-                        v_new.vector(), numpy_mpi.gather_vector(v.vector())
+                        v_new.vector(),
+                        numpy_mpi.gather_vector(v.vector()),
                     )
                     v = v_new
 
@@ -178,6 +182,11 @@ class Material(ABC):
 
     @abstractmethod
     def strain_energy(self, F):
+        pass
+
+    @staticmethod
+    @abstractstaticmethod
+    def default_parameters():
         pass
 
     def update_geometry(self, geometry):

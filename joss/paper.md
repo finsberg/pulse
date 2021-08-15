@@ -22,12 +22,12 @@ bibliography: paper.bib
 
 `pulse` is a software package based on [FEniCS](https://fenicsproject.org) [@logg2012automated] that aims to solve problems in cardiac mechanics (but is easily extended to solve more general problems in continuum mechanics). `pulse` is a result of the author's PhD thesis [@finsberg2017patient], where most of the relevant background for the code can be found.
 
-While FEniCS offers a general framework for solving PDEs, `pulse` specifically targets problems in continuum mechanics. Therefore, most of the code for applying compatible boundary conditions, formulating the governing equations, choosing appropriate spaces for the solutions and applying iterative strategies, etc., are already implemented, so that the user can focus on the actual problem he/she wants to solve rather than implementing all the necessary code for formulating and solving the underlying equations. 
+While FEniCS offers a general framework for solving PDEs, `pulse` specifically targets problems in continuum mechanics. Therefore, most of the code for applying compatible boundary conditions, formulating the governing equations, choosing appropriate spaces for the solutions and applying iterative strategies, etc., are already implemented, so that the user can focus on the actual problem he/she wants to solve rather than implementing all the necessary code for formulating and solving the underlying equations.
 
 The user can pick any of the built-in meshes or choose a custom user-defined mesh. The user also need to provide appropriate markers for the boundaries where the boundary conditions will be applied, as well as microstructural information (i.e., information about muscle fiber orientations) if an anisotropic model is to be used. Examples of how to create custom idealized geometries as well as appropriate microstructure can be found in another repository called [ldrb](https://github.com/finsberg/ldrb), which uses the Laplace-Dirichlet Rule-Based (LDRB) algorithm [@bayer2012novel] for assigning myocardial fiber orientations.
 
 Next the user needs to select a material model or create a [custom material model](https://finsberg.github.io/pulse/html/demos/custom_material.html), and define appropriate boundary conditions (Dirichlet, Neumann, or Robin boundary conditions). Finally a `MechanicsProblem` is built using the geometry, material, and boundary conditions. Figure 1 shows the different components involved as well as how they are related.
- 
+
 ![Visualization of the different components that are part of the `pulse` library.](components.png)
 
 The problem is solved using some iterative strategy, either with an incremental load technique with fixed or adaptive stepping and/or using with a continuation technique [@finsberg2017patient].

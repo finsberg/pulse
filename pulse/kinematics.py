@@ -1,7 +1,10 @@
 #!/usr/bin/env python
-from dolfin import Identity, det
+from dolfin import det
 from dolfin import grad as Grad
-from dolfin import inner, inv, tr
+from dolfin import Identity
+from dolfin import inner
+from dolfin import inv
+from dolfin import tr
 
 try:
     from dolfin_adjoint import Constant

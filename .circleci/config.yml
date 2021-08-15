@@ -36,7 +36,7 @@ jobs:
       - run:
           name: install package
           command: |
-            python3 -m pip install ".[all]"
+            make dev
 
       - restore_cache:
           keys:

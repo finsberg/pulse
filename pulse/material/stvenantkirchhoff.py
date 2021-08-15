@@ -1,7 +1,6 @@
 import dolfin
 
 from .. import kinematics
-from ..dolfin_utils import get_dimesion
 from .material_model import Material
 
 

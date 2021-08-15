@@ -148,7 +148,7 @@ def read_hdf5(h5name, func, h5group="", comm=mpi_comm_world()):
                 "Something went wrong when reading file "
                 "{h5name} into function {func} from group "
                 "{h5group}"
-            ).format(h5name=h5name, func=func, h5group=h5group)
+            ).format(h5name=h5name, func=func, h5group=h5group),
         )
         raise ex
 
@@ -172,8 +172,8 @@ def map_displacement(u, old_space, new_space, approx, name="mapped displacement"
 def compute_meshvolume(domain=None, dx=dolfin.dx, subdomain_id=None):
     return Constant(
         dolfin.assemble(
-            dolfin.Constant(1.0) * dx(domain=domain, subdomain_id=subdomain_id)
-        )
+            dolfin.Constant(1.0) * dx(domain=domain, subdomain_id=subdomain_id),
+        ),
     )
 
 

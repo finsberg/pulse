@@ -5,11 +5,13 @@ import dolfin
 import h5py
 import numpy as np
 
-from . import annotation, numpy_mpi
+from . import numpy_mpi
 from .dolfin_utils import get_pressure
 from .iterate import iterate
 from .iterate import logger as logger_it
-from .utils import getLogger, mpi_comm_world
+from .utils import annotation
+from .utils import getLogger
+from .utils import mpi_comm_world
 
 logger = getLogger(__name__)
 
@@ -27,7 +29,7 @@ class ResidualCalculator(object):
                     "algorithm cannot be computed. Please install "
                     'scipy "pip install scipy" if you want to compute '
                     "the residual"
-                )
+                ),
             )
             self.bbtree = None
 
@@ -50,7 +52,7 @@ class ResidualCalculator(object):
             [
                 self.bbtree.query(dolfin.Vertex(boundmesh, v_idx).point().array())[0]
                 for v_idx in range(boundmesh.num_vertices())
-            ]
+            ],
         )
 
         return dolfin.MPI.max(mpi_comm_world(), d)
@@ -69,14 +71,16 @@ def print_volumes(geometry, logger=logger, txt="original", u=None):
 
     logger.info(
         ("\nLV Volume of {} geometry = {:.3f} ml" "").format(
-            txt, geometry.cavity_volume(chamber="lv")
-        )
+            txt,
+            geometry.cavity_volume(chamber="lv"),
+        ),
     )
     if geometry.is_biv:
         logger.info(
             ("RV Volume of {} geometry = {:.3f} ml" "").format(
-                txt, geometry.cavity_volume(chamber="rv")
-            )
+                txt,
+                geometry.cavity_volume(chamber="rv"),
+            ),
         )
 
 
@@ -137,7 +141,7 @@ def continuation_step(params, it_, paramvec):
             [
                 min(max(a_cont[i], a_prev[i] / 2), a_prev[i] * 2)
                 for i in range(len(a_cont))
-            ]
+            ],
         )
 
         # Just make sure that we are within the given bounds
@@ -148,7 +152,7 @@ def continuation_step(params, it_, paramvec):
                     params["Optimization_parameters"]["matparams_max"],
                 )
                 for i in range(len(a_cont))
-            ]
+            ],
         )
 
     else:

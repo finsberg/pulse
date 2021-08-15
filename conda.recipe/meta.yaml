@@ -37,7 +37,7 @@ test:
     - pulse
 
 about:
-  home: https://finsberg.github.io/pulse/html/index.html
+  home: https://finsberg.github.io/pulse
   license: LGPL-3.0-or-later
   license_family: LGPL
   license_file: LICENSE
@@ -46,7 +46,7 @@ about:
   description: |
     pulse is a python library based on FEniCS that aims to solve
     problems in continuum mechanics, in particular cardiac mechanics.
-  doc_url: https://finsberg.github.io/pulse/html/index.html
+  doc_url: https://finsberg.github.io/pulse
   dev_url: https://github.com/finsberg/pulse
 extra:
   recipe-maintainers:

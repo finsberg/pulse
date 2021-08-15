@@ -1,22 +1,22 @@
 #!/usr/bin/env python
-
 import logging
 import os
+from typing import Optional
 
 import dolfin
 import numpy as np
 
 
-def log_if_process0(record):
+class MPIFilt(logging.Filter):
+    def filter(self, record):
 
-    if dolfin.MPI.rank(mpi_comm_world()) == 0:
-        return 1
-    else:
-        return 0
+        if dolfin.MPI.rank(mpi_comm_world()) == 0:
+            return 1
+        else:
+            return 0
 
 
-mpi_filt = lambda: None
-mpi_filt.filter = log_if_process0
+mpi_filt = MPIFilt()
 
 
 def getLogger(name):
@@ -79,7 +79,7 @@ class Annotation(object):
 
 
 try:
-    annotation = Annotation()
+    annotation: Optional[Annotation] = Annotation()
 except Exception:
     annotation = None
 
@@ -271,9 +271,10 @@ class TablePrint(object):
             [
                 "{" + "{0}:{1}".format(col, f) + "}"
                 for col, f in zip(
-                    fldmap[0 : len(fldmap) : 2], fldmap[1 : len(fldmap) : 2]
+                    fldmap[0 : len(fldmap) : 2],
+                    fldmap[1 : len(fldmap) : 2],
                 )
-            ]
+            ],
         )
 
     def print_head(self):

@@ -103,7 +103,7 @@ def Wactive_anisotropic(Ta, C, f0, s0, n0):
             (0.5 * (I4f - 1), I8fs, I8fn),
             (I8fs, 0.5 * (I4s - 1), I8sn),
             (I8fn, I8sn, 0.5 * (I4n - 1)),
-        )
+        ),
     )
 
     return dolfin.inner(Ta, A)
@@ -140,18 +140,29 @@ class ActiveStress(ActiveModel):
 
             if self.active_isotropy == "transversally":
                 return Wactive_transversally(
-                    Ta=self.activation_field, C=C, f0=self.f0, eta=self.eta
+                    Ta=self.activation_field,
+                    C=C,
+                    f0=self.f0,
+                    eta=self.eta,
                 )
 
             elif self.active_isotropy == "orthotropic":
                 return Wactive_orthotropic(
-                    Ta=self.activation_field, C=C, f0=self.f0, s0=self.s0, n0=self.n0
+                    Ta=self.activation_field,
+                    C=C,
+                    f0=self.f0,
+                    s0=self.s0,
+                    n0=self.n0,
                 )
 
             elif self.active_isotropy == "fully_anisotropic":
 
                 return Wactive_anisotropic(
-                    Ta=self.activation_field, C=C, f0=self.f0, s0=self.s0, n0=self.n0
+                    Ta=self.activation_field,
+                    C=C,
+                    f0=self.f0,
+                    s0=self.s0,
+                    n0=self.n0,
                 )
             else:
                 msg = ("Unknown acitve isotropy " "{}").format(self.active_isotropy)

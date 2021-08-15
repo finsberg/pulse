@@ -98,7 +98,7 @@ install: clean ## install the package to the active Python's site-packages
 
 dev: clean ## Just need to make sure that libfiles remains
 	python3 -m pip install -r requirements_dev.txt
-	python3 -m pip install -e ".[all]"
+	python3 -m pip install -e ".[test,plot,docs,dev]"
 
 bump:
 	bump2version patch

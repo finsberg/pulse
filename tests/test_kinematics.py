@@ -61,7 +61,8 @@ def F_dict(F_2D_Real, F_2D_CG1, F_3D_Real, F_3D_CG1):
 
 
 @pytest.mark.parametrize(
-    "F_str, dim", [("F_2D_Real", 2), ("F_2D_CG1", 2), ("F_3D_Real", 3), ("F_3D_CG1", 3)]
+    "F_str, dim",
+    [("F_2D_Real", 2), ("F_2D_CG1", 2), ("F_3D_Real", 3), ("F_3D_CG1", 3)],
 )
 def test_SecondOderIdetity(F_dict, F_str, dim):
     F = F_dict[F_str]
@@ -107,7 +108,7 @@ def test_I2(invariants, F_dict, F_str):
     assert (
         abs(
             df.assemble(invariants._I2(F) * df.dx)
-            - 0.5 * ((A ** 2 + B ** 2 + c ** 2) ** 2 - (A ** 4 + B ** 4 + c ** 4))
+            - 0.5 * ((A ** 2 + B ** 2 + c ** 2) ** 2 - (A ** 4 + B ** 4 + c ** 4)),
         )
         < 1e-12
     )

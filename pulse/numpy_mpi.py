@@ -6,7 +6,8 @@ import dolfin
 import numpy as np
 from dolfin import MPI
 
-from .utils import DOLFIN_VERSION_MAJOR, mpi_comm_world
+from .utils import DOLFIN_VERSION_MAJOR
+from .utils import mpi_comm_world
 
 
 def gather_vector(u, size=None):
@@ -86,7 +87,8 @@ def broadcast(array, from_process):
             }
             """
         cpp_module = compile_extension_module(
-            cpp_code, additional_system_headers=["dolfin/common/MPI.h"]
+            cpp_code,
+            additional_system_headers=["dolfin/common/MPI.h"],
         )
 
         broadcast.cpp_module = cpp_module
@@ -143,7 +145,8 @@ def gather(array, on_process=0, flatten=False):
             }
             """
         gather.cpp_module = compile_extension_module(
-            cpp_code, additional_system_headers=["dolfin/common/MPI.h"]
+            cpp_code,
+            additional_system_headers=["dolfin/common/MPI.h"],
         )
 
     cpp_module = gather.cpp_module
@@ -193,7 +196,8 @@ def distribution(number):
             }
             """
         distribution.cpp_module = compile_extension_module(
-            cpp_code, additional_system_headers=["dolfin/common/MPI.h"]
+            cpp_code,
+            additional_system_headers=["dolfin/common/MPI.h"],
         )
 
     cpp_module = distribution.cpp_module
