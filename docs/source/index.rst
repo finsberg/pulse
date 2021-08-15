@@ -7,12 +7,6 @@ A software for solving problems in cardiac mechanics.
 
 Overview
 --------
-<<<<<<< HEAD
-`pulse` is a software based on `FEniCS <https://fenicsproject.org>`_  that aims to solve problems in cardiac mechanics (but is easily extended to solve more general problems in continuum mechanics). `pulse` is a results of the author's `PhD thesis <https://www.duo.uio.no/handle/10852/62015>`_, where most of the relevant background for the code can be found.
-
-While FEniCS offers a general framework for solving PDEs, `pulse` specifically targets problems in continuum mechanics. Therefore, most of the code for applying compatible boundary conditions, formulating the governing equations, choosing appropriate spaces for the solutions and applying iterative strategies etc. are already implemented, so that the user can focus on the actual problem he/she wants to solve rather than implementing all the necessary code for formulating and solving the underlying equations.
-=======
->>>>>>> master
 
 ``pulse`` is a software based on `FEniCS <https://fenicsproject.org>`__
 that aims to solve problems in cardiac mechanics (but is easily extended
