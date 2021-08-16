@@ -82,7 +82,7 @@ convert the notebooks to ``.py`` files using e.g
 Automated test
 --------------
 
-Test are provided in the folder ```tests`` <tests>`__. You can run the
+Test are provided in the folder named ``tests``. You can run the
 test with ``pytest``
 
 ::
