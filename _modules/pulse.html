@@ -163,8 +163,25 @@
             
   <h1>Source code for pulse</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span> <span class="k">as</span> <span class="nn">_logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="c1"># Check if dolfin-adjoint is installed, and if</span>
+<span class="c1"># the &#39;DOLFIN_ADJOINT&#39; flag is set to 0, then</span>
+<span class="c1"># we remove it from sys.modules</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">dolfin_adjoint</span>  <span class="c1"># noqa: F401</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">pass</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;DOLFIN_ADJOINT&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">))):</span>
+        <span class="kn">import</span> <span class="nn">sys</span>
+
+        <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="s2">&quot;dolfin_adjoint&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: ignore</span>
+        <span class="n">_logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Dolfin-adjoint found but will be turned off&quot;</span><span class="p">)</span>
+
 
 <span class="kn">import</span> <span class="nn">daiquiri</span> <span class="k">as</span> <span class="nn">_daiquiri</span>
+
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">dolfin_utils</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">geometry</span>
