@@ -1,6 +1,23 @@
 import logging as _logging
+import os
+
+# Check if dolfin-adjoint is installed, and if
+# the 'DOLFIN_ADJOINT' flag is set to 0, then
+# we remove it from sys.modules
+try:
+    import dolfin_adjoint  # noqa: F401
+except ImportError:
+    pass
+else:
+    if not bool(int(os.getenv("DOLFIN_ADJOINT", "1"))):
+        import sys
+
+        sys.modules["dolfin_adjoint"] = None  # type: ignore
+        _logging.warning("Dolfin-adjoint found but will be turned off")
+
 
 import daiquiri as _daiquiri
+
 
 from . import dolfin_utils
 from . import geometry
