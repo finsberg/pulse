@@ -27,6 +27,10 @@ jobs:
     steps:
       - checkout
 
+      - restore_cache:
+          keys:
+            - dolfin-jit-cache-pip
+
       - run:
           name: install dependencies
           command: |
@@ -38,10 +42,6 @@ jobs:
           command: |
             make dev
 
-      - restore_cache:
-          keys:
-            - v2-dolfin-jit-cache
-
       # run tests!
       - run:
           name: run tests
@@ -49,10 +49,11 @@ jobs:
             python3 -m pytest
 
       - save_cache:
-          key: v2-dolfin-jit-cache
+          key: dolfin-jit-cache-pip
           paths:
             - ~/.cache/instant
             - ~/.cache/dijitso
+            - ~/.cache/pip
 
       - store_artifacts:
           path: htmlcov
