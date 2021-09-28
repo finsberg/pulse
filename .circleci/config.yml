@@ -20,6 +20,9 @@ executors:
 
 jobs:
   test:
+    branches:
+      ignore:
+        - gh-pages
     parameters:
       fenics:
         type: executor
