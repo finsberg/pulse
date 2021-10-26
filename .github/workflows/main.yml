@@ -1,0 +1,40 @@
+name: CI
+
+on: [push]
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        container:
+          [
+            "quay.io/fenicsproject/stable:latest",
+            "quay.io/dolfinadjoint/pyadjoint:latest",
+            "finsberg/fenics2017",
+          ]
+
+    container:
+      image: ${{ matrix.container }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install h5py --no-binary=h5py
+          python3 -m pip install -e ".[dev]"
+
+      - name: Run flake8
+        run: |
+          python3 -m flake8 src tests
+
+      - name: Run black
+        run: |
+          python3 -m black --check src tests
+
+      - name: Test with pytest
+        run: |
+          python3 -m pytest
