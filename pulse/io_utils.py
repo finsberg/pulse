@@ -70,10 +70,12 @@ def copy_h5group(h5name, src, dst, comm=None, overwrite=False):
 def open_h5py(h5name, file_mode="a", comm=mpi_comm_world()):
 
     if parallel_h5py:
+        if has_petsc4py:
+            petsc4py.init()
         if has_mpi4py and has_petsc4py:
             assert isinstance(comm, (petsc4py.PETSc.Comm, mpi4py.MPI.Intracomm))
 
-        if isinstance(comm, petsc4py.PETSc.Comm):
+        if has_petsc4py and isinstance(comm, petsc4py.PETSc.Comm):
             comm = comm.tompi4py()
 
         return h5py.File(h5name, file_mode, comm=comm)
