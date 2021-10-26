@@ -21,11 +21,23 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Cache
+        id: cache-primes
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/instant
+            ~/.cache/dijitso
+            ~/.cache/pip
+          key: ${{ matrix.container }}-cache_v1
+          restore-keys: |
+            ${{ matrix.container }}-cache_v1
+
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install h5py --no-binary=h5py
-          python3 -m pip install -e ".[test]"
+          python3 -m pip install -e ".[test,plot]"
 
       - name: Run flake8
         run: |
