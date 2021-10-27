@@ -236,10 +236,12 @@
 <div class="viewcode-block" id="open_h5py"><a class="viewcode-back" href="../../pulse.html#pulse.io_utils.open_h5py">[docs]</a><span class="k">def</span> <span class="nf">open_h5py</span><span class="p">(</span><span class="n">h5name</span><span class="p">,</span> <span class="n">file_mode</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">comm</span><span class="o">=</span><span class="n">mpi_comm_world</span><span class="p">()):</span>
 
     <span class="k">if</span> <span class="n">parallel_h5py</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">has_petsc4py</span><span class="p">:</span>
+            <span class="n">petsc4py</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">has_mpi4py</span> <span class="ow">and</span> <span class="n">has_petsc4py</span><span class="p">:</span>
             <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="p">(</span><span class="n">petsc4py</span><span class="o">.</span><span class="n">PETSc</span><span class="o">.</span><span class="n">Comm</span><span class="p">,</span> <span class="n">mpi4py</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">Intracomm</span><span class="p">))</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">petsc4py</span><span class="o">.</span><span class="n">PETSc</span><span class="o">.</span><span class="n">Comm</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">has_petsc4py</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">petsc4py</span><span class="o">.</span><span class="n">PETSc</span><span class="o">.</span><span class="n">Comm</span><span class="p">):</span>
             <span class="n">comm</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">tompi4py</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">h5name</span><span class="p">,</span> <span class="n">file_mode</span><span class="p">,</span> <span class="n">comm</span><span class="o">=</span><span class="n">comm</span><span class="p">)</span>
