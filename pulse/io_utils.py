@@ -78,7 +78,7 @@ def open_h5py(h5name, file_mode="a", comm=mpi_comm_world()):
         if has_petsc4py and isinstance(comm, petsc4py.PETSc.Comm):
             comm = comm.tompi4py()
 
-        return h5py.File(h5name, file_mode, comm=comm)
+        return h5py.File(h5name, file_mode, driver="mpio", comm=comm)
     else:
         return h5py.File(h5name, file_mode)
 
