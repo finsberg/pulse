@@ -27,6 +27,6 @@ class LinearElastic(Material):
         )
 
         # Active stress
-        Wactive = self.active.Wactive(F, diff=0)
+        Wactive = self.Wactive(F, diff=0)
 
         return W + Wactive

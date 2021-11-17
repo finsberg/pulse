@@ -26,7 +26,7 @@ except ImportError:
 from pulse import kinematics
 from pulse.dolfin_utils import QuadratureSpace
 from pulse.geometry import Geometry, MarkerFunctions, Microstructure
-from pulse.material import ActiveStrain, HolzapfelOgden, NeoHookean, material_models
+from pulse.material import HolzapfelOgden, NeoHookean, material_models
 from pulse.mechanicsproblem import BoundaryConditions, MechanicsProblem, NeumannBC
 from pulse.utils import mpi_comm_world
 
@@ -237,7 +237,8 @@ def test_pass_active_model_as_object(unitcube_geometry):
 
     material = NeoHookean(
         parameters=matparams,
-        active_model=ActiveStrain(activation=activation),
+        active_model="active_strain",
+        activation=activation,
     )
 
     problem = MechanicsProblem(unitcube_geometry, material, bcs)

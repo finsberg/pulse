@@ -1,5 +1,6 @@
 import dolfin
 
+from .. import kinematics
 from ..dolfin_utils import get_dimesion
 from ..dolfin_utils import heaviside
 from ..dolfin_utils import subplus
@@ -204,13 +205,13 @@ class HolzapfelOgden(Material):
         """
 
         # Invariants
-        I1 = self.active.I1(F)
-        I4f = self.active.I4(F, self.f0)
-        I4s = self.active.I4(F, self.s0)
-        I8fs = self.active.I8(F, self.f0, self.s0)
+        I1 = kinematics.I1(self.Fe(F))
+        I4f = kinematics.I4(self.Fe(F), self.f0)
+        I4s = kinematics.I4(self.Fe(F), self.s0)
+        I8fs = kinematics.I8(self.Fe(F), self.f0, self.s0)
 
         # Active stress
-        Wactive = self.active.Wactive(F, diff=0)
+        Wactive = self.Wactive(F, diff=0)
 
         dim = get_dimesion(F)
         W1 = self.W_1(I1, diff=0, dim=dim)

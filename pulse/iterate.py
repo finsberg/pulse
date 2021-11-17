@@ -112,7 +112,7 @@ def get_delta(new_control, c0, c1):
 
     else:
         msg = ("Unexpected type for new_crontrol in get_delta" "Got {}").format(
-            type(delta),
+            type(new_control),
         )
         raise TypeError(msg)
 
@@ -215,7 +215,6 @@ def step_too_large(current, target, step):
     """
     Check if `current + step` exceeds `target`
     """
-
     if isinstance(target, (dolfin.Function, Function)):
         target = numpy_mpi.gather_vector(target.vector(), target.function_space().dim())
     elif isinstance(target, (Constant, dolfin.Constant)):
@@ -238,8 +237,12 @@ def step_too_large(current, target, step):
     step = squeeze(step)
 
     if not hasattr(target, "__len__"):
-        comp = op.gt if current < target else op.lt
-        return comp(current + step, target)
+        cond = current < target
+        if hasattr(cond, "__len__"):
+            cond = np.any(cond)
+
+        comp = op.gt if cond else op.lt
+        return np.any(comp(current + step, target))
     else:
         too_large = []
         for (c, t, s) in zip(current, target, step):

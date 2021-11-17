@@ -1,5 +1,6 @@
 import dolfin
 import numpy as np
+import ufl
 
 try:
     from dolfin_adjoint import (
@@ -171,8 +172,8 @@ def map_displacement(u, old_space, new_space, approx, name="mapped displacement"
 
 def compute_meshvolume(domain=None, dx=dolfin.dx, subdomain_id=None):
     return Constant(
-        dolfin.assemble(
-            dolfin.Constant(1.0) * dx(domain=domain, subdomain_id=subdomain_id),
+        assemble(
+            Constant(1.0) * dx(domain=domain, subdomain_id=subdomain_id),
         ),
     )
 
@@ -259,14 +260,11 @@ def get_dimesion(u):
 
     # TODO : Check argument
     try:
-        if DOLFIN_VERSION_MAJOR > 1.6:
-            from ufl.domain import find_geometric_dimension
+        from ufl.domain import find_geometric_dimension
 
-            dim = find_geometric_dimension(u)
-        else:
-            dim = u.geometric_dimension()
+        dim = find_geometric_dimension(u)
 
-    except Exception as ex:
+    except ufl.UFLException as ex:
 
         try:
             dim = len(u)

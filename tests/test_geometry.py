@@ -2,6 +2,11 @@ import dolfin
 import numpy as np
 import pytest
 
+try:
+    from dolfin_adjoint import UnitCubeMesh, interpolate
+except ImportError:
+    from dolfin import UnitCubeMesh, interpolate
+
 from pulse.dolfin_utils import QuadratureSpace
 from pulse.example_meshes import mesh_paths
 from pulse.geometry import CRLBasis
@@ -56,13 +61,13 @@ def strain_markers_3d(mesh, nregions):
 @pytest.fixture
 def unitcube_geometry():
     N = 2
-    mesh = dolfin.UnitCubeMesh(N, N, N)
+    mesh = UnitCubeMesh(N, N, N)
 
     V_f = QuadratureSpace(mesh, 4)
 
-    l0 = dolfin.interpolate(dolfin.Expression(("1.0", "0.0", "0.0"), degree=1), V_f)
-    r0 = dolfin.interpolate(dolfin.Expression(("0.0", "1.0", "0.0"), degree=1), V_f)
-    c0 = dolfin.interpolate(dolfin.Expression(("0.0", "0.0", "1.0"), degree=1), V_f)
+    l0 = interpolate(dolfin.Expression(("1.0", "0.0", "0.0"), degree=1), V_f)
+    r0 = interpolate(dolfin.Expression(("0.0", "1.0", "0.0"), degree=1), V_f)
+    c0 = interpolate(dolfin.Expression(("0.0", "0.0", "1.0"), degree=1), V_f)
 
     crl_basis = CRLBasis(l0=l0, r0=r0, c0=c0)
 
@@ -76,9 +81,9 @@ def unitcube_geometry():
     marker_functions = MarkerFunctions(ffun=ffun, cfun=cfun)
 
     # Fibers
-    f0 = dolfin.interpolate(dolfin.Expression(("1.0", "0.0", "0.0"), degree=1), V_f)
-    s0 = dolfin.interpolate(dolfin.Expression(("0.0", "1.0", "0.0"), degree=1), V_f)
-    n0 = dolfin.interpolate(dolfin.Expression(("0.0", "0.0", "1.0"), degree=1), V_f)
+    f0 = interpolate(dolfin.Expression(("1.0", "0.0", "0.0"), degree=1), V_f)
+    s0 = interpolate(dolfin.Expression(("0.0", "1.0", "0.0"), degree=1), V_f)
+    n0 = interpolate(dolfin.Expression(("0.0", "0.0", "1.0"), degree=1), V_f)
 
     microstructure = Microstructure(f0=f0, s0=s0, n0=n0)
 

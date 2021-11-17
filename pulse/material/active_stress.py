@@ -6,9 +6,6 @@ except ImportError:
     from dolfin import Constant
 
 
-from .active_model import ActiveModel
-
-
 def Wactive_transversally(Ta, C, f0, eta=0.0):
     """
     Return active strain energy when activation is only
@@ -107,66 +104,3 @@ def Wactive_anisotropic(Ta, C, f0, s0, n0):
     )
 
     return dolfin.inner(Ta, A)
-
-
-class ActiveStress(ActiveModel):
-    """
-    Active stress model
-    """
-
-    _model = "active_stress"
-
-    def __init__(self, *args, **kwargs):
-
-        # Fraction of transverse stress
-        # (0 = active only along fiber, 1 = equal
-        # amout of tension in all directions)
-        self._eta = Constant(kwargs.pop("eta", 0.0))
-
-        self.active_isotropy = kwargs.pop("active_isotropy", "transversally")
-
-        ActiveModel.__init__(self, *args, **kwargs)
-
-    @property
-    def eta(self):
-        return self._eta
-
-    def Wactive(self, F, diff=0):
-        """Active stress energy"""
-
-        C = F.T * F
-
-        if diff == 0:
-
-            if self.active_isotropy == "transversally":
-                return Wactive_transversally(
-                    Ta=self.activation_field,
-                    C=C,
-                    f0=self.f0,
-                    eta=self.eta,
-                )
-
-            elif self.active_isotropy == "orthotropic":
-                return Wactive_orthotropic(
-                    Ta=self.activation_field,
-                    C=C,
-                    f0=self.f0,
-                    s0=self.s0,
-                    n0=self.n0,
-                )
-
-            elif self.active_isotropy == "fully_anisotropic":
-
-                return Wactive_anisotropic(
-                    Ta=self.activation_field,
-                    C=C,
-                    f0=self.f0,
-                    s0=self.s0,
-                    n0=self.n0,
-                )
-            else:
-                msg = ("Unknown acitve isotropy " "{}").format(self.active_isotropy)
-                raise ValueError(msg)
-
-        elif diff == 1:
-            return self.activation_field

@@ -6,7 +6,13 @@ import dolfin
 import ufl
 
 try:
-    from dolfin_adjoint import Constant, Function, FunctionAssigner
+    from dolfin_adjoint import (
+        Constant,
+        Function,
+        FunctionAssigner,
+        NonlinearVariationalProblem,
+        NonlinearVariationalSolver,
+    )
 
     has_dolfin_adjoint = True
 except ImportError:
@@ -248,16 +254,25 @@ class MechanicsProblem(object):
         self._init_solver()
 
     def _init_solver(self):
-        self._problem = NonlinearProblem(
-            J=self._jacobian,
-            F=self._virtual_work,
-            bcs=self._dirichlet_bc,
-        )
-        self.solver = NonlinearSolver(
-            self._problem,
-            self.state,
-            parameters=self.solver_parameters,
-        )
+        if has_dolfin_adjoint:
+            self._problem = NonlinearVariationalProblem(
+                J=self._jacobian,
+                F=self._virtual_work,
+                u=self.state,
+                bcs=self._dirichlet_bc,
+            )
+            self.solver = NonlinearVariationalSolver(self._problem)
+        else:
+            self._problem = NonlinearProblem(
+                J=self._jacobian,
+                F=self._virtual_work,
+                bcs=self._dirichlet_bc,
+            )
+            self.solver = NonlinearSolver(
+                self._problem,
+                self.state,
+                parameters=self.solver_parameters,
+            )
 
     def _set_dirichlet_bc(self):
         # DirichletBC
