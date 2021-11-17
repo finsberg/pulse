@@ -47,7 +47,7 @@ class Guccione(Material):
         # Elastic part of deformation gradient
         F = self.Fe(F_)
 
-        E = kinematics.GreenLagrangeStrain(F, isochoric=self.is_isochoric)
+        E = kinematics.GreenLagrangeStrain(F, isochoric=self.isochoric)
 
         CC = Constant(params["C"], name="C")
 

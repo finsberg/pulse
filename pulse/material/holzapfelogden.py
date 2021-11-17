@@ -205,9 +205,9 @@ class HolzapfelOgden(Material):
         """
 
         # Invariants
-        I1 = kinematics.I1(self.Fe(F))
-        I4f = kinematics.I4(self.Fe(F), self.f0)
-        I4s = kinematics.I4(self.Fe(F), self.s0)
+        I1 = kinematics.I1(self.Fe(F), isochoric=self.isochoric)
+        I4f = kinematics.I4(self.Fe(F), self.f0, isochoric=self.isochoric)
+        I4s = kinematics.I4(self.Fe(F), self.s0, isochoric=self.isochoric)
         I8fs = kinematics.I8(self.Fe(F), self.f0, self.s0)
 
         # Active stress

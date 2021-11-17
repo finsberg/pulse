@@ -125,7 +125,7 @@ def test_material(unitcube_geometry, Material, active_model, isochoric):
         active_model=active_model,
     )
 
-    assert material.is_isochoric == isochoric
+    assert material.isochoric == isochoric
 
     problem = MechanicsProblem(unitcube_geometry, material, bcs)
     problem.solve()
@@ -133,7 +133,6 @@ def test_material(unitcube_geometry, Material, active_model, isochoric):
     u, p = problem.state.split(deepcopy=True)
 
     print(material.name)
-
     if active_model == "active_strain":
 
         tol = 1e-4
@@ -195,6 +194,7 @@ def test_material(unitcube_geometry, Material, active_model, isochoric):
                 raise TypeError("Unkown material {}".format(material.name))
 
         else:
+
             assert all(abs(p.vector().get_local()) < tol)
 
 

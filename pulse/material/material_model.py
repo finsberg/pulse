@@ -228,7 +228,7 @@ class Material(ABC):
         f0f0 = dolfin.outer(f0, f0)
         Id = kinematics.SecondOrderIdentity(f0f0)
 
-        mgamma = 1 - self.activation
+        mgamma = 1 - self.activation_field
         Fa = mgamma * f0f0 + pow(mgamma, -1.0 / float(self._dim - 1)) * (Id - f0f0)
 
         return Fa
@@ -296,10 +296,6 @@ class Material(ABC):
         return self._model
 
     @property
-    def is_isochoric(self):
-        return self._isochoric
-
-    @property
     def eta(self):
         return self._eta
 
@@ -329,10 +325,6 @@ class Material(ABC):
         for each segment.
         """
         return self._activation
-
-    @activation.setter
-    def activation(self, f):
-        self._activation = f
 
     def CauchyStress(self, F, p=None, deviatoric=False):
 

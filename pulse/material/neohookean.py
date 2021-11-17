@@ -51,7 +51,7 @@ class NeoHookean(Material):
         """
 
         # Invariants
-        I1 = kinematics.I1(self.Fe(F))
+        I1 = kinematics.I1(self.Fe(F), isochoric=self.isochoric)
 
         # Active stress
         Wactive = self.Wactive(F, diff=0)
