@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 import dolfin
 import h5py
@@ -141,6 +141,7 @@ def load_geometry_from_h5(
     :rtype: object
 
     """
+    h5name = Path(h5name)
 
     logger.info("\nLoad mesh from h5")
     # Set default groups
@@ -149,7 +150,7 @@ def load_geometry_from_h5(
     lgroup = "{}/local basis functions".format(h5group)
     fgroup = "{}/microstructure/".format(h5group)
 
-    if not os.path.isfile(h5name):
+    if not h5name.is_file():
         raise IOError("File {} does not exist".format(h5name))
 
     # Check that the given file contains
@@ -171,7 +172,7 @@ def load_geometry_from_h5(
 
     geo = Geometry()
 
-    with dolfin.HDF5File(comm, h5name, "r") as h5file:
+    with dolfin.HDF5File(comm, h5name.as_posix(), "r") as h5file:
 
         # Load mesh
         mesh = Mesh(comm)
@@ -624,7 +625,9 @@ def save_geometry_to_h5(
     assert isinstance(mesh, dolfin.Mesh)
     if comm is None:
         comm = mesh.mpi_comm()
-    file_mode = "a" if os.path.isfile(h5name) and not overwrite_file else "w"
+
+    h5name = Path(h5name)
+    file_mode = "a" if h5name.is_file() and not overwrite_file else "w"
 
     # IF we should append the file but overwrite the group we need to
     # check that the group does not exist. If so we need to open it in
@@ -632,7 +635,7 @@ def save_geometry_to_h5(
     if file_mode == "a" and overwrite_group and h5group != "":
         io_utils.check_h5group(h5name, h5group, delete=True, comm=comm)
 
-    with dolfin.HDF5File(comm, h5name, file_mode) as h5file:
+    with dolfin.HDF5File(comm, h5name.as_posix(), file_mode) as h5file:
 
         # Save mesh
         ggroup = "{}/geometry".format(h5group)

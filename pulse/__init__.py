@@ -93,7 +93,7 @@ ffc_logger.setLevel(_logging.WARNING)
 ffc_logger.addFilter(utils.mpi_filt)
 
 ufl_logger = _logging.getLogger("UFL")
-ufl_logger.setLevel(_logging.WARNING)
+ufl_logger.setLevel(_logging.FATAL)
 ufl_logger.addFilter(utils.mpi_filt)
 
 __author__ = "Henrik Finsberg"

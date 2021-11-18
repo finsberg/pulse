@@ -5,6 +5,7 @@ from functools import partial
 import dolfin
 import ufl
 
+
 try:
     from dolfin_adjoint import (
         Constant,

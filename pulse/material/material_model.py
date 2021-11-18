@@ -226,7 +226,7 @@ class Material(ABC):
 
         f0 = self.f0
         f0f0 = dolfin.outer(f0, f0)
-        Id = kinematics.SecondOrderIdentity(f0f0)
+        Id = dolfin.Identity(self._dim)
 
         mgamma = 1 - self.activation_field
         Fa = mgamma * f0f0 + pow(mgamma, -1.0 / float(self._dim - 1)) * (Id - f0f0)
