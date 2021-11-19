@@ -208,16 +208,12 @@
 <span class="kn">from</span> <span class="nn">.kinematics</span> <span class="kn">import</span> <span class="n">DeformationGradient</span>
 <span class="kn">from</span> <span class="nn">.kinematics</span> <span class="kn">import</span> <span class="n">EulerAlmansiStrain</span>
 <span class="kn">from</span> <span class="nn">.kinematics</span> <span class="kn">import</span> <span class="n">GreenLagrangeStrain</span>
-<span class="kn">from</span> <span class="nn">.kinematics</span> <span class="kn">import</span> <span class="n">Invariants</span>
 <span class="kn">from</span> <span class="nn">.kinematics</span> <span class="kn">import</span> <span class="n">InversePiolaTransform</span>
 <span class="kn">from</span> <span class="nn">.kinematics</span> <span class="kn">import</span> <span class="n">Jacobian</span>
 <span class="kn">from</span> <span class="nn">.kinematics</span> <span class="kn">import</span> <span class="n">LeftCauchyGreen</span>
 <span class="kn">from</span> <span class="nn">.kinematics</span> <span class="kn">import</span> <span class="n">PiolaTransform</span>
 <span class="kn">from</span> <span class="nn">.kinematics</span> <span class="kn">import</span> <span class="n">RightCauchyGreen</span>
 <span class="kn">from</span> <span class="nn">.kinematics</span> <span class="kn">import</span> <span class="n">SecondOrderIdentity</span>
-<span class="kn">from</span> <span class="nn">.material</span> <span class="kn">import</span> <span class="n">ActiveModel</span>
-<span class="kn">from</span> <span class="nn">.material</span> <span class="kn">import</span> <span class="n">ActiveStrain</span>
-<span class="kn">from</span> <span class="nn">.material</span> <span class="kn">import</span> <span class="n">ActiveStress</span>
 <span class="kn">from</span> <span class="nn">.material</span> <span class="kn">import</span> <span class="n">Guccione</span>
 <span class="kn">from</span> <span class="nn">.material</span> <span class="kn">import</span> <span class="n">HolzapfelOgden</span>
 <span class="kn">from</span> <span class="nn">.material</span> <span class="kn">import</span> <span class="n">LinearElastic</span>
@@ -261,7 +257,7 @@
 <span class="n">ffc_logger</span><span class="o">.</span><span class="n">addFilter</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">mpi_filt</span><span class="p">)</span>
 
 <span class="n">ufl_logger</span> <span class="o">=</span> <span class="n">_logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;UFL&quot;</span><span class="p">)</span>
-<span class="n">ufl_logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">_logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+<span class="n">ufl_logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">_logging</span><span class="o">.</span><span class="n">FATAL</span><span class="p">)</span>
 <span class="n">ufl_logger</span><span class="o">.</span><span class="n">addFilter</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">mpi_filt</span><span class="p">)</span>
 
 <span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Henrik Finsberg&quot;</span>
@@ -296,9 +292,6 @@
     <span class="s2">&quot;MechanicsProblem&quot;</span><span class="p">,</span>
     <span class="s2">&quot;NeumannBC&quot;</span><span class="p">,</span>
     <span class="s2">&quot;RobinBC&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ActiveStrain&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ActiveStress&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ActiveModel&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Material&quot;</span><span class="p">,</span>
     <span class="s2">&quot;HolzapfelOgden&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Guccione&quot;</span><span class="p">,</span>
@@ -312,7 +305,6 @@
     <span class="s2">&quot;LeftCauchyGreen&quot;</span><span class="p">,</span>
     <span class="s2">&quot;RightCauchyGreen&quot;</span><span class="p">,</span>
     <span class="s2">&quot;EulerAlmansiStrain&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Invariants&quot;</span><span class="p">,</span>
     <span class="s2">&quot;PiolaTransform&quot;</span><span class="p">,</span>
     <span class="s2">&quot;InversePiolaTransform&quot;</span><span class="p">,</span>
     <span class="s2">&quot;set_log_level&quot;</span><span class="p">,</span>

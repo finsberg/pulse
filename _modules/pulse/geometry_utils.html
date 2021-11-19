@@ -164,7 +164,7 @@
            <div itemprop="articleBody">
             
   <h1>Source code for pulse.geometry_utils</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">import</span> <span class="nn">dolfin</span>
 <span class="kn">import</span> <span class="nn">h5py</span>
@@ -286,8 +286,6 @@
 <div class="viewcode-block" id="load_geometry_from_h5"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.load_geometry_from_h5">[docs]</a><span class="k">def</span> <span class="nf">load_geometry_from_h5</span><span class="p">(</span>
     <span class="n">h5name</span><span class="p">,</span>
     <span class="n">h5group</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-    <span class="n">fendo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">fepi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">include_sheets</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">comm</span><span class="o">=</span><span class="n">mpi_comm_world</span><span class="p">(),</span>
 <span class="p">):</span>
@@ -300,23 +298,22 @@
 
 <span class="sd">    :param str h5name: Name of the h5file</span>
 <span class="sd">    :param str h5group: The group within the file</span>
-<span class="sd">    :param int fendo: Helix fiber angle (endocardium) (if available)</span>
-<span class="sd">    :param int fepi: Helix fiber angle (epicardium) (if available)</span>
 <span class="sd">    :param bool include_sheets: Include sheets and cross-sheets</span>
 <span class="sd">    :returns: An object with geometry data</span>
 <span class="sd">    :rtype: object</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">h5name</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">h5name</span><span class="p">)</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Load mesh from h5&quot;</span><span class="p">)</span>
     <span class="c1"># Set default groups</span>
-    <span class="n">ggroup</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/geometry&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5group</span><span class="p">)</span>
-    <span class="n">mgroup</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/mesh&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ggroup</span><span class="p">)</span>
-    <span class="n">lgroup</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/local basis functions&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5group</span><span class="p">)</span>
-    <span class="n">fgroup</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/microstructure/&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5group</span><span class="p">)</span>
+    <span class="n">ggroup</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">h5group</span><span class="si">}</span><span class="s2">/geometry&quot;</span>
+    <span class="n">mgroup</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ggroup</span><span class="si">}</span><span class="s2">/mesh&quot;</span>
+    <span class="n">lgroup</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">h5group</span><span class="si">}</span><span class="s2">/local basis functions&quot;</span>
+    <span class="n">fgroup</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">h5group</span><span class="si">}</span><span class="s2">/microstructure/&quot;</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">h5name</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;File </span><span class="si">{}</span><span class="s2"> does not exist&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5name</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">h5name</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File </span><span class="si">{</span><span class="n">h5name</span><span class="si">}</span><span class="s2"> does not exist&quot;</span><span class="p">)</span>
 
     <span class="c1"># Check that the given file contains</span>
     <span class="c1"># the geometry in the given h5group</span>
@@ -328,7 +325,7 @@
 
         <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">h5name</span><span class="p">)</span> <span class="k">as</span> <span class="n">h</span><span class="p">:</span>
             <span class="n">keys</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-        <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Possible values for the h5group are </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Possible values for the h5group are </span><span class="si">{</span><span class="n">keys</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="c1"># Create a dummy object for easy parsing</span>
@@ -337,7 +334,7 @@
 
     <span class="n">geo</span> <span class="o">=</span> <span class="n">Geometry</span><span class="p">()</span>
 
-    <span class="k">with</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">HDF5File</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">h5name</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5file</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">HDF5File</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">h5name</span><span class="o">.</span><span class="n">as_posix</span><span class="p">(),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5file</span><span class="p">:</span>
 
         <span class="c1"># Load mesh</span>
         <span class="n">mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="p">(</span><span class="n">comm</span><span class="p">)</span>
@@ -351,7 +348,7 @@
                 <span class="nb">setattr</span><span class="p">(</span><span class="n">geo</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
                 <span class="k">continue</span>
 
-            <span class="n">dgroup</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/mesh/meshfunction_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ggroup</span><span class="p">,</span> <span class="n">dim</span><span class="p">)</span>
+            <span class="n">dgroup</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ggroup</span><span class="si">}</span><span class="s2">/mesh/meshfunction_</span><span class="si">{</span><span class="n">dim</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="n">mf</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">MeshFunction</span><span class="p">(</span><span class="s2">&quot;size_t&quot;</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">domains</span><span class="p">())</span>
 
             <span class="k">if</span> <span class="n">h5file</span><span class="o">.</span><span class="n">has_dataset</span><span class="p">(</span><span class="n">dgroup</span><span class="p">):</span>
@@ -365,7 +362,7 @@
         <span class="n">markers</span> <span class="o">=</span> <span class="n">load_markers</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">ggroup</span><span class="p">,</span> <span class="n">dgroup</span><span class="p">)</span>
         <span class="n">geo</span><span class="o">.</span><span class="n">markers</span> <span class="o">=</span> <span class="n">markers</span>
 
-        <span class="n">origmeshgroup</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/original_geometry&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5group</span><span class="p">)</span>
+        <span class="n">origmeshgroup</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">h5group</span><span class="si">}</span><span class="s2">/original_geometry&quot;</span>
         <span class="k">if</span> <span class="n">h5file</span><span class="o">.</span><span class="n">has_dataset</span><span class="p">(</span><span class="n">origmeshgroup</span><span class="p">):</span>
             <span class="n">original_mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="p">(</span><span class="n">comm</span><span class="p">)</span>
             <span class="n">io_utils</span><span class="o">.</span><span class="n">read_h5file</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">original_mesh</span><span class="p">,</span> <span class="n">origmeshgroup</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
@@ -383,7 +380,7 @@
         <span class="n">markers</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">ufl_domain</span><span class="p">()</span><span class="o">.</span><span class="n">topological_dimension</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">key_str</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;domain&quot;</span><span class="p">,</span> <span class="s2">&quot;meshfunction&quot;</span><span class="p">]:</span>
-                <span class="n">dgroup</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/mesh/</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ggroup</span><span class="p">,</span> <span class="n">key_str</span><span class="p">,</span> <span class="n">dim</span><span class="p">)</span>
+                <span class="n">dgroup</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ggroup</span><span class="si">}</span><span class="s2">/mesh/</span><span class="si">{</span><span class="n">key_str</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">dim</span><span class="si">}</span><span class="s2">&quot;</span>
 
                 <span class="c1"># If dataset is not present</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">h5file</span><span class="o">.</span><span class="n">has_dataset</span><span class="p">(</span><span class="n">dgroup</span><span class="p">):</span>
@@ -399,9 +396,7 @@
                     <span class="k">if</span> <span class="n">aname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;marker_name&quot;</span><span class="p">):</span>
 
                         <span class="n">name</span> <span class="o">=</span> <span class="n">aname</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;marker_name_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-                        <span class="n">marker</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">dgroup</span><span class="p">)[</span>
-                            <span class="s2">&quot;marker_name_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-                        <span class="p">]</span>
+                        <span class="n">marker</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">dgroup</span><span class="p">)[</span><span class="sa">f</span><span class="s2">&quot;marker_name_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
                         <span class="n">markers</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">marker</span><span class="p">),</span> <span class="n">dim</span><span class="p">)</span>
 
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
@@ -683,7 +678,7 @@
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
             <span class="n">lb</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
 
-            <span class="n">io_utils</span><span class="o">.</span><span class="n">read_h5file</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">lb</span><span class="p">,</span> <span class="n">lgroup</span> <span class="o">+</span> <span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+            <span class="n">io_utils</span><span class="o">.</span><span class="n">read_h5file</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">lb</span><span class="p">,</span> <span class="n">lgroup</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="n">geo</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">lb</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="n">geo</span><span class="p">,</span> <span class="s2">&quot;circumferential&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -712,7 +707,7 @@
 
         <span class="c1"># Check that these fibers exists</span>
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
-            <span class="n">fsubgroup</span> <span class="o">=</span> <span class="n">fgroup</span> <span class="o">+</span> <span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">fsubgroup</span> <span class="o">=</span> <span class="n">fgroup</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">h5file</span><span class="o">.</span><span class="n">has_dataset</span><span class="p">(</span><span class="n">fsubgroup</span><span class="p">):</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;H5File does not have dataset </span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fsubgroup</span><span class="p">)</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
@@ -731,11 +726,48 @@
         <span class="n">attrs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;f0&quot;</span><span class="p">,</span> <span class="s2">&quot;s0&quot;</span><span class="p">,</span> <span class="s2">&quot;n0&quot;</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
             <span class="n">func</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
-            <span class="n">fsubgroup</span> <span class="o">=</span> <span class="n">fgroup</span> <span class="o">+</span> <span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">fsubgroup</span> <span class="o">=</span> <span class="n">fgroup</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
 
             <span class="n">io_utils</span><span class="o">.</span><span class="n">read_h5file</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">fsubgroup</span><span class="p">)</span>
 
             <span class="nb">setattr</span><span class="p">(</span><span class="n">geo</span><span class="p">,</span> <span class="n">attrs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">func</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="save_meshfunctions"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.save_meshfunctions">[docs]</a><span class="k">def</span> <span class="nf">save_meshfunctions</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">h5group</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">meshfunctions</span><span class="p">,</span> <span class="n">comm</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">get_geometric_dimension</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">meshfunctions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">meshfunctions</span><span class="p">:</span>
+            <span class="n">mf</span> <span class="o">=</span> <span class="n">meshfunctions</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mf</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">MeshFunction</span><span class="p">(</span><span class="s2">&quot;size_t&quot;</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">domains</span><span class="p">())</span>
+
+        <span class="n">save_mf</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">mf</span><span class="o">.</span><span class="n">array</span><span class="p">())))</span> <span class="o">&gt;</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">save_mf</span><span class="p">:</span>
+            <span class="n">dgroup</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ggroup</span><span class="p">(</span><span class="n">h5group</span><span class="p">)</span><span class="si">}</span><span class="s2">/mesh/meshfunction_</span><span class="si">{</span><span class="n">dim</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">h5file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mf</span><span class="p">,</span> <span class="n">dgroup</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="save_markers"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.save_markers">[docs]</a><span class="k">def</span> <span class="nf">save_markers</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">h5group</span><span class="p">,</span> <span class="n">markers</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">markers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="c1"># Save the boundary markers</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">marker</span><span class="p">,</span> <span class="n">dim</span><span class="p">)</span> <span class="ow">in</span> <span class="n">markers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+        <span class="k">for</span> <span class="n">key_str</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;domain&quot;</span><span class="p">,</span> <span class="s2">&quot;meshfunction&quot;</span><span class="p">]:</span>
+            <span class="n">dgroup</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ggroup</span><span class="p">(</span><span class="n">h5group</span><span class="p">)</span><span class="si">}</span><span class="s2">/mesh/</span><span class="si">{</span><span class="n">key_str</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">dim</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="k">if</span> <span class="n">h5file</span><span class="o">.</span><span class="n">has_dataset</span><span class="p">(</span><span class="n">dgroup</span><span class="p">):</span>
+                <span class="n">aname</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;marker_name_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">dgroup</span><span class="p">)[</span><span class="n">aname</span><span class="p">]</span> <span class="o">=</span> <span class="n">marker</span></div>
+
+
+<div class="viewcode-block" id="ggroup"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.ggroup">[docs]</a><span class="k">def</span> <span class="nf">ggroup</span><span class="p">(</span><span class="n">h5group</span><span class="p">):</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">h5group</span><span class="si">}</span><span class="s2">/geometry&quot;</span></div>
+
+
+<div class="viewcode-block" id="mgroup"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.mgroup">[docs]</a><span class="k">def</span> <span class="nf">mgroup</span><span class="p">(</span><span class="n">h5group</span><span class="p">):</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ggroup</span><span class="p">(</span><span class="n">h5group</span><span class="p">)</span><span class="si">}</span><span class="s2">/mesh&quot;</span></div>
 
 
 <div class="viewcode-block" id="save_geometry_to_h5"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.save_geometry_to_h5">[docs]</a><span class="k">def</span> <span class="nf">save_geometry_to_h5</span><span class="p">(</span>
@@ -790,89 +822,48 @@
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Mesh</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">comm</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">comm</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">mpi_comm</span><span class="p">()</span>
-    <span class="n">file_mode</span> <span class="o">=</span> <span class="s2">&quot;a&quot;</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">h5name</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite_file</span> <span class="k">else</span> <span class="s2">&quot;w&quot;</span>
+
+    <span class="n">h5name</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">h5name</span><span class="p">)</span>
+    <span class="n">file_mode</span> <span class="o">=</span> <span class="s2">&quot;a&quot;</span> <span class="k">if</span> <span class="n">h5name</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite_file</span> <span class="k">else</span> <span class="s2">&quot;w&quot;</span>
 
     <span class="c1"># IF we should append the file but overwrite the group we need to</span>
     <span class="c1"># check that the group does not exist. If so we need to open it in</span>
     <span class="c1"># h5py and delete it.</span>
-    <span class="k">if</span> <span class="n">file_mode</span> <span class="o">==</span> <span class="s2">&quot;a&quot;</span> <span class="ow">and</span> <span class="n">overwrite_group</span> <span class="ow">and</span> <span class="n">h5group</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
-        <span class="n">io_utils</span><span class="o">.</span><span class="n">check_h5group</span><span class="p">(</span><span class="n">h5name</span><span class="p">,</span> <span class="n">h5group</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">comm</span><span class="o">=</span><span class="n">comm</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">file_mode</span> <span class="o">==</span> <span class="s2">&quot;a&quot;</span> <span class="ow">and</span> <span class="n">overwrite_group</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">h5group</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="n">io_utils</span><span class="o">.</span><span class="n">check_h5group</span><span class="p">(</span><span class="n">h5name</span><span class="p">,</span> <span class="n">h5group</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">comm</span><span class="o">=</span><span class="n">comm</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">h5name</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+            <span class="n">file_mode</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span>
 
-    <span class="k">with</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">HDF5File</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">h5name</span><span class="p">,</span> <span class="n">file_mode</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5file</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">HDF5File</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">h5name</span><span class="o">.</span><span class="n">as_posix</span><span class="p">(),</span> <span class="n">file_mode</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5file</span><span class="p">:</span>
 
         <span class="c1"># Save mesh</span>
-        <span class="n">ggroup</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/geometry&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5group</span><span class="p">)</span>
-        <span class="n">mgroup</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/mesh&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ggroup</span><span class="p">)</span>
-        <span class="n">h5file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">mgroup</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">get_geometric_dimension</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-
-            <span class="k">if</span> <span class="n">meshfunctions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">meshfunctions</span><span class="p">:</span>
-                <span class="n">mf</span> <span class="o">=</span> <span class="n">meshfunctions</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">mf</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">MeshFunction</span><span class="p">(</span><span class="s2">&quot;size_t&quot;</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">domains</span><span class="p">())</span>
-
-            <span class="n">save_mf</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">mf</span><span class="o">.</span><span class="n">array</span><span class="p">())))</span> <span class="o">&gt;</span> <span class="mi">1</span>
-
-            <span class="k">if</span> <span class="n">save_mf</span><span class="p">:</span>
-                <span class="n">dgroup</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/mesh/meshfunction_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ggroup</span><span class="p">,</span> <span class="n">dim</span><span class="p">)</span>
-                <span class="n">h5file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mf</span><span class="p">,</span> <span class="n">dgroup</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">markers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># Save the boundary markers</span>
-            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">marker</span><span class="p">,</span> <span class="n">dim</span><span class="p">)</span> <span class="ow">in</span> <span class="n">markers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-
-                <span class="k">for</span> <span class="n">key_str</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;domain&quot;</span><span class="p">,</span> <span class="s2">&quot;meshfunction&quot;</span><span class="p">]:</span>
-                    <span class="n">dgroup</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/mesh/</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ggroup</span><span class="p">,</span> <span class="n">key_str</span><span class="p">,</span> <span class="n">dim</span><span class="p">)</span>
-
-                    <span class="k">if</span> <span class="n">h5file</span><span class="o">.</span><span class="n">has_dataset</span><span class="p">(</span><span class="n">dgroup</span><span class="p">):</span>
-                        <span class="n">aname</span> <span class="o">=</span> <span class="s2">&quot;marker_name_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-                        <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">dgroup</span><span class="p">)[</span><span class="n">aname</span><span class="p">]</span> <span class="o">=</span> <span class="n">marker</span>
-
-        <span class="k">if</span> <span class="n">local_basis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># Save local basis functions</span>
-            <span class="n">lgroup</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/local basis functions&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5group</span><span class="p">)</span>
-            <span class="n">save_local_basis</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">lgroup</span><span class="p">,</span> <span class="n">local_basis</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">fields</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># Save fiber field</span>
-            <span class="n">fgroup</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/microstructure&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5group</span><span class="p">)</span>
-            <span class="n">save_fields</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">fgroup</span><span class="p">,</span> <span class="n">fields</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">other_functions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">fun</span> <span class="ow">in</span> <span class="n">other_functions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">fungroup</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">h5group</span><span class="p">,</span> <span class="n">k</span><span class="p">])</span>
-                <span class="n">h5file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">fungroup</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">):</span>
-                <span class="n">elm</span> <span class="o">=</span> <span class="n">fun</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span>
-                <span class="n">family</span><span class="p">,</span> <span class="n">degree</span><span class="p">,</span> <span class="n">vsize</span> <span class="o">=</span> <span class="n">elm</span><span class="o">.</span><span class="n">family</span><span class="p">(),</span> <span class="n">elm</span><span class="o">.</span><span class="n">degree</span><span class="p">(),</span> <span class="n">elm</span><span class="o">.</span><span class="n">value_size</span><span class="p">()</span>
-                <span class="n">fspace</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">family</span><span class="p">,</span> <span class="n">degree</span><span class="p">)</span>
-                <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">fungroup</span><span class="p">)[</span><span class="s2">&quot;space&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fspace</span>
-                <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">fungroup</span><span class="p">)[</span><span class="s2">&quot;value_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">vsize</span>
-
-        <span class="k">if</span> <span class="n">other_attributes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">other_attributes</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                    <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">h5group</span><span class="p">)[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Invalid attribute </span><span class="si">{}</span><span class="s2"> = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
-
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Geometry saved to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5name</span><span class="p">))</span></div>
+        <span class="n">h5file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">mgroup</span><span class="p">(</span><span class="n">h5group</span><span class="p">))</span>
+        <span class="n">save_meshfunctions</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">h5group</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">meshfunctions</span><span class="p">,</span> <span class="n">comm</span><span class="p">)</span>
+        <span class="n">save_markers</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">h5group</span><span class="p">,</span> <span class="n">markers</span><span class="p">)</span>
+        <span class="n">save_local_basis</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">h5group</span><span class="p">,</span> <span class="n">local_basis</span><span class="p">)</span>
+        <span class="n">save_fields</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">h5group</span><span class="p">,</span> <span class="n">fields</span><span class="p">)</span>
+        <span class="n">save_other_functions</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">h5group</span><span class="p">,</span> <span class="n">other_functions</span><span class="p">)</span>
+        <span class="n">save_other_attributes</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">h5group</span><span class="p">,</span> <span class="n">other_attributes</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Geometry saved to </span><span class="si">{</span><span class="n">h5name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="save_fields"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.save_fields">[docs]</a><span class="k">def</span> <span class="nf">save_fields</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">fgroup</span><span class="p">,</span> <span class="n">fields</span><span class="p">):</span>
+<div class="viewcode-block" id="save_fields"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.save_fields">[docs]</a><span class="k">def</span> <span class="nf">save_fields</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">h5group</span><span class="p">,</span> <span class="n">fields</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Save mictrostructure to h5file</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    h5file : dolfin.HDF5File</span>
 <span class="sd">        The file to write to</span>
-<span class="sd">    fgroup : str</span>
+<span class="sd">    h5group : str</span>
 <span class="sd">        The folder inside the file to write to</span>
 <span class="sd">    fields : list</span>
 <span class="sd">        List of dolfin functions to write</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">fields</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="n">fgroup</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">h5group</span><span class="si">}</span><span class="s2">/microstructure&quot;</span>
     <span class="n">names</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
@@ -880,38 +871,66 @@
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="n">label</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">()</span>
         <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">field</span><span class="p">),</span> <span class="n">label</span><span class="p">]))</span>
-        <span class="n">fsubgroup</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fgroup</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">fsubgroup</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fgroup</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">h5file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">fsubgroup</span><span class="p">)</span>
         <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">fsubgroup</span><span class="p">)[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">()</span>
         <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
     <span class="n">elm</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span>
     <span class="n">family</span><span class="p">,</span> <span class="n">degree</span> <span class="o">=</span> <span class="n">elm</span><span class="o">.</span><span class="n">family</span><span class="p">(),</span> <span class="n">elm</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
-    <span class="n">fspace</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">family</span><span class="p">,</span> <span class="n">degree</span><span class="p">)</span>
+    <span class="n">fspace</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">family</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">degree</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">fgroup</span><span class="p">)[</span><span class="s2">&quot;space&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fspace</span>
     <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">fgroup</span><span class="p">)[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;:&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">names</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="save_local_basis"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.save_local_basis">[docs]</a><span class="k">def</span> <span class="nf">save_local_basis</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">lgroup</span><span class="p">,</span> <span class="n">local_basis</span><span class="p">):</span>
+<div class="viewcode-block" id="save_other_functions"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.save_other_functions">[docs]</a><span class="k">def</span> <span class="nf">save_other_functions</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">h5group</span><span class="p">,</span> <span class="n">other_functions</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">other_functions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">fun</span> <span class="ow">in</span> <span class="n">other_functions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">fungroup</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">h5group</span><span class="p">,</span> <span class="n">k</span><span class="p">])</span>
+        <span class="n">h5file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">fungroup</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">Function</span><span class="p">):</span>
+            <span class="n">elm</span> <span class="o">=</span> <span class="n">fun</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span>
+            <span class="n">family</span><span class="p">,</span> <span class="n">degree</span><span class="p">,</span> <span class="n">vsize</span> <span class="o">=</span> <span class="n">elm</span><span class="o">.</span><span class="n">family</span><span class="p">(),</span> <span class="n">elm</span><span class="o">.</span><span class="n">degree</span><span class="p">(),</span> <span class="n">elm</span><span class="o">.</span><span class="n">value_size</span><span class="p">()</span>
+            <span class="n">fspace</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">family</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">degree</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">fungroup</span><span class="p">)[</span><span class="s2">&quot;space&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fspace</span>
+            <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">fungroup</span><span class="p">)[</span><span class="s2">&quot;value_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">vsize</span></div>
+
+
+<div class="viewcode-block" id="save_other_attributes"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.save_other_attributes">[docs]</a><span class="k">def</span> <span class="nf">save_other_attributes</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">h5group</span><span class="p">,</span> <span class="n">other_attributes</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">other_attributes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">other_attributes</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">h5group</span><span class="p">)[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid attribute </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="save_local_basis"><a class="viewcode-back" href="../../pulse.html#pulse.geometry_utils.save_local_basis">[docs]</a><span class="k">def</span> <span class="nf">save_local_basis</span><span class="p">(</span><span class="n">h5file</span><span class="p">,</span> <span class="n">h5group</span><span class="p">,</span> <span class="n">local_basis</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Save local basis functions</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    h5file : dolfin.HDF5File</span>
 <span class="sd">        The file to write to</span>
-<span class="sd">    lgroup : str</span>
+<span class="sd">    h5group : str</span>
 <span class="sd">        Folder inside file to store the local basis</span>
 <span class="sd">    local_basis : list</span>
 <span class="sd">        List of dolfin functions with local basis functions</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">local_basis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="n">lgroup</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">h5group</span><span class="si">}</span><span class="s2">/local basis functions&quot;</span>
     <span class="n">names</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">basis</span> <span class="ow">in</span> <span class="n">local_basis</span><span class="p">:</span>
-        <span class="n">h5file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">basis</span><span class="p">,</span> <span class="n">lgroup</span> <span class="o">+</span> <span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">basis</span><span class="o">.</span><span class="n">name</span><span class="p">()))</span>
+        <span class="n">h5file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">basis</span><span class="p">,</span> <span class="n">lgroup</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">basis</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">basis</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
 
     <span class="n">elm</span> <span class="o">=</span> <span class="n">basis</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span>
     <span class="n">family</span><span class="p">,</span> <span class="n">degree</span> <span class="o">=</span> <span class="n">elm</span><span class="o">.</span><span class="n">family</span><span class="p">(),</span> <span class="n">elm</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
-    <span class="n">lspace</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">family</span><span class="p">,</span> <span class="n">degree</span><span class="p">)</span>
+    <span class="n">lspace</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">family</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">degree</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">lgroup</span><span class="p">)[</span><span class="s2">&quot;space&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lspace</span>
     <span class="n">h5file</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="n">lgroup</span><span class="p">)[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;:&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">names</span><span class="p">)</span></div>
 

@@ -211,15 +211,15 @@
         <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span>
 
         <span class="c1"># Elastic part of deformation gradient</span>
-        <span class="n">F</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span><span class="o">.</span><span class="n">Fe</span><span class="p">(</span><span class="n">F_</span><span class="p">)</span>
+        <span class="n">F</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Fe</span><span class="p">(</span><span class="n">F_</span><span class="p">)</span>
 
-        <span class="n">E</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">GreenLagrangeStrain</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">isochoric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_isochoric</span><span class="p">)</span>
+        <span class="n">E</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">GreenLagrangeStrain</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">isochoric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">isochoric</span><span class="p">)</span>
 
         <span class="n">CC</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
 
-        <span class="n">e1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span><span class="o">.</span><span class="n">f0</span>
-        <span class="n">e2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span><span class="o">.</span><span class="n">s0</span>
-        <span class="n">e3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span><span class="o">.</span><span class="n">n0</span>
+        <span class="n">e1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f0</span>
+        <span class="n">e2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s0</span>
+        <span class="n">e3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n0</span>
 
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">e</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="p">(</span><span class="n">e1</span><span class="p">,</span> <span class="n">e2</span><span class="p">,</span> <span class="n">e3</span><span class="p">)):</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
@@ -263,7 +263,7 @@
 
         <span class="c1"># passive strain energy</span>
         <span class="n">Wpassive</span> <span class="o">=</span> <span class="n">CC</span> <span class="o">/</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">dolfin</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">Q</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">Wactive</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span><span class="o">.</span><span class="n">Wactive</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">diff</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">Wactive</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Wactive</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">diff</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">Wpassive</span> <span class="o">+</span> <span class="n">Wactive</span></div></div>
 </pre></div>

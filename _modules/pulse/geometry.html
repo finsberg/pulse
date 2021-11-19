@@ -269,8 +269,12 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">markers</span> <span class="o">=</span> <span class="n">markers</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">marker_functions</span> <span class="o">=</span> <span class="n">marker_functions</span> <span class="ow">or</span> <span class="n">MarkerFunctions</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">microstructure</span> <span class="o">=</span> <span class="n">microstructure</span> <span class="ow">or</span> <span class="n">Microstructure</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">microstructure</span> <span class="o">=</span> <span class="n">microstructure</span> <span class="ow">or</span> <span class="n">Microstructure</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">crl_basis</span> <span class="o">=</span> <span class="n">crl_basis</span> <span class="ow">or</span> <span class="n">CRLBasis</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_post_init</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_post_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">args</span> <span class="o">=</span> <span class="p">[]</span>
@@ -353,7 +357,7 @@
 <div class="viewcode-block" id="Geometry.load_from_file"><a class="viewcode-back" href="../../pulse.html#pulse.geometry.Geometry.load_from_file">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">load_from_file</span><span class="p">(</span><span class="n">h5name</span><span class="p">,</span> <span class="n">h5group</span><span class="p">,</span> <span class="n">comm</span><span class="p">):</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Load geometry from file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5name</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Load geometry from file </span><span class="si">{</span><span class="n">h5name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="n">geo</span> <span class="o">=</span> <span class="n">load_geometry_from_h5</span><span class="p">(</span><span class="n">h5name</span><span class="p">,</span> <span class="n">h5group</span><span class="p">,</span> <span class="n">include_sheets</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">comm</span><span class="o">=</span><span class="n">comm</span><span class="p">)</span>
 
@@ -390,7 +394,7 @@
     <span class="p">):</span>
 
         <span class="n">h5name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">h5name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.h5&quot;</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Save to </span><span class="si">{}</span><span class="s2">...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5name</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Save to </span><span class="si">{</span><span class="n">h5name</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
         <span class="n">save_geometry_to_h5</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span>
             <span class="n">h5name</span><span class="o">=</span><span class="n">h5name</span><span class="p">,</span>
@@ -564,8 +568,7 @@
 
 
 <div class="viewcode-block" id="HeartGeometry"><a class="viewcode-back" href="../../pulse.html#pulse.geometry.HeartGeometry">[docs]</a><span class="k">class</span> <span class="nc">HeartGeometry</span><span class="p">(</span><span class="n">Geometry</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">HeartGeometry</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_post_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">xshift</span> <span class="o">=</span> <span class="mf">0.0</span>
 
     <span class="nd">@property</span>

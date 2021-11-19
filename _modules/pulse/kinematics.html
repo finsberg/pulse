@@ -253,58 +253,56 @@
     <span class="k">return</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">Id</span> <span class="o">-</span> <span class="n">inv</span><span class="p">(</span><span class="n">b</span><span class="p">))</span></div>
 
 
-<span class="c1"># Invariants #####</span>
-<div class="viewcode-block" id="Invariants"><a class="viewcode-back" href="../../pulse.html#pulse.kinematics.Invariants">[docs]</a><span class="k">class</span> <span class="nc">Invariants</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isochoric</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_isochoric</span> <span class="o">=</span> <span class="n">isochoric</span>
+<div class="viewcode-block" id="I1"><a class="viewcode-back" href="../../pulse.html#pulse.kinematics.I1">[docs]</a><span class="k">def</span> <span class="nf">I1</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">isochoric</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_isochoric</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isochoric</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">RightCauchyGreen</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">isochoric</span><span class="p">)</span>
+    <span class="n">I1</span> <span class="o">=</span> <span class="n">tr</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">I1</span></div>
 
-    <span class="k">def</span> <span class="nf">_I1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">F</span><span class="p">):</span>
 
-        <span class="n">C</span> <span class="o">=</span> <span class="n">RightCauchyGreen</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isochoric</span><span class="p">)</span>
-        <span class="n">I1</span> <span class="o">=</span> <span class="n">tr</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">I1</span>
+<div class="viewcode-block" id="I2"><a class="viewcode-back" href="../../pulse.html#pulse.kinematics.I2">[docs]</a><span class="k">def</span> <span class="nf">I2</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">isochoric</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">RightCauchyGreen</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">isochoric</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">I1</span><span class="p">(</span><span class="n">F</span><span class="p">)</span> <span class="o">*</span> <span class="n">I1</span><span class="p">(</span><span class="n">F</span><span class="p">)</span> <span class="o">-</span> <span class="n">tr</span><span class="p">(</span><span class="n">C</span> <span class="o">*</span> <span class="n">C</span><span class="p">))</span></div>
 
-    <span class="k">def</span> <span class="nf">_I2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">F</span><span class="p">):</span>
-        <span class="n">C</span> <span class="o">=</span> <span class="n">RightCauchyGreen</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isochoric</span><span class="p">)</span>
-        <span class="k">return</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_I1</span><span class="p">(</span><span class="n">F</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_I1</span><span class="p">(</span><span class="n">F</span><span class="p">)</span> <span class="o">-</span> <span class="n">tr</span><span class="p">(</span><span class="n">C</span> <span class="o">*</span> <span class="n">C</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">_I3</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">F</span><span class="p">):</span>
-        <span class="n">C</span> <span class="o">=</span> <span class="n">RightCauchyGreen</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isochoric</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">det</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
+<div class="viewcode-block" id="I3"><a class="viewcode-back" href="../../pulse.html#pulse.kinematics.I3">[docs]</a><span class="k">def</span> <span class="nf">I3</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">isochoric</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">RightCauchyGreen</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">isochoric</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">det</span><span class="p">(</span><span class="n">C</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_I4</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">a0</span><span class="p">):</span>
 
-        <span class="k">if</span> <span class="n">a0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">C</span> <span class="o">=</span> <span class="n">RightCauchyGreen</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isochoric</span><span class="p">)</span>
-            <span class="n">I4</span> <span class="o">=</span> <span class="n">inner</span><span class="p">(</span><span class="n">C</span> <span class="o">*</span> <span class="n">a0</span><span class="p">,</span> <span class="n">a0</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">I4</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">I4</span>
+<div class="viewcode-block" id="I4"><a class="viewcode-back" href="../../pulse.html#pulse.kinematics.I4">[docs]</a><span class="k">def</span> <span class="nf">I4</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">a0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">isochoric</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">_I5</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">a0</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">a0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">C</span> <span class="o">=</span> <span class="n">RightCauchyGreen</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isochoric</span><span class="p">)</span>
-            <span class="n">I5</span> <span class="o">=</span> <span class="n">inner</span><span class="p">(</span><span class="n">C</span> <span class="o">*</span> <span class="n">a0</span><span class="p">,</span> <span class="n">C</span> <span class="o">*</span> <span class="n">a0</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">I5</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">I5</span>
+    <span class="k">if</span> <span class="n">a0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="n">RightCauchyGreen</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">isochoric</span><span class="p">)</span>
+        <span class="n">I4</span> <span class="o">=</span> <span class="n">inner</span><span class="p">(</span><span class="n">C</span> <span class="o">*</span> <span class="n">a0</span><span class="p">,</span> <span class="n">a0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">I4</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">I4</span></div>
 
-    <span class="k">def</span> <span class="nf">_I6</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">b0</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_I4</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">b0</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_I7</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">b0</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_I5</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">b0</span><span class="p">)</span>
+<div class="viewcode-block" id="I5"><a class="viewcode-back" href="../../pulse.html#pulse.kinematics.I5">[docs]</a><span class="k">def</span> <span class="nf">I5</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">isochoric</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">a0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="n">RightCauchyGreen</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">isochoric</span><span class="p">)</span>
+        <span class="n">I5</span> <span class="o">=</span> <span class="n">inner</span><span class="p">(</span><span class="n">C</span> <span class="o">*</span> <span class="n">a0</span><span class="p">,</span> <span class="n">C</span> <span class="o">*</span> <span class="n">a0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">I5</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">I5</span></div>
 
-    <span class="k">def</span> <span class="nf">_I8</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">b0</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">a0</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">b0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">I8</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">I8</span> <span class="o">=</span> <span class="n">inner</span><span class="p">(</span><span class="n">F</span> <span class="o">*</span> <span class="n">a0</span><span class="p">,</span> <span class="n">F</span> <span class="o">*</span> <span class="n">b0</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">I8</span></div>
+
+<div class="viewcode-block" id="I6"><a class="viewcode-back" href="../../pulse.html#pulse.kinematics.I6">[docs]</a><span class="k">def</span> <span class="nf">I6</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">b0</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">I4</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">b0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="I7"><a class="viewcode-back" href="../../pulse.html#pulse.kinematics.I7">[docs]</a><span class="k">def</span> <span class="nf">I7</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">b0</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">I5</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">b0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="I8"><a class="viewcode-back" href="../../pulse.html#pulse.kinematics.I8">[docs]</a><span class="k">def</span> <span class="nf">I8</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">b0</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">a0</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">b0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">I8</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">I8</span> <span class="o">=</span> <span class="n">inner</span><span class="p">(</span><span class="n">F</span> <span class="o">*</span> <span class="n">a0</span><span class="p">,</span> <span class="n">F</span> <span class="o">*</span> <span class="n">b0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">I8</span></div>
 
 
 <span class="c1"># Transforms #####</span>

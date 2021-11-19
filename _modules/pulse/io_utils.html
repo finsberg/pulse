@@ -289,13 +289,13 @@
 
             <span class="k">if</span> <span class="n">parallel_h5py</span><span class="p">:</span>
 
-                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Deleting existing group: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5group</span><span class="p">))</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleting existing group: &#39;</span><span class="si">{</span><span class="n">h5group</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
                 <span class="k">del</span> <span class="n">h5file</span><span class="p">[</span><span class="n">h5group</span><span class="p">]</span>
 
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">comm</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
 
-                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Deleting existing group: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5group</span><span class="p">))</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleting existing group: &#39;</span><span class="si">{</span><span class="n">h5group</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
                     <span class="k">del</span> <span class="n">h5file</span><span class="p">[</span><span class="n">h5group</span><span class="p">]</span></div>
 
 

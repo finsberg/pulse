@@ -166,6 +166,7 @@
   <h1>Source code for pulse.dolfin_utils</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">dolfin</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">ufl</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">dolfin_adjoint</span> <span class="kn">import</span> <span class="p">(</span>
@@ -304,7 +305,7 @@
 
     <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Make sure file </span><span class="si">{}</span><span class="s2"> exist&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5name</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Make sure file </span><span class="si">{</span><span class="n">h5name</span><span class="si">}</span><span class="s2"> exist&quot;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="n">ex</span>
 
     <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
@@ -337,8 +338,8 @@
 
 <div class="viewcode-block" id="compute_meshvolume"><a class="viewcode-back" href="../../pulse.html#pulse.dolfin_utils.compute_meshvolume">[docs]</a><span class="k">def</span> <span class="nf">compute_meshvolume</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="n">dolfin</span><span class="o">.</span><span class="n">dx</span><span class="p">,</span> <span class="n">subdomain_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">Constant</span><span class="p">(</span>
-        <span class="n">dolfin</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span>
-            <span class="n">dolfin</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">dx</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">,</span> <span class="n">subdomain_id</span><span class="o">=</span><span class="n">subdomain_id</span><span class="p">),</span>
+        <span class="n">assemble</span><span class="p">(</span>
+            <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">dx</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">,</span> <span class="n">subdomain_id</span><span class="o">=</span><span class="n">subdomain_id</span><span class="p">),</span>
         <span class="p">),</span>
     <span class="p">)</span></div>
 
@@ -425,14 +426,11 @@
 
     <span class="c1"># TODO : Check argument</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">DOLFIN_VERSION_MAJOR</span> <span class="o">&gt;</span> <span class="mf">1.6</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">ufl.domain</span> <span class="kn">import</span> <span class="n">find_geometric_dimension</span>
+        <span class="kn">from</span> <span class="nn">ufl.domain</span> <span class="kn">import</span> <span class="n">find_geometric_dimension</span>
 
-            <span class="n">dim</span> <span class="o">=</span> <span class="n">find_geometric_dimension</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">dim</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">geometric_dimension</span><span class="p">()</span>
+        <span class="n">dim</span> <span class="o">=</span> <span class="n">find_geometric_dimension</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
 
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+    <span class="k">except</span> <span class="n">ufl</span><span class="o">.</span><span class="n">UFLException</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>

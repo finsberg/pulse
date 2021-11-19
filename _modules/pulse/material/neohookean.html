@@ -164,7 +164,8 @@
            <div itemprop="articleBody">
             
   <h1>Source code for pulse.material.neohookean</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">..dolfin_utils</span> <span class="kn">import</span> <span class="n">get_dimesion</span>
+<span></span><span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">kinematics</span>
+<span class="kn">from</span> <span class="nn">..dolfin_utils</span> <span class="kn">import</span> <span class="n">get_dimesion</span>
 <span class="kn">from</span> <span class="nn">.material_model</span> <span class="kn">import</span> <span class="n">Material</span>
 
 
@@ -216,10 +217,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># Invariants</span>
-        <span class="n">I1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span><span class="o">.</span><span class="n">I1</span><span class="p">(</span><span class="n">F</span><span class="p">)</span>
+        <span class="n">I1</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">I1</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Fe</span><span class="p">(</span><span class="n">F</span><span class="p">),</span> <span class="n">isochoric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">isochoric</span><span class="p">)</span>
 
         <span class="c1"># Active stress</span>
-        <span class="n">Wactive</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span><span class="o">.</span><span class="n">Wactive</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">diff</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">Wactive</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Wactive</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">diff</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
         <span class="n">dim</span> <span class="o">=</span> <span class="n">get_dimesion</span><span class="p">(</span><span class="n">F</span><span class="p">)</span>
         <span class="n">W1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">W_1</span><span class="p">(</span><span class="n">I1</span><span class="p">,</span> <span class="n">diff</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="n">dim</span><span class="p">)</span>

@@ -171,8 +171,15 @@
 <span class="kn">import</span> <span class="nn">dolfin</span>
 <span class="kn">import</span> <span class="nn">ufl</span>
 
+
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">dolfin_adjoint</span> <span class="kn">import</span> <span class="n">Constant</span><span class="p">,</span> <span class="n">Function</span><span class="p">,</span> <span class="n">FunctionAssigner</span>
+    <span class="kn">from</span> <span class="nn">dolfin_adjoint</span> <span class="kn">import</span> <span class="p">(</span>
+        <span class="n">Constant</span><span class="p">,</span>
+        <span class="n">Function</span><span class="p">,</span>
+        <span class="n">FunctionAssigner</span><span class="p">,</span>
+        <span class="n">NonlinearVariationalProblem</span><span class="p">,</span>
+        <span class="n">NonlinearVariationalSolver</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="n">has_dolfin_adjoint</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
@@ -289,7 +296,7 @@
             <span class="p">),</span>
         <span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown base bc </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">base_bc</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown base bc </span><span class="si">{</span><span class="n">base_bc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="n">boundary_conditions</span> <span class="o">=</span> <span class="n">BoundaryConditions</span><span class="p">(</span>
         <span class="n">dirichlet</span><span class="o">=</span><span class="n">dirichlet_bc</span><span class="p">,</span>
@@ -414,16 +421,25 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_solver</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_init_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_problem</span> <span class="o">=</span> <span class="n">NonlinearProblem</span><span class="p">(</span>
-            <span class="n">J</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_jacobian</span><span class="p">,</span>
-            <span class="n">F</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_virtual_work</span><span class="p">,</span>
-            <span class="n">bcs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dirichlet_bc</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="n">NonlinearSolver</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_problem</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
-            <span class="n">parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">has_dolfin_adjoint</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_problem</span> <span class="o">=</span> <span class="n">NonlinearVariationalProblem</span><span class="p">(</span>
+                <span class="n">J</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_jacobian</span><span class="p">,</span>
+                <span class="n">F</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_virtual_work</span><span class="p">,</span>
+                <span class="n">u</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
+                <span class="n">bcs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dirichlet_bc</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="n">NonlinearVariationalSolver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_problem</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_problem</span> <span class="o">=</span> <span class="n">NonlinearProblem</span><span class="p">(</span>
+                <span class="n">J</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_jacobian</span><span class="p">,</span>
+                <span class="n">F</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_virtual_work</span><span class="p">,</span>
+                <span class="n">bcs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dirichlet_bc</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="n">NonlinearSolver</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_problem</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
+                <span class="n">parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="p">,</span>
+            <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_set_dirichlet_bc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># DirichletBC</span>
