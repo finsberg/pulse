@@ -26,7 +26,7 @@ except ImportError:
 from pulse import kinematics
 from pulse.dolfin_utils import QuadratureSpace
 from pulse.geometry import Geometry, MarkerFunctions, Microstructure
-from pulse.material import ActiveStrain, HolzapfelOgden, NeoHookean, material_models
+from pulse.material import HolzapfelOgden, NeoHookean, material_models
 from pulse.mechanicsproblem import BoundaryConditions, MechanicsProblem, NeumannBC
 from pulse.utils import mpi_comm_world
 
@@ -125,7 +125,7 @@ def test_material(unitcube_geometry, Material, active_model, isochoric):
         active_model=active_model,
     )
 
-    assert material.is_isochoric == isochoric
+    assert material.isochoric == isochoric
 
     problem = MechanicsProblem(unitcube_geometry, material, bcs)
     problem.solve()
@@ -133,7 +133,6 @@ def test_material(unitcube_geometry, Material, active_model, isochoric):
     u, p = problem.state.split(deepcopy=True)
 
     print(material.name)
-
     if active_model == "active_strain":
 
         tol = 1e-4
@@ -153,7 +152,7 @@ def test_material(unitcube_geometry, Material, active_model, isochoric):
                     abs(p.vector().get_local() - material.parameters["mu"]) < tol,
                 )
             else:
-                raise TypeError("Unkown material {}".format(material.name))
+                raise TypeError(f"Unkown material {material.name}")
 
         else:
             assert all(abs(p.vector().get_local()) < tol)
@@ -192,9 +191,10 @@ def test_material(unitcube_geometry, Material, active_model, isochoric):
                     abs(p.vector().get_local() - material.parameters["mu"]) < tol,
                 )
             else:
-                raise TypeError("Unkown material {}".format(material.name))
+                raise TypeError(f"Unkown material {material.name}")
 
         else:
+
             assert all(abs(p.vector().get_local()) < tol)
 
 
@@ -237,7 +237,8 @@ def test_pass_active_model_as_object(unitcube_geometry):
 
     material = NeoHookean(
         parameters=matparams,
-        active_model=ActiveStrain(activation=activation),
+        active_model="active_strain",
+        activation=activation,
     )
 
     problem = MechanicsProblem(unitcube_geometry, material, bcs)

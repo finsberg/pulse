@@ -123,13 +123,13 @@ def check_and_delete(h5name, h5group, comm=mpi_comm_world()):
 
             if parallel_h5py:
 
-                logger.debug("Deleting existing group: '{}'".format(h5group))
+                logger.debug(f"Deleting existing group: '{h5group}'")
                 del h5file[h5group]
 
             else:
                 if comm.rank == 0:
 
-                    logger.debug("Deleting existing group: '{}'".format(h5group))
+                    logger.debug(f"Deleting existing group: '{h5group}'")
                     del h5file[h5group]
 
 

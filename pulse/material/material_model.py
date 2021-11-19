@@ -28,21 +28,18 @@ from abc import ABC
 from abc import abstractmethod
 from abc import abstractstaticmethod
 from typing import Optional
-from typing import Union
 
 import dolfin
 import ufl
 
 try:
-    from dolfin_adjoint import Constant, Function
+    from dolfin_adjoint import Constant, Function, project
 except ImportError:
-    from dolfin import Constant, Function
+    from dolfin import Constant, Function, project
 
 from .. import kinematics, numpy_mpi
-from ..dolfin_utils import RegionalParameter, update_function
-from .active_model import ActiveModel
-from .active_strain import ActiveStrain
-from .active_stress import ActiveStress
+from ..dolfin_utils import RegionalParameter, update_function, get_dimesion
+from . import active_model
 
 
 def compressibility(model, *args, **kwargs):
@@ -53,26 +50,6 @@ def compressibility(model, *args, **kwargs):
 
 def incompressible(p, J):
     return -p * (J - 1.0)
-
-
-def handle_active_model(
-    active_model, activation, f0, s0, n0, T_ref, isochoric, eta, **kwargs
-):
-    if isinstance(active_model, str):
-        assert active_model in [
-            "active_stress",
-            "active_strain",
-        ], "The active model '{}' is not implemented.".format(active_model)
-
-        active_args = (activation, f0, s0, n0, T_ref, isochoric)
-        # Activation
-        if active_model == "active_stress":
-            return ActiveStress(*active_args, eta=eta, **kwargs)
-        else:
-            return ActiveStrain(*active_args)
-    else:
-        assert isinstance(active_model, ActiveModel)
-        return active_model
 
 
 class Material(ABC):
@@ -108,7 +85,7 @@ class Material(ABC):
         self,
         activation: Optional[ufl.Coefficient] = None,
         parameters=None,
-        active_model: Union[ActiveModel, str] = "active_strain",
+        active_model: active_model.ActiveModel = active_model.ActiveModel.active_strain,
         T_ref: Optional[float] = None,
         eta: Optional[float] = 0.0,
         isochoric: bool = True,
@@ -117,6 +94,7 @@ class Material(ABC):
         f0=None,
         s0=None,
         n0=None,
+        active_isotropy: active_model.ActiveStressModels = active_model.ActiveStressModels.transversally,
         *args,
         **kwargs
     ):
@@ -127,27 +105,26 @@ class Material(ABC):
             self.parameters.update(parameters)
         self._set_parameter_attrs(geometry)
 
-        # Active model
-        self.active = handle_active_model(
-            active_model, activation, f0, s0, n0, T_ref, isochoric, eta, **kwargs
+        self._activation = activation if activation is not None else Constant(0.0)
+        self._f0 = f0
+        self._s0 = s0
+        self._n0 = n0
+        self._T_ref = self.T_ref = (
+            Constant(T_ref, name="T_ref") if T_ref else Constant(1.0, name="T_ref")
         )
-
+        self._eta = Constant(eta, name="eta")
+        self._active_model = active_model
+        self.active_isotropy = active_isotropy
+        self._isochoric = isochoric
         self.compressible_model = compressible_model
-        self._update_activation(activation, geometry)
+        self._set_dimension()
 
-    def _update_activation(self, activation, geometry):
-        # FIXME: Do we need this function?
+    def _set_dimension(self):
         try:
-            activation_element = self.activation.ufl_element()
-            cell = activation_element.cell()
-        except AttributeError:
-            if not hasattr(activation, "cell"):
-                cell = None
-            else:
-                cell = activation.cell()
-
-        if geometry is not None and cell is not None:
-            self.activation = update_function(geometry.mesh, self.activation)
+            self._dim = get_dimesion(self.f0)
+        except Exception:
+            # just assume three dimensions
+            self._dim = 3
 
     def _set_parameter_attrs(self, geometry=None):
         for k, v in self.parameters.items():
@@ -170,7 +147,7 @@ class Material(ABC):
                 setattr(self, k, Function(ind_space, name=k))
                 mat = getattr(self, k)
                 matfun = v.function
-                mat.assign(dolfin.project(matfun, ind_space))
+                mat.assign(project(matfun, ind_space))
 
             else:
 
@@ -218,41 +195,17 @@ class Material(ABC):
             f0=f0,
             s0=s0,
             n0=n0,
-            T_ref=float(self.active.T_ref),
+            T_ref=float(self._T_ref),
         )
 
     @property
     def name(self):
         return "generic_material"
 
-    @property
-    def f0(self):
-        return self.active.f0
-
-    @f0.setter
-    def f0(self, f0):
-        self.active.f0 = f0
-
-    @property
-    def s0(self):
-        return self.active.s0
-
-    @s0.setter
-    def s0(self, s0):
-        self.active.s0 = s0
-
-    @property
-    def n0(self):
-        return self.active.n0
-
-    @n0.setter
-    def n0(self, n0):
-        self.active.n0 = n0
-
     def __repr__(self):
         return (
             "{self.__class__.__name__}({self.parameters}, "
-            "{self.active._model}, "
+            "{self.active_model}, "
             "{self.compressible_model})"
         ).format(self=self)
 
@@ -261,16 +214,83 @@ class Material(ABC):
         return compressibility(self.compressible_model, p, J)
 
     @property
+    def Fa(self):
+
+        if self.active_model == active_model.ActiveModel.active_stress:
+            return dolfin.Identity(self._dim)
+
+        f0 = self.f0
+        f0f0 = dolfin.outer(f0, f0)
+        Id = dolfin.Identity(self._dim)
+
+        mgamma = 1 - self.activation_field
+        Fa = mgamma * f0f0 + pow(mgamma, -1.0 / float(self._dim - 1)) * (Id - f0f0)
+
+        return Fa
+
+    def Fe(self, F):
+        if self.active_model == active_model.ActiveModel.active_stress:
+            return F
+        Fa = self.Fa
+        Fe = F * dolfin.inv(Fa)
+
+        return Fe
+
+    def Wactive(self, F=None, diff=0):
+        """Active stress energy"""
+        if self.active_model == active_model.ActiveModel.active_strain:
+            return 0
+
+        C = F.T * F
+
+        if diff == 0:
+
+            return active_model.Wactive(
+                Ta=self.activation_field,
+                C=C,
+                f0=self.f0,
+                s0=self.s0,
+                n0=self.n0,
+                eta=self.eta,
+                active_isotropy=self.active_isotropy,
+            )
+
+        elif diff == 1:
+            return self.activation_field
+
+    @property
+    def isochoric(self):
+        return self._isochoric
+
+    @property
     def active_model(self):
-        return self.active.model_type
+        return self._active_model
 
     @property
     def material_model(self):
         return self._model
 
     @property
-    def is_isochoric(self):
-        return self.active.is_isochoric
+    def eta(self):
+        return self._eta
+
+    @property
+    def activation_field(self):
+        """
+        Return the activation field.
+        If regional, this will return a piecewise
+        constant function (DG_0)
+        """
+
+        # Activation
+        if isinstance(self._activation, RegionalParameter):
+            # This means a regional activation
+            # Could probably make this a bit more clean
+            activation = self._activation.function
+        else:
+            activation = self._activation
+
+        return self.T_ref * activation
 
     @property
     def activation(self):
@@ -279,20 +299,7 @@ class Material(ABC):
         If regional, this will return one parameter
         for each segment.
         """
-        return self.active.activation
-
-    @activation.setter
-    def activation(self, f):
-        self.active.activation = f
-
-    @property
-    def activation_field(self):
-        """
-        Return the contraciton paramter.
-        If regional, this will return a piecewise
-        constant function (DG_0)
-        """
-        return self.active.activation_field
+        return self._activation
 
     def CauchyStress(self, F, p=None, deviatoric=False):
 

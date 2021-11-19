@@ -103,8 +103,12 @@ class Geometry(object):
 
         self.markers = markers or {}
         self.marker_functions = marker_functions or MarkerFunctions()
-        self.microstructure = microstructure or Microstructure
+        self.microstructure = microstructure or Microstructure()
         self.crl_basis = crl_basis or CRLBasis()
+        self._post_init()
+
+    def _post_init(self):
+        pass
 
     def __repr__(self):
         args = []
@@ -187,7 +191,7 @@ class Geometry(object):
     @staticmethod
     def load_from_file(h5name, h5group, comm):
 
-        logger.debug("Load geometry from file {}".format(h5name))
+        logger.debug(f"Load geometry from file {h5name}")
 
         geo = load_geometry_from_h5(h5name, h5group, include_sheets=True, comm=comm)
 
@@ -224,7 +228,7 @@ class Geometry(object):
     ):
 
         h5name = os.path.splitext(h5name)[0] + ".h5"
-        logger.debug("Save to {}...".format(h5name))
+        logger.debug(f"Save to {h5name}...")
         save_geometry_to_h5(
             self.mesh,
             h5name=h5name,
@@ -398,8 +402,7 @@ class Geometry(object):
 
 
 class HeartGeometry(Geometry):
-    def __init__(self, *args, **kwargs):
-        super(HeartGeometry, self).__init__(*args, **kwargs)
+    def _post_init(self):
         self.xshift = 0.0
 
     @property

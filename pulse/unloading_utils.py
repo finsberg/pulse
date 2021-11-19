@@ -60,7 +60,7 @@ class ResidualCalculator(object):
 
 def inflate_to_pressure(target_pressure, problem, ntries=5, n=2, annotate=False):
 
-    logger.debug("\nInflate geometry to p = {} kPa".format(target_pressure))
+    logger.debug(f"\nInflate geometry to p = {target_pressure} kPa")
     pressure = get_pressure(problem)
     solve(target_pressure, problem, pressure, ntries, n, annotate)
 
@@ -169,7 +169,7 @@ def continuation_step(params, it_, paramvec):
 
 
 def load_material_parameter(h5name, h5group, paramvec):
-    logger.info("Load {}:{}".format(h5name, h5group))
+    logger.info(f"Load {h5name}:{h5group}")
     group = "/".join([h5group, "passive_inflation", "optimal_control"])
     with dolfin.HDF5File(mpi_comm_world(), h5name, "r") as h5file:
         h5file.read(paramvec, group)

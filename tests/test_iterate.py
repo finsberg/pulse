@@ -168,7 +168,7 @@ if __name__ == "__main__":
     exit()
 
     for c, a in cases:
-        print("Continuation = {}, annotate = {}".format(c, a))
+        print(f"Continuation = {c}, annotate = {a}")
         prob = problem()
         test_iterate_pressure(prob, continuation=c, annotate=a)
         if has_dolfin_adjoint:

@@ -1,8 +1,5 @@
 # Material models
 # Active models
-from .active_model import ActiveModel
-from .active_strain import ActiveStrain
-from .active_stress import ActiveStress
 from .guccione import Guccione
 from .holzapfelogden import HolzapfelOgden
 from .linearelastic import LinearElastic
@@ -43,7 +40,4 @@ __all__ = [
     "NeoHookean",
     "LinearElastic",
     "StVenantKirchhoff",
-    "ActiveModel",
-    "ActiveStrain",
-    "ActiveStress",
 ]

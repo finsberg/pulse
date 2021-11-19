@@ -87,58 +87,56 @@ def EulerAlmansiStrain(F, isochoric=False):
     return 0.5 * (Id - inv(b))
 
 
-# Invariants #####
-class Invariants(object):
-    def __init__(self, isochoric=True, *args):
-        self._isochoric = isochoric
+def I1(F, isochoric=False):
 
-    @property
-    def is_isochoric(self):
-        return self._isochoric
+    C = RightCauchyGreen(F, isochoric)
+    I1 = tr(C)
+    return I1
 
-    def _I1(self, F):
 
-        C = RightCauchyGreen(F, self._isochoric)
-        I1 = tr(C)
-        return I1
+def I2(F, isochoric=False):
+    C = RightCauchyGreen(F, isochoric)
+    return 0.5 * (I1(F) * I1(F) - tr(C * C))
 
-    def _I2(self, F):
-        C = RightCauchyGreen(F, self._isochoric)
-        return 0.5 * (self._I1(F) * self._I1(F) - tr(C * C))
 
-    def _I3(self, F):
-        C = RightCauchyGreen(F, self._isochoric)
-        return det(C)
+def I3(F, isochoric=False):
+    C = RightCauchyGreen(F, isochoric)
+    return det(C)
 
-    def _I4(self, F, a0):
 
-        if a0 is not None:
-            C = RightCauchyGreen(F, self._isochoric)
-            I4 = inner(C * a0, a0)
-        else:
-            I4 = Constant(0.0)
-        return I4
+def I4(F, a0=None, isochoric=False):
 
-    def _I5(self, F, a0):
-        if a0 is not None:
-            C = RightCauchyGreen(F, self._isochoric)
-            I5 = inner(C * a0, C * a0)
-        else:
-            I5 = Constant(0.0)
-        return I5
+    if a0 is not None:
+        C = RightCauchyGreen(F, isochoric)
+        I4 = inner(C * a0, a0)
+    else:
+        I4 = Constant(0.0)
+    return I4
 
-    def _I6(self, F, b0):
-        return self._I4(F, b0)
 
-    def _I7(self, F, b0):
-        return self._I5(F, b0)
+def I5(F, a0, isochoric=False):
+    if a0 is not None:
+        C = RightCauchyGreen(F, isochoric)
+        I5 = inner(C * a0, C * a0)
+    else:
+        I5 = Constant(0.0)
+    return I5
 
-    def _I8(self, F, a0, b0):
-        if a0 is None or b0 is None:
-            I8 = Constant(0.0)
-        else:
-            I8 = inner(F * a0, F * b0)
-        return I8
+
+def I6(F, b0):
+    return I4(F, b0)
+
+
+def I7(F, b0):
+    return I5(F, b0)
+
+
+def I8(F, a0, b0):
+    if a0 is None or b0 is None:
+        I8 = Constant(0.0)
+    else:
+        I8 = inner(F * a0, F * b0)
+    return I8
 
 
 # Transforms #####

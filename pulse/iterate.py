@@ -112,7 +112,7 @@ def get_delta(new_control, c0, c1):
 
     else:
         msg = ("Unexpected type for new_crontrol in get_delta" "Got {}").format(
-            type(delta),
+            type(new_control),
         )
         raise TypeError(msg)
 
@@ -122,8 +122,8 @@ def get_delta(new_control, c0, c1):
 def np2str(c_, fmt="{:.3f}"):
     c = delist(c_)
     if isinstance(c, (np.ndarray, list, tuple)):
-        return ", ".join(["{:.3f}".format(ci) for ci in c])
-    return "{:.3f}".format(c)
+        return ", ".join([f"{ci:.3f}" for ci in c])
+    return f"{c:.3f}"
 
 
 def print_control(cs, msg):
@@ -215,7 +215,6 @@ def step_too_large(current, target, step):
     """
     Check if `current + step` exceeds `target`
     """
-
     if isinstance(target, (dolfin.Function, Function)):
         target = numpy_mpi.gather_vector(target.vector(), target.function_space().dim())
     elif isinstance(target, (Constant, dolfin.Constant)):
@@ -238,8 +237,12 @@ def step_too_large(current, target, step):
     step = squeeze(step)
 
     if not hasattr(target, "__len__"):
-        comp = op.gt if current < target else op.lt
-        return comp(current + step, target)
+        cond = current < target
+        if hasattr(cond, "__len__"):
+            cond = np.any(cond)
+
+        comp = op.gt if cond else op.lt
+        return np.any(comp(current + step, target))
     else:
         too_large = []
         for (c, t, s) in zip(current, target, step):
@@ -451,9 +454,7 @@ class Iterator(object):
                         and self.parameters["adapt_step"]
                     ):
                         self.change_step_size(1.5)
-                        msg = "Adapt step size. New step size: {}".format(
-                            np2str(self.step),
-                        )
+                        msg = f"Adapt step size. New step size: {np2str(self.step)}"
                         # print_control(enlist(self.step), msg)
                         logger.debug(msg)
 
@@ -585,7 +586,7 @@ class Iterator(object):
         for t in self.target[1:]:
             if value_size(t0) > 1 or value_size(t) > 1:
                 raise (ValueError(msg))
-        logger.debug("Target: {}".format([constant2float(t) for t in self.target]))
+        logger.debug(f"Target: {[constant2float(t) for t in self.target]}")
 
     def _check_control(self, control):
 
@@ -600,7 +601,7 @@ class Iterator(object):
             assert isinstance(c, self._control_types), msg
 
         self.control = control
-        logger.debug("Control: {}".format([constant2float(c) for c in self.control]))
+        logger.debug(f"Control: {[constant2float(c) for c in self.control]}")
 
     @property
     def ncontrols(self):
@@ -624,6 +625,6 @@ class Iterator(object):
             logger.debug("Check target reached: YES!")
         else:
             logger.debug("Check target reached: NO")
-            logger.debug("Maximum difference: {:.3e}".format(max_diff))
+            logger.debug(f"Maximum difference: {max_diff:.3e}")
 
         return reached

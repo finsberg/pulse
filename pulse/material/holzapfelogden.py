@@ -1,8 +1,10 @@
 import dolfin
 
+from .. import kinematics
 from ..dolfin_utils import get_dimesion
 from ..dolfin_utils import heaviside
 from ..dolfin_utils import subplus
+from .active_model import ActiveModel
 from .material_model import Material
 
 
@@ -204,19 +206,31 @@ class HolzapfelOgden(Material):
         """
 
         # Invariants
-        I1 = self.active.I1(F)
-        I4f = self.active.I4(F, self.f0)
-        I4s = self.active.I4(F, self.s0)
-        I8fs = self.active.I8(F, self.f0, self.s0)
+        I1 = kinematics.I1(F, isochoric=self.isochoric)
+        I4f = kinematics.I4(F, self.f0, isochoric=self.isochoric)
+        I4s = kinematics.I4(F, self.s0, isochoric=self.isochoric)
+        I8fs = kinematics.I8(F, self.f0, self.s0)
+
+        if self.active_model == ActiveModel.active_strain:
+            mgamma = 1 - self.activation_field
+            I1e = mgamma * I1 + (1 / mgamma ** 2 - mgamma) * I4f
+            I4fe = 1 / mgamma ** 2 * I4f
+            I4se = mgamma * I4s
+            I8fse = 1 / dolfin.sqrt(mgamma) * I8fs
+        else:
+            I1e = I1
+            I4fe = I4f
+            I4se = I4s
+            I8fse = I8fs
 
         # Active stress
-        Wactive = self.active.Wactive(F, diff=0)
+        Wactive = self.Wactive(F, diff=0)
 
         dim = get_dimesion(F)
-        W1 = self.W_1(I1, diff=0, dim=dim)
-        W4f = self.W_4(I4f, diff=0)
-        W4s = self.W_4(I4s, diff=0)
-        W8fs = self.W_8(I8fs, diff=0)
+        W1 = self.W_1(I1e, diff=0, dim=dim)
+        W4f = self.W_4(I4fe, diff=0)
+        W4s = self.W_4(I4se, diff=0)
+        W8fs = self.W_8(I8fse, diff=0)
 
         W = W1 + W4f + W4s + W8fs + Wactive
 

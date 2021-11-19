@@ -172,7 +172,7 @@ def save_logger(params):
     import datetime
 
     time = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d %H:%M:%S")
-    logger.info("Time: {}".format(time))
+    logger.info(f"Time: {time}")
 
 
 class UnableToChangePressureExeption(Exception):
@@ -196,12 +196,9 @@ def print_head(for_res, display_iter=True):
     keys = targets.keys() + ["regularization"]
     n = len(keys)
 
-    head = "\n{:<6}\t".format("Iter") if display_iter else "\n" + " " * 7
+    head = f"\n{'Iter':<6}\t" if display_iter else "\n" + " " * 7
     head += (
-        "{:<10}\t".format("Obj")
-        + "{:<10}".format("||grad||")
-        + "\t"
-        + (n * "I_{:<10}\t").format(*keys)
+        f"{'Obj':<10}\t" + f"{'||grad||':<10}" + "\t" + (n * "I_{:<10}\t").format(*keys)
     )
 
     return head
@@ -218,10 +215,10 @@ def print_line(for_res, it=None, grad_norm=None, func_value=None):
     targets["regularization"] = reg_func
 
     n = len(values)
-    line = "{:<6d}\t".format(it) if it is not None else ""
+    line = f"{it:<6d}\t" if it is not None else ""
     line += (
-        "{:<10.2e}\t".format(func_value)
-        + "{:<10.2e}".format(grad_norm)
+        f"{func_value:<10.2e}\t"
+        + f"{grad_norm:<10.2e}"
         + "\t"
         + (n * "{:<10.2e}\t").format(*values)
     )
@@ -261,7 +258,7 @@ class TablePrint(object):
         if fancyhead:
             q = [int(a.split(".")[0]) for a in fldmap[1::2]]
 
-            fmt = "\t".join(["{:" + "{}".format(f) + "}" for f in q])
+            fmt = "\t".join(["{:" + f"{f}" + "}" for f in q])
 
             self.head = fmt.format(*fldmap[0::2])
         else:
@@ -269,7 +266,7 @@ class TablePrint(object):
 
         self.fmt = "\t".join(
             [
-                "{" + "{0}:{1}".format(col, f) + "}"
+                "{" + f"{col}:{f}" + "}"
                 for col, f in zip(
                     fldmap[0 : len(fldmap) : 2],
                     fldmap[1 : len(fldmap) : 2],

@@ -45,15 +45,15 @@ class Guccione(Material):
         params = self.parameters
 
         # Elastic part of deformation gradient
-        F = self.active.Fe(F_)
+        F = self.Fe(F_)
 
-        E = kinematics.GreenLagrangeStrain(F, isochoric=self.is_isochoric)
+        E = kinematics.GreenLagrangeStrain(F, isochoric=self.isochoric)
 
         CC = Constant(params["C"], name="C")
 
-        e1 = self.active.f0
-        e2 = self.active.s0
-        e3 = self.active.n0
+        e1 = self.f0
+        e2 = self.s0
+        e3 = self.n0
 
         if any(e is None for e in (e1, e2, e3)):
             msg = (
@@ -97,6 +97,6 @@ class Guccione(Material):
 
         # passive strain energy
         Wpassive = CC / 2.0 * (dolfin.exp(Q) - 1)
-        Wactive = self.active.Wactive(F, diff=0)
+        Wactive = self.Wactive(F, diff=0)
 
         return Wpassive + Wactive

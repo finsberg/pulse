@@ -44,16 +44,12 @@ from .geometry import Microstructure
 from .kinematics import DeformationGradient
 from .kinematics import EulerAlmansiStrain
 from .kinematics import GreenLagrangeStrain
-from .kinematics import Invariants
 from .kinematics import InversePiolaTransform
 from .kinematics import Jacobian
 from .kinematics import LeftCauchyGreen
 from .kinematics import PiolaTransform
 from .kinematics import RightCauchyGreen
 from .kinematics import SecondOrderIdentity
-from .material import ActiveModel
-from .material import ActiveStrain
-from .material import ActiveStress
 from .material import Guccione
 from .material import HolzapfelOgden
 from .material import LinearElastic
@@ -97,7 +93,7 @@ ffc_logger.setLevel(_logging.WARNING)
 ffc_logger.addFilter(utils.mpi_filt)
 
 ufl_logger = _logging.getLogger("UFL")
-ufl_logger.setLevel(_logging.WARNING)
+ufl_logger.setLevel(_logging.FATAL)
 ufl_logger.addFilter(utils.mpi_filt)
 
 __author__ = "Henrik Finsberg"
@@ -132,9 +128,6 @@ __all__ = [
     "MechanicsProblem",
     "NeumannBC",
     "RobinBC",
-    "ActiveStrain",
-    "ActiveStress",
-    "ActiveModel",
     "Material",
     "HolzapfelOgden",
     "Guccione",
@@ -148,7 +141,6 @@ __all__ = [
     "LeftCauchyGreen",
     "RightCauchyGreen",
     "EulerAlmansiStrain",
-    "Invariants",
     "PiolaTransform",
     "InversePiolaTransform",
     "set_log_level",

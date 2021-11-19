@@ -1,135 +1,159 @@
-#!/usr/bin/env python
-# c) 2001-2017 Simula Research Laboratory ALL RIGHTS RESERVED
-# Authors: Henrik Finsberg
-# END-USER LICENSE AGREEMENT
-# PLEASE READ THIS DOCUMENT CAREFULLY. By installing or using this
-# software you agree with the terms and conditions of this license
-# agreement. If you do not accept the terms of this license agreement
-# you may not install or use this software.
-# Permission to use, copy, modify and distribute any part of this
-# software for non-profit educational and research purposes, without
-# fee, and without a written agreement is hereby granted, provided
-# that the above copyright notice, and this license agreement in its
-# entirety appear in all copies. Those desiring to use this software
-# for commercial purposes should contact Simula Research Laboratory AS:
-# post@simula.no
-#
-# IN NO EVENT SHALL SIMULA RESEARCH LABORATORY BE LIABLE TO ANY PARTY
-# FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES,
-# INCLUDING LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE
-# "PULSE-ADJOINT" EVEN IF SIMULA RESEARCH LABORATORY HAS BEEN ADVISED
-# OF THE POSSIBILITY OF SUCH DAMAGE. THE SOFTWARE PROVIDED HEREIN IS
-# ON AN "AS IS" BASIS, AND SIMULA RESEARCH LABORATORY HAS NO OBLIGATION
-# TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
-# SIMULA RESEARCH LABORATORY MAKES NO REPRESENTATIONS AND EXTENDS NO
-# WARRANTIES OF ANY KIND, EITHER IMPLIED OR EXPRESSED, INCLUDING, BUT
-# NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
+from enum import Enum
+
+import dolfin
+
 try:
     from dolfin_adjoint import Constant
 except ImportError:
     from dolfin import Constant
 
-from .. import kinematics
-from ..dolfin_utils import RegionalParameter
+
+class ActiveModel(str, Enum):
+    active_stress = "active_stress"
+    active_strain = "active_strain"
 
 
-class ActiveModel(kinematics.Invariants):
-    def __init__(
-        self,
-        activation=None,
-        f0=None,
-        s0=None,
-        n0=None,
-        T_ref=None,
-        isochoric=True,
-        *args,
-        **kwargs
-    ):
+class ActiveStressModels(str, Enum):
+    transversally = "transversally"
+    orthotropic = "orthotropic"
+    fully_anisotropic = "fully_anisotropic"
 
-        # Fiber system
-        self.f0 = f0
-        self.s0 = s0
-        self.n0 = n0
 
-        self._activation = (
-            Constant(0, name="activation") if activation is None else activation
+def Wactive(
+    Ta,
+    C,
+    f0,
+    eta,
+    active_isotropy=ActiveStressModels.transversally,
+    s0=None,
+    n0=None,
+):
+    if active_isotropy == "transversally":
+        return Wactive_transversally(
+            Ta=Ta,
+            C=C,
+            f0=f0,
+            eta=eta,
         )
 
-        self.T_ref = (
-            Constant(T_ref, name="T_ref") if T_ref else Constant(1.0, name="T_ref")
+    elif active_isotropy == "orthotropic":
+        return Wactive_orthotropic(
+            Ta=Ta,
+            C=C,
+            f0=f0,
+            s0=s0,
+            n0=n0,
         )
 
-        kinematics.Invariants.__init__(self, isochoric, *args)
+    elif active_isotropy == "fully_anisotropic":
 
-    @property
-    def model_type(self):
-        return self._model
+        return Wactive_anisotropic(
+            Ta=Ta,
+            C=C,
+            f0=f0,
+            s0=s0,
+            n0=n0,
+        )
+    else:
+        msg = ("Unknown acitve isotropy " "{}").format(active_isotropy)
+        raise ValueError(msg)
 
-    def Wactive(self, *args, **kwargs):
-        return 0
 
-    @property
-    def eta(self):
-        return 0
+def Wactive_transversally(Ta, C, f0, eta=0.0):
+    """
+    Return active strain energy when activation is only
+    working along the fibers, with a possible transverse
+    component defined by eta
 
-    @property
-    def activation_field(self):
-        """
-        Return the activation field.
-        If regional, this will return a piecewise
-        constant function (DG_0)
-        """
+    Arguments
+    ---------
+    Ta : dolfin.Function or dolfin.Constant
+        A scalar function representng the mangnitude of the
+        active stress in the reference configuration (firt Pioala)
+    C : ufl.Form
+        The right Cauchy-Green deformation tensor
+    f0 : dolfin.Function
+        A vector function representng the direction of the
+        active stress
+    eta : float
+        Amount of active stress in the transverse direction
+        (relative to f0)
+    """
 
-        # Activation
-        if isinstance(self._activation, RegionalParameter):
-            # This means a regional activation
-            # Could probably make this a bit more clean
-            activation = self._activation.function
-        else:
-            activation = self._activation
+    I4f = dolfin.inner(C * f0, f0)
+    I1 = dolfin.tr(C)
+    return Constant(0.5) * Ta * ((I4f - 1) + eta * ((I1 - 3) - (I4f - 1)))
 
-        return self.T_ref * activation
 
-    @property
-    def activation(self):
-        """
-        Return the activation paramter.
-        If regional, this will return one parameter
-        for each segment.
-        """
-        return self._activation
+def Wactive_orthotropic(Ta, C, f0, s0, n0):
+    """Return active strain energy for an orthotropic
+    active stress
 
-    @activation.setter
-    def activation(self, f):
-        self._activation = f
 
-    @property
-    def Fa(self):
-        return kinematics.SecondOrderIdentity(self.f0)
+    Arguments
+    ---------
+    Ta : dolfin.Function or dolfin.Constant
+        A vector function representng the mangnitude of the
+        active stress in the reference configuration (firt Pioala).
+        Ta = (Ta_f0, Ta_s0, Ta_n0)
+    C : ufl.Form
+        The right Cauchy-Green deformation tensor
+    f0 : dolfin.Function
+        A vector function representng the direction of the
+        first component
+    s0 : dolfin.Function
+        A vector function representng the direction of the
+        second component
+    n0 : dolfin.Function
+        A vector function representng the direction of the
+        third component
+    """
+    I4f = dolfin.inner(C * f0, f0)
+    I4s = dolfin.inner(C * s0, s0)
+    I4n = dolfin.inner(C * n0, n0)
 
-    def Fe(self, F):
-        return F
+    I4 = dolfin.as_vector([I4f - 1, I4s - 1, I4n - 1])
+    return Constant(0.5) * dolfin.inner(Ta, I4)
 
-    def I1(self, F):
-        return self._I1(self.Fe(F))
 
-    def I2(self, F):
-        return self._I2(self.Fe(F))
+def Wactive_anisotropic(Ta, C, f0, s0, n0):
+    """Return active strain energy for a fully anisotropic
+    acitvation.
+    Note that the three basis vectors are assumed to be
+    orthogonal
 
-    def I3(self, F):
-        return self._I3(self.Fe(F))
+    Arguments
+    ---------
+    Ta : dolfin.Function or dolfin.Constant
+        A full tensor function representng the active stress tensor
+        of the active stress in the reference configuration
+        (firt Pioala).
+    C : ufl.Form
+        The right Cauchy-Green deformation tensor
+    f0 : dolfin.Function
+        A vector function representng the direction of the
+        first component
+    s0 : dolfin.Function
+        A vector function representng the direction of the
+        second component
+    n0 : dolfin.Function
+        A vector function representng the direction of the
+        third component
+    """
+    I4f = dolfin.inner(C * f0, f0)
+    I4s = dolfin.inner(C * s0, s0)
+    I4n = dolfin.inner(C * n0, n0)
 
-    def I4(self, F, a0):
-        return self._I4(self.Fe(F), a0)
+    I8fs = dolfin.inner(C * f0, s0)
+    I8fn = dolfin.inner(C * f0, n0)
+    I8sn = dolfin.inner(C * s0, n0)
 
-    def I5(self, F, a0):
-        return self._I5(self.Fe(F), a0)
+    A = dolfin.as_matrix(
+        (
+            (0.5 * (I4f - 1), I8fs, I8fn),
+            (I8fs, 0.5 * (I4s - 1), I8sn),
+            (I8fn, I8sn, 0.5 * (I4n - 1)),
+        ),
+    )
 
-    def I6(self, F, a0):
-        return self._I6(self.Fe(F), a0)
-
-    def I7(self, F, a0):
-        return self._I7(self.Fe(F), a0)
-
-    def I8(self, F, a0, b0):
-        return self._I8(self.Fe(F), a0, b0)
+    return dolfin.inner(Ta, A)

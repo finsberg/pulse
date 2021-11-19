@@ -1,3 +1,4 @@
+from .. import kinematics
 from ..dolfin_utils import get_dimesion
 from .material_model import Material
 
@@ -50,10 +51,10 @@ class NeoHookean(Material):
         """
 
         # Invariants
-        I1 = self.active.I1(F)
+        I1 = kinematics.I1(self.Fe(F), isochoric=self.isochoric)
 
         # Active stress
-        Wactive = self.active.Wactive(F, diff=0)
+        Wactive = self.Wactive(F, diff=0)
 
         dim = get_dimesion(F)
         W1 = self.W_1(I1, diff=0, dim=dim)

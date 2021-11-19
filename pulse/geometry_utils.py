@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 import dolfin
 import h5py
@@ -120,8 +120,6 @@ def get_geometric_dimension(mesh):
 def load_geometry_from_h5(
     h5name,
     h5group="",
-    fendo=None,
-    fepi=None,
     include_sheets=True,
     comm=mpi_comm_world(),
 ):
@@ -134,23 +132,22 @@ def load_geometry_from_h5(
 
     :param str h5name: Name of the h5file
     :param str h5group: The group within the file
-    :param int fendo: Helix fiber angle (endocardium) (if available)
-    :param int fepi: Helix fiber angle (epicardium) (if available)
     :param bool include_sheets: Include sheets and cross-sheets
     :returns: An object with geometry data
     :rtype: object
 
     """
+    h5name = Path(h5name)
 
     logger.info("\nLoad mesh from h5")
     # Set default groups
-    ggroup = "{}/geometry".format(h5group)
-    mgroup = "{}/mesh".format(ggroup)
-    lgroup = "{}/local basis functions".format(h5group)
-    fgroup = "{}/microstructure/".format(h5group)
+    ggroup = f"{h5group}/geometry"
+    mgroup = f"{ggroup}/mesh"
+    lgroup = f"{h5group}/local basis functions"
+    fgroup = f"{h5group}/microstructure/"
 
-    if not os.path.isfile(h5name):
-        raise IOError("File {} does not exist".format(h5name))
+    if not h5name.is_file():
+        raise IOError(f"File {h5name} does not exist")
 
     # Check that the given file contains
     # the geometry in the given h5group
@@ -162,7 +159,7 @@ def load_geometry_from_h5(
 
         with h5py.File(h5name) as h:
             keys = h.keys()
-        msg += "\nPossible values for the h5group are {}".format(keys)
+        msg += f"\nPossible values for the h5group are {keys}"
         raise IOError(msg)
 
     # Create a dummy object for easy parsing
@@ -171,7 +168,7 @@ def load_geometry_from_h5(
 
     geo = Geometry()
 
-    with dolfin.HDF5File(comm, h5name, "r") as h5file:
+    with dolfin.HDF5File(comm, h5name.as_posix(), "r") as h5file:
 
         # Load mesh
         mesh = Mesh(comm)
@@ -185,7 +182,7 @@ def load_geometry_from_h5(
                 setattr(geo, attr, None)
                 continue
 
-            dgroup = "{}/mesh/meshfunction_{}".format(ggroup, dim)
+            dgroup = f"{ggroup}/mesh/meshfunction_{dim}"
             mf = dolfin.MeshFunction("size_t", mesh, dim, mesh.domains())
 
             if h5file.has_dataset(dgroup):
@@ -199,7 +196,7 @@ def load_geometry_from_h5(
         markers = load_markers(h5file, mesh, ggroup, dgroup)
         geo.markers = markers
 
-        origmeshgroup = "{}/original_geometry".format(h5group)
+        origmeshgroup = f"{h5group}/original_geometry"
         if h5file.has_dataset(origmeshgroup):
             original_mesh = Mesh(comm)
             io_utils.read_h5file(h5file, original_mesh, origmeshgroup, True)
@@ -217,7 +214,7 @@ def load_markers(h5file, mesh, ggroup, dgroup):
         markers = {}
         for dim in range(mesh.ufl_domain().topological_dimension() + 1):
             for key_str in ["domain", "meshfunction"]:
-                dgroup = "{}/mesh/{}_{}".format(ggroup, key_str, dim)
+                dgroup = f"{ggroup}/mesh/{key_str}_{dim}"
 
                 # If dataset is not present
                 if not h5file.has_dataset(dgroup):
@@ -233,9 +230,7 @@ def load_markers(h5file, mesh, ggroup, dgroup):
                     if aname.startswith("marker_name"):
 
                         name = aname.rsplit("marker_name_")[-1]
-                        marker = h5file.attributes(dgroup)[
-                            "marker_name_{}".format(name)
-                        ]
+                        marker = h5file.attributes(dgroup)[f"marker_name_{name}"]
                         markers[name] = (int(marker), dim)
 
     except Exception as ex:
@@ -517,7 +512,7 @@ def load_local_basis(h5file, lgroup, mesh, geo):
         for name in names:
             lb = Function(V, name=name)
 
-            io_utils.read_h5file(h5file, lb, lgroup + "/{}".format(name))
+            io_utils.read_h5file(h5file, lb, lgroup + f"/{name}")
             setattr(geo, name, lb)
     else:
         setattr(geo, "circumferential", None)
@@ -546,7 +541,7 @@ def load_microstructure(h5file, fgroup, mesh, geo, include_sheets=True):
 
         # Check that these fibers exists
         for name in names:
-            fsubgroup = fgroup + "/{}".format(name)
+            fsubgroup = fgroup + f"/{name}"
             if not h5file.has_dataset(fsubgroup):
                 msg = ("H5File does not have dataset {}").format(fsubgroup)
                 logger.warning(msg)
@@ -565,11 +560,48 @@ def load_microstructure(h5file, fgroup, mesh, geo, include_sheets=True):
         attrs = ["f0", "s0", "n0"]
         for i, name in enumerate(names):
             func = Function(V, name=name)
-            fsubgroup = fgroup + "/{}".format(name)
+            fsubgroup = fgroup + f"/{name}"
 
             io_utils.read_h5file(h5file, func, fsubgroup)
 
             setattr(geo, attrs[i], func)
+
+
+def save_meshfunctions(h5file, h5group, mesh, meshfunctions, comm):
+    for dim in range(get_geometric_dimension(mesh) + 1):
+
+        if meshfunctions is not None and dim in meshfunctions:
+            mf = meshfunctions[dim]
+        else:
+            mf = dolfin.MeshFunction("size_t", mesh, dim, mesh.domains())
+
+        save_mf = dolfin.MPI.max(comm, len(set(mf.array()))) > 1
+
+        if save_mf:
+            dgroup = f"{ggroup(h5group)}/mesh/meshfunction_{dim}"
+            h5file.write(mf, dgroup)
+
+
+def save_markers(h5file, h5group, markers):
+    if markers is None:
+        return
+    # Save the boundary markers
+    for name, (marker, dim) in markers.items():
+
+        for key_str in ["domain", "meshfunction"]:
+            dgroup = f"{ggroup(h5group)}/mesh/{key_str}_{dim}"
+
+            if h5file.has_dataset(dgroup):
+                aname = f"marker_name_{name}"
+                h5file.attributes(dgroup)[aname] = marker
+
+
+def ggroup(h5group):
+    return f"{h5group}/geometry"
+
+
+def mgroup(h5group):
+    return f"{ggroup(h5group)}/mesh"
 
 
 def save_geometry_to_h5(
@@ -624,89 +656,48 @@ def save_geometry_to_h5(
     assert isinstance(mesh, dolfin.Mesh)
     if comm is None:
         comm = mesh.mpi_comm()
-    file_mode = "a" if os.path.isfile(h5name) and not overwrite_file else "w"
+
+    h5name = Path(h5name)
+    file_mode = "a" if h5name.is_file() and not overwrite_file else "w"
 
     # IF we should append the file but overwrite the group we need to
     # check that the group does not exist. If so we need to open it in
     # h5py and delete it.
-    if file_mode == "a" and overwrite_group and h5group != "":
-        io_utils.check_h5group(h5name, h5group, delete=True, comm=comm)
+    if file_mode == "a" and overwrite_group:
+        if h5group != "":
+            io_utils.check_h5group(h5name, h5group, delete=True, comm=comm)
+        else:
+            h5name.unlink()
+            file_mode = "w"
 
-    with dolfin.HDF5File(comm, h5name, file_mode) as h5file:
+    with dolfin.HDF5File(comm, h5name.as_posix(), file_mode) as h5file:
 
         # Save mesh
-        ggroup = "{}/geometry".format(h5group)
-        mgroup = "{}/mesh".format(ggroup)
-        h5file.write(mesh, mgroup)
-
-        for dim in range(get_geometric_dimension(mesh) + 1):
-
-            if meshfunctions is not None and dim in meshfunctions:
-                mf = meshfunctions[dim]
-            else:
-                mf = dolfin.MeshFunction("size_t", mesh, dim, mesh.domains())
-
-            save_mf = dolfin.MPI.max(comm, len(set(mf.array()))) > 1
-
-            if save_mf:
-                dgroup = "{}/mesh/meshfunction_{}".format(ggroup, dim)
-                h5file.write(mf, dgroup)
-
-        if markers is not None:
-            # Save the boundary markers
-            for name, (marker, dim) in markers.items():
-
-                for key_str in ["domain", "meshfunction"]:
-                    dgroup = "{}/mesh/{}_{}".format(ggroup, key_str, dim)
-
-                    if h5file.has_dataset(dgroup):
-                        aname = "marker_name_{}".format(name)
-                        h5file.attributes(dgroup)[aname] = marker
-
-        if local_basis is not None:
-            # Save local basis functions
-            lgroup = "{}/local basis functions".format(h5group)
-            save_local_basis(h5file, lgroup, local_basis)
-
-        if fields is not None:
-            # Save fiber field
-            fgroup = "{}/microstructure".format(h5group)
-            save_fields(h5file, fgroup, fields)
-
-        if other_functions is not None:
-            for k, fun in other_functions.items():
-                fungroup = "/".join([h5group, k])
-                h5file.write(fun, fungroup)
-
-            if isinstance(fun, dolfin.Function):
-                elm = fun.function_space().ufl_element()
-                family, degree, vsize = elm.family(), elm.degree(), elm.value_size()
-                fspace = "{}_{}".format(family, degree)
-                h5file.attributes(fungroup)["space"] = fspace
-                h5file.attributes(fungroup)["value_size"] = vsize
-
-        if other_attributes is not None:
-            for k, v in other_attributes.iteritems():
-                if isinstance(v, str) and isinstance(k, str):
-                    h5file.attributes(h5group)[k] = v
-                else:
-                    logger.warning("Invalid attribute {} = {}".format(k, v))
-
-    logger.info("Geometry saved to {}".format(h5name))
+        h5file.write(mesh, mgroup(h5group))
+        save_meshfunctions(h5file, h5group, mesh, meshfunctions, comm)
+        save_markers(h5file, h5group, markers)
+        save_local_basis(h5file, h5group, local_basis)
+        save_fields(h5file, h5group, fields)
+        save_other_functions(h5file, h5group, other_functions)
+        save_other_attributes(h5file, h5group, other_attributes)
+    logger.info(f"Geometry saved to {h5name}")
 
 
-def save_fields(h5file, fgroup, fields):
+def save_fields(h5file, h5group, fields):
     """Save mictrostructure to h5file
 
     Parameters
     ----------
     h5file : dolfin.HDF5File
         The file to write to
-    fgroup : str
+    h5group : str
         The folder inside the file to write to
     fields : list
         List of dolfin functions to write
     """
+    if fields is None:
+        return
+    fgroup = f"{h5group}/microstructure"
     names = []
     for field in fields:
         try:
@@ -714,38 +705,66 @@ def save_fields(h5file, fgroup, fields):
         except AttributeError:
             label = field.name()
         name = "_".join(filter(None, [str(field), label]))
-        fsubgroup = "{}/{}".format(fgroup, name)
+        fsubgroup = f"{fgroup}/{name}"
         h5file.write(field, fsubgroup)
         h5file.attributes(fsubgroup)["name"] = field.name()
         names.append(name)
 
     elm = field.function_space().ufl_element()
     family, degree = elm.family(), elm.degree()
-    fspace = "{}_{}".format(family, degree)
+    fspace = f"{family}_{degree}"
     h5file.attributes(fgroup)["space"] = fspace
     h5file.attributes(fgroup)["names"] = ":".join(names)
 
 
-def save_local_basis(h5file, lgroup, local_basis):
+def save_other_functions(h5file, h5group, other_functions):
+    if other_functions is None:
+        return
+    for k, fun in other_functions.items():
+        fungroup = "/".join([h5group, k])
+        h5file.write(fun, fungroup)
+
+        if isinstance(fun, dolfin.Function):
+            elm = fun.function_space().ufl_element()
+            family, degree, vsize = elm.family(), elm.degree(), elm.value_size()
+            fspace = f"{family}_{degree}"
+            h5file.attributes(fungroup)["space"] = fspace
+            h5file.attributes(fungroup)["value_size"] = vsize
+
+
+def save_other_attributes(h5file, h5group, other_attributes):
+    if other_attributes is None:
+        return
+    for k, v in other_attributes.iteritems():
+        if isinstance(v, str) and isinstance(k, str):
+            h5file.attributes(h5group)[k] = v
+        else:
+            logger.warning(f"Invalid attribute {k} = {v}")
+
+
+def save_local_basis(h5file, h5group, local_basis):
     """Save local basis functions
 
     Parameters
     ----------
     h5file : dolfin.HDF5File
         The file to write to
-    lgroup : str
+    h5group : str
         Folder inside file to store the local basis
     local_basis : list
         List of dolfin functions with local basis functions
     """
+    if local_basis is None:
+        return
+    lgroup = f"{h5group}/local basis functions"
     names = []
     for basis in local_basis:
-        h5file.write(basis, lgroup + "/{}".format(basis.name()))
+        h5file.write(basis, lgroup + f"/{basis.name()}")
         names.append(basis.name())
 
     elm = basis.function_space().ufl_element()
     family, degree = elm.family(), elm.degree()
-    lspace = "{}_{}".format(family, degree)
+    lspace = f"{family}_{degree}"
     h5file.attributes(lgroup)["space"] = lspace
     h5file.attributes(lgroup)["names"] = ":".join(names)
 

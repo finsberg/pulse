@@ -17,7 +17,7 @@ class LinearElastic(Material):
 
     def strain_energy(self, F_):
 
-        F = self.active.Fe(F_)
+        F = self.Fe(F_)
 
         dim = get_dimesion(F)
         gradu = F - dolfin.Identity(dim)
@@ -27,6 +27,6 @@ class LinearElastic(Material):
         )
 
         # Active stress
-        Wactive = self.active.Wactive(F, diff=0)
+        Wactive = self.Wactive(F, diff=0)
 
         return W + Wactive

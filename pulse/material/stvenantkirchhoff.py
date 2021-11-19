@@ -17,11 +17,11 @@ class StVenantKirchhoff(Material):
 
     def strain_energy(self, F_):
 
-        F = self.active.Fe(F_)
-        E = kinematics.GreenLagrangeStrain(F, isochoric=self.active.is_isochoric)
+        F = self.Fe(F_)
+        E = kinematics.GreenLagrangeStrain(F, isochoric=self.isochoric)
         W = self.lmbda / 2 * (dolfin.tr(E) ** 2) + self.mu * dolfin.tr(E * E)
 
         # Active stress
-        Wactive = self.active.Wactive(F, diff=0)
+        Wactive = self.Wactive(F, diff=0)
 
         return W + Wactive
