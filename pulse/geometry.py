@@ -105,6 +105,10 @@ class Geometry(object):
         self.marker_functions = marker_functions or MarkerFunctions()
         self.microstructure = microstructure or Microstructure
         self.crl_basis = crl_basis or CRLBasis()
+        self._post_init()
+
+    def _post_init(self):
+        pass
 
     def __repr__(self):
         args = []
@@ -398,8 +402,7 @@ class Geometry(object):
 
 
 class HeartGeometry(Geometry):
-    def __init__(self, *args, **kwargs):
-        super(HeartGeometry, self).__init__(*args, **kwargs)
+    def _post_init(self):
         self.xshift = 0.0
 
     @property

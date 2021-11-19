@@ -1,62 +1,120 @@
 """
-Install gmsh and meshio
+Install gmsh, meshio and ldrb
 
-python -m pip install gmsh meshio
+python -m pip install gmsh meshio ldrb
+
+These examples are based on the snippets from
+https://bitbucket.org/peppu/fenicshotools/src/master/demos/generate_from_geo.py
+
 """
 import math
-import subprocess
 import sys
 from pathlib import Path
 
 import dolfin
 import gmsh
+import ldrb
+import meshio
 
 import pulse
 
 
-# https://bitbucket.org/peppu/fenicshotools/src/master/demos/generate_from_geo.py
-
-
-def convert_gmsh_to_dolfin(msh_file):
-
-    # Based on https://github.com/MiroK/tieler/blob/master/tiles/msh_convert.py
-
-    mesh_path = Path(msh_file)
-    mesh_name = mesh_path.stem
-    xml_file = mesh_path.with_suffix(".xml")
-
-    # Get the xml mesh
-    subprocess.call(["dolfin-convert", msh_file, xml_file], shell=True)
-
-    assert xml_file.is_file()
-
-    mesh = dolfin.Mesh(xml_file.as_posix())
-    cfun = dolfin.MeshFunction(
-        "size_t",
-        mesh,
-        mesh_path.with_name(f"{mesh_name}_physical_region.xml").as_posix(),
+def create_mesh(mesh, cell_type, prune_z=True):
+    # From http://jsdokken.com/converted_files/tutorial_pygmsh.html
+    cells = mesh.get_cells_type(cell_type)
+    cell_data = mesh.get_cell_data("gmsh:physical", cell_type)
+    out_mesh = meshio.Mesh(
+        points=mesh.points,
+        cells={cell_type: cells},
+        cell_data={"name_to_read": [cell_data]},
     )
-    ffun = dolfin.MeshFunction(
-        "size_t",
-        mesh,
-        mesh_path.with_name(f"{mesh_name}_facet_region.xml").as_posix(),
+    if prune_z:
+        out_mesh.prune_z_0()
+    return out_mesh
+
+
+def read_meshfunction(fname, obj):
+    with dolfin.XDMFFile(Path(fname).as_posix()) as f:
+        f.read(obj, "name_to_read")
+
+
+def gmsh2dolfin(msh_file):
+
+    msh = meshio.gmsh.read(msh_file)
+
+    vertex_mesh = create_mesh(msh, "vertex")
+    line_mesh = create_mesh(msh, "line")
+    triangle_mesh = create_mesh(msh, "triangle")
+    tetra_mesh = create_mesh(msh, "tetra")
+
+    vertex_mesh_name = Path("vertex_mesh.xdmf")
+    meshio.write(vertex_mesh_name, vertex_mesh)
+
+    line_mesh_name = Path("line_mesh.xdmf")
+    meshio.write(line_mesh_name, line_mesh)
+
+    triangle_mesh_name = Path("triangle_mesh.xdmf")
+    meshio.write(triangle_mesh_name, triangle_mesh)
+
+    tetra_mesh_name = Path("mesh.xdmf")
+    meshio.write(
+        tetra_mesh_name,
+        tetra_mesh,
     )
 
-    ffun_markers = {
-        "surf_{i}": (value, ffun.dim()) for i, value in enumerate(set(ffun.array()))
-    }
-    cfun_markers = {
-        "vol_{i}": (value, cfun.dim()) for i, value in enumerate(set(cfun.array()))
+    mesh = dolfin.Mesh()
+
+    with dolfin.XDMFFile(tetra_mesh_name.as_posix()) as infile:
+        infile.read(mesh)
+
+    cfun = dolfin.MeshFunction("size_t", mesh, 3)
+    read_meshfunction(tetra_mesh_name, cfun)
+    tetra_mesh_name.unlink()
+
+    ffun_val = dolfin.MeshValueCollection("size_t", mesh, 2)
+    read_meshfunction(triangle_mesh_name, ffun_val)
+    ffun = dolfin.MeshFunction("size_t", mesh, ffun_val)
+    ffun.array()[ffun.array() == max(ffun.array())] = 0
+    triangle_mesh_name.unlink()
+
+    efun_val = dolfin.MeshValueCollection("size_t", mesh, 1)
+    read_meshfunction(line_mesh_name, efun_val)
+    efun = dolfin.MeshFunction("size_t", mesh, efun_val)
+    efun.array()[efun.array() == max(efun.array())] = 0
+    line_mesh_name.unlink()
+
+    vfun_val = dolfin.MeshValueCollection("size_t", mesh, 0)
+    read_meshfunction(vertex_mesh_name, vfun_val)
+    vfun = dolfin.MeshFunction("size_t", mesh, vfun_val)
+    vfun.array()[vfun.array() == max(vfun.array())] = 0
+    vertex_mesh_name.unlink()
+
+    markers = msh.field_data
+
+    ldrb_markers = {
+        "base": markers["BASE"][0],
+        "epi": markers["EPI"][0],
+        "lv": markers["ENDO"][0],
     }
 
-    return pulse.Geometry(
+    fiber_sheet_system = ldrb.dolfin_ldrb(mesh, "CG_1", ffun, ldrb_markers)
+
+    marker_functions = pulse.MarkerFunctions(vfun=vfun, efun=efun, ffun=ffun, cfun=cfun)
+    microstructure = pulse.Microstructure(
+        f0=fiber_sheet_system.fiber,
+        s0=fiber_sheet_system.sheet,
+        n0=fiber_sheet_system.sheet_normal,
+    )
+    geo = pulse.HeartGeometry(
         mesh=mesh,
-        marker_functions=pulse.MarkerFunctions(ffun=ffun, cfun=cfun),
-        markers={**ffun_markers, **cfun_markers},
+        markers=markers,
+        marker_functions=marker_functions,
+        microstructure=microstructure,
     )
+    return geo
 
 
-def create_disk(mesh_name, mesh_size_factor=3.0):
+def create_disk(mesh_name, mesh_size_factor=1.0):
 
     gmsh.initialize(sys.argv)
     gmsh.option.setNumber("Mesh.MeshSizeFactor", mesh_size_factor)
@@ -268,7 +326,8 @@ def main():
     # create_square(msh_name)
     # create_disk(msh_name)
 
-    convert_gmsh_to_dolfin(msh_name)
+    geo = gmsh2dolfin(msh_name)
+    dolfin.File("ffun.pvd") << geo.ffun
 
 
 if __name__ == "__main__":
