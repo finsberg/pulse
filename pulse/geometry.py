@@ -103,7 +103,7 @@ class Geometry(object):
 
         self.markers = markers or {}
         self.marker_functions = marker_functions or MarkerFunctions()
-        self.microstructure = microstructure or Microstructure
+        self.microstructure = microstructure or Microstructure()
         self.crl_basis = crl_basis or CRLBasis()
         self._post_init()
 
