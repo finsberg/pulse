@@ -164,9 +164,9 @@ class MeshUnloader(object):
             "\n\n"
             + " Unloading options ".center(72, "-")
             + "\n\n"
-            + "\tTarget pressure: {}\n".format(pressure)
-            + "\tmaxiter = {}\n".format(self.parameters["maxiter"])
-            + "\ttolerance = {}\n".format(self.parameters["tol"])
+            + f"\tTarget pressure: {pressure}\n"
+            + f"\tmaxiter = {self.parameters['maxiter']}\n"
+            + f"\ttolerance = {self.parameters['tol']}\n"
             + "\tregenerate_fibers (serial only)= "
             "{}\n\n".format(self.parameters["regen_fibers"]) + "".center(72, "-") + "\n"
         )
@@ -419,7 +419,7 @@ class FixedPointUnloader(MeshUnloader):
         res = np.inf
         while it < self.parameters["maxiter"] and res > self.parameters["tol"]:
 
-            logger.info("\nIteration: {}".format(it))
+            logger.info(f"\nIteration: {it}")
             self.U.vector()[:] = u.vector()
 
             # The displacent field that we will move the mesh according to
@@ -467,7 +467,7 @@ class FixedPointUnloader(MeshUnloader):
             # Compute the residual
             if residual is not None:
                 res = residual.calculate_residual(ed_geometry.mesh)
-                logger.info("\nResidual:\t{}\n".format(res))
+                logger.info(f"\nResidual:\t{res}\n")
             else:
                 res = 0.0
 

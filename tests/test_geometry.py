@@ -46,12 +46,12 @@ def strain_markers_3d(mesh, nregions):
                 region += 1
                 domain_str = ""
 
-                domain_str += "x[0] >= {}".format(xs[it_x])
-                domain_str += " && x[1] >= {}".format(xs[it_y])
-                domain_str += " && x[2] >= {}".format(xs[it_z])
-                domain_str += " && x[0] <= {}".format(xs[it_x + 1])
-                domain_str += " && x[1] <= {}".format(xs[it_y + 1])
-                domain_str += " && x[2] <= {}".format(xs[it_z + 1])
+                domain_str += f"x[0] >= {xs[it_x]}"
+                domain_str += f" && x[1] >= {xs[it_y]}"
+                domain_str += f" && x[2] >= {xs[it_z]}"
+                domain_str += f" && x[0] <= {xs[it_x + 1]}"
+                domain_str += f" && x[1] <= {xs[it_y + 1]}"
+                domain_str += f" && x[2] <= {xs[it_z + 1]}"
 
                 len_sub = dolfin.CompiledSubDomain(domain_str)
                 len_sub.mark(strain_markers, region)

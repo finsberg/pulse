@@ -130,7 +130,7 @@ def cardiac_boundary_conditions(
             ),
         ]
     else:
-        raise ValueError("Unknown base bc {}".format(base_bc))
+        raise ValueError(f"Unknown base bc {base_bc}")
 
     boundary_conditions = BoundaryConditions(
         dirichlet=dirichlet_bc,

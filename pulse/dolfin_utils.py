@@ -139,7 +139,7 @@ def read_hdf5(h5name, func, h5group="", comm=mpi_comm_world()):
 
     except IOError as ex:
         logger.error(ex)
-        logger.error("Make sure file {} exist".format(h5name))
+        logger.error(f"Make sure file {h5name} exist")
         raise ex
 
     except RuntimeError as ex:

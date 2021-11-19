@@ -70,24 +70,28 @@ def gmsh2dolfin(msh_file):
     cfun = dolfin.MeshFunction("size_t", mesh, 3)
     read_meshfunction(tetra_mesh_name, cfun)
     tetra_mesh_name.unlink()
+    tetra_mesh_name.with_suffix(".h5").unlink()
 
     ffun_val = dolfin.MeshValueCollection("size_t", mesh, 2)
     read_meshfunction(triangle_mesh_name, ffun_val)
     ffun = dolfin.MeshFunction("size_t", mesh, ffun_val)
     ffun.array()[ffun.array() == max(ffun.array())] = 0
     triangle_mesh_name.unlink()
+    triangle_mesh_name.with_suffix(".h5").unlink()
 
     efun_val = dolfin.MeshValueCollection("size_t", mesh, 1)
     read_meshfunction(line_mesh_name, efun_val)
     efun = dolfin.MeshFunction("size_t", mesh, efun_val)
     efun.array()[efun.array() == max(efun.array())] = 0
     line_mesh_name.unlink()
+    line_mesh_name.with_suffix(".h5").unlink()
 
     vfun_val = dolfin.MeshValueCollection("size_t", mesh, 0)
     read_meshfunction(vertex_mesh_name, vfun_val)
     vfun = dolfin.MeshFunction("size_t", mesh, vfun_val)
     vfun.array()[vfun.array() == max(vfun.array())] = 0
     vertex_mesh_name.unlink()
+    vertex_mesh_name.with_suffix(".h5").unlink()
 
     markers = msh.field_data
 
@@ -328,7 +332,7 @@ def main():
 
     geo = gmsh2dolfin(msh_name)
     dolfin.File("ffun.pvd") << geo.ffun
-    # geo.save("prolate.h5")
+    geo.save("prolate.h5")
 
 
 if __name__ == "__main__":

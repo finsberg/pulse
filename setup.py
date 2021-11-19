@@ -30,7 +30,7 @@ class ReleaseCommand(Command):
     @staticmethod
     def status(s):
         """Prints things in bold."""
-        print("\033[1m{0}\033[0m".format(s))
+        print(f"[1m{s}[0m")
 
     def initialize_options(self):
         pass
@@ -46,7 +46,7 @@ class ReleaseCommand(Command):
             pass
 
         self.status("Pushing git tags…")
-        os.system("git tag v{0}".format(about["__version__"]))
+        os.system(f"git tag v{about['__version__']}")
         os.system("git push finsberg master --tags")
 
         sys.exit()

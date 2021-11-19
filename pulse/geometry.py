@@ -191,7 +191,7 @@ class Geometry(object):
     @staticmethod
     def load_from_file(h5name, h5group, comm):
 
-        logger.debug("Load geometry from file {}".format(h5name))
+        logger.debug(f"Load geometry from file {h5name}")
 
         geo = load_geometry_from_h5(h5name, h5group, include_sheets=True, comm=comm)
 
@@ -228,7 +228,7 @@ class Geometry(object):
     ):
 
         h5name = os.path.splitext(h5name)[0] + ".h5"
-        logger.debug("Save to {}...".format(h5name))
+        logger.debug(f"Save to {h5name}...")
         save_geometry_to_h5(
             self.mesh,
             h5name=h5name,

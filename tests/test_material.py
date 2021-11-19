@@ -152,7 +152,7 @@ def test_material(unitcube_geometry, Material, active_model, isochoric):
                     abs(p.vector().get_local() - material.parameters["mu"]) < tol,
                 )
             else:
-                raise TypeError("Unkown material {}".format(material.name))
+                raise TypeError(f"Unkown material {material.name}")
 
         else:
             assert all(abs(p.vector().get_local()) < tol)
@@ -191,7 +191,7 @@ def test_material(unitcube_geometry, Material, active_model, isochoric):
                     abs(p.vector().get_local() - material.parameters["mu"]) < tol,
                 )
             else:
-                raise TypeError("Unkown material {}".format(material.name))
+                raise TypeError(f"Unkown material {material.name}")
 
         else:
 
