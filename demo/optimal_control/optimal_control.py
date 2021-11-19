@@ -17,7 +17,7 @@ def create_forward_problem(
     mesh,
     activation,
     active_value=0.0,
-    active_model="active_stress",
+    active_model="active_stain",
     T_ref=1.0,
 ):
 
@@ -79,17 +79,16 @@ def main():
     mesh = da.UnitCubeMesh(N, N, N)
 
     W = df.FunctionSpace(mesh, "CG", 1)
-    T_ref = 10.0
 
     active = da.Function(W)
-    problem = create_forward_problem(mesh, active, active_value=0.3, T_ref=T_ref)
+    problem = create_forward_problem(mesh, active, active_value=0.1)
     u, _ = problem.state.split()
 
     V = df.VectorFunctionSpace(mesh, "CG", 2)
     u_synthetic = da.project(u, V)
 
     active_ctrl = da.Function(W)
-    problem = create_forward_problem(mesh, active_ctrl, active_value=0.0, T_ref=T_ref)
+    problem = create_forward_problem(mesh, active_ctrl, active_value=0.0)
     u_model, _ = problem.state.split()
 
     J = cost_function(
@@ -111,7 +110,7 @@ def main():
         eval_cb_post=eval_cb,
     )
 
-    problem = da.MinimizationProblem(reduced_functional, bounds=[(0, 1)])
+    problem = da.MinimizationProblem(reduced_functional, bounds=[(0, 0.4)])
 
     parameters = {
         "limited_memory_initialization": "scalar2",

@@ -199,7 +199,7 @@ def create_square(mesh_name, mesh_size_factor=1.0):
     gmsh.finalize()
 
 
-def create_prolate_mesh(mesh_name, mesh_size_factor=3.0):
+def create_prolate_mesh(mesh_name, mesh_size_factor=1.0):
 
     gmsh.initialize(sys.argv)
     gmsh.option.setNumber("Mesh.MeshSizeFactor", mesh_size_factor)
@@ -328,6 +328,7 @@ def main():
 
     geo = gmsh2dolfin(msh_name)
     dolfin.File("ffun.pvd") << geo.ffun
+    # geo.save("prolate.h5")
 
 
 if __name__ == "__main__":

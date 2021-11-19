@@ -27,7 +27,6 @@
 from abc import ABC
 from abc import abstractmethod
 from abc import abstractstaticmethod
-from enum import Enum
 from typing import Optional
 
 import dolfin
@@ -40,7 +39,7 @@ except ImportError:
 
 from .. import kinematics, numpy_mpi
 from ..dolfin_utils import RegionalParameter, update_function, get_dimesion
-from . import active_stress
+from . import active_model
 
 
 def compressibility(model, *args, **kwargs):
@@ -51,11 +50,6 @@ def compressibility(model, *args, **kwargs):
 
 def incompressible(p, J):
     return -p * (J - 1.0)
-
-
-class ActiveModel(str, Enum):
-    active_stress = "active_stress"
-    active_strain = "active_strain"
 
 
 class Material(ABC):
@@ -91,7 +85,7 @@ class Material(ABC):
         self,
         activation: Optional[ufl.Coefficient] = None,
         parameters=None,
-        active_model: ActiveModel = ActiveModel.active_strain,
+        active_model: active_model.ActiveModel = active_model.ActiveModel.active_strain,
         T_ref: Optional[float] = None,
         eta: Optional[float] = 0.0,
         isochoric: bool = True,
@@ -100,6 +94,7 @@ class Material(ABC):
         f0=None,
         s0=None,
         n0=None,
+        active_isotropy: active_model.ActiveStressModels = active_model.ActiveStressModels.transversally,
         *args,
         **kwargs
     ):
@@ -119,7 +114,7 @@ class Material(ABC):
         )
         self._eta = Constant(eta, name="eta")
         self._active_model = active_model
-        self.active_isotropy = kwargs.pop("active_isotropy", "transversally")
+        self.active_isotropy = active_isotropy
         self._isochoric = isochoric
         self.compressible_model = compressible_model
         self._set_dimension()
@@ -221,7 +216,7 @@ class Material(ABC):
     @property
     def Fa(self):
 
-        if self.active_model == ActiveModel.active_stress:
+        if self.active_model == active_model.ActiveModel.active_stress:
             return dolfin.Identity(self._dim)
 
         f0 = self.f0
@@ -234,7 +229,7 @@ class Material(ABC):
         return Fa
 
     def Fe(self, F):
-        if self.active_model == ActiveModel.active_stress:
+        if self.active_model == active_model.ActiveModel.active_stress:
             return F
         Fa = self.Fa
         Fe = F * dolfin.inv(Fa)
@@ -243,42 +238,22 @@ class Material(ABC):
 
     def Wactive(self, F=None, diff=0):
         """Active stress energy"""
-        if self.active_model == ActiveModel.active_strain:
+        if self.active_model == active_model.ActiveModel.active_strain:
             return 0
 
         C = F.T * F
 
         if diff == 0:
 
-            if self.active_isotropy == "transversally":
-                return active_stress.Wactive_transversally(
-                    Ta=self.activation_field,
-                    C=C,
-                    f0=self.f0,
-                    eta=self.eta,
-                )
-
-            elif self.active_isotropy == "orthotropic":
-                return active_stress.Wactive_orthotropic(
-                    Ta=self.activation_field,
-                    C=C,
-                    f0=self.f0,
-                    s0=self.s0,
-                    n0=self.n0,
-                )
-
-            elif self.active_isotropy == "fully_anisotropic":
-
-                return active_stress.Wactive_anisotropic(
-                    Ta=self.activation_field,
-                    C=C,
-                    f0=self.f0,
-                    s0=self.s0,
-                    n0=self.n0,
-                )
-            else:
-                msg = ("Unknown acitve isotropy " "{}").format(self.active_isotropy)
-                raise ValueError(msg)
+            return active_model.Wactive(
+                Ta=self.activation_field,
+                C=C,
+                f0=self.f0,
+                s0=self.s0,
+                n0=self.n0,
+                eta=self.eta,
+                active_isotropy=self.active_isotropy,
+            )
 
         elif diff == 1:
             return self.activation_field
