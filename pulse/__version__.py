@@ -9,7 +9,6 @@ try:
         "ignore",
         category=QuadratureRepresentationDeprecationWarning,
     )
-    _warnings.filterwarnings("ignore", category=DeprecationWarning)
 except ImportError:
     pass
 
@@ -24,6 +23,3 @@ else:
     _dolfin.parameters["form_compiler"]["cpp_optimize"] = True
     _dolfin.parameters["form_compiler"]["cpp_optimize_flags"] = " ".join(flags)
     _dolfin.set_log_level(_logging.WARNING)
-
-_warnings.filterwarnings("ignore", category=FutureWarning)
-_warnings.filterwarnings("ignore", category=UserWarning)

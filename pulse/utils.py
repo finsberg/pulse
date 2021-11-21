@@ -128,10 +128,6 @@ def value_size(obj):
             return [0]
 
 
-def set_default_none(NamedTuple, default=None):
-    NamedTuple.__new__.__defaults__ = (default,) * len(NamedTuple._fields)
-
-
 # Dummy object
 class Object(object):
     pass

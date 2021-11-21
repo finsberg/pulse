@@ -1,5 +1,6 @@
 # Material models
 # Active models
+from .active_model import ActiveModel
 from .guccione import Guccione
 from .holzapfelogden import HolzapfelOgden
 from .linearelastic import LinearElastic
@@ -40,4 +41,5 @@ __all__ = [
     "NeoHookean",
     "LinearElastic",
     "StVenantKirchhoff",
+    "ActiveModel",
 ]
