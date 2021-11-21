@@ -26,7 +26,7 @@ BROWSER := python3 -c "$$BROWSER_PYSCRIPT"
 help:
 	@python3 -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
-clean: clean-build clean-pyc clean-test ## remove all build, test, coverage and Python artifacts
+clean: clean-build clean-pyc clean-test clean-notebooks ## remove all build, test, coverage and Python artifacts
 
 clean-build: ## remove build artifacts
 	rm -fr build/
@@ -47,6 +47,9 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr htmlcov/
 	rm -fr .pytest_cache
 
+clean-notebooks: ## remove notebook checkpoints
+	find . -name '*.ipynb_checkpoints' -exec rm -fr {} +
+
 lint: ## check style with flake8
 	python3 -m flake8 pulse tests
 
@@ -66,6 +69,21 @@ coverage: ## check code coverage quickly with the default Python
 	$(BROWSER) htmlcov/index.html
 
 docs: ## generate Sphinx HTML documentation, including API docs
+	rm -f docs/source/pulse.rst
+	rm -f docs/source/pulse.material.rst
+	rm -f docs/source/modules.rst
+	for file in README.md; do \
+		cp $$file docs/source/. ;\
+	done
+
+	sphinx-apidoc -o docs/source pulse
+	jupyter-book build docs
+
+list-demos:
+	find ./demo -name '*.ipynb' | xargs jupytext --to py
+
+
+docs-old: ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/source/pulse.rst
 	rm -f docs/source/modules.rst
 	rm -f docs/source/pulse.scripts.rst

@@ -80,7 +80,7 @@ class CompressibleProblem(pulse.MechanicsProblem):
         self._init_solver()
 
 
-geometry = pulse.Geometry.from_file(pulse.mesh_paths["simple_ellipsoid"])
+geometry = pulse.geometries.prolate_ellipsoid_geometry(mesh_size_factor=3.0)
 
 activation = Function(dolfin.FunctionSpace(geometry.mesh, "R", 0))
 activation.assign(Constant(0.2))

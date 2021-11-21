@@ -58,10 +58,10 @@ dirichlet_types = typing.Union[
 
 @dataclass
 class BoundaryConditions:
-    neumann: typing.Optional[typing.Sequence[NeumannBC]] = None
-    dirichlet: typing.Optional[typing.Sequence[dirichlet_types]] = None
-    robin: typing.Optional[typing.Sequence[RobinBC]] = None
-    body_force: typing.Optional[typing.Sequence[ufl.Coefficient]] = None
+    neumann: typing.Sequence[NeumannBC] = ()
+    dirichlet: typing.Sequence[dirichlet_types] = ()
+    robin: typing.Sequence[RobinBC] = ()
+    body_force: typing.Sequence[ufl.Coefficient] = ()
 
 
 def dirichlet_fix_base(W, ffun, marker):
