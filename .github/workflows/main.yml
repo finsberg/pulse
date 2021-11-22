@@ -30,9 +30,9 @@ jobs:
             ~/.cache/dijitso
             ~/.cache/pulse
             ~/.cache/pip
-          key: ${{ matrix.container }}-cache_v3
+          key: ${{ matrix.container }}-cache_v2
           restore-keys: |
-            ${{ matrix.container }}-cache_v3
+            ${{ matrix.container }}-cache_v2
 
       - name: Install gmsh
         run: |

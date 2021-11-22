@@ -21,9 +21,9 @@ jobs:
             ~/.cache/dijitso
             ~/.cache/pip
             docs/_build/jupyter_execute
-          key: cache_v1
+          key: cache_v2
           restore-keys: |
-            cache_v1
+            cache_v2
 
       - name: Upgrade pip
         run: |
