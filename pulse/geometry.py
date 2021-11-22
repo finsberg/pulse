@@ -135,16 +135,6 @@ class Geometry(object):
     @classmethod
     def from_file(cls, h5name, h5group="", comm=None):
 
-        from . import mesh_paths
-
-        if h5name in mesh_paths.values():
-            logger.warning(
-                (
-                    "Using pulse.mesh_paths will be deprated in the future. "
-                    "Please consider using the pulse.geometries or make your own meshes."
-                ),
-            )
-
         comm = comm if comm is not None else mpi_comm_world()
 
         return cls(**cls.load_from_file(h5name, h5group, comm))

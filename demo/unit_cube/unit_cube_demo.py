@@ -74,7 +74,7 @@ cfun.set_all(0)
 marker_functions = pulse.MarkerFunctions(ffun=ffun, cfun=cfun)
 
 # Create mictrotructure
-V_f = pulse.QuadratureSpace(mesh, 4)
+V_f = dolfin.VectorFunctionSpace(mesh, "CG", 1)
 
 # Fibers
 f0 = interpolate(Expression(("1.0", "0.0", "0.0"), degree=1), V_f)

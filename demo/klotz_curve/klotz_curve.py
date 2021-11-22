@@ -120,8 +120,10 @@ def fix_basal_plane(W):
     return bc
 
 
-geometry = pulse.geometries.prolate_ellipsoid_geometry(mesh_size_factor=3.0)
-geometry.mesh.coordinates()[:] *= 0.37
+geometry = pulse.HeartGeometry.from_file(pulse.mesh_paths["simple_ellipsoid"])
+geometry.mesh.coordinates()[:] *= 4.7
+# geometry = pulse.geometries.prolate_ellipsoid_geometry(mesh_size_factor=3.0)
+# geometry.mesh.coordinates()[:] *= 0.37
 
 dirichlet_bc = [fix_basal_plane]
 

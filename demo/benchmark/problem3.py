@@ -16,7 +16,8 @@ except ImportError:
 import pulse
 from fenics_plotly import plot
 
-geometry = pulse.geometries.benchmark_ellipsoid_geometry()
+geometry = pulse.HeartGeometry.from_file(pulse.mesh_paths["benchmark"])
+# geometry = pulse.geometries.benchmark_ellipsoid_geometry()
 
 # Create the material
 material_parameters = pulse.Guccione.default_parameters()

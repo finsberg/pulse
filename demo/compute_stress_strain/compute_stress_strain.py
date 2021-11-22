@@ -12,7 +12,8 @@ import pulse
 from fenics_plotly import plot
 
 gamma_space = "R_0"
-geometry = pulse.geometries.prolate_ellipsoid_geometry(mesh_size_factor=3.0)
+geometry = pulse.Geometry.from_file(pulse.mesh_paths["simple_ellipsoid"])
+# geometry = pulse.geometries.prolate_ellipsoid_geometry(mesh_size_factor=3.0)
 geometry.mesh.coordinates()[:] *= 0.1
 # breakpoint()
 activation = Function(dolfin.FunctionSpace(geometry.mesh, "R", 0))

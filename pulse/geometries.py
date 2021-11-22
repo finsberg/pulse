@@ -5,8 +5,14 @@ from pathlib import Path
 from textwrap import dedent
 
 import dolfin
-import meshio
 from dijitso.signatures import hashit
+
+try:
+    import meshio
+
+    has_meshio = True
+except ImportError:
+    has_meshio = False
 
 try:
     import gmsh
@@ -121,11 +127,22 @@ def gmsh2dolfin(msh_file):
 
 
 def check_gmsh():
+    check_meshio()
     if not has_gmsh:
         raise ImportError(
             (
                 "Cannot create mesh using gmsh. "
                 "Please install gmsh first with 'python -m pip install gmsh'"
+            ),
+        )
+
+
+def check_meshio():
+    if not has_meshio:
+        raise ImportError(
+            (
+                "Cannot create mesh using gmsh. "
+                "Please install meshio first with 'python -m pip install meshio'"
             ),
         )
 
@@ -156,7 +173,7 @@ def create_benchmark_ellipsoid_mesh_gmsh(
     gmsh.option.setNumber("Geometry.CopyMeshingMethod", 1)
     gmsh.option.setNumber("Mesh.Optimize", 1)
     gmsh.option.setNumber("Mesh.OptimizeNetgen", 1)
-    gmsh.option.setNumber("Mesh.MeshSizeFactor", mesh_size_factor)
+    # gmsh.option.setNumber("Mesh.MeshSizeFactor", mesh_size_factor)
 
     mu_base = math.acos(quota_base / r_long_endo)
     psize_ref = psize / ndiv

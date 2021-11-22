@@ -5,7 +5,8 @@ from fenics_plotly import plot
 import pulse
 
 
-geometry = pulse.geometries.prolate_ellipsoid_geometry(mesh_size_factor=3.0)
+geometry = pulse.HeartGeometry.from_file(pulse.mesh_paths["simple_ellipsoid"])
+# geometry = pulse.geometries.prolate_ellipsoid_geometry(mesh_size_factor=3.0)
 material = pulse.NeoHookean()
 # material = pulse.Guccione()
 

@@ -33,7 +33,7 @@ demos = [
 
 @pytest.mark.parametrize("filename, root", demos)
 def test_demo(filename, root):
-    if os.path.basename(root) in ["closed_loop", "optimal_control"]:
+    if os.path.basename(root) in ["closed_loop", "optimal_control", "custom_geometry"]:
         return
     if os.path.basename(root) == "creating_geometries" and not has_mshr:
         return

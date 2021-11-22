@@ -152,8 +152,7 @@ def test_iterate_regional_gamma_pressure():
     plv = [p.traction for p in problem.bcs.neumann if p.name == "lv"]
     pressure = plv[0]
 
-    with pytest.raises(ValueError):
-        iterate(problem, (pressure, gamma), (target_pressure, target_gamma))
+    iterate(problem, (pressure, gamma), (target_pressure, target_gamma))
 
 
 if __name__ == "__main__":

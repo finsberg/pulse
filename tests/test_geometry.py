@@ -7,7 +7,6 @@ try:
 except ImportError:
     from dolfin import UnitCubeMesh, interpolate
 
-from pulse.dolfin_utils import QuadratureSpace
 from pulse.example_meshes import mesh_paths
 from pulse.geometry import CRLBasis
 from pulse.geometry import Geometry
@@ -63,7 +62,7 @@ def unitcube_geometry():
     N = 2
     mesh = UnitCubeMesh(N, N, N)
 
-    V_f = QuadratureSpace(mesh, 4)
+    V_f = dolfin.VectorFunctionSpace(mesh, "CG", 1)
 
     l0 = interpolate(dolfin.Expression(("1.0", "0.0", "0.0"), degree=1), V_f)
     r0 = interpolate(dolfin.Expression(("0.0", "1.0", "0.0"), degree=1), V_f)
@@ -138,15 +137,15 @@ def test_crl_basis(unitcube_geometry):
 def test_simple_ellipsoid():
     geometry = HeartGeometry.from_file(mesh_paths["simple_ellipsoid"])
 
-    assert abs(geometry.cavity_volume() - 2.511304019359619) < 1e-14
+    assert abs(geometry.cavity_volume() - 0.7494375870292063) < 1e-14
     assert geometry.is_biv is False
 
 
 def test_biv_ellipsoid():
     geometry = HeartGeometry.from_file(mesh_paths["biv_ellipsoid"])
 
-    assert abs(geometry.cavity_volume(chamber="lv") - 0.7422747965172004) < 1e-14
-    assert abs(geometry.cavity_volume(chamber="rv") - 0.8171389194959642) < 1e-14
+    assert abs(geometry.cavity_volume(chamber="lv") - 0.7415450456459624) < 1e-14
+    assert abs(geometry.cavity_volume(chamber="rv") - 0.8141695718969176) < 1e-14
     assert geometry.is_biv is True
 
 

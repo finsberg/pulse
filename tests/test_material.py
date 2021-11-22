@@ -24,7 +24,6 @@ except ImportError:
     )
 
 from pulse import kinematics
-from pulse.dolfin_utils import QuadratureSpace
 from pulse.geometry import Geometry, MarkerFunctions, Microstructure
 from pulse.material import HolzapfelOgden, NeoHookean, material_models
 from pulse.mechanicsproblem import BoundaryConditions, MechanicsProblem, NeumannBC
@@ -63,7 +62,7 @@ def unitcube_geometry():
     marker_functions = MarkerFunctions(ffun=ffun)
 
     # Fibers
-    V_f = QuadratureSpace(mesh, 4)
+    V_f = dolfin.VectorFunctionSpace(mesh, "CG", 1)
 
     f0 = interpolate(Expression(("1.0", "0.0", "0.0"), degree=1), V_f)
     s0 = interpolate(Expression(("0.0", "1.0", "0.0"), degree=1), V_f)
