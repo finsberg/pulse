@@ -1,6 +1,8 @@
 .PHONY: clean clean-test clean-pyc clean-build docs help
 .DEFAULT_GOAL := help
 
+export FENICS_PLOTLY_RENDERER=notebook
+
 define BROWSER_PYSCRIPT
 import os, webbrowser, sys
 
@@ -69,32 +71,36 @@ coverage: ## check code coverage quickly with the default Python
 	$(BROWSER) htmlcov/index.html
 
 docs: ## generate Sphinx HTML documentation, including API docs
-	rm -f docs/source/pulse.rst
-	rm -f docs/source/pulse.material.rst
-	rm -f docs/source/modules.rst
+	rm -f docs/pulse.rst
+	rm -f docs/pulse.material.rst
+	rm -f docs/modules.rst
+	sphinx-apidoc -o docs pulse
 	for file in README.md; do \
-		cp $$file docs/source/. ;\
+		cp $$file docs/. ;\
 	done
-
-	sphinx-apidoc -o docs/source pulse
+	jupytext demo/benchmark/problem1.py -o docs/problem1.ipynb
+	jupytext demo/benchmark/problem2.py -o docs/problem2.ipynb
+	jupytext demo/benchmark/problem3.py -o docs/problem3.ipynb
+	jupytext demo/biaxial_stress_test/biaxial_stress_test.py -o docs/biaxial_stress_test.ipynb
+	jupytext demo/compressible_model/compressible_model.py -o docs/compressible_model.ipynb
+	jupytext demo/compute_stress_strain/compute_stress_strain.py -o docs/compute_stress_strain.ipynb
+	jupytext demo/custom_geometry/custom_geometry.py -o docs/custom_geometry.ipynb
+	jupytext demo/custom_material/demo_custom_material.py -o docs/demo_custom_material.ipynb
+	jupytext demo/from_xml/from_xml.py -o docs/from_xml.ipynb
+	cp -r demo/from_xml/data docs/.
+	jupytext demo/klotz_curve/klotz_curve.py -o docs/klotz_curve.ipynb
+	jupytext demo/optimal_control/optimal_control.py -o docs/optimal_control.ipynb
+	jupytext demo/rigid_motion/rigid_motion.py -o docs/rigid_motion.ipynb
+	jupytext demo/shear_experiment/shear_experiment.py -o docs/shear_experiment.ipynb
+	jupytext demo/simple_ellipsoid/simple_ellipsoid.py -o docs/simple_ellipsoid.ipynb
+	jupytext demo/unit_cube/unit_cube_demo.py -o docs/unit_cube_demo.ipynb
+	jupytext demo/unloading/demo_fixedpointunloader.py -o docs/demo_fixedpointunloader.ipynb
 	jupyter-book build docs
+	# python -m http.server --directory docs/_build/html
 
 list-demos:
 	find ./demo -name '*.ipynb' | xargs jupytext --to py
 
-
-docs-old: ## generate Sphinx HTML documentation, including API docs
-	rm -f docs/source/pulse.rst
-	rm -f docs/source/modules.rst
-	rm -f docs/source/pulse.scripts.rst
-	sphinx-apidoc -o docs/source pulse
-	$(MAKE) -C docs clean
-	$(MAKE) -C docs html
-
-	curl -o docs/build/html/plotly.tar -L https://github.com/plotly/plotly.js/archive/refs/tags/v2.2.0.tar.gz
-	cd docs/build/html/ && tar -xvf plotly.tar && mv plotly.js-2.2.0/* . &&  mv dist/* demos/.
-	# $(BROWSER) docs/build/html/index.html
-	# python -m http.server --directory docs/build/html
 
 servedocs: docs ## compile the docs watching for changes
 	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .

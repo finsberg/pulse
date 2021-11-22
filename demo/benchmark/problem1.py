@@ -6,7 +6,6 @@
 # benchmark problems and solutions for testing active and passive material
 # behaviour. Proc. R. Soc. A. 2015 Dec 8;471(2184):20150641.
 #
-# +
 import dolfin
 import numpy as np
 

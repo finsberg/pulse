@@ -1,12 +1,8 @@
-"""
-Install gmsh, meshio and ldrb
-
-python -m pip install gmsh meshio ldrb
-
-These examples are based on the snippets from
-https://bitbucket.org/peppu/fenicshotools/src/master/demos/generate_from_geo.py
-
-"""
+# # Custom geometry
+# Install gmsh, meshio and ldrb
+# python -m pip install gmsh meshio ldrb
+# These examples are based on the snippets from
+# https://bitbucket.org/peppu/fenicshotools/src/master/demos/generate_from_geo.py
 import math
 import sys
 from pathlib import Path

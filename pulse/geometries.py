@@ -677,7 +677,7 @@ def benchmark_ellipsoid_geometry(
 
     Returns
     -------
-    HeartGeometry
+    geometry.HeartGeometry
         The gemometry
     """
     params = params or {}

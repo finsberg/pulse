@@ -2,7 +2,6 @@
 #
 # Inlate a geometry to a pressure using different
 # material models, and compare with the Klotz curve.
-# +
 import math
 
 import matplotlib.pyplot as plt

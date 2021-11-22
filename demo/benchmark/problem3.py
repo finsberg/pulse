@@ -5,7 +5,7 @@
 # Crozier A, Favino M, Fastl TE. Verification of cardiac mechanics software:
 # benchmark problems and solutions for testing active and passive material
 # behaviour. Proc. R. Soc. A. 2015 Dec 8;471(2184):20150641.
-# +
+#
 import dolfin
 
 try:
@@ -62,7 +62,7 @@ pulse.iterate.iterate(problem, activation, 60.0, initial_number_of_steps=50)
 u, p = problem.state.split(deepcopy=True)
 
 
-endo_apex_marker = geometry.markers["ENDOPT"][0]
+endo_apex_marker = geometry.markers["APEX_ENDO"][0]
 endo_apex_idx = geometry.vfun.array().tolist().index(endo_apex_marker)
 endo_apex = geometry.mesh.coordinates()[endo_apex_idx, :]
 endo_apex_pos = endo_apex + u(endo_apex)
@@ -74,7 +74,7 @@ print(
 )
 
 
-epi_apex_marker = geometry.markers["EPIPT"][0]
+epi_apex_marker = geometry.markers["APEX_EPI"][0]
 epi_apex_idx = geometry.vfun.array().tolist().index(epi_apex_marker)
 epi_apex = geometry.mesh.coordinates()[epi_apex_idx, :]
 epi_apex_pos = epi_apex + u(epi_apex)
