@@ -20,7 +20,7 @@ activation = Function(dolfin.FunctionSpace(geometry.mesh, "R", 0))
 
 matparams = pulse.HolzapfelOgden.default_parameters()
 material = pulse.HolzapfelOgden(
-    active_model=pulse.ActiveModel.active_stress,
+    active_model=pulse.ActiveModels.active_stress,
     T_ref=1.0,  # Total active stress should be activation * T_ref
     eta=0.2,  # Fraction of transverse stress
     activation=activation,

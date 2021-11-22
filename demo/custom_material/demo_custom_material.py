@@ -107,7 +107,7 @@ class MooneyRivelin(pulse.Material):
 
 
 # Select model for active contraction
-active_model = pulse.ActiveModel.active_strain
+active_model = pulse.ActiveModels.active_strain
 # active_model = "active_stress"
 
 # Set the activation

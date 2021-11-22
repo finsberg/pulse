@@ -29,7 +29,7 @@ material_parameters["bt"] = 2.0
 activation = Constant(0.0)
 material = pulse.Guccione(
     parameters=material_parameters,
-    active_model=pulse.ActiveModel.active_stress,
+    active_model=pulse.ActiveModels.active_stress,
     activation=activation,
 )
 

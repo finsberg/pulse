@@ -58,6 +58,7 @@ from .material import Material
 from .material import NeoHookean
 from .material import StVenantKirchhoff
 from .material import ActiveModel
+from .material import ActiveModels
 from .mechanicsproblem import BoundaryConditions
 from .mechanicsproblem import MechanicsProblem
 from .mechanicsproblem import NeumannBC
@@ -155,6 +156,7 @@ __all__ = [
     "geometry_utils",
     "geometries",
     "ActiveModel",
+    "ActiveModels",
 ]
 
 __author__ = "Henrik Finsberg"

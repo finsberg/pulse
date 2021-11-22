@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Optional
 
 import dolfin
 
@@ -7,8 +8,10 @@ try:
 except ImportError:
     from dolfin import Constant
 
+from ..dolfin_utils import get_dimesion, RegionalParameter
 
-class ActiveModel(str, Enum):
+
+class ActiveModels(str, Enum):
     active_stress = "active_stress"
     active_strain = "active_strain"
 
@@ -17,6 +20,121 @@ class ActiveStressModels(str, Enum):
     transversally = "transversally"
     orthotropic = "orthotropic"
     fully_anisotropic = "fully_anisotropic"
+
+
+class ActiveModel:
+    def __init__(
+        self,
+        activation=None,
+        f0=None,
+        s0=None,
+        n0=None,
+        model: ActiveModels = ActiveModels.active_strain,
+        active_isotropy: ActiveStressModels = ActiveStressModels.transversally,
+        eta: Optional[float] = None,
+        T_ref: Optional[float] = None,
+        isochoric=True,
+    ):
+        # Fiber system
+        self.f0 = f0
+        self.s0 = s0
+        self.n0 = n0
+
+        self._activation = (
+            Constant(0, name="activation") if activation is None else activation
+        )
+
+        self.T_ref = (
+            Constant(T_ref, name="T_ref") if T_ref else Constant(1.0, name="T_ref")
+        )
+
+        self.eta = Constant(eta, name="eta") if eta else Constant(0.0, name="eta")
+        self.isochoric = isochoric
+        self.active_isotropy = active_isotropy
+        self.model = model
+
+    @property
+    def dim(self):
+        if not hasattr(self, "_dim"):
+            try:
+                self._dim = get_dimesion(self.f0)
+            except Exception:
+                # just assume three dimensions
+                self._dim = 3
+        return self._dim
+
+    @property
+    def activation(self):
+        """
+        Return the activation paramter.
+        If regional, this will return one parameter
+        for each segment.
+        """
+        return self._activation
+
+    @property
+    def activation_field(self):
+        """
+        Return the activation field.
+        If regional, this will return a piecewise
+        constant function (DG_0)
+        """
+
+        # Activation
+        if isinstance(self._activation, RegionalParameter):
+            # This means a regional activation
+            # Could probably make this a bit more clean
+            activation = self._activation.function
+        else:
+            activation = self._activation
+
+        return self.T_ref * activation
+
+    @property
+    def Fa(self):
+
+        if self.model == ActiveModels.active_stress:
+            return dolfin.Identity(self.dim)
+
+        f0 = self.f0
+        f0f0 = dolfin.outer(f0, f0)
+        Id = dolfin.Identity(self.dim)
+
+        mgamma = 1 - self.activation_field
+        Fa = mgamma * f0f0 + pow(mgamma, -1.0 / float(self.dim - 1)) * (Id - f0f0)
+
+        return Fa
+
+    def Fe(self, F):
+        if self.model == ActiveModels.active_stress:
+            return F
+        Fa = self.Fa
+        Fe = F * dolfin.inv(Fa)
+
+        return Fe
+
+    def Wactive(self, F=None, diff=0):
+        """Active stress energy"""
+        if self.model == ActiveModels.active_strain:
+            return 0
+
+        C = F.T * F
+
+        if diff == 0:
+
+            return Wactive(
+                Ta=self.activation_field,
+                C=C,
+                f0=self.f0,
+                s0=self.s0,
+                n0=self.n0,
+                eta=self.eta,
+                active_isotropy=self.active_isotropy,
+            )
+
+        elif diff == 1:
+            return self.activation_field
+        raise ValueError(f"Unknown diff {diff}")
 
 
 def Wactive(
