@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-from collections import namedtuple
+import typing
+from dataclasses import dataclass
 from functools import partial
 
 import dolfin
@@ -32,20 +32,36 @@ from .dolfin_utils import list_sum
 from .geometry import Geometry, HeartGeometry
 from .material import Material
 from .solver import NonlinearProblem, NonlinearSolver
-from .utils import get_lv_marker, getLogger, set_default_none
+from .utils import get_lv_marker, getLogger
 
 logger = getLogger(__name__)
 
-BoundaryConditions = namedtuple(
-    "BoundaryConditions",
-    ["dirichlet", "neumann", "robin", "body_force"],
-)
-set_default_none(BoundaryConditions, ())
 
-NeumannBC = namedtuple("NeumannBC", ["traction", "marker", "name"])
-# Name is optional
-NeumannBC.__new__.__defaults__ = ("",)  # type: ignore
-RobinBC = namedtuple("RobinBC", ["value", "marker"])
+@dataclass
+class NeumannBC:
+    traction: typing.Union[float, ufl.Coefficient]
+    marker: int
+    name: str = ""
+
+
+@dataclass
+class RobinBC:
+    value: typing.Union[float, ufl.Coefficient]
+    marker: int
+
+
+dirichlet_types = typing.Union[
+    typing.Callable[[dolfin.FunctionSpace], dolfin.DirichletBC],
+    dolfin.DirichletBC,
+]
+
+
+@dataclass
+class BoundaryConditions:
+    neumann: typing.Sequence[NeumannBC] = ()
+    dirichlet: typing.Sequence[dirichlet_types] = ()
+    robin: typing.Sequence[RobinBC] = ()
+    body_force: typing.Sequence[ufl.Coefficient] = ()
 
 
 def dirichlet_fix_base(W, ffun, marker):

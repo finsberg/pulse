@@ -128,10 +128,6 @@ def value_size(obj):
             return [0]
 
 
-def set_default_none(NamedTuple, default=None):
-    NamedTuple.__new__.__defaults__ = (default,) * len(NamedTuple._fields)
-
-
 # Dummy object
 class Object(object):
     pass
@@ -144,12 +140,10 @@ def number_of_passive_controls(params):
 
 def get_lv_marker(geometry):
 
-    if "ENDO" in geometry.markers:
-        return geometry.markers["ENDO"][0]
-    elif "ENDO_LV" in geometry.markers:
-        return geometry.markers["ENDO_LV"][0]
-    else:
-        raise KeyError("Geometry is missing marker for LV ENDO")
+    for key in ["ENDO", "ENDO_LV", "endo", "endo_lv"]:
+        if key in geometry.markers:
+            return geometry.markers[key][0]
+    raise KeyError("Geometry is missing marker for LV ENDO")
 
 
 def save_logger(params):

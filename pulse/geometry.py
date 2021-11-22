@@ -1,6 +1,6 @@
-#!/usr/bin/env python
 import os
-from collections import namedtuple
+import typing
+from dataclasses import dataclass
 
 import dolfin
 
@@ -12,31 +12,42 @@ except ImportError:
 from . import numpy_mpi
 from .dolfin_utils import compute_meshvolume, get_cavity_volume, map_vector_field
 from .geometry_utils import load_geometry_from_h5, move, save_geometry_to_h5
-from .utils import getLogger, mpi_comm_world, set_default_none
+from .utils import getLogger, mpi_comm_world
 
 logger = getLogger(__name__)
 
 
-# f0 - fibers, s0 - sheets, n0 - cross-sheets
-Microstructure = namedtuple("Microstructure", ["f0", "s0", "n0"])
-# Set defaults none to allow for different types of anisotropy
-set_default_none(Microstructure)
+@dataclass
+class Microstructure:
+    """f0 - fibers, s0 - sheets, n0 - cross-sheets"""
 
-# l0 - longitudinal, c0 - circumferential, r0 - radial
-CRLBasis = namedtuple("CRLBasis", ["c0", "r0", "l0"])
-# These are only needed in the RegionalStrainTarget
-set_default_none(CRLBasis)
+    f0: typing.Optional[dolfin.Function] = None
+    s0: typing.Optional[dolfin.Function] = None
+    n0: typing.Optional[dolfin.Function] = None
 
 
-# vfun - vertex function
-# efun - edge function
-# ffun - facet function
-# cfun - cell function
-MarkerFunctions = namedtuple("MarkerFunctions", ["vfun", "efun", "ffun", "cfun"])
-# Note the this might not allways make sense for meshes
-# of dimension < 3, also some of these function might not
-# be relevant, therefore set defaults to None
-set_default_none(MarkerFunctions)
+@dataclass
+class CRLBasis:
+    """l0 - longitudinal, c0 - circumferential, r0 - radial"""
+
+    c0: typing.Optional[dolfin.Function] = None
+    r0: typing.Optional[dolfin.Function] = None
+    l0: typing.Optional[dolfin.Function] = None
+
+
+@dataclass
+class MarkerFunctions:
+    """
+    # vfun - vertex function
+    # efun - edge function
+    # ffun - facet function
+    # cfun - cell function
+    """
+
+    vfun: typing.Optional[dolfin.MeshFunction] = None
+    efun: typing.Optional[dolfin.MeshFunction] = None
+    ffun: typing.Optional[dolfin.MeshFunction] = None
+    cfun: typing.Optional[dolfin.MeshFunction] = None
 
 
 def get_attribute(obj, key1, key2, default=None):

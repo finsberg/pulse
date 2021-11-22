@@ -4,7 +4,7 @@ from .. import kinematics
 from ..dolfin_utils import get_dimesion
 from ..dolfin_utils import heaviside
 from ..dolfin_utils import subplus
-from .active_model import ActiveModel
+from .active_model import ActiveModels
 from .material_model import Material
 
 
@@ -211,7 +211,7 @@ class HolzapfelOgden(Material):
         I4s = kinematics.I4(F, self.s0, isochoric=self.isochoric)
         I8fs = kinematics.I8(F, self.f0, self.s0)
 
-        if self.active_model == ActiveModel.active_strain:
+        if self.active_model == ActiveModels.active_strain:
             mgamma = 1 - self.activation_field
             I1e = mgamma * I1 + (1 / mgamma ** 2 - mgamma) * I4f
             I4fe = 1 / mgamma ** 2 * I4f

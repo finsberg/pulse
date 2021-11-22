@@ -28,16 +28,17 @@ jobs:
           path: |
             ~/.cache/instant
             ~/.cache/dijitso
+            ~/.cache/pulse
             ~/.cache/pip
-          key: ${{ matrix.container }}-cache_v2
+          key: ${{ matrix.container }}-cache_v4
           restore-keys: |
-            ${{ matrix.container }}-cache_v2
+            ${{ matrix.container }}-cache_v4
 
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install h5py --no-binary=h5py
-          python3 -m pip install -e ".[test,plot]"
+          python3 -m pip install -e ".[test,plot,dev]"
 
       - name: Run flake8
         run: |

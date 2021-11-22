@@ -407,8 +407,8 @@ def fibers(mesh, fiber_endo=60, fiber_epi=-60):
 def get_circ_field(mesh):
 
     fiber_params = dolfin.Parameters("Fibers")
-    fiber_params.add("fiber_space", "Quadrature_4")
-    # fiber_params.add("fiber_space", "Lagrange_1")
+    # fiber_params.add("fiber_space", "Quadrature_4")
+    fiber_params.add("fiber_space", "Lagrange_1")
     fiber_params.add("include_sheets", False)
 
     # Parameter set from Bayer et al.
@@ -528,8 +528,10 @@ def load_microstructure(h5file, fgroup, mesh, geo, include_sheets=True):
         fspace = fiber_attrs["space"]
         if fspace is None:
             # Assume quadrature 4
-            family = "Quadrature"
-            order = 4
+            # family = "Quadrature"
+            # order = 4
+            family = "CG"
+            order = 1
         else:
             family, order = fspace.split("_")
 

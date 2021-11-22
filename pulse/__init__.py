@@ -31,6 +31,7 @@ from . import numpy_mpi
 from . import solver
 from . import unloader
 from . import utils
+from . import geometries
 from .__version__ import __version__
 from .dolfin_utils import MixedParameter
 from .dolfin_utils import QuadratureSpace
@@ -56,6 +57,8 @@ from .material import LinearElastic
 from .material import Material
 from .material import NeoHookean
 from .material import StVenantKirchhoff
+from .material import ActiveModel
+from .material import ActiveModels
 from .mechanicsproblem import BoundaryConditions
 from .mechanicsproblem import MechanicsProblem
 from .mechanicsproblem import NeumannBC
@@ -151,6 +154,9 @@ __all__ = [
     "NonlinearSolver",
     "geometry",
     "geometry_utils",
+    "geometries",
+    "ActiveModel",
+    "ActiveModels",
 ]
 
 __author__ = "Henrik Finsberg"
