@@ -34,11 +34,20 @@ jobs:
           restore-keys: |
             ${{ matrix.container }}-cache_v3
 
+      - name: Install gmsh
+        run: |
+          apt-get update && apt-get install wget libglu1 libxrender1  libxcursor-dev libxft-dev libxinerama-dev -y
+          cd /usr/local
+          wget -nc  http://gmsh.info/bin/Linux/gmsh-4.6.0-Linux64-sdk.tgz
+          tar -xf gmsh-4.6.0-Linux64-sdk.tgz
+          rm gmsh-4.6.0-Linux64-sdk.tgz
+          export PYTHONPATH=/usr/local/gmsh-4.6.0-Linux64-sdk/lib:$PYTHONPATH
+          export PATH=/usr/local/gmsh-4.6.0-Linux64-sdk/bin:$PATH
+
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install h5py --no-binary=h5py
-          python3 -m pip install gmsh-sdk
           python3 -m pip install -e ".[test,plot,mesh,dev]"
 
       - name: Run flake8
