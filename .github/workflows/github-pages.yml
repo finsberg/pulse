@@ -37,8 +37,6 @@ jobs:
           wget -nc  http://gmsh.info/bin/Linux/gmsh-4.6.0-Linux64-sdk.tgz
           tar -xf gmsh-4.6.0-Linux64-sdk.tgz
           rm gmsh-4.6.0-Linux64-sdk.tgz
-          export PYTHONPATH=/usr/local/gmsh-4.6.0-Linux64-sdk/lib:$PYTHONPATH
-          export PATH=/usr/local/gmsh-4.6.0-Linux64-sdk/bin:$PATH
 
       - name: Install dependencies
         run: |
@@ -48,6 +46,8 @@ jobs:
 
       - name: Build docs
         run: |
+          export PYTHONPATH=/usr/local/gmsh-4.6.0-Linux64-sdk/lib:$PYTHONPATH
+          export PATH=/usr/local/gmsh-4.6.0-Linux64-sdk/bin:$PATH
           make docs
 
       - name: Deploy
