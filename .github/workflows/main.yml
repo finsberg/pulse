@@ -38,6 +38,7 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install h5py --no-binary=h5py
+          python3 -m pip install gmsh-sdk
           python3 -m pip install -e ".[test,plot,mesh,dev]"
 
       - name: Run flake8

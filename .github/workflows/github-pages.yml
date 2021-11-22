@@ -30,10 +30,20 @@ jobs:
           # install pip=>20.1 to use "pip cache dir"
           python3 -m pip install --upgrade pip
 
+      - name: Install gmsh
+        run: |
+          apt-get update && apt-get install wget libglu1 libxrender1  libxcursor-dev libxft-dev libxinerama-dev -y
+          cd /usr/local
+          wget -nc  http://gmsh.info/bin/Linux/gmsh-4.6.0-Linux64-sdk.tgz
+          tar -xf gmsh-4.6.0-Linux64-sdk.tgz
+          rm gmsh-4.6.0-Linux64-sdk.tgz
+          export PYTHONPATH=/usr/local/gmsh-4.6.0-Linux64-sdk/lib:$PYTHONPATH
+          export PATH=/usr/local/gmsh-4.6.0-Linux64-sdk/bin:$PATH
+
       - name: Install dependencies
         run: |
+          sudo apt update && sudo apt install gmsh -y
           sudo apt install -y pandoc
-          python -m pip install fenics-ufl
           make dev
 
       - name: Build docs
