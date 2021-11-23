@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>&lt;no title&gt; &#8212; pulse</title>
+    <title>Custom geometry &#8212; pulse</title>
     
   <link href="_static/css/theme.css" rel="stylesheet">
   <link href="_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
@@ -54,8 +54,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="&lt;no title&gt;" href="demo_custom_material.html" />
-    <link rel="prev" title="&lt;no title&gt;" href="compute_stress_strain.html" />
+    <link rel="next" title="Custom material" href="demo_custom_material.html" />
+    <link rel="prev" title="Compute stress and strain" href="compute_stress_strain.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
     
@@ -99,17 +99,97 @@
   </a>
  </li>
 </ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1 has-children">
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active has-children">
   <a class="reference internal" href="DEMO.html">
    Demos
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
   <label for="toctree-checkbox-1">
    <i class="fas fa-chevron-down">
    </i>
   </label>
-  <ul class="simple">
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="problem1.html">
+     Cardiac mechanics Benchmark - Problem 1
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="problem2.html">
+     Cardiac mechanics Benchmark - Problem 2
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="problem3.html">
+     Cardiac mechanics Benchmark - Problem 3
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="biaxial_stress_test.html">
+     Biaxial stress test
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="compressible_model.html">
+     Compressible model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="compute_stress_strain.html">
+     Compute stress and strain
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Custom geometry
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="demo_custom_material.html">
+     Custom material
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="from_xml.html">
+     From XML data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="klotz_curve.html">
+     Klotz curve
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="optimal_control.html">
+     Optimal controls
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="rigid_motion.html">
+     Rigid motion
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="shear_experiment.html">
+     Shear experiment
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="simple_ellipsoid.html">
+     Simple ellipsoid
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="unit_cube_demo.html">
+     Contracting cube
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="demo_fixedpointunloader.html">
+     Finding the unloaded geometry
+    </a>
+   </li>
   </ul>
  </li>
  <li class="toctree-l1 has-children">
@@ -216,14 +296,6 @@
         <!-- Table of contents -->
         <div class="d-none d-md-block col-md-2 bd-toc show">
             
-            <div class="tocsection onthispage pt-5 pb-3">
-                <i class="fas fa-list"></i> Contents
-            </div>
-            <nav id="bd-toc-nav" aria-label="Page">
-                <ul class="simple visible nav section-nav flex-column">
-</ul>
-
-            </nav>
         </div>
     </div>
 </div>
@@ -232,14 +304,15 @@
         
               <div>
                 
-  <div class="cell docutils container">
+  <div class="tex2jax_ignore mathjax_ignore section" id="custom-geometry">
+<h1>Custom geometry<a class="headerlink" href="#custom-geometry" title="Permalink to this headline">¶</a></h1>
+<p>Install gmsh, meshio and ldrb
+python -m pip install gmsh meshio ldrb
+These examples are based on the snippets from
+<a class="reference external" href="https://bitbucket.org/peppu/fenicshotools/src/master/demos/generate_from_geo.py">https://bitbucket.org/peppu/fenicshotools/src/master/demos/generate_from_geo.py</a></p>
+<div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># # Custom geometry</span>
-<span class="c1"># Install gmsh, meshio and ldrb</span>
-<span class="c1"># python -m pip install gmsh meshio ldrb</span>
-<span class="c1"># These examples are based on the snippets from</span>
-<span class="c1"># https://bitbucket.org/peppu/fenicshotools/src/master/demos/generate_from_geo.py</span>
-<span class="kn">import</span> <span class="nn">math</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 </pre></div>
@@ -653,6 +726,7 @@
 </div>
 </div>
 </div>
+</div>
 
     <script type="text/x-thebe-config">
     {
@@ -683,13 +757,13 @@
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">&lt;no title&gt;</p>
+            <p class="prev-next-title">Compute stress and strain</p>
         </div>
     </a>
     <a class='right-next' id="next-link" href="demo_custom_material.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">&lt;no title&gt;</p>
+        <p class="prev-next-title">Custom material</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>
