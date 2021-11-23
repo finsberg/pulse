@@ -1,0 +1,26 @@
+# Table of contents
+# Learn more at https://jupyterbook.org/customize/toc.html
+
+format: jb-book
+root: README
+chapters:
+  - file: INSTALL
+  - file: DEMO
+    sections:
+      - file: problem1.ipynb
+      - file: problem2.ipynb
+      - file: problem3.ipynb
+      - file: biaxial_stress_test.ipynb
+      - file: compressible_model.ipynb
+      - file: compute_stress_strain.ipynb
+      - file: custom_geometry.ipynb
+      - file: demo_custom_material.ipynb
+      - file: from_xml.ipynb
+      - file: klotz_curve.ipynb
+      - file: optimal_control.ipynb
+      - file: rigid_motion.ipynb
+      - file: shear_experiment.ipynb
+      - file: simple_ellipsoid.ipynb
+      - file: unit_cube_demo.ipynb
+      - file: demo_fixedpointunloader.ipynb
+  - file: pulse
