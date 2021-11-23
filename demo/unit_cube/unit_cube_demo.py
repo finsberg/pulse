@@ -5,6 +5,7 @@
 # a transversally isotropic material with fiber oriented
 # in the $x$-direction.
 #
+
 import dolfin
 
 try:

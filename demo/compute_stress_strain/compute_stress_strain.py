@@ -1,6 +1,7 @@
 # # Compute stress and strain
 #
 # In this demo we show how to compute stress and strain
+
 import dolfin
 
 try:

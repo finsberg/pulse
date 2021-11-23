@@ -12,6 +12,7 @@
 # is added as a penalty to the strain energy denisty function, and we
 # use $\mathbb{P}1$ elements for the displacement
 #
+
 import dolfin
 
 import pulse

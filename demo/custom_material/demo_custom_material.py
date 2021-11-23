@@ -6,6 +6,7 @@
 # To illustrate this we will implement a model for a
 # Mooney-Rivelin material.
 #
+
 import dolfin
 
 # Make sure to use dolfin-adjoint version of object if using dolfin_adjoint
