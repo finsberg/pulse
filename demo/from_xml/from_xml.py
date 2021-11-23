@@ -1,6 +1,7 @@
 # # From XML data
 #
 # Example on how to load your data if it is currently in xml format
+
 import json
 
 import dolfin
