@@ -4,6 +4,7 @@
 # at $x = 0$ and free at $x = 1$. We use
 # a transversally isotropic material with fiber oriented
 # in the $x$-direction.
+#
 import dolfin
 
 try:

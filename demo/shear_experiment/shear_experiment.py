@@ -7,6 +7,7 @@
 #     a structurally based framework for material characterization.
 #     "Philosophical Transactions of the Royal Society of London A:
 #     Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.
+#
 import dolfin
 import matplotlib.pyplot as plt
 import numpy as np

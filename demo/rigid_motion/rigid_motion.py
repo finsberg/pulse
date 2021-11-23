@@ -4,6 +4,7 @@
 # > [1] Kuchta, M., Mardal, K. A., & Mortensen, M. (2019). On the singular Neumann problem in linear elasticity. Numerical Linear Algebra with Applications, 26(1), e2212.
 #
 # Credits to [Aashild Telle](https://github.com/aashildte)
+#
 import dolfin
 from fenics_plotly import plot
 

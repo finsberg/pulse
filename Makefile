@@ -78,23 +78,23 @@ docs: ## generate Sphinx HTML documentation, including API docs
 	for file in README.md; do \
 		cp $$file docs/. ;\
 	done
-	jupytext demo/benchmark/problem1.py -o docs/problem1.ipynb
-	jupytext demo/benchmark/problem2.py -o docs/problem2.ipynb
-	jupytext demo/benchmark/problem3.py -o docs/problem3.ipynb
-	jupytext demo/biaxial_stress_test/biaxial_stress_test.py -o docs/biaxial_stress_test.ipynb
-	jupytext demo/compressible_model/compressible_model.py -o docs/compressible_model.ipynb
-	jupytext demo/compute_stress_strain/compute_stress_strain.py -o docs/compute_stress_strain.ipynb
-	jupytext demo/custom_geometry/custom_geometry.py -o docs/custom_geometry.ipynb
-	jupytext demo/custom_material/demo_custom_material.py -o docs/demo_custom_material.ipynb
-	jupytext demo/from_xml/from_xml.py -o docs/from_xml.ipynb
+	jupytext demo/benchmark/problem1.py -o docs/problem1.ipynb --update
+	jupytext demo/benchmark/problem2.py -o docs/problem2.ipynb --update
+	jupytext demo/benchmark/problem3.py -o docs/problem3.ipynb --update
+	jupytext demo/biaxial_stress_test/biaxial_stress_test.py -o docs/biaxial_stress_test.ipynb --update
+	jupytext demo/compressible_model/compressible_model.py -o docs/compressible_model.ipynb --update
+	jupytext demo/compute_stress_strain/compute_stress_strain.py -o docs/compute_stress_strain.ipynb --update
+	jupytext demo/custom_geometry/custom_geometry.py -o docs/custom_geometry.ipynb --update
+	jupytext demo/custom_material/demo_custom_material.py -o docs/demo_custom_material.ipynb --update
+	jupytext demo/from_xml/from_xml.py -o docs/from_xml.ipynb --update
 	cp -r demo/from_xml/data docs/.
-	jupytext demo/klotz_curve/klotz_curve.py -o docs/klotz_curve.ipynb
-	jupytext demo/optimal_control/optimal_control.py -o docs/optimal_control.ipynb
-	jupytext demo/rigid_motion/rigid_motion.py -o docs/rigid_motion.ipynb
-	jupytext demo/shear_experiment/shear_experiment.py -o docs/shear_experiment.ipynb
-	jupytext demo/simple_ellipsoid/simple_ellipsoid.py -o docs/simple_ellipsoid.ipynb
-	jupytext demo/unit_cube/unit_cube_demo.py -o docs/unit_cube_demo.ipynb
-	jupytext demo/unloading/demo_fixedpointunloader.py -o docs/demo_fixedpointunloader.ipynb
+	jupytext demo/klotz_curve/klotz_curve.py -o docs/klotz_curve.ipynb --update
+	jupytext demo/optimal_control/optimal_control.py -o docs/optimal_control.ipynb --update
+	jupytext demo/rigid_motion/rigid_motion.py -o docs/rigid_motion.ipynb --update
+	jupytext demo/shear_experiment/shear_experiment.py -o docs/shear_experiment.ipynb --update
+	jupytext demo/simple_ellipsoid/simple_ellipsoid.py -o docs/simple_ellipsoid.ipynb --update
+	jupytext demo/unit_cube/unit_cube_demo.py -o docs/unit_cube_demo.ipynb --update
+	jupytext demo/unloading/demo_fixedpointunloader.py -o docs/demo_fixedpointunloader.ipynb --update
 	jupyter-book build docs
 	# python -m http.server --directory docs/_build/html
 
