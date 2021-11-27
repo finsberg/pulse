@@ -99,7 +99,7 @@ class HolzapfelOgden(Material):
         elif diff == 2:
             return a * b / 2.0 * dolfin.exp(b * (I1 - 3))
 
-    def W_4(self, I4, diff=0, use_heaviside=False, *args, **kwargs):
+    def W_4(self, I4, direction, diff=0, use_heaviside=False, *args, **kwargs):
         r"""
         Anisotropic contribution.
 
@@ -131,8 +131,9 @@ class HolzapfelOgden(Material):
         is the Heaviside function.
 
         """
-        a = self.a_f
-        b = self.b_f
+        assert direction in ["f", "s", "n"]
+        a = self.parameters[f"a_{direction}"]
+        b = self.parameters[f"b_{direction}"]
 
         if I4 == 0:
             return 0
@@ -228,8 +229,8 @@ class HolzapfelOgden(Material):
 
         dim = get_dimesion(F)
         W1 = self.W_1(I1e, diff=0, dim=dim)
-        W4f = self.W_4(I4fe, diff=0)
-        W4s = self.W_4(I4se, diff=0)
+        W4f = self.W_4(I4fe, "f", diff=0)
+        W4s = self.W_4(I4se, "s", diff=0)
         W8fs = self.W_8(I8fse, diff=0)
 
         W = W1 + W4f + W4s + W8fs + Wactive
