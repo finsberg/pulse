@@ -132,8 +132,8 @@ class HolzapfelOgden(Material):
 
         """
         assert direction in ["f", "s", "n"]
-        a = self.parameters[f"a_{direction}"]
-        b = self.parameters[f"b_{direction}"]
+        a = getattr(self, f"a_{direction}")
+        b = getattr(self, f"b_{direction}")
 
         if I4 == 0:
             return 0
