@@ -9,7 +9,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     container:
-      image: quay.io/fenicsproject/stable:latest
+      image: finsberg/fenics-extra
     steps:
       - uses: actions/checkout@v2
 
