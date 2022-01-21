@@ -320,7 +320,6 @@ def create_prolate_mesh(mesh_name, mesh_size_factor=1.0):
 
 
 def main():
-
     msh_name = "test.msh"
 
     create_prolate_mesh(msh_name)
@@ -330,7 +329,3 @@ def main():
     geo = gmsh2dolfin(msh_name)
     dolfin.File("ffun.pvd") << geo.ffun
     geo.save("prolate.h5")
-
-
-if __name__ == "__main__":
-    main()

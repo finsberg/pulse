@@ -98,6 +98,9 @@ docs: ## generate Sphinx HTML documentation, including API docs
 	jupyter-book build docs
 	# python -m http.server --directory docs/_build/html
 
+docs-html:
+	jupyter-book build docs
+
 list-demos:
 	find ./demo -name '*.ipynb' | xargs jupytext --to py
 

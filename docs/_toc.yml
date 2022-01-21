@@ -5,6 +5,12 @@ format: jb-book
 root: README
 chapters:
   - file: INSTALL
+  - file: cardiac_mechanics_intro
+    sections:
+      - file: kinematics
+      - file: balance_laws
+      - file: hyperalsticity
+      - file: incompressibility
   - file: DEMO
     sections:
       - file: problem1.ipynb
@@ -24,3 +30,4 @@ chapters:
       - file: unit_cube_demo.ipynb
       - file: demo_fixedpointunloader.ipynb
   - file: pulse
+  - file: modules
