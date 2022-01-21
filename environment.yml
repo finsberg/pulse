@@ -1,11 +1,14 @@
 name: pulse
 channels:
+  - default
   - conda-forge
-  - defaults
 dependencies:
-    - python
-    - h5py
-    - fenics
-    - scipy
-    - matplotlib
-    - pulse
+  - pulse
+  - gmsh
+  - ldrb
+  - jupyter
+  - jupyterlab
+  - pip:
+      - fenics-plotly
+      - jupyter-book>=0.7.0b
+      - sphinx_inline_tabs
