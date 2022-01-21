@@ -1,4 +1,13 @@
 docs/*.ipynb
+docs/modules.rst
+docs/pulse.example_meshes.rst
+docs/pulse.material.rst
+docs/pulse.rst
+demo/custom_geometry/test.msh
+docs/data/
+publish_conda.sh
+pulse-feedstock/
+joss/components.pptx
 # Package-specific files
 *.vtu
 tests/tmp*
