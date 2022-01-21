@@ -127,7 +127,7 @@ incorporated using two fundamentally different approaches known as the
 *active stress* and *active strain* formulation.
 
 
-```{figure} figures/Hill_muscle_model.png
+```{figure} ./figures/Hill_muscle_model.png
 ---
 name: hill_muscle_model
 width: 300px
@@ -237,7 +237,7 @@ function of the elastic deformation gradient only. The
 decoupling can be illustrated by considering two sarcomeres connected in
 series as shown in {numref}`actstrain`.
 
-```{figure} figures/actstrain.png
+```{figure} ./figures/actstrain.png
 ---
 name: actstrain
 width: 300px
