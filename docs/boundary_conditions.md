@@ -90,7 +90,7 @@ An overview of the location of the different boundaries for the
 bi-ventricular geometry is illustrated in {numref}`boundaries`.
 
 
-```{figure} figures/boundaries.png
+```{figure} ./figures/boundaries.png
 ---
 name: boundaries
 ---
