@@ -3,7 +3,7 @@ We represent the heart as a continuum body $\mathfrak{B}$ embedded in
 $\mathbb{R}^3$. A configuration of $\mathfrak{B}$ is a mapping $\chi:
 \mathfrak{B} \rightarrow \mathbb{R}^3$.
 We denote the *reference configuration* of the heart by $\Omega
-\equiv \chi_0(\mathfrak{B})$, and the \emph{current configuration} by $\omega
+\equiv \chi_0(\mathfrak{B})$, and the *current configuration* by $\omega
 \equiv \chi(\mathfrak{B})$. The mapping $\varphi :  \Omega
 \rightarrow \omega$, given by the composition $\varphi = \chi
 \circ \chi_0^{-1}$, is a smooth, orientation preserving (positive
@@ -15,7 +15,7 @@ are related through the mapping $\varphi$, by $\mathbf{x} = \varphi(\mathbf{X})$
 For time-dependent problems it is common to make  the time-dependence
 explicitly by writing $\mathbf{x} = \varphi(\mathbf{X}, t)$. In the following
 we will only focus on the mapping between two configurations and
-therefore no time-dependence is needed. The \emph{deformation gradient} is a
+therefore no time-dependence is needed. The *deformation gradient* is a
 rank-2 tensor, defined as the partial derivative of $\varphi$  with
 respect to the material coordinates:
 
@@ -51,9 +51,9 @@ see that
 \end{align}
 ```
 
-Some other useful quantities are the \emph{right Cauchy-Green} deformation
-tensor $\mathbf{C} = \mathbf{F}^T\mathbf{F}$, the \emph{left Cauchy-Green} deformation tensor
-$\mathbf{B} = \mathbf{F}\mathbf{F}^T$, the \emph{Green-Lagrange} strain tensor
+Some other useful quantities are the *right Cauchy-Green* deformation
+tensor $\mathbf{C} = \mathbf{F}^T\mathbf{F}$, the *left Cauchy-Green* deformation tensor
+$\mathbf{B} = \mathbf{F}\mathbf{F}^T$, the *Green-Lagrange* strain tensor
 $\mathbf{E} = \frac{1}{2}(\mathbf{C} - \mathbf{I})$, and the determinant of the
 deformation gradient $J = \det \mathbf{F}$.
 
@@ -61,11 +61,11 @@ An important concept in mechanics is the concept of stress, which is
 defined as force per area
 $\left[\frac{\mathrm{N}}{\mathrm{m}^2}\right]$. When working with
 different configurations one needs to be careful with which forces and
-which areas we are talking about. Table \ref{tab:stress_tensor}
+which areas we are talking about. {numref}`stress_tensor`
 shows how forces and areas are related for the most important stress
 tensors used in this thesis. Note that the explicit form of the stress
 tensor requires a constitutive law for the material at hand. This will
-be discussed in more detail in Section \ref{sec:constitutive_relations}.
+be discussed in more detail in {ref}`section:constitutive_relations`.
 
 
 ```{list-table} Showing different stress tensors used in this thesis, and how they relate forces to areas trough different configurations.

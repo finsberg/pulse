@@ -62,7 +62,7 @@ mass density $\rho$ this implies that
 
 where $\mathbf{v}$ is the spatial velocity field, $\mathbf{t}$ is
 the traction acting on the boundary, and $\mathbf{b}$ is the body
-force. From \emph{Cauchy's stress theorem} we know that there exists a
+force. From *Cauchy's stress theorem* we know that there exists a
 second order tensor $\sigma$, known as the Cauchy stress tensor that is
 related to the traction vector by $\mathbf{t} = \sigma \mathbf{n}$,
 where $\mathbf{n}$ is the unit normal in the current configuration.

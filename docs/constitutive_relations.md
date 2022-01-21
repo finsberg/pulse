@@ -1,3 +1,4 @@
+(section:constitutive_relations)=
 # Constitutive relations
 We have now covered a mechanical framework which holds any for
 material in general. What differentiate the mechanics of soft
@@ -77,6 +78,7 @@ fulfilled.
 In this thesis we have used a transversely isotropic version of
 {eq}`holzapfel_full` which is obtained by setting $a_{fs} =
 b_{fs}= a_s = b_s = 0$, i.e
+
 ```{math}
 :label: holzapel_trans
 \begin{align}
@@ -89,6 +91,7 @@ b_{fs}= a_s = b_s = 0$, i.e
 If we further set $a_f = b_f = b = 0$ so that in $a$ is the
 only nonzero parameter, then the Holzapfel-Ogden model reduces (after a
 series expansion of the exponential and a limiting argument) to
+
 ```{math}
 \begin{align}
   \Psi(I_1)  = \frac{a}{2} \left( I_1 - 3 \right),
@@ -97,6 +100,7 @@ series expansion of the exponential and a limiting argument) to
 which is the model of a Neo Hookean material. The Cauchy stress can be derived
 analytically from {eq}`holzapfel_full`, by using the chain rule and
 {eq}`cauchy_incomp`,
+
 ```{math}
 \begin{align}
   \begin{split}
@@ -114,7 +118,7 @@ analytically from {eq}`holzapfel_full`, by using the chain rule and
 where $\mathbf{B} = \mathbf{F} \mathbf{F}^{T}$ is the left Cauchy-Green tensor,
 $\mathbf{f} = \mathbf{F} \mathbf{f}_0$ and $\mathbf{s} = \mathbf{F} \mathbf{s}_0$.
 
-## Modeling of the active contraction}
+## Modeling of the active contraction
 
 One feature that separates the myocardium from other hyperelastic
 materials such as rubber, is its ability to actively generate force
@@ -140,18 +144,21 @@ of passive and active stresses
 formulation {cite}`hunter1998modelling` one assumes that the total
 Cauchy stress $\sigma$ can be written as an additive sum of one
 passive contribution $\sigma_p$ and one active contribution $\sigma_a$,
+
 ```{math}
 \begin{align}
   \sigma = \sigma_p + \sigma_a
 \end{align}
 ```
 The passive contribution is determined by the material model used
+
 ```{math}
 \begin{align}
  \sigma_p = \frac{1}{J} \frac{\partial \Psi(\mathbf{F})}{\partial \mathbf{F}} \mathbf{F}^{T},
 \end{align}
 ```
 while the active contribution is given by
+
 ```{math}
 \begin{align}
   \sigma_a = \sigma_{ff} \mathbf{f} \otimes \mathbf{f} +
@@ -168,6 +175,7 @@ transverse direction of the fibers ($\sigma_{ss}$, and $\sigma_{nn}$),
 are non-negligible {cite}`lin1998multiaxial`, and one approach is to assume
 a uniform transverse activation in which the total active tension
 can be written as
+
 ```{math}
 :label: intro_active_stress
 \begin{align}
@@ -180,12 +188,14 @@ where $\eta$ represent the amount of transverse activation and $T_a
 \in \mathbb{R}$ is the magnitude of the active tension.
 In the limiting case ($\eta = 0.0$), the active tension acts purely
 along the fibers and {eq}`intro_active_stress` reduces to
+
 ```{math}
 \begin{align}
   \sigma_a = T_a \mathbf{f} \otimes \mathbf{f}.
 \end{align}
 ```
 Note that, by observing  that
+
 ```{math}
 \begin{align*}
   \frac{\partial I_{4\mathbf{a}_0}}{\partial \mathbf{F}}
@@ -197,6 +207,7 @@ Note that, by observing  that
 and that $I_1 =  I_{4\mathbf{f}_0} +  I_{4\mathbf{s}_0} +  I_{4\mathbf{n}_0}$,
 we can instead decompose the strain-energy function into a passive and active
 parts {cite}`pathmanathan2010cardiac`, $\Psi= \Psi_p + \Psi_a$, with
+
 ```{math}
 \begin{align}
 \Psi_a = \frac{T_a}{2J} \left(( I_{4\mathbf{f}_0} - 1)  + \eta \left[ (I_1 - 3) -
@@ -210,14 +221,13 @@ The *active strain* formulation is a relatively new way of modeling the
 active contraction in the heart and was first introduced in
 {cite}`taber2000modeling`. This formulation is based on a
 multiplicative decomposition of the deformation gradient,
+
 ```{math}
 :label: active_strain
 \begin{equation}
  \mathbf{F} = \mathbf{F}_e \mathbf{F}_a.
 \end{equation}
 ```
-
-
 The active part $\mathbf{F}_a$, is an inelastic process driven by the
 biochemistry and can be seen as the actual distortion of the
 microstructure. The elastic part $\mathbf{F}_e$ is responsible for preserving
@@ -237,6 +247,7 @@ Illustration of the active strain formulation. During the active deformation, th
 
 The general form of the active deformation gradient for a
 material with an orthotropic active response is given by
+
 ```{math}
 :label: active_strain_Fa_general
 \begin{equation}
@@ -252,6 +263,7 @@ deformation is volume preserving. Further we assume that the activation is
 transversely isotropic, so that the sheet and sheet-normal axis is
 treated in the same way. It is then straight forward to verify that
 $\gamma_n = \gamma_s =1- (1-\gamma_f)^{-1/2}$, and we have
+
 ```{math}
 :label: intro_active_strain_Fa_gjerald
 \begin{equation}

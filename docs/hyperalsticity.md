@@ -60,8 +60,8 @@ require an infinite amount of energy, i.e
 ```
 We say that the strain energy should be objective, meaning that the
 stored energy in the material should be invariant with respect to
-change of observer. Formally we must have: \emph{given any positive symmetric
-rank-2 tensor $\mathbf{C} \in \mathrm{Sym}$:}
+change of observer. Formally we must have: *given any positive symmetric
+rank-2 tensor $\mathbf{C} \in \mathrm{Sym}$:*
 ```{math}
 \begin{align}
   \Psi(\mathbf{C}) = \Psi(\mathbf{Q}\mathbf{C}\mathbf{Q}^T), \; \forall \mathbf{Q} \in \mathcal{G} \subseteq \mathrm{Orth}.
@@ -109,7 +109,7 @@ transversely isotropic invariants are given by
 Some of the invariants do have a physical interpretation. For instance, $I_3$
 is related to the volume ratio of material during deformation, while
 $I_{4\mathbf{a}_0 } $ is related to the stretch along the direction
-$\mathbf{a}_0 $. Indeed the \emph{stretch} ratio in the direction
+$\mathbf{a}_0 $. Indeed the *stretch* ratio in the direction
 $\mathbf{a}_0$ is given by $\lambda_{\mathbf{a}_0} = | \mathbf{F} \mathbf{a}_0
 |$ and we see that $I_{4\mathbf{a}_0 }  =  \mathbf{a}_0 \cdot (\mathbf{C}
 \mathbf{a}_0) = \mathbf{F} \mathbf{a}_0 \cdot (\mathbf{F} \mathbf{a}_0) =
@@ -120,7 +120,7 @@ $\mathbf{a}_0$ is given by $\lambda_{\mathbf{a}_0} = | \mathbf{F} \mathbf{a}_0
 The theory of global existence of unique solutions for elastic problems
 was originally based convexity of the free energy function.
 An energy function $\Psi: \mathrm{Lin}^+ \rightarrow
-\mathbb{R}^+$ is strictly \emph{convex} if for each $\mathbf{F} \in
+\mathbb{R}^+$ is strictly *convex* if for each $\mathbf{F} \in
 \mathrm{Lin}^+$ and $\mathbf{H} \neq \mathbf{0}$ with $\det (\mathbf{F} +
 (1-\lambda)\mathbf{H}) > 0$, we have
 ```{math}
