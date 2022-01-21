@@ -11,6 +11,10 @@ chapters:
       - file: balance_laws
       - file: hyperalsticity
       - file: incompressibility
+      - file: boundary_conditions
+      - file: force_balance
+      - file: constitutive_relations
+      - file: implementation_details
   - file: DEMO
     sections:
       - file: problem1.ipynb

@@ -1,3 +1,4 @@
+(section:hyperelasticity)=
 # Hyperelasticity
 
 Even though experimental studies have indicated visco-elastic behavior
@@ -37,7 +38,7 @@ material.
   Helmholtz free energy density.
 ```
 
-
+(section:strain_energy_req)=
 ## General requirements for the strain-energy density function
 
 Some general requirements must hold for the strain-energy function.
