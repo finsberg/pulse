@@ -1,0 +1,757 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Constitutive relations &#8212; pulse</title>
+    
+  <link href="_static/css/theme.css" rel="stylesheet">
+  <link href="_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <link rel="preload" as="script" href="_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
+    <script>
+        const thebe_selector = ".thebe,.cell"
+        const thebe_selector_input = "pre,.cell_input div.highlight"
+        const thebe_selector_output = ".output,.cell_output"
+    </script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Implementation details" href="implementation_details.html" />
+    <link rel="prev" title="Force-balance equation" href="force_balance.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="_static/logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">pulse</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="README.html">
+   pulse
+  </a>
+ </li>
+</ul>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="cardiac_mechanics_intro.html">
+   Cardiac Mechanics
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="kinematics.html">
+     Kinematics
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="balance_laws.html">
+     Balance laws and transformations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="hyperalsticity.html">
+     Hyperelasticity
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="incompressibility.html">
+     Incompressibility
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="boundary_conditions.html">
+     Boundary Conditions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="force_balance.html">
+     Force-balance equation
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Constitutive relations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="implementation_details.html">
+     Implementation details
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="DEMO.html">
+   Demos
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="problem1.html">
+     Cardiac mechanics Benchmark - Problem 1
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="problem2.html">
+     Cardiac mechanics Benchmark - Problem 2
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="problem3.html">
+     Cardiac mechanics Benchmark - Problem 3
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="biaxial_stress_test.html">
+     Biaxial stress test
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="compressible_model.html">
+     Compressible model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="compute_stress_strain.html">
+     Compute stress and strain
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="custom_geometry.html">
+     Custom geometry
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="demo_custom_material.html">
+     Custom material
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="from_xml.html">
+     From XML data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="klotz_curve.html">
+     Klotz curve
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="optimal_control.html">
+     Optimal controls
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="rigid_motion.html">
+     Rigid motion
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="shear_experiment.html">
+     Shear experiment
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="simple_ellipsoid.html">
+     Simple ellipsoid
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="unit_cube_demo.html">
+     Contracting cube
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="demo_fixedpointunloader.html">
+     Finding the unloaded geometry
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="pulse.html">
+   pulse package
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <label for="toctree-checkbox-3">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="pulse.example_meshes.html">
+     pulse.example_meshes package
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="pulse.material.html">
+     pulse.material package
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="modules.html">
+   pulse
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+  <label for="toctree-checkbox-4">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="pulse.html">
+     pulse package
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+    <label for="toctree-checkbox-5">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="pulse.example_meshes.html">
+       pulse.example_meshes package
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="pulse.material.html">
+       pulse.material package
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+    </div>
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  <a href="https://www.simula.no/research/projects/department-computational-physiology">Computational Physiology at Simula</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="_sources/constitutive_relations.md"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.md</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/finsberg/pulse"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/finsberg/pulse/issues/new?title=Issue%20on%20page%20%2Fconstitutive_relations.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav" aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#modeling-of-the-passive-myocardium">
+   Modeling of the passive myocardium
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#modeling-of-the-active-contraction">
+   Modeling of the active contraction
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#references">
+   References
+  </a>
+ </li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="tex2jax_ignore mathjax_ignore section" id="constitutive-relations">
+<span id="section-constitutive-relations"></span><h1>Constitutive relations<a class="headerlink" href="#constitutive-relations" title="Permalink to this headline">¶</a></h1>
+<p>We have now covered a mechanical framework which holds any for
+material in general. What differentiate the mechanics of soft
+living tissue, like the myocardium, from other materials is the
+constitutive relations which describes the response of a material to
+applied load. Such constitutive relations often comes from
+experimental observations, both observations of anatomical structure
+but also from experiments done on tissue slabs.</p>
+<p>We have already covered the theory of hyperelasticity and incompressibility in Section
+<a class="reference internal" href="hyperalsticity.html#section-hyperelasticity"><span class="std std-ref">Hyperelasticity</span></a> and <a class="reference internal" href="incompressibility.html#section-incompressibility"><span class="std std-ref">Incompressibility</span></a> respectively
+which are types of constitutive relations. In this section we will
+cover constitutive relations which only apply to soft living tissue
+such as the myocardium. In particular, we will consider a complete
+constitutive model of the mechanical behavior of the myocardium that
+accounts for both the passive and the active response of the myocardium.</p>
+<div class="section" id="modeling-of-the-passive-myocardium">
+<h2>Modeling of the passive myocardium<a class="headerlink" href="#modeling-of-the-passive-myocardium" title="Permalink to this headline">¶</a></h2>
+<p>The passive response of the myocardium has been investigated through
+uni-axial, bi-axial and shear deformation experiments <span id="id1">[<a class="reference internal" href="hyperalsticity.html#id112">Dokos <em>et al.</em>, 2002</a>]</span>.</p>
+<p>In 2009 Holzapfel and Ogden proposed an orthotropic constitutive model
+of the passive myocardium <span id="id2">[<a class="reference internal" href="hyperalsticity.html#id92">Holzapfel and Ogden, 2009</a>]</span> which is
+based on the experiments done in <span id="id3">[<a class="reference internal" href="hyperalsticity.html#id112">Dokos <em>et al.</em>, 2002</a>]</span>, and is the
+model used in this thesis. Other constitutive models for the passive
+myocardium exists
+<span id="id4">[<a class="reference internal" href="#id102">Costa <em>et al.</em>, 2001</a>, <a class="reference internal" href="#id115">Guccione <em>et al.</em>, 1991</a>, <a class="reference internal" href="#id118">Nash and Hunter, 2000</a>]</span>
+but is not considered here. The model
+assumes a local orthonormal coordinate system with the fiber axis
+<span class="math notranslate nohighlight">\(\mathbf{f}_0\)</span>, sheet axis <span class="math notranslate nohighlight">\(\mathbf{s}_0\)</span> and sheet-normal axis <span class="math notranslate nohighlight">\(\mathbf{n}_0\)</span>.</p>
+<p>From this coordinate system we define the invariants</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+  \begin{split}
+    I_1 &amp;= \mathrm{tr} \; (\mathbf{C}) ,\\
+    I_{4\mathbf{f}_0} &amp;= \mathbf{f}_0 \cdot (\mathbf{C} \mathbf{f}_0),\\
+    I_{4\mathbf{s}_0} &amp;= \mathbf{s}_0 \cdot (\mathbf{C} \mathbf{s}_0),\\
+    I_{8\mathbf{f}_0\mathbf{s}_0} &amp;=  \mathbf{s}_0 \cdot (\mathbf{C} \mathbf{f}_0),
+  \end{split}
+\end{align}\end{split}\]</div>
+<p>Here <span class="math notranslate nohighlight">\(I_{4\mathbf{f}_0} \)</span> and <span class="math notranslate nohighlight">\(I_{4\mathbf{s}_0}\)</span> are the stretches along the
+fiber, sheet axis respectively and <span class="math notranslate nohighlight">\(I_{8\mathbf{f}_0\mathbf{s}_0}\)</span> is
+related to the angle between the fiber and sheets in the current
+configuration given that they are orthogonal in the reference
+configuration. Note that since <span class="math notranslate nohighlight">\((\mathbf{f}_0, \mathbf{s}_0, \mathbf{n}_0)\)</span> is an orthonormal
+system, we have the relation <span class="math notranslate nohighlight">\(I_1 = I_{4\mathbf{f}_0} + I_{4\mathbf{s}_0} +I_{4\mathbf{n}_0}\)</span>,
+and so <span class="math notranslate nohighlight">\(I_{4\mathbf{n}_0}\)</span> is redundant. The orthotropic Holzapfel and Ogden
+model reads</p>
+<div class="math notranslate nohighlight" id="equation-holzapfel-full">
+<span class="eqno">(20)<a class="headerlink" href="#equation-holzapfel-full" title="Permalink to this equation">¶</a></span>\[\begin{split}\begin{align}
+  \begin{split}
+  \Psi(I_1, I_{4\mathbf{f}_0},  I_{4\mathbf{s}_0},  I_{8\mathbf{f}_0\mathbf{s}_0}) =&amp; \frac{a}{2 b} \left( e^{ b (I_1 - 3)}  -1 \right)\\
+  +&amp; \frac{a_f}{2 b_f} \left( e^{ b_f (I_{4\mathbf{f}_0} - 1)_+^2} -1 \right) \\
+  +&amp; \frac{a_s}{2 b_s} \left( e^{ b_s (I_{4\mathbf{s}_0} - 1)_+^2} -1 \right)\\
+  +&amp; \frac{a_{fs}}{2 b_{fs}} \left( e^{ b_{fs} I_{8\mathbf{f}_0\mathbf{s}_0}^2} -1 \right).
+\end{split}
+\end{align}\end{split}\]</div>
+<p>Here <span class="math notranslate nohighlight">\(( x )_+ = \frac{1}{2} \left( x + |x| \right)\)</span>, so that the
+the terms involving <span class="math notranslate nohighlight">\(I_{4\mathbf{f}_0}\)</span> and <span class="math notranslate nohighlight">\(I_{4\mathbf{s}_0}\)</span> only contribute to the
+stored energy during elongation. From <a class="reference internal" href="#equation-holzapfel-full">(20)</a> we see
+that it is easy to identify the physical meaning of each term. For
+example the first term represents the isotropic contribution which is
+the overall stiffness in the extracellular matrix while the second
+term accounts for the extra stiffness along the fibers when they are
+elongated. It is also straight forward to prove that the strain-energy
+function is convex, and that the requirements for existence and
+uniqueness discussed in <a class="reference internal" href="hyperalsticity.html#section-strain-energy-req"><span class="std std-ref">General requirements for the strain-energy density function</span></a> are
+fulfilled.</p>
+<p>In this thesis we have used a transversely isotropic version of
+<a class="reference internal" href="#equation-holzapfel-full">(20)</a> which is obtained by setting <span class="math notranslate nohighlight">\(a_{fs} =
+b_{fs}= a_s = b_s = 0\)</span>, i.e</p>
+<div class="math notranslate nohighlight" id="equation-holzapel-trans">
+<span class="eqno">(21)<a class="headerlink" href="#equation-holzapel-trans" title="Permalink to this equation">¶</a></span>\[\begin{align}
+  \begin{split}
+  \Psi(I_1, I_{4\mathbf{f}_0}) = \frac{a}{2 b} \left( e^{ b (I_1 - 3)}  -1 \right)
+  + \frac{a_f}{2 b_f} \left( e^{ b_f (I_{4\mathbf{f}_0} - 1)_+^2} -1 \right).
+  \end{split}
+\end{align}\]</div>
+<p>If we further set <span class="math notranslate nohighlight">\(a_f = b_f = b = 0\)</span> so that in <span class="math notranslate nohighlight">\(a\)</span> is the
+only nonzero parameter, then the Holzapfel-Ogden model reduces (after a
+series expansion of the exponential and a limiting argument) to</p>
+<div class="math notranslate nohighlight">
+\[\begin{align}
+  \Psi(I_1)  = \frac{a}{2} \left( I_1 - 3 \right),
+\end{align}\]</div>
+<p>which is the model of a Neo Hookean material. The Cauchy stress can be derived
+analytically from <a class="reference internal" href="#equation-holzapfel-full">(20)</a>, by using the chain rule and
+<a class="reference internal" href="incompressibility.html#equation-cauchy-incomp">(16)</a>,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+  \begin{split}
+    J\sigma
+    =&amp; \frac{\partial \Psi(\mathbf{F})}{\partial \mathbf{F}}\mathbf{F}^{T} + p \mathbf{I}
+    = \sum_{i \in \left\{ 1, 4\mathbf{f}_0,  4\mathbf{s}_0,  8\mathbf{f}_0\mathbf{s}_0 \right\} }
+    \psi_i \frac{\partial I_i}{\partial \mathbf{F}}\mathbf{F}^{T} + p \mathbf{I} \\
+    =&amp; p \mathbf{I} + a \left( e^{ b (I_1 - 3)}  -1 \right) \mathbf{B}
+    + 2 a_f (I_{4\mathbf{f}_0} - 1)_+  e^{ b_f (I_{4\mathbf{f}_0} - 1)^2} \mathbf{f} \otimes \mathbf{f} \\
+    &amp;+ 2 a_f (I_{4\mathbf{s}_0} - 1)_+  e^{ b_f (I_{4\mathbf{s}_0} - 1)^2} \mathbf{s} \otimes \mathbf{s}
+    + a_{fs} I_{8\mathbf{f}_0\mathbf{s}_0}  e^{ b_{fs} I_{8\mathbf{f}_0\mathbf{s}_0}^2} \left( \mathbf{f} \otimes \mathbf{s}  +  \mathbf{s} \otimes \mathbf{f} \right),
+  \end{split}
+\end{align}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{B} = \mathbf{F} \mathbf{F}^{T}\)</span> is the left Cauchy-Green tensor,
+<span class="math notranslate nohighlight">\(\mathbf{f} = \mathbf{F} \mathbf{f}_0\)</span> and <span class="math notranslate nohighlight">\(\mathbf{s} = \mathbf{F} \mathbf{s}_0\)</span>.</p>
+</div>
+<div class="section" id="modeling-of-the-active-contraction">
+<h2>Modeling of the active contraction<a class="headerlink" href="#modeling-of-the-active-contraction" title="Permalink to this headline">¶</a></h2>
+<p>One feature that separates the myocardium from other hyperelastic
+materials such as rubber, is its ability to actively generate force
+without external loads. This active component of the model can be
+incorporated using two fundamentally different approaches known as the
+<em>active stress</em> and <em>active strain</em> formulation.</p>
+<div class="figure align-default" id="hill-muscle-model">
+<a class="reference internal image-reference" href="figures/Hill_muscle_model.png"><img alt="figures/Hill_muscle_model.png" src="figures/Hill_muscle_model.png" style="width: 300px;" /></a>
+<p class="caption"><span class="caption-number">Fig. 2 </span><span class="caption-text">The classical three-element Hill muscle model with one contractile element and two non-linear springs, one arranged in series and one parallel.</span><a class="headerlink" href="#hill-muscle-model" title="Permalink to this image">¶</a></p>
+</div>
+<p>The <em>active stress</em> approach is based on the classical three element
+Hill model illustrated in <a class="reference internal" href="#hill-muscle-model"><span class="std std-numref">Fig. 2</span></a>, where the
+active contribution naturally decomposes the total stress into a sum
+of passive and active stresses
+<span id="id5">[<a class="reference internal" href="#id34">Nash and Panfilov, 2004</a>]</span>. Hence, in the active stress
+formulation <span id="id6">[<a class="reference internal" href="#id41">Hunter <em>et al.</em>, 1998</a>]</span> one assumes that the total
+Cauchy stress <span class="math notranslate nohighlight">\(\sigma\)</span> can be written as an additive sum of one
+passive contribution <span class="math notranslate nohighlight">\(\sigma_p\)</span> and one active contribution <span class="math notranslate nohighlight">\(\sigma_a\)</span>,</p>
+<div class="math notranslate nohighlight">
+\[\begin{align}
+  \sigma = \sigma_p + \sigma_a
+\end{align}\]</div>
+<p>The passive contribution is determined by the material model used</p>
+<div class="math notranslate nohighlight">
+\[\begin{align}
+ \sigma_p = \frac{1}{J} \frac{\partial \Psi(\mathbf{F})}{\partial \mathbf{F}} \mathbf{F}^{T},
+\end{align}\]</div>
+<p>while the active contribution is given by</p>
+<div class="math notranslate nohighlight">
+\[\begin{align}
+  \sigma_a = \sigma_{ff} \mathbf{f} \otimes \mathbf{f} +
+  \sigma_{ss} \mathbf{s} \otimes \mathbf{s} +
+  \sigma_{nn} \mathbf{n} \otimes \mathbf{n},
+\end{align}\]</div>
+<p>and the different constants <span class="math notranslate nohighlight">\(\sigma_{ff}, \sigma_{ss}\)</span>, and
+<span class="math notranslate nohighlight">\(\sigma_{nn}\)</span>, which are the active stress in the fiber, sheet and
+sheet-normal direction respectively, are typically coupled to the
+electrophysiology and calcium dynamics.
+There are experimental evidence that the active stresses in the
+transverse direction of the fibers (<span class="math notranslate nohighlight">\(\sigma_{ss}\)</span>, and <span class="math notranslate nohighlight">\(\sigma_{nn}\)</span>),
+are non-negligible <span id="id7">[<a class="reference internal" href="#id32">Lin and Yin, 1998</a>]</span>, and one approach is to assume
+a uniform transverse activation in which the total active tension
+can be written as</p>
+<div class="math notranslate nohighlight" id="equation-intro-active-stress">
+<span class="eqno">(22)<a class="headerlink" href="#equation-intro-active-stress" title="Permalink to this equation">¶</a></span>\[\begin{align}
+  \sigma_a = T_a \left[\mathbf{f} \otimes \mathbf{f} +
+   \eta\left( \mathbf{s} \otimes \mathbf{s} +
+  \ \mathbf{n} \otimes \mathbf{n} \right)\right],
+\end{align}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\eta\)</span> represent the amount of transverse activation and <span class="math notranslate nohighlight">\(T_a
+\in \mathbb{R}\)</span> is the magnitude of the active tension.
+In the limiting case (<span class="math notranslate nohighlight">\(\eta = 0.0\)</span>), the active tension acts purely
+along the fibers and <a class="reference internal" href="#equation-intro-active-stress">(22)</a> reduces to</p>
+<div class="math notranslate nohighlight">
+\[\begin{align}
+  \sigma_a = T_a \mathbf{f} \otimes \mathbf{f}.
+\end{align}\]</div>
+<p>Note that, by observing  that</p>
+<div class="math notranslate nohighlight">
+\[\begin{align*}
+  \frac{\partial I_{4\mathbf{a}_0}}{\partial \mathbf{F}}
+  = \frac{\partial (\mathbf{a}_0  \cdot \mathbf{C} \mathbf{a}_0 )}{\partial \mathbf{F}}
+  = 2 \mathbf{a} \otimes \mathbf{a}_0 \implies
+  \mathbf{a} \otimes  \mathbf{a}= \frac{1}{2} \frac{\partial I_{4\mathbf{a}_0}}{\partial \mathbf{F}} \mathbf{F}^{T}
+\end{align*}\]</div>
+<p>and that <span class="math notranslate nohighlight">\(I_1 =  I_{4\mathbf{f}_0} +  I_{4\mathbf{s}_0} +  I_{4\mathbf{n}_0}\)</span>,
+we can instead decompose the strain-energy function into a passive and active
+parts <span id="id8">[<a class="reference internal" href="#id30">Pathmanathan <em>et al.</em>, 2010</a>]</span>, <span class="math notranslate nohighlight">\(\Psi= \Psi_p + \Psi_a\)</span>, with</p>
+<div class="math notranslate nohighlight">
+\[\begin{align}
+\Psi_a = \frac{T_a}{2J} \left(( I_{4\mathbf{f}_0} - 1)  + \eta \left[ (I_1 - 3) -
+    (I_{4\mathbf{f}_0} - 1)\right] \right),
+\end{align}\]</div>
+<p>so that <span class="math notranslate nohighlight">\(J \sigma_a  = \frac{\partial \Psi_a}{\partial \mathbf{F}}
+\mathbf{F}^{T}\)</span>.</p>
+<p>The <em>active strain</em> formulation is a relatively new way of modeling the
+active contraction in the heart and was first introduced in
+<span id="id9">[<a class="reference internal" href="#id40">Taber and Perucchio, 2000</a>]</span>. This formulation is based on a
+multiplicative decomposition of the deformation gradient,</p>
+<div class="math notranslate nohighlight" id="equation-active-strain">
+<span class="eqno">(23)<a class="headerlink" href="#equation-active-strain" title="Permalink to this equation">¶</a></span>\[\begin{equation}
+ \mathbf{F} = \mathbf{F}_e \mathbf{F}_a.
+\end{equation}\]</div>
+<p>The active part <span class="math notranslate nohighlight">\(\mathbf{F}_a\)</span>, is an inelastic process driven by the
+biochemistry and can be seen as the actual distortion of the
+microstructure. The elastic part <span class="math notranslate nohighlight">\(\mathbf{F}_e\)</span> is responsible for preserving
+compatibility of the tissue and stores all the energy in the
+deformations. As a consequence, the strain energy function is a
+function of the elastic deformation gradient only. The
+decoupling can be illustrated by considering two sarcomeres connected in
+series as shown in <a class="reference internal" href="#actstrain"><span class="std std-numref">Fig. 3</span></a>.</p>
+<div class="figure align-default" id="actstrain">
+<a class="reference internal image-reference" href="figures/actstrain.png"><img alt="figures/actstrain.png" src="figures/actstrain.png" style="width: 300px;" /></a>
+<p class="caption"><span class="caption-number">Fig. 3 </span><span class="caption-text">Illustration of the active strain formulation. During the active deformation, the sarcomeres shortens as if they were all detached. The elastic deformation ensures compatibility of the tissue.</span><a class="headerlink" href="#actstrain" title="Permalink to this image">¶</a></p>
+</div>
+<p>The general form of the active deformation gradient for a
+material with an orthotropic active response is given by</p>
+<div class="math notranslate nohighlight" id="equation-active-strain-fa-general">
+<span class="eqno">(24)<a class="headerlink" href="#equation-active-strain-fa-general" title="Permalink to this equation">¶</a></span>\[\begin{equation}
+  \mathbf{F}_a =  \mathbf{I}
+  - \gamma_f \mathbf{f}_0 \otimes \mathbf{f}_0
+  - \gamma_s \mathbf{s}_0 \otimes \mathbf{s}_0
+  - \gamma_n \mathbf{n}_0 \otimes \mathbf{n}_0
+\end{equation}\]</div>
+<p>We add the constraint <span class="math notranslate nohighlight">\(\mathrm{det} \; (\mathbf{F}_a) = 1\)</span>, meaning that the active
+deformation is volume preserving. Further we assume that the activation is
+transversely isotropic, so that the sheet and sheet-normal axis is
+treated in the same way. It is then straight forward to verify that
+<span class="math notranslate nohighlight">\(\gamma_n = \gamma_s =1- (1-\gamma_f)^{-1/2}\)</span>, and we have</p>
+<div class="math notranslate nohighlight" id="equation-intro-active-strain-fa-gjerald">
+<span class="eqno">(25)<a class="headerlink" href="#equation-intro-active-strain-fa-gjerald" title="Permalink to this equation">¶</a></span>\[\begin{equation}
+  \mathbf{F}_a = (1 - \gamma) \mathbf{f}_0 \otimes \mathbf{f}_0  + \frac{1}{\sqrt{1 - \gamma}} (\mathbf{I} - \mathbf{f}_0 \otimes \mathbf{f}_0),
+\end{equation}\]</div>
+<p>where we set <span class="math notranslate nohighlight">\(\gamma = \gamma_f\)</span> for convenience.</p>
+<p>While the motivation behind the active stress formulation is purely
+physiological and based on the classical Hill model shown in
+<a class="reference internal" href="#hill-muscle-model"><span class="std std-numref">Fig. 2</span></a>, the motivation behind the active strain
+formulation is more driven by ensuring mathematical robustness. In
+particular it has been shown <span id="id10">[<a class="reference internal" href="#id66">Ambrosi and Pezzuto, 2012</a>]</span> that with the
+active strain formulation, properties such as frame invariance and
+rank-one ellipticity is inherited from the strain energy function. In
+contrast, rank-one ellipticity is not guaranteed for the active stress
+formulation.</p>
+<p>For a more extensive comparison of the active stress and active strain
+approach we refer to <span id="id11">[<a class="reference internal" href="#id66">Ambrosi and Pezzuto, 2012</a>, <a class="reference internal" href="#id17">Giantesio <em>et al.</em>, 2017</a>]</span>,
+and for an overview of other methods to model the active contraction
+we refer to <span id="id12">[<a class="reference internal" href="#id67">Goriely, 2017</a>]</span>.</p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p id="id13"><dl class="citation">
+<dt class="label" id="id66"><span class="brackets">AP12</span><span class="fn-backref">(<a href="#id10">1</a>,<a href="#id11">2</a>)</span></dt>
+<dd><p>D Ambrosi and S Pezzuto. Active stress vs. active strain in mechanobiology: constitutive issues. <em>Journal of Elasticity</em>, 107(2):199–212, 2012.</p>
+</dd>
+<dt class="label" id="id102"><span class="brackets"><a class="fn-backref" href="#id4">CHM01</a></span></dt>
+<dd><p>Kevin D Costa, Jeffrey W Holmes, and Andrew D McCulloch. Modelling cardiac mechanical properties in three dimensions. <em>Philosophical Transactions of the Royal Society of London A: Mathematical, Physical and Engineering Sciences</em>, 359(1783):1233–1250, 2001.</p>
+</dd>
+<dt class="label" id="id120"><span class="brackets">DSYL02</span><span class="fn-backref">(<a href="#id1">1</a>,<a href="#id3">2</a>)</span></dt>
+<dd><p>Socrates Dokos, Bruce H Smaill, Alistair A Young, and Ian J LeGrice. Shear properties of passive ventricular myocardium. <em>American Journal of Physiology-Heart and Circulatory Physiology</em>, 283(6):H2650–H2659, 2002.</p>
+</dd>
+<dt class="label" id="id17"><span class="brackets"><a class="fn-backref" href="#id11">GMR17</a></span></dt>
+<dd><p>Giulia Giantesio, Alessandro Musesti, and Davide Riccobelli. A comparison between active strain and active stress in transversely isotropic hyperelastic materials. <em>arXiv preprint arXiv:1709.04977</em>, 2017.</p>
+</dd>
+<dt class="label" id="id67"><span class="brackets"><a class="fn-backref" href="#id12">Gor17</a></span></dt>
+<dd><p>A Goriely. Five ways to model active processes in elastic solids: active forces, active stresses, active strains, active fibers, and active metrics. <em>Mechanics Research Communications</em>, 2017.</p>
+</dd>
+<dt class="label" id="id115"><span class="brackets"><a class="fn-backref" href="#id4">GMW+91</a></span></dt>
+<dd><p>Julius M Guccione, Andrew D McCulloch, LK Waldman, and others. Passive material properties of intact ventricular myocardium determined from a cylindrical model. <em>J Biomech Eng</em>, 113(1):42–55, 1991.</p>
+</dd>
+<dt class="label" id="id100"><span class="brackets"><a class="fn-backref" href="#id2">HO09</a></span></dt>
+<dd><p>Gerhard A Holzapfel and Ray W Ogden. Constitutive modelling of passive myocardium: a structurally based framework for material characterization. <em>Philosophical Transactions of the Royal Society of London A: Mathematical, Physical and Engineering Sciences</em>, 367(1902):3445–3475, 2009.</p>
+</dd>
+<dt class="label" id="id41"><span class="brackets"><a class="fn-backref" href="#id6">HMTK98</a></span></dt>
+<dd><p>PJ Hunter, AD McCulloch, and HEDJ Ter Keurs. Modelling the mechanical properties of cardiac muscle. <em>Progress in biophysics and molecular biology</em>, 69(2):289–331, 1998.</p>
+</dd>
+<dt class="label" id="id32"><span class="brackets"><a class="fn-backref" href="#id7">LY98</a></span></dt>
+<dd><p>DHS Lin and FCP Yin. A multiaxial constitutive law for mammalian left ventricular myocardium in steady-state barium contracture or tetanus. <em>Journal of biomechanical engineering</em>, 120(4):504–517, 1998.</p>
+</dd>
+<dt class="label" id="id118"><span class="brackets"><a class="fn-backref" href="#id4">NH00</a></span></dt>
+<dd><p>Martyn P Nash and Peter J Hunter. Computational mechanics of the heart. <em>Journal of elasticity and the physical science of solids</em>, 61(1-3):113–141, 2000.</p>
+</dd>
+<dt class="label" id="id34"><span class="brackets"><a class="fn-backref" href="#id5">NP04</a></span></dt>
+<dd><p>Martyn P Nash and Alexander V Panfilov. Electromechanical model of excitable tissue to study reentrant cardiac arrhythmias. <em>Progress in biophysics and molecular biology</em>, 85(2):501–522, 2004.</p>
+</dd>
+<dt class="label" id="id30"><span class="brackets"><a class="fn-backref" href="#id8">PCGW10</a></span></dt>
+<dd><p>Pras Pathmanathan, SJ Chapman, DJ Gavaghan, and JP Whiteley. Cardiac electromechanics: the effect of contraction model on the mathematical problem and accuracy of the numerical scheme. <em>Quaterly Journal of Mechanics and Applied Mathematics</em>, 2010.</p>
+</dd>
+<dt class="label" id="id40"><span class="brackets"><a class="fn-backref" href="#id9">TP00</a></span></dt>
+<dd><p>Larry A Taber and Renato Perucchio. Modeling heart development. <em>Journal of elasticity and the physical science of solids</em>, 61(1-3):165–197, 2000.</p>
+</dd>
+</dl>
+</p>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "finsberg/pulse",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+        
+            <!-- Previous / next buttons -->
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="force_balance.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Force-balance equation</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="implementation_details.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Implementation details</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+        
+        </div>
+    </div>
+    <footer class="footer">
+    <div class="container">
+      <p>
+        
+          By Henrik Finsberg<br/>
+        
+            &copy; Copyright 2022.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+  
+  <script src="_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+
+  </body>
+</html>

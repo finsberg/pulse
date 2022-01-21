@@ -98,12 +98,64 @@
  </li>
 </ul>
 <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="cardiac_mechanics_intro.html">
+   Cardiac Mechanics
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="kinematics.html">
+     Kinematics
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="balance_laws.html">
+     Balance laws and transformations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="hyperalsticity.html">
+     Hyperelasticity
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="incompressibility.html">
+     Incompressibility
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="boundary_conditions.html">
+     Boundary Conditions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="force_balance.html">
+     Force-balance equation
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="constitutive_relations.html">
+     Constitutive relations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="implementation_details.html">
+     Implementation details
+    </a>
+   </li>
+  </ul>
+ </li>
  <li class="toctree-l1 current active has-children">
   <a class="reference internal" href="DEMO.html">
    Demos
   </a>
-  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
-  <label for="toctree-checkbox-1">
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
    <i class="fas fa-chevron-down">
    </i>
   </label>
@@ -194,8 +246,8 @@
   <a class="reference internal" href="pulse.html">
    pulse package
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
-  <label for="toctree-checkbox-2">
+  <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <label for="toctree-checkbox-3">
    <i class="fas fa-chevron-down">
    </i>
   </label>
@@ -209,6 +261,40 @@
     <a class="reference internal" href="pulse.material.html">
      pulse.material package
     </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="modules.html">
+   pulse
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+  <label for="toctree-checkbox-4">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="pulse.html">
+     pulse package
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+    <label for="toctree-checkbox-5">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="pulse.example_meshes.html">
+       pulse.example_meshes package
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="pulse.material.html">
+       pulse.material package
+      </a>
+     </li>
+    </ul>
    </li>
   </ul>
  </li>
@@ -329,7 +415,7 @@ These examples are based on the snippets from
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">OSError</span><span class="g g-Whitespace">                                   </span>Traceback (most recent call last)
-<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_465</span><span class="o">/</span><span class="mf">2296562037.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_419</span><span class="o">/</span><span class="mf">2296562037.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">dolfin</span>
 <span class="ne">----&gt; </span><span class="mi">2</span> <span class="kn">import</span> <span class="nn">gmsh</span>
 <span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">import</span> <span class="nn">ldrb</span>
@@ -363,7 +449,7 @@ These examples are based on the snippets from
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">OSError</span><span class="g g-Whitespace">                                   </span>Traceback (most recent call last)
-<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_465</span><span class="o">/</span><span class="mf">3128865658.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_419</span><span class="o">/</span><span class="mf">3128865658.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
 <span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">pulse</span>
 
 <span class="o">/</span><span class="n">__w</span><span class="o">/</span><span class="n">pulse</span><span class="o">/</span><span class="n">pulse</span><span class="o">/</span><span class="n">pulse</span><span class="o">/</span><span class="fm">__init__</span><span class="o">.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
@@ -729,7 +815,6 @@ These examples are based on the snippets from
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-
     <span class="n">msh_name</span> <span class="o">=</span> <span class="s2">&quot;test.msh&quot;</span>
 
     <span class="n">create_prolate_mesh</span><span class="p">(</span><span class="n">msh_name</span><span class="p">)</span>
@@ -739,39 +824,6 @@ These examples are based on the snippets from
     <span class="n">geo</span> <span class="o">=</span> <span class="n">gmsh2dolfin</span><span class="p">(</span><span class="n">msh_name</span><span class="p">)</span>
     <span class="n">dolfin</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="s2">&quot;ffun.pvd&quot;</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">geo</span><span class="o">.</span><span class="n">ffun</span>
     <span class="n">geo</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;prolate.h5&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">main</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_465</span><span class="o">/</span><span class="mf">3832242952.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-<span class="ne">----&gt; </span><span class="mi">2</span>     <span class="n">main</span><span class="p">()</span>
-
-<span class="nn">/tmp/ipykernel_465/3289001337.py</span> in <span class="ni">main</span><span class="nt">()</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span>     <span class="n">msh_name</span> <span class="o">=</span> <span class="s2">&quot;test.msh&quot;</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> 
-<span class="ne">----&gt; </span><span class="mi">5</span>     <span class="n">create_prolate_mesh</span><span class="p">(</span><span class="n">msh_name</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">6</span>     <span class="c1"># create_square(msh_name)</span>
-<span class="g g-Whitespace">      </span><span class="mi">7</span>     <span class="c1"># create_disk(msh_name)</span>
-
-<span class="nn">/tmp/ipykernel_465/884272104.py</span> in <span class="ni">create_prolate_mesh</span><span class="nt">(mesh_name, mesh_size_factor)</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="k">def</span> <span class="nf">create_prolate_mesh</span><span class="p">(</span><span class="n">mesh_name</span><span class="p">,</span> <span class="n">mesh_size_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> 
-<span class="ne">----&gt; </span><span class="mi">3</span>     <span class="n">gmsh</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span>     <span class="n">gmsh</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">setNumber</span><span class="p">(</span><span class="s2">&quot;Mesh.MeshSizeFactor&quot;</span><span class="p">,</span> <span class="n">mesh_size_factor</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span> 
-
-<span class="ne">NameError</span>: name &#39;gmsh&#39; is not defined
 </pre></div>
 </div>
 </div>
@@ -827,7 +879,7 @@ These examples are based on the snippets from
         
           By Henrik Finsberg<br/>
         
-            &copy; Copyright 2021.<br/>
+            &copy; Copyright 2022.<br/>
       </p>
     </div>
   </footer>

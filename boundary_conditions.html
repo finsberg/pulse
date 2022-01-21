@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Python Module Index &#8212; pulse</title>
+    <title>Boundary Conditions &#8212; pulse</title>
     
   <link href="_static/css/theme.css" rel="stylesheet">
   <link href="_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
@@ -42,18 +42,26 @@
     <script src="_static/copybutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
+    <script>
+        const thebe_selector = ".thebe,.cell"
+        const thebe_selector_input = "pre,.cell_input div.highlight"
+        const thebe_selector_output = ".output,.cell_output"
+    </script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-
+    <link rel="next" title="Force-balance equation" href="force_balance.html" />
+    <link rel="prev" title="Incompressibility" href="incompressibility.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
     
 
     <!-- Google Analytics -->
     
-
-
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
     
@@ -91,17 +99,17 @@
   </a>
  </li>
 </ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1 has-children">
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active has-children">
   <a class="reference internal" href="cardiac_mechanics_intro.html">
    Cardiac Mechanics
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
   <label for="toctree-checkbox-1">
    <i class="fas fa-chevron-down">
    </i>
   </label>
-  <ul>
+  <ul class="current">
    <li class="toctree-l2">
     <a class="reference internal" href="kinematics.html">
      Kinematics
@@ -122,8 +130,8 @@
      Incompressibility
     </a>
    </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="boundary_conditions.html">
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
      Boundary Conditions
     </a>
    </li>
@@ -325,6 +333,23 @@
             </button>
             
             
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="_sources/boundary_conditions.md"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.md</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
             <!-- Source interaction buttons -->
 
 <div class="dropdown-buttons-trigger">
@@ -336,7 +361,7 @@
                 data-toggle="tooltip" data-placement="left" title="Source repository"><i
                     class="fab fa-github"></i>repository</button></a>
         <a class="issues-button"
-            href="https://github.com/finsberg/pulse/issues/new?title=Issue%20on%20page%20%2Fpy-modindex.html&body=Your%20issue%20content%20here."><button
+            href="https://github.com/finsberg/pulse/issues/new?title=Issue%20on%20page%20%2Fboundary_conditions.html&body=Your%20issue%20content%20here."><button
                 type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
                 title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
         
@@ -357,6 +382,19 @@
         <!-- Table of contents -->
         <div class="d-none d-md-block col-md-2 bd-toc show">
             
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav" aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#references">
+   References
+  </a>
+ </li>
+</ul>
+
+            </nav>
         </div>
     </div>
 </div>
@@ -365,126 +403,143 @@
         
               <div>
                 
+  <div class="tex2jax_ignore mathjax_ignore section" id="boundary-conditions">
+<h1>Boundary Conditions<a class="headerlink" href="#boundary-conditions" title="Permalink to this headline">¶</a></h1>
+<p>Choosing the correct boundary conditions for the model is essential,
+and the choice should mimic what is observed in reality. To
+physiologically constrain the ventricle in a correct way is difficult,
+and different approaches has been proposed.
+The boundary condition at the endocardium is typically modeled as a
+Neumann boundary condition, representing the endocardial blood
+pressure. For the left ventricle we have</p>
+<div class="math notranslate nohighlight">
+\[\begin{align}
+  \sigma \mathbf{n} = -p_{\mathrm{lv}} \mathbf{n}, \;  \mathbf{x} \in  \partial \omega_{ \text{endo LV}},
+\end{align}\]</div>
+<p>and for the right ventricle, <em>lv</em> is substituted with <em>rv</em>.
+This condition has a negative sign because the unit normal
+<span class="math notranslate nohighlight">\(\mathbf{N}\)</span> is pointing out of the domain, while the pressure is
+acting into the domain.
+Note that this condition is imposed on the current configuration, and
+to utilize the Lagrangian formulation we can pull back this condition
+to the reference configuration to obtain</p>
+<div class="math notranslate nohighlight">
+\[\begin{align}
+  \mathbf{P}\mathbf{N} &amp;= -p_{\mathrm{lv}} J\mathbf{F}^{-T} \cdot \mathbf{N}, \;  \mathbf{X} \in \partial \Omega_{\text{endo LV}}
+\end{align}\]</div>
+<p>Likewise, it is common to enforce a
+Neumann boundary condition on the epicardium,</p>
+<div class="math notranslate nohighlight">
+\[\begin{align}
+\mathbf{P}\mathbf{N}  &amp;= -p_{\mathrm{epi}}  J\mathbf{F}^{-T} \cdot \mathbf{N}, \;  \mathbf{X} \in \partial \Omega_{\text{epi}}.
+\end{align}\]</div>
+<p>However, the pressure <span class="math notranslate nohighlight">\(p_{\mathrm{epi}}\)</span> is often set to zero as a
+simplification.</p>
+<p>There exist a variety of boundary conditions at the base.
+It is common to constrain the longitudinal motion of
+base, even though it is observed in cardiac images that the apex tend
+to be more fixed than the base. A recent study shows that taking into
+account the base movement is important to capture the correct
+geometrical shape <span id="id1">[<a class="reference internal" href="#id26">Palit <em>et al.</em>, 2016</a>]</span>. However, this has not been
+done in the studies in this thesis.
+Fixing the longitudinal motion at the base is enforced through a
+Dirichlet boundary condition,</p>
+<div class="math notranslate nohighlight">
+\[\begin{align}
+  u_1 = 0,  \;  \mathbf{X} \in \partial \Omega_{\text{base}},
+\end{align}\]</div>
+<p>where <span class="math notranslate nohighlight">\(u_1\)</span> is the longitudinal component of the displacement <span class="math notranslate nohighlight">\(\mathbf{u} =
+(u_1, u_2, u_3)\)</span>. To apply this type of condition, it is easiest if
+the base is flat and located at a prescribed location, for example in
+the <span class="math notranslate nohighlight">\(x= 0\)</span> plane. Constraining the longitudinal motion of the base
+alone is not enough since the ventricle is free to move in the basal
+plane. In order to anchor the geometry it is possible to fix the
+movement of the base in all directions</p>
+<div class="math notranslate nohighlight">
+\[\begin{align}
+  \mathbf{u} = \mathbf{0},  \;  \mathbf{X} \in \partial \Omega_{\text{base}},
+\end{align}\]</div>
+<p>or fixing the endocardial or epicardial ring</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+  \mathbf{u} &amp;= \mathbf{0},  \;  \mathbf{X} \in \Gamma_{\mathrm{endo}} \\
+  \mathbf{u} &amp;= \mathbf{0},  \;  \mathbf{X} \in \Gamma_{\mathrm{epi}}.
+\end{align}\end{split}\]</div>
+<p>Another approach which is used in this thesis is to impose a Robin
+type boundary condition at the base</p>
+<div class="math notranslate nohighlight">
+\[\begin{align}
+  \mathbf{P} \mathbf{N} + k \mathbf{u} = \mathbf{0},  \;  \mathbf{X} \in \partial \Omega_{\text{base}},
+\end{align}\]</div>
+<p>or at the epicardium to mimic the pericardium</p>
+<div class="math notranslate nohighlight">
+\[\begin{align}
+  \mathbf{P} \mathbf{N} + k \mathbf{u} = \mathbf{0},  \;  \mathbf{X} \in \partial \Omega_{\text{epi}}.
+\end{align}\]</div>
+<p>Here <span class="math notranslate nohighlight">\(k\)</span> can be seen as the stiffness of a spring that limits the
+movement. The limiting cases, <span class="math notranslate nohighlight">\(k = 0\)</span> and <span class="math notranslate nohighlight">\(k \rightarrow
+\infty\)</span> represent free and fixed boundary respectively.
+More complex boundary conditions to mimic the pericardium are also
+possible <span id="id2">[<a class="reference internal" href="#id34">Fritz <em>et al.</em>, 2014</a>]</span>, but not considered in this thesis.
+An overview of the location of the different boundaries for the
+bi-ventricular geometry is illustrated in <a class="reference internal" href="#boundaries"><span class="std std-numref">Fig. 1</span></a>.</p>
+<div class="figure align-default" id="boundaries">
+<img alt="figures/boundaries.png" src="figures/boundaries.png" />
+<p class="caption"><span class="caption-number">Fig. 1 </span><span class="caption-text">Illustration of the different boundaries in a bi-ventricular domain.</span><a class="headerlink" href="#boundaries" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p id="id3"><dl class="citation">
+<dt class="label" id="id34"><span class="brackets"><a class="fn-backref" href="#id2">FWS+14</a></span></dt>
+<dd><p>Thomas Fritz, Christian Wieners, Gunnar Seemann, Henning Steen, and Olaf Dössel. Simulation of the contraction of the ventricles in a human heart model including atria and pericardium. <em>Biomechanics and modeling in mechanobiology</em>, 13(3):627–641, 2014.</p>
+</dd>
+<dt class="label" id="id26"><span class="brackets"><a class="fn-backref" href="#id1">PFB+16</a></span></dt>
+<dd><p>Arnab Palit, Pasquale Franciosa, Sunil K Bhudia, Theodoros N Arvanitis, Glen A Turley, and Mark A Williams. Passive diastolic modelling of human ventricles: effects of base movement and geometrical heterogeneity. <em>Journal of Biomechanics</em>, 2016.</p>
+</dd>
+</dl>
+</p>
+</div>
+</div>
 
-   <h1>Python Module Index</h1>
-
-   <div class="modindex-jumpbox">
-   <a href="#cap-p"><strong>p</strong></a>
-   </div>
-
-   <table class="indextable modindextable">
-     <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
-     <tr class="cap" id="cap-p"><td></td><td>
-       <strong>p</strong></td><td></td></tr>
-     <tr>
-       <td><img src="_static/minus.png" class="toggler"
-              id="toggle-1" style="display: none" alt="-" /></td>
-       <td>
-       <code class="xref">pulse</code></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="pulse.html#module-pulse.geometry"><code class="xref">pulse.geometry</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="pulse.html#module-pulse.geometry_utils"><code class="xref">pulse.geometry_utils</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="pulse.html#module-pulse.io_utils"><code class="xref">pulse.io_utils</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="pulse.html#module-pulse.iterate"><code class="xref">pulse.iterate</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="pulse.html#module-pulse.kinematics"><code class="xref">pulse.kinematics</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="pulse.material.html#module-pulse.material"><code class="xref">pulse.material</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="pulse.material.html#module-pulse.material.active_model"><code class="xref">pulse.material.active_model</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="pulse.material.html#module-pulse.material.guccione"><code class="xref">pulse.material.guccione</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="pulse.material.html#module-pulse.material.holzapfelogden"><code class="xref">pulse.material.holzapfelogden</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="pulse.material.html#module-pulse.material.linearelastic"><code class="xref">pulse.material.linearelastic</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="pulse.material.html#module-pulse.material.material_model"><code class="xref">pulse.material.material_model</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="pulse.material.html#module-pulse.material.neohookean"><code class="xref">pulse.material.neohookean</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="pulse.material.html#module-pulse.material.stvenantkirchhoff"><code class="xref">pulse.material.stvenantkirchhoff</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="pulse.html#module-pulse.mechanicsproblem"><code class="xref">pulse.mechanicsproblem</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="pulse.html#module-pulse.numpy_mpi"><code class="xref">pulse.numpy_mpi</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="pulse.html#module-pulse.solver"><code class="xref">pulse.solver</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="pulse.html#module-pulse.unloader"><code class="xref">pulse.unloader</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="pulse.html#module-pulse.unloading_utils"><code class="xref">pulse.unloading_utils</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="pulse.html#module-pulse.utils"><code class="xref">pulse.utils</code></a></td><td>
-       <em></em></td></tr>
-   </table>
-
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "finsberg/pulse",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
 
               </div>
               
         
             <!-- Previous / next buttons -->
-<div class='prev-next-area'>
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="incompressibility.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Incompressibility</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="force_balance.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Force-balance equation</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
 </div>
         
         </div>
