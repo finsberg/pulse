@@ -18,7 +18,7 @@ try:
     import gmsh
 
     has_gmsh = True
-except ImportError:
+except (ImportError, OSError):
     has_gmsh = False
 
 try:
