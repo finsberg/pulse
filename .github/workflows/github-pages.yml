@@ -21,7 +21,7 @@ jobs:
             ~/.cache/instant
             ~/.cache/dijitso
             ~/.cache/pip
-            docs/_build/jupyter_execute
+            /__w/pulse/pulse/docs/_build/jupyter_execute
           key: cache_v4
           restore-keys: |
             cache_v4
