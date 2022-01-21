@@ -22,9 +22,9 @@ jobs:
             ~/.cache/dijitso
             ~/.cache/pip
             /__w/pulse/pulse/docs/_build/jupyter_execute
-          key: cache_v4
+          key: cache_v5
           restore-keys: |
-            cache_v4
+            cache_v5
 
       - name: Upgrade pip
         run: |
