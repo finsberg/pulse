@@ -1,7 +1,6 @@
 [![InstallConda](https://anaconda.org/finsberg/pulse/badges/installer/conda.svg)](https://anaconda.org/finsberg/pulse)
 [![CI](https://github.com/finsberg/pulse/actions/workflows/main.yml/badge.svg)](https://github.com/finsberg/pulse/actions/workflows/main.yml)
 [![Platform](https://anaconda.org/finsberg/pulse/badges/platforms.svg)](https://anaconda.org/finsberg/pulse)
-[![Binder](https://binder.pangeo.io/badge_logo.svg)](https://binder.pangeo.io/v2/gh/finsberg/pulse/master?filepath=index.ipynb)
 [![status](http://joss.theoj.org/papers/9abee735e6abadabe9252d5fcc84fd40/status.svg)](http://joss.theoj.org/papers/9abee735e6abadabe9252d5fcc84fd40)
 [![codecov](https://codecov.io/gh/finsberg/pulse/branch/master/graph/badge.svg?token=cZEkiXSOKm)](https://codecov.io/gh/finsberg/pulse)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/finsberg/pulse/master.svg)](https://results.pre-commit.ci/latest/github/finsberg/pulse/master)
@@ -57,7 +56,6 @@ with `pytest`
 python3 -m pytest tests -vv
 ```
 
-
 ## Documentation
 Documentation can be found at [finsberg.github.io/pulse](https://finsberg.github.io/pulse)
 You can create documentation yourselves by typing `make html` in the
@@ -88,3 +86,6 @@ If you use `pulse` in your own research, please cite the [JOSS paper](https://jo
 ```
 python3 -m pip install h5py --no-binary=h5py
 ```
+
+## Contributing
+See [CONTRIBUTING.md](CONTRIBUTING.md)

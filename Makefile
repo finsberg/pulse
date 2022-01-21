@@ -75,7 +75,7 @@ docs: ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/pulse.material.rst
 	rm -f docs/modules.rst
 	sphinx-apidoc -o docs pulse
-	for file in README.md; do \
+	for file in README.md CONTRIBUTING.md; do \
 		cp $$file docs/. ;\
 	done
 	jupytext demo/benchmark/problem1.py -o docs/problem1.ipynb --update
