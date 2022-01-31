@@ -167,7 +167,7 @@ def test_material(unitcube_geometry, Material, active_model, isochoric):
         f = F * unitcube_geometry.f0
 
         # Fiber stress
-        Tf = dolfin.inner(T * f / f ** 2, f)
+        Tf = dolfin.inner(T * f / f**2, f)
         Tf_dg = project(Tf, V_dg)
 
         tol = 1e-10

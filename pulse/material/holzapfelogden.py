@@ -173,13 +173,13 @@ class HolzapfelOgden(Material):
         try:
             if float(a) > dolfin.DOLFIN_EPS:
                 if float(b) > dolfin.DOLFIN_EPS:
-                    return a / (2.0 * b) * (dolfin.exp(b * I8 ** 2) - 1.0)
+                    return a / (2.0 * b) * (dolfin.exp(b * I8**2) - 1.0)
                 else:
-                    return a / 2.0 * I8 ** 2
+                    return a / 2.0 * I8**2
             else:
                 return 0.0
         except Exception:
-            return a / (2.0 * b) * (dolfin.exp(b * I8 ** 2) - 1.0)
+            return a / (2.0 * b) * (dolfin.exp(b * I8**2) - 1.0)
 
     def strain_energy(self, F):
         r"""
@@ -214,8 +214,8 @@ class HolzapfelOgden(Material):
 
         if self.active_model == ActiveModels.active_strain:
             mgamma = 1 - self.activation_field
-            I1e = mgamma * I1 + (1 / mgamma ** 2 - mgamma) * I4f
-            I4fe = 1 / mgamma ** 2 * I4f
+            I1e = mgamma * I1 + (1 / mgamma**2 - mgamma) * I4f
+            I4fe = 1 / mgamma**2 * I4f
             I4se = mgamma * I4s
             I8fse = 1 / dolfin.sqrt(mgamma) * I8fs
         else:

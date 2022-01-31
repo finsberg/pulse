@@ -69,12 +69,9 @@ class RigidMotionProblem(pulse.MechanicsProblem):
         dx = self.geometry.dx
 
         # Add penalty term
-        internal_energy = (
-            self.material.strain_energy(
-                F,
-            )
-            + self.material.compressibility(p, J)
-        )
+        internal_energy = self.material.strain_energy(
+            F,
+        ) + self.material.compressibility(p, J)
 
         self._virtual_work = dolfin.derivative(
             internal_energy * dx,
