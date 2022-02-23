@@ -6,12 +6,7 @@ from dolfin import inner
 from dolfin import inv
 from dolfin import tr
 
-try:
-    from dolfin_adjoint import Constant
-except ImportError:
-    from dolfin import Constant
-
-
+from . import Constant
 from .dolfin_utils import get_dimesion
 
 

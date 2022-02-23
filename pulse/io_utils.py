@@ -28,45 +28,6 @@ except ImportError:
     has_petsc4py = False
 
 
-def check_group_exists(h5name, h5group, comm=None):
-
-    if not os.path.exists(h5name):
-        return False
-
-    try:
-        h5file = h5py.File(h5name)
-    except Exception as ex:
-        logger.info(ex)
-        return False
-
-    group_exists = False
-    if h5group in h5file:
-        group_exists = True
-
-    h5file.close()
-    if comm is None:
-        comm = mpi_comm_world()
-    dolfin.MPI.barrier(comm)
-    return group_exists
-
-
-def copy_h5group(h5name, src, dst, comm=None, overwrite=False):
-
-    if comm is None:
-        comm = mpi_comm_world()
-
-    if comm.rank == 0:
-        with h5py.File(h5name, "a") as h5file:
-
-            if dst in h5file and overwrite:
-                del h5file[dst]
-
-            if dst not in h5file:
-                h5file.copy(src, dst)
-
-    dolfin.MPI.barrier(comm)
-
-
 def open_h5py(h5name, file_mode="a", comm=mpi_comm_world()):
 
     if parallel_h5py:
@@ -114,23 +75,6 @@ def check_h5group(h5name, h5group, delete=False, comm=mpi_comm_world()):
                         del h5file[h5group]
 
     return h5group_in_h5file
-
-
-def check_and_delete(h5name, h5group, comm=mpi_comm_world()):
-
-    with open_h5py(h5name, "a", comm) as h5file:
-        if h5group in h5file:
-
-            if parallel_h5py:
-
-                logger.debug(f"Deleting existing group: '{h5group}'")
-                del h5file[h5group]
-
-            else:
-                if comm.rank == 0:
-
-                    logger.debug(f"Deleting existing group: '{h5group}'")
-                    del h5file[h5group]
 
 
 def read_h5file(h5file, obj, group, *args, **kwargs):

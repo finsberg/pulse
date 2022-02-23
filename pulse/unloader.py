@@ -10,20 +10,8 @@ import os
 import dolfin
 import numpy as np
 
-# try:
-#     from scipy.optimize import minimize_scalar
+from . import Function, interpolate
 
-#     has_scipy = True
-# except ImportError:
-#     has_scipy = False
-
-
-try:
-    from dolfin_adjoint import Function, interpolate
-except ImportError:
-    from dolfin import Function, interpolate
-
-# from . import numpy_mpi
 from . import unloading_utils as utils
 from .mechanicsproblem import MechanicsProblem, cardiac_boundary_conditions
 from .utils import getLogger, mpi_comm_world

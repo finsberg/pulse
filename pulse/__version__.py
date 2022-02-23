@@ -1,21 +1,10 @@
 __version__ = "2022.0.0"
 import logging as _logging
-import warnings as _warnings
-
-try:
-    from ffc.quadrature.deprecation import QuadratureRepresentationDeprecationWarning
-
-    _warnings.filterwarnings(
-        "ignore",
-        category=QuadratureRepresentationDeprecationWarning,
-    )
-except ImportError:
-    pass
 
 try:
     import dolfin as _dolfin
 except ImportError:
-    pass
+    _logging.warning("Cannot find 'dolfin' - 'pulse' doest not work without it")
 else:
     flags = ["-O3", "-ffast-math", "-march=native"]
     _dolfin.parameters["form_compiler"]["quadrature_degree"] = 4

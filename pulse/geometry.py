@@ -4,15 +4,16 @@ from dataclasses import dataclass
 
 import dolfin
 
-try:
-    from dolfin_adjoint import Mesh
-except ImportError:
-    from dolfin import Mesh
-
+from . import Mesh
 from . import numpy_mpi
-from .dolfin_utils import compute_meshvolume, get_cavity_volume, map_vector_field
-from .geometry_utils import load_geometry_from_h5, move, save_geometry_to_h5
-from .utils import getLogger, mpi_comm_world
+from .dolfin_utils import compute_meshvolume
+from .dolfin_utils import get_cavity_volume
+from .dolfin_utils import map_vector_field
+from .geometry_utils import load_geometry_from_h5
+from .geometry_utils import move
+from .geometry_utils import save_geometry_to_h5
+from .utils import getLogger
+from .utils import mpi_comm_world
 
 logger = getLogger(__name__)
 

@@ -2,27 +2,17 @@ import dolfin
 import numpy as np
 import ufl
 
-try:
-    from dolfin_adjoint import (
-        Constant,
-        Function,
-        FunctionAssigner,
-        assemble,
-        interpolate,
-        project,
-    )
-except ImportError:
-    from dolfin import (
-        Function,
-        interpolate,
-        Constant,
-        project,
-        assemble,
-        FunctionAssigner,
-    )
-
-from . import numpy_mpi, utils
-from .utils import DOLFIN_VERSION_MAJOR, getLogger, mpi_comm_world
+from . import assemble
+from . import Constant
+from . import Function
+from . import FunctionAssigner
+from . import interpolate
+from . import numpy_mpi
+from . import project
+from . import utils
+from .utils import DOLFIN_VERSION_MAJOR
+from .utils import getLogger
+from .utils import mpi_comm_world
 
 logger = getLogger(__name__)
 
@@ -128,46 +118,6 @@ def get_pressure(problem):
         return tuple(pressure)
     else:
         return pressure[0]
-
-
-def read_hdf5(h5name, func, h5group="", comm=mpi_comm_world()):
-
-    try:
-        with dolfin.HDF5File(comm, h5name, "r") as h5file:
-
-            h5file.read(func, h5group)
-
-    except IOError as ex:
-        logger.error(ex)
-        logger.error(f"Make sure file {h5name} exist")
-        raise ex
-
-    except RuntimeError as ex:
-        logger.errro(ex)
-        logger.error(
-            (
-                "Something went wrong when reading file "
-                "{h5name} into function {func} from group "
-                "{h5group}"
-            ).format(h5name=h5name, func=func, h5group=h5group),
-        )
-        raise ex
-
-
-def map_displacement(u, old_space, new_space, approx, name="mapped displacement"):
-
-    if approx == "interpolate":
-        # Do we need dolfin-adjoint here or is dolfin enough?
-        u_int = interpolate(project(u, old_space), new_space)  # , name=name)
-
-    elif approx == "project":
-        # Do we need dolfin-adjoint here or is dolfin enough?
-        u_int = project(u, new_space)  # , name=name)
-
-    else:
-        u_int = u
-
-    return u_int
 
 
 def compute_meshvolume(domain=None, dx=dolfin.dx, subdomain_id=None):
@@ -325,36 +275,6 @@ def list_sum(lst):
     return out
 
 
-def get_spaces(mesh):
-    """
-    Return an object of dolfin FunctionSpace, to
-    be used in the optimization pipeline
-
-    :param mesh: The mesh
-    :type mesh: :py:class:`dolfin.Mesh`
-    :returns: An object of functionspaces
-    :rtype: object
-
-    """
-
-    # Make a dummy object
-    spaces = utils.Object()
-
-    # A real space with scalars used for dolfin adjoint
-    spaces.r_space = dolfin.FunctionSpace(mesh, "R", 0)
-
-    # A space for the strain fields
-    spaces.strainfieldspace = dolfin.VectorFunctionSpace(mesh, "CG", 1, dim=3)
-
-    # A space used for scalar strains
-    spaces.strainspace = dolfin.VectorFunctionSpace(mesh, "R", 0, dim=3)
-
-    # Spaces for the strain weights
-    spaces.strain_weight_space = dolfin.TensorFunctionSpace(mesh, "R", 0)
-
-    return spaces
-
-
 def QuadratureSpace(mesh, degree, dim=3):
     """
     From FEniCS version 1.6 to 2016.1 there was a change in how
@@ -395,126 +315,6 @@ def QuadratureSpace(mesh, degree, dim=3):
             return dolfin.FunctionSpace(mesh, "Quadrature", degree)
         else:
             return dolfin.VectorFunctionSpace(mesh, "Quadrature", degree)
-
-
-class VertexDomain(dolfin.SubDomain):
-    """
-    A subdomain defined in terms of
-    a given set of coordinates.
-    A point that is close to the given coordinates
-    within a given tolerance will be marked as inside
-    the domain.
-    """
-
-    def __init__(self, coords, tol=1e-4):
-        """
-        *Arguments*
-          coords (list)
-            List of coordinates for vertices in reference geometry
-            defining this domains
-
-          tol (float)
-            Tolerance for how close a pointa should be to the given coordinates
-            to be marked as inside the domain
-        """
-
-        self.coords = np.array(coords)
-        self.tol = tol
-        dolfin.SubDomain.__init__(self)
-
-    def inside(self, x, on_boundary):
-
-        if np.all([np.any(abs(x[i] - self.coords.T[i]) < self.tol) for i in range(3)]):
-            return True
-
-        return False
-
-
-class BaseExpression(dolfin.Expression):
-    """
-    A class for assigning boundary condition according to segmented surfaces
-    Since the base is located at x = a (usually a=0), two classes must be set:
-    One for the y-direction and one for the z-direction
-
-    Point on the endocardium and epicardium is given and the
-    points on the mesh base is set accordingly.
-    Points that lie on the base but not on the epi- or endoring
-    will be given a zero value.
-    """
-
-    def __init__(self, mesh_verts, seg_verts, sub, it, name):
-        """
-
-        *Arguments*
-          mesh: (dolfin.mesh)
-            The mesh
-
-          u: (dolfin.GenericFunction)
-            Initial displacement
-
-          mesh_verts (numpy.ndarray or list)
-            Point of endocardial base from mesh
-
-          seg_verts (numpy.ndarray or list)
-            Point of endocardial base from segmentation
-
-          sub (str)
-            Either "y" or "z". The displacement in this direction is returned
-
-          it (dolfin.Expression)
-            Can be used to incrment the direclet bc
-
-        """
-
-        assert sub in ["y", "z"]
-        self._mesh_verts = np.array(mesh_verts)
-        self._all_seg_verts = np.array(seg_verts)
-        self.point = 0
-        self.npoints = len(seg_verts) - 1
-
-        self._seg_verts = self._all_seg_verts[0]
-
-        self._sub = sub
-        self._it = it
-        self.rename(name, name)
-
-    def next(self):
-        self._it.t = 0
-        self.point += 1
-        self._seg_verts = self._all_seg_verts[self.point]
-
-    def reset(self):
-        self.point = 0
-        self._it.t = 0
-
-    def eval(self, value, x):
-
-        # Check if given coordinate is in the endoring vertices
-        # and find the cooresponding index
-        d = [np.where(x[i] == self._mesh_verts.T[i])[0] for i in range(3)]
-        d_intersect = set.intersection(*map(set, d))
-        assert len(d_intersect) < 2
-        if len(d_intersect) == 1:
-
-            idx = d_intersect.pop()
-            prev_seg_verts = self._all_seg_verts[self.point - 1]
-
-            # Return the displacement in the given direction
-            # Iterated starting from the previous displacemet
-            # to the current one
-            if self._sub == "y":
-                u_prev = self._mesh_verts[idx][1] - prev_seg_verts[idx][1]
-                u_current = self._mesh_verts[idx][1] - self._seg_verts[idx][1]
-                # value[0] = u_prev + self._it.t*(u_current - u_prev)
-            else:  # sub == "z"
-                u_prev = self._mesh_verts[idx][2] - prev_seg_verts[idx][2]
-                u_current = self._mesh_verts[idx][2] - self._seg_verts[idx][2]
-
-            val = u_prev + self._it.t * (u_current - u_prev)
-            value[0] = val
-
-        else:
-            value[0] = 0
 
 
 class MixedParameter(Function):
