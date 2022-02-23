@@ -90,9 +90,9 @@ class Guccione(Material):
             )
 
             Q = (
-                bf * E11 ** 2
-                + bt * (E22 ** 2 + E33 ** 2 + 2 * E23 ** 2)
-                + bfs * (2 * E12 ** 2 + 2 * E13 ** 2)
+                bf * E11**2
+                + bt * (E22**2 + E33**2 + 2 * E23**2)
+                + bfs * (2 * E12**2 + 2 * E13**2)
             )
 
         # passive strain energy

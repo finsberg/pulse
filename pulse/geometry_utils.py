@@ -263,8 +263,8 @@ def full_arctangent(x, y):
 
 def cartesian_to_prolate_ellipsoidal(x, y, z, a):
 
-    b1 = np.sqrt((x + a) ** 2 + y ** 2 + z ** 2)
-    b2 = np.sqrt((x - a) ** 2 + y ** 2 + z ** 2)
+    b1 = np.sqrt((x + a) ** 2 + y**2 + z**2)
+    b2 = np.sqrt((x - a) ** 2 + y**2 + z**2)
 
     sigma = 1 / (2.0 * a) * (b1 + b2)
     tau = 1 / (2.0 * a) * (b1 - b2)
@@ -951,6 +951,6 @@ def estimate_focal_point(mesh):
     long_axis = np.max(axis)
     short_axis = np.min(axis)
 
-    focal = np.sqrt(long_axis ** 2 - short_axis ** 2)
+    focal = np.sqrt(long_axis**2 - short_axis**2)
 
     return focal
