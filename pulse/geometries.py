@@ -5,6 +5,7 @@ from pathlib import Path
 from textwrap import dedent
 
 import dolfin
+import numpy as np
 from dijitso.signatures import hashit
 
 try:
@@ -49,7 +50,10 @@ def create_mesh(mesh, cell_type, prune_z=True):
         cell_data={"name_to_read": [cell_data]},
     )
     if prune_z:
-        out_mesh.prune_z_0()
+        if out_mesh.points.shape[1] == 3 and np.all(
+            np.abs(out_mesh.points[:, 2]) < 1.0e-13,
+        ):
+            out_mesh.points = out_mesh.points[:, :2]
     return out_mesh
 
 
