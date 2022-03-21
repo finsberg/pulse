@@ -40,17 +40,6 @@ jobs:
           python3 -m pip install h5py --no-binary=h5py
           python3 -m pip install -e ".[test,plot,dev]"
 
-      - name: Run flake8
-        run: |
-          python3 -m flake8 pulse tests
-
-      - name: Run black
-        run: |
-          python3 -m black --check pulse tests
-
-      - name: Run mypy
-        run: |
-          python3 -m mypy pulse tests
 
       - name: Test with pytest
         uses: nick-invision/retry@v2

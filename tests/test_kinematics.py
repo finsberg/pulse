@@ -78,8 +78,8 @@ def test_EngineeringStrain(F_dict, F_str):
 def test_GreenLagrangeStrain(F_dict, F_str):
     F = F_dict[F_str]
     E = kinematics.GreenLagrangeStrain(F)
-    assert abs(df.assemble((E[0, 0]) * df.dx) - (0.5 * (A ** 2 - 1))) < 1e-12
-    assert abs(df.assemble((E[1, 1]) * df.dx) - (0.5 * (B ** 2 - 1))) < 1e-12
+    assert abs(df.assemble((E[0, 0]) * df.dx) - (0.5 * (A**2 - 1))) < 1e-12
+    assert abs(df.assemble((E[1, 1]) * df.dx) - (0.5 * (B**2 - 1))) < 1e-12
     assert abs(df.assemble((E[1, 0]) * df.dx)) < 1e-12
     assert abs(df.assemble((E[0, 1]) * df.dx)) < 1e-12
 
@@ -90,7 +90,7 @@ def test_I1(F_dict, F_str):
     c = 0 if "2D" in F_str else C
     # Trace of F**2
     assert (
-        abs(df.assemble(kinematics.I1(F) * df.dx) - (A ** 2 + B ** 2 + c ** 2)) < 1e-12
+        abs(df.assemble(kinematics.I1(F) * df.dx) - (A**2 + B**2 + c**2)) < 1e-12
     )
 
 
@@ -102,7 +102,7 @@ def test_I2(F_dict, F_str):
     assert (
         abs(
             df.assemble(kinematics.I2(F) * df.dx)
-            - 0.5 * ((A ** 2 + B ** 2 + c ** 2) ** 2 - (A ** 4 + B ** 4 + c ** 4)),
+            - 0.5 * ((A**2 + B**2 + c**2) ** 2 - (A**4 + B**4 + c**4)),
         )
         < 1e-12
     )
@@ -125,7 +125,7 @@ def test_I4x(F_dict, F_str):
     else:
         x = df.as_vector([1, 0, 0])
 
-    assert abs(df.assemble(kinematics.I4(F, x) * df.dx) - A ** 2) < 1e-12
+    assert abs(df.assemble(kinematics.I4(F, x) * df.dx) - A**2) < 1e-12
 
 
 @pytest.mark.parametrize("F_str", ["F_2D_Real", "F_2D_CG1", "F_3D_Real", "F_3D_CG1"])
@@ -149,7 +149,7 @@ def test_I5x(F_dict, F_str):
     else:
         x = df.as_vector([1, 0, 0])
 
-    assert abs(df.assemble(kinematics.I5(F, x) * df.dx) - A ** 4) < 1e-12
+    assert abs(df.assemble(kinematics.I5(F, x) * df.dx) - A**4) < 1e-12
 
 
 @pytest.mark.parametrize("F_str", ["F_2D_Real", "F_2D_CG1", "F_3D_Real", "F_3D_CG1"])
@@ -161,7 +161,7 @@ def test_I5y(F_dict, F_str):
     else:
         y = df.as_vector([0, 1, 0])
 
-    assert abs(df.assemble(kinematics.I5(F, y) * df.dx) - B ** 4) < 1e-12
+    assert abs(df.assemble(kinematics.I5(F, y) * df.dx) - B**4) < 1e-12
 
 
 def test_I6():
@@ -186,5 +186,5 @@ def test_I8xy(F_dict, F_str):
         y = df.as_vector([0, 1, 0])
 
     assert (
-        abs(df.assemble(kinematics.I8(F, x, y) * df.dx) - (A ** 2 * 0 + 0 * B)) < 1e-12
+        abs(df.assemble(kinematics.I8(F, x, y) * df.dx) - (A**2 * 0 + 0 * B)) < 1e-12
     )

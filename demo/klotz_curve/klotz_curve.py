@@ -96,7 +96,7 @@ def klotz_curve(ED_pressure):
     V30 = V0 + (Vm - V0) / (Pm / An) ** (1.0 / Bn)
 
     beta = math.log(Pm / 30.0) / math.log(Vm / V30)
-    alpha = 30.0 / V30 ** beta
+    alpha = 30.0 / V30**beta
 
     # Unloaded volume (not used here)
     # P_V0 = alpha * V0 ** beta
