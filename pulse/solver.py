@@ -4,12 +4,11 @@ from pathlib import Path
 
 import dolfin
 
-try:
-    from dolfin_adjoint import as_backend_type, assemble
-except ImportError:
-    from dolfin import assemble, as_backend_type
-
-from .utils import enlist, getLogger, mpi_comm_world
+from . import as_backend_type
+from . import assemble
+from .utils import enlist
+from .utils import getLogger
+from .utils import mpi_comm_world
 
 logger = getLogger(__name__)
 

@@ -1,6 +1,7 @@
 import logging as _logging
 import os
 
+from dolfin import as_backend_type
 from dolfin import assemble
 from dolfin import Constant
 from dolfin import DirichletBC
@@ -9,6 +10,7 @@ from dolfin import FunctionAssigner
 from dolfin import interpolate
 from dolfin import Mesh
 from dolfin import project
+
 
 Constants = Constant
 Functions = Function
@@ -29,15 +31,16 @@ else:
         _logging.warning("Dolfin-adjoint found but will be turned off")
     else:
         import dolfin as _dolfin
-        from dolfin_adjoint import (
-            Constant,
-            Function,
-            FunctionAssigner,
-            assemble,
-            interpolate,
-            project,
-            Mesh,
-            DirichletBC,
+        from dolfin_adjoint import (  # noqa: F811
+            as_backend_type,  # noqa: F811
+            Constant,  # noqa: F811
+            Function,  # noqa: F811
+            FunctionAssigner,  # noqa: F811
+            assemble,  # noqa: F811
+            interpolate,  # noqa: F811
+            project,  # noqa: F811
+            Mesh,  # noqa: F811
+            DirichletBC,  # noqa: F811
         )
 
         Constants = (_dolfin.Constant, Constant)
@@ -191,6 +194,7 @@ __all__ = [
     "FunctionAssigner",
     "Mesh",
     "DirichletBC",
+    "as_backend_type",
 ]
 
 __author__ = "Henrik Finsberg"

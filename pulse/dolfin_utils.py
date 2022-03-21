@@ -6,13 +6,10 @@ from . import assemble
 from . import Constant
 from . import Function
 from . import FunctionAssigner
-from . import interpolate
 from . import numpy_mpi
 from . import project
-from . import utils
 from .utils import DOLFIN_VERSION_MAJOR
 from .utils import getLogger
-from .utils import mpi_comm_world
 
 logger = getLogger(__name__)
 
