@@ -1,19 +1,50 @@
 import logging as _logging
 import os
 
+from dolfin import as_backend_type
+from dolfin import assemble
+from dolfin import Constant
+from dolfin import DirichletBC
+from dolfin import Function
+from dolfin import FunctionAssigner
+from dolfin import interpolate
+from dolfin import Mesh
+from dolfin import project
+
+
+Constants = Constant
+Functions = Function
 # Check if dolfin-adjoint is installed, and if
 # the 'DOLFIN_ADJOINT' flag is set to 0, then
 # we remove it from sys.modules
 try:
     import dolfin_adjoint  # noqa: F401
 except ImportError:
-    pass
+
+    has_dolfin_adjoint = False
 else:
+    has_dolfin_adjoint = True
     if not bool(int(os.getenv("DOLFIN_ADJOINT", "1"))):
         import sys
 
         sys.modules["dolfin_adjoint"] = None  # type: ignore
         _logging.warning("Dolfin-adjoint found but will be turned off")
+    else:
+        import dolfin as _dolfin
+        from dolfin_adjoint import (  # noqa: F811
+            as_backend_type,  # noqa: F811
+            Constant,  # noqa: F811
+            Function,  # noqa: F811
+            FunctionAssigner,  # noqa: F811
+            assemble,  # noqa: F811
+            interpolate,  # noqa: F811
+            project,  # noqa: F811
+            Mesh,  # noqa: F811
+            DirichletBC,  # noqa: F811
+        )
+
+        Constants = (_dolfin.Constant, Constant)
+        Functions = (_dolfin.Function, Function)
 
 
 import daiquiri as _daiquiri
@@ -31,7 +62,6 @@ from . import numpy_mpi
 from . import solver
 from . import unloader
 from . import utils
-from . import geometries
 from .__version__ import __version__
 from .dolfin_utils import MixedParameter
 from .dolfin_utils import QuadratureSpace
@@ -154,9 +184,17 @@ __all__ = [
     "NonlinearSolver",
     "geometry",
     "geometry_utils",
-    "geometries",
     "ActiveModel",
     "ActiveModels",
+    "Function",
+    "interpolate",
+    "Constant",
+    "project",
+    "assemble",
+    "FunctionAssigner",
+    "Mesh",
+    "DirichletBC",
+    "as_backend_type",
 ]
 
 __author__ = "Henrik Finsberg"

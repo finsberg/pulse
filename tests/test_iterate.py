@@ -155,25 +155,6 @@ def test_iterate_regional_gamma_pressure():
     iterate(problem, (pressure, gamma), (target_pressure, target_gamma))
 
 
-if __name__ == "__main__":
-
-    prob = problem()
-    # test_iterate_pressure(prob)
-    test_iterate_gamma(prob)
-    # test_iterate_gamma_regional()
-    # test_iterate_gamma_cg1(True)
-    # test_iterate_gamma_pressure(prob)
-    # test_iterate_regional_gamma_pressure()
-    exit()
-
-    for c, a in cases:
-        print(f"Continuation = {c}, annotate = {a}")
-        prob = problem()
-        test_iterate_pressure(prob, continuation=c, annotate=a)
-        if has_dolfin_adjoint:
-            dolfin_adjoint.adj_reset()
-
-        prob = problem()
-        test_iterate_gamma(prob, continuation=c, annotate=a)
-        if has_dolfin_adjoint:
-            dolfin_adjoint.adj_reset()
+def test_iterate_zero():
+    problem = make_lv_mechanics_problem("R_0")
+    iterate(problem, problem.material.activation, 1e-5)

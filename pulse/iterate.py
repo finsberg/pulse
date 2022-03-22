@@ -4,20 +4,19 @@ import operator as op
 import dolfin
 import numpy as np
 
-try:
-    from dolfin_adjoint import Constant, Function
-
-    has_dolfin_adjoint = True
-except ImportError:
-    from dolfin import Constant, Function
-
-    has_dolfin_adjoint = False
-
-
+from . import Constant
+from . import Constants
+from . import Function
+from . import Functions
+from . import has_dolfin_adjoint
 from . import numpy_mpi
 from .dolfin_utils import get_constant
 from .mechanicsproblem import SolverDidNotConverge
-from .utils import Enlisted, delist, enlist, getLogger, value_size
+from .utils import delist
+from .utils import enlist
+from .utils import Enlisted
+from .utils import getLogger
+from .utils import value_size
 
 logger = getLogger(__name__)
 
@@ -28,7 +27,7 @@ def copy(f, deepcopy=True, name="copied_function"):
     with dolfin adjoint where copied fuctions are annotated.
     """
 
-    if isinstance(f, (dolfin.Function, Function)):
+    if isinstance(f, Functions):
         if has_dolfin_adjoint:
             try:
                 return f.copy(deepcopy=deepcopy, name=name)
@@ -81,7 +80,7 @@ def get_delta(new_control, c0, c1):
     """
     Get extrapolation parameter used in the continuation step.
     """
-    if isinstance(c0, (Constant, dolfin.Constant)):
+    if isinstance(c0, Constants):
         c0 = constant2float(c0)
         c1 = constant2float(c1)
         new_control = constant2float(new_control)
@@ -154,7 +153,7 @@ def get_diff(current, target):
     if isinstance(target, (Function, dolfin.Function)):
         diff = target.vector() - current.vector()
 
-    elif isinstance(target, (Constant, dolfin.Constant)):
+    elif isinstance(target, Constants):
         diff = np.subtract(constant2float(target), constant2float(current))
     elif isinstance(target, (tuple, list)):
         diff = np.subtract(
@@ -217,7 +216,7 @@ def step_too_large(current, target, step):
     """
     if isinstance(target, (dolfin.Function, Function)):
         target = numpy_mpi.gather_vector(target.vector(), target.function_space().dim())
-    elif isinstance(target, (Constant, dolfin.Constant)):
+    elif isinstance(target, Constants):
         target = constant2float(target)
     target = squeeze(target)
 
@@ -226,13 +225,13 @@ def step_too_large(current, target, step):
             current.vector(),
             current.function_space().dim(),
         )
-    elif isinstance(current, (Constant, dolfin.Constant)):
+    elif isinstance(current, Constants):
         current = constant2float(current)
     current = squeeze(current)
 
     if isinstance(step, (dolfin.Function, Function)):
         step = numpy_mpi.gather_vector(step.vector(), step.function_space().dim())
-    elif isinstance(step, (Constant, dolfin.Constant)):
+    elif isinstance(step, Constants):
         step = constant2float(step)
     step = squeeze(step)
 

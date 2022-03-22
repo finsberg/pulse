@@ -5,34 +5,20 @@ from functools import partial
 import dolfin
 import ufl
 
-
-try:
-    from dolfin_adjoint import (
-        Constant,
-        Function,
-        FunctionAssigner,
-        NonlinearVariationalProblem,
-        NonlinearVariationalSolver,
-    )
-
-    has_dolfin_adjoint = True
-except ImportError:
-    from dolfin import Constant, Function, FunctionAssigner
-
-    has_dolfin_adjoint = False
-
-# For newer versions of dolfin_adjoint
-try:
-    from dolfin_adjoint import DirichletBC
-except ImportError:
-    from dolfin import DirichletBC
-
+from . import Constant
+from . import DirichletBC
+from . import Function
+from . import FunctionAssigner
+from . import has_dolfin_adjoint
 from . import kinematics
 from .dolfin_utils import list_sum
-from .geometry import Geometry, HeartGeometry
+from .geometry import Geometry
+from .geometry import HeartGeometry
 from .material import Material
-from .solver import NonlinearProblem, NonlinearSolver
-from .utils import get_lv_marker, getLogger
+from .solver import NonlinearProblem
+from .solver import NonlinearSolver
+from .utils import get_lv_marker
+from .utils import getLogger
 
 logger = getLogger(__name__)
 
@@ -269,6 +255,11 @@ class MechanicsProblem(object):
 
     def _init_solver(self):
         if has_dolfin_adjoint:
+            from dolfin_adjoint import (
+                NonlinearVariationalProblem,
+                NonlinearVariationalSolver,
+            )
+
             self._problem = NonlinearVariationalProblem(
                 J=self._jacobian,
                 F=self._virtual_work,
@@ -368,17 +359,6 @@ class MechanicsProblem(object):
         """
 
         logger.debug("Solving variational problem")
-        # Get old state in case of non-convergence
-        if has_dolfin_adjoint:
-            try:
-                old_state = self.state.copy(deepcopy=True, name="Old state (pulse)")
-            except TypeError:
-                # In case this is a dolfin fuction and not a
-                # dolfin-adjoint function
-                old_state = self.state.copy(deepcopy=True)
-
-        else:
-            old_state = self.state.copy(deepcopy=True)
 
         try:
             logger.debug("Try to solve")
@@ -391,9 +371,6 @@ class MechanicsProblem(object):
         except RuntimeError as ex:
             logger.debug("Failed")
             logger.debug("Reintialize old state and raise exception")
-
-            self.reinit(old_state)
-
             raise SolverDidNotConverge(ex) from ex
         else:
             logger.debug("Sucess")

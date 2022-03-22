@@ -33,14 +33,14 @@ from typing import Union
 import dolfin
 import ufl
 
-try:
-    from dolfin_adjoint import Constant, Function, project
-except ImportError:
-    from dolfin import Constant, Function, project
-
-from .. import kinematics, numpy_mpi
-from ..dolfin_utils import RegionalParameter, update_function
 from . import active_model as _active_model
+from .. import Constant
+from .. import Function
+from .. import kinematics
+from .. import numpy_mpi
+from .. import project
+from ..dolfin_utils import RegionalParameter
+from ..dolfin_utils import update_function
 
 
 def compressibility(model, *args, **kwargs):
