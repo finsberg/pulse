@@ -33,8 +33,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt install -y pandoc
-          python3 -m pip install h5py --no-binary=h5py
           make dev
 
       - name: Build docs

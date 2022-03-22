@@ -10,8 +10,8 @@ jobs:
       matrix:
         container:
           [
-            "quay.io/fenicsproject/stable:latest",
-            "quay.io/dolfinadjoint/pyadjoint:latest",
+            "finsberg/fenics-extra",
+            "finsberg/pyadjoint-extra",
             "finsberg/fenics2017",
           ]
 
@@ -37,7 +37,6 @@ jobs:
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
-          python3 -m pip install h5py --no-binary=h5py
           python3 -m pip install -e ".[test,plot,dev]"
 
 
