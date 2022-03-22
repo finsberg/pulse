@@ -30,9 +30,9 @@ jobs:
             ~/.cache/dijitso
             ~/.cache/pulse
             ~/.cache/pip
-          key: ${{ matrix.container }}-cache_v7
+          key: ${{ matrix.container }}-cache_v8
           restore-keys: |
-            ${{ matrix.container }}-cache_v7
+            ${{ matrix.container }}-cache_v8
 
       - name: Install dependencies
         run: |
