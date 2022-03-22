@@ -37,22 +37,24 @@
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/togglebutton.js"></script>
     <script src="_static/clipboard.min.js"></script>
     <script src="_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script src="_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
-    <script>
-        const thebe_selector = ".thebe,.cell"
-        const thebe_selector_input = "pre,.cell_input div.highlight"
-        const thebe_selector_output = ".output,.cell_output"
-    </script>
-    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -348,7 +350,7 @@
                 data-placement="left">.md</button></a>
         <!-- Download PDF via print -->
         <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
     </div>
 </div>
 
@@ -382,7 +384,7 @@
         </div>
 
         <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
             
             <div class="tocsection onthispage pt-5 pb-3">
                 <i class="fas fa-list"></i> Contents
@@ -417,7 +419,45 @@
 </div>
     <div id="main-content" class="row">
         <div class="col-12 col-md-9 pl-md-3 pr-md-0">
-        
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Balance laws and transformations</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#transformations-between-reference-and-current-configuration">
+   Transformations between reference and current configuration
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#conservation-of-linear-momentum">
+   Conservation of linear momentum
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#conservation-of-angular-momentum">
+   Conservation of angular momentum
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#references">
+   References
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            
               <div>
                 
   <div class="tex2jax_ignore mathjax_ignore section" id="balance-laws-and-transformations">
@@ -493,7 +533,7 @@ Cauchy’s momentum equation</p>
 \end{align}\]</div>
 <p>The contribution from the body force (<span class="math notranslate nohighlight">\(\mathbf{b}\)</span>)  and inertial term
 (<span class="math notranslate nohighlight">\(\rho \dot{\mathbf{v}}\)</span>) can be considered negligible compared to the stresses
-<span id="id1">[<a class="reference internal" href="#id102">Costa <em>et al.</em>, 1996</a>, <a class="reference internal" href="#id17">Moskowitz, 1981</a>, <a class="reference internal" href="#id103">Tallarida <em>et al.</em>, 1970</a>]</span>, which is
+<span id="id1">[<a class="reference internal" href="#id102" title="KD Costa, PJ Hunter, JM Rogers, Julius M Guccione, LK Waldman, and Andrew D McCulloch. A three-dimensional finite element method for large elastic deformations of ventricular myocardium: i—cylindrical and spherical polar coordinates. Journal of biomechanical engineering, 118(4):452–463, 1996.">Costa <em>et al.</em>, 1996</a>, <a class="reference internal" href="#id17" title="Samuel E Moskowitz. Effects of inertia and viscoelasticity in late rapid filling of the left ventricle. Journal of biomechanics, 14(6):443–445, 1981.">Moskowitz, 1981</a>, <a class="reference internal" href="#id103" title="Ronald J Tallarida, Ben F Rusy, and Michael H Loughnane. Left ventricular wall acceleration and the law of laplace. Cardiovascular research, 4(2):217–223, 1970.">Tallarida <em>et al.</em>, 1970</a>]</span>, which is
 why the force balance equations is typically only stated as</p>
 <div class="math notranslate nohighlight" id="equation-balance-laws-1">
 <span class="eqno">(7)<a class="headerlink" href="#equation-balance-laws-1" title="Permalink to this equation">¶</a></span>\[\begin{align}
@@ -564,8 +604,8 @@ consequence, the Cauchy stress tensor is symmetric</p>
 
               </div>
               
-        
-            <!-- Previous / next buttons -->
+            
+                <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
     <a class='left-prev' id="prev-link" href="kinematics.html" title="previous page">
         <i class="fas fa-angle-left"></i>
@@ -582,19 +622,17 @@ consequence, the Cauchy stress tensor is symmetric</p>
     <i class="fas fa-angle-right"></i>
     </a>
 </div>
-        
+            
         </div>
     </div>
     <footer class="footer">
-    <div class="container">
-      <p>
-        
-          By Henrik Finsberg<br/>
-        
-            &copy; Copyright 2022.<br/>
-      </p>
-    </div>
-  </footer>
+  <p>
+    
+      By Henrik Finsberg<br/>
+    
+        &copy; Copyright 2022.<br/>
+  </p>
+</footer>
 </main>
 
 

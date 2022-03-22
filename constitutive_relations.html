@@ -37,22 +37,24 @@
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/togglebutton.js"></script>
     <script src="_static/clipboard.min.js"></script>
     <script src="_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script src="_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
-    <script>
-        const thebe_selector = ".thebe,.cell"
-        const thebe_selector_input = "pre,.cell_input div.highlight"
-        const thebe_selector_output = ".output,.cell_output"
-    </script>
-    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -348,7 +350,7 @@
                 data-placement="left">.md</button></a>
         <!-- Download PDF via print -->
         <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
     </div>
 </div>
 
@@ -382,7 +384,7 @@
         </div>
 
         <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
             
             <div class="tocsection onthispage pt-5 pb-3">
                 <i class="fas fa-list"></i> Contents
@@ -412,7 +414,40 @@
 </div>
     <div id="main-content" class="row">
         <div class="col-12 col-md-9 pl-md-3 pr-md-0">
-        
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Constitutive relations</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#modeling-of-the-passive-myocardium">
+   Modeling of the passive myocardium
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#modeling-of-the-active-contraction">
+   Modeling of the active contraction
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#references">
+   References
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            
               <div>
                 
   <div class="tex2jax_ignore mathjax_ignore section" id="constitutive-relations">
@@ -434,13 +469,13 @@ accounts for both the passive and the active response of the myocardium.</p>
 <div class="section" id="modeling-of-the-passive-myocardium">
 <h2>Modeling of the passive myocardium<a class="headerlink" href="#modeling-of-the-passive-myocardium" title="Permalink to this headline">¶</a></h2>
 <p>The passive response of the myocardium has been investigated through
-uni-axial, bi-axial and shear deformation experiments <span id="id1">[<a class="reference internal" href="hyperalsticity.html#id112">Dokos <em>et al.</em>, 2002</a>]</span>.</p>
+uni-axial, bi-axial and shear deformation experiments <span id="id1">[<a class="reference internal" href="hyperalsticity.html#id112" title="Socrates Dokos, Bruce H Smaill, Alistair A Young, and Ian J LeGrice. Shear properties of passive ventricular myocardium. American Journal of Physiology-Heart and Circulatory Physiology, 283(6):H2650–H2659, 2002.">Dokos <em>et al.</em>, 2002</a>]</span>.</p>
 <p>In 2009 Holzapfel and Ogden proposed an orthotropic constitutive model
-of the passive myocardium <span id="id2">[<a class="reference internal" href="hyperalsticity.html#id92">Holzapfel and Ogden, 2009</a>]</span> which is
-based on the experiments done in <span id="id3">[<a class="reference internal" href="hyperalsticity.html#id112">Dokos <em>et al.</em>, 2002</a>]</span>, and is the
+of the passive myocardium <span id="id2">[<a class="reference internal" href="hyperalsticity.html#id92" title="Gerhard A Holzapfel and Ray W Ogden. Constitutive modelling of passive myocardium: a structurally based framework for material characterization. Philosophical Transactions of the Royal Society of London A: Mathematical, Physical and Engineering Sciences, 367(1902):3445–3475, 2009.">Holzapfel and Ogden, 2009</a>]</span> which is
+based on the experiments done in <span id="id3">[<a class="reference internal" href="hyperalsticity.html#id112" title="Socrates Dokos, Bruce H Smaill, Alistair A Young, and Ian J LeGrice. Shear properties of passive ventricular myocardium. American Journal of Physiology-Heart and Circulatory Physiology, 283(6):H2650–H2659, 2002.">Dokos <em>et al.</em>, 2002</a>]</span>, and is the
 model used in this thesis. Other constitutive models for the passive
 myocardium exists
-<span id="id4">[<a class="reference internal" href="#id102">Costa <em>et al.</em>, 2001</a>, <a class="reference internal" href="#id115">Guccione <em>et al.</em>, 1991</a>, <a class="reference internal" href="#id118">Nash and Hunter, 2000</a>]</span>
+<span id="id4">[<a class="reference internal" href="#id102" title="Kevin D Costa, Jeffrey W Holmes, and Andrew D McCulloch. Modelling cardiac mechanical properties in three dimensions. Philosophical Transactions of the Royal Society of London A: Mathematical, Physical and Engineering Sciences, 359(1783):1233–1250, 2001.">Costa <em>et al.</em>, 2001</a>, <a class="reference internal" href="#id115" title="Julius M Guccione, Andrew D McCulloch, LK Waldman, and others. Passive material properties of intact ventricular myocardium determined from a cylindrical model. J Biomech Eng, 113(1):42–55, 1991.">Guccione <em>et al.</em>, 1991</a>, <a class="reference internal" href="#id118" title="Martyn P Nash and Peter J Hunter. Computational mechanics of the heart. Journal of elasticity and the physical science of solids, 61(1-3):113–141, 2000.">Nash and Hunter, 2000</a>]</span>
 but is not considered here. The model
 assumes a local orthonormal coordinate system with the fiber axis
 <span class="math notranslate nohighlight">\(\mathbf{f}_0\)</span>, sheet axis <span class="math notranslate nohighlight">\(\mathbf{s}_0\)</span> and sheet-normal axis <span class="math notranslate nohighlight">\(\mathbf{n}_0\)</span>.</p>
@@ -533,8 +568,8 @@ incorporated using two fundamentally different approaches known as the
 Hill model illustrated in <a class="reference internal" href="#hill-muscle-model"><span class="std std-numref">Fig. 2</span></a>, where the
 active contribution naturally decomposes the total stress into a sum
 of passive and active stresses
-<span id="id5">[<a class="reference internal" href="#id34">Nash and Panfilov, 2004</a>]</span>. Hence, in the active stress
-formulation <span id="id6">[<a class="reference internal" href="#id41">Hunter <em>et al.</em>, 1998</a>]</span> one assumes that the total
+<span id="id5">[<a class="reference internal" href="#id34" title="Martyn P Nash and Alexander V Panfilov. Electromechanical model of excitable tissue to study reentrant cardiac arrhythmias. Progress in biophysics and molecular biology, 85(2):501–522, 2004.">Nash and Panfilov, 2004</a>]</span>. Hence, in the active stress
+formulation <span id="id6">[<a class="reference internal" href="#id41" title="PJ Hunter, AD McCulloch, and HEDJ Ter Keurs. Modelling the mechanical properties of cardiac muscle. Progress in biophysics and molecular biology, 69(2):289–331, 1998.">Hunter <em>et al.</em>, 1998</a>]</span> one assumes that the total
 Cauchy stress <span class="math notranslate nohighlight">\(\sigma\)</span> can be written as an additive sum of one
 passive contribution <span class="math notranslate nohighlight">\(\sigma_p\)</span> and one active contribution <span class="math notranslate nohighlight">\(\sigma_a\)</span>,</p>
 <div class="math notranslate nohighlight">
@@ -559,7 +594,7 @@ sheet-normal direction respectively, are typically coupled to the
 electrophysiology and calcium dynamics.
 There are experimental evidence that the active stresses in the
 transverse direction of the fibers (<span class="math notranslate nohighlight">\(\sigma_{ss}\)</span>, and <span class="math notranslate nohighlight">\(\sigma_{nn}\)</span>),
-are non-negligible <span id="id7">[<a class="reference internal" href="#id32">Lin and Yin, 1998</a>]</span>, and one approach is to assume
+are non-negligible <span id="id7">[<a class="reference internal" href="#id32" title="DHS Lin and FCP Yin. A multiaxial constitutive law for mammalian left ventricular myocardium in steady-state barium contracture or tetanus. Journal of biomechanical engineering, 120(4):504–517, 1998.">Lin and Yin, 1998</a>]</span>, and one approach is to assume
 a uniform transverse activation in which the total active tension
 can be written as</p>
 <div class="math notranslate nohighlight" id="equation-intro-active-stress">
@@ -586,7 +621,7 @@ along the fibers and <a class="reference internal" href="#equation-intro-active-
 \end{align*}\]</div>
 <p>and that <span class="math notranslate nohighlight">\(I_1 =  I_{4\mathbf{f}_0} +  I_{4\mathbf{s}_0} +  I_{4\mathbf{n}_0}\)</span>,
 we can instead decompose the strain-energy function into a passive and active
-parts <span id="id8">[<a class="reference internal" href="#id30">Pathmanathan <em>et al.</em>, 2010</a>]</span>, <span class="math notranslate nohighlight">\(\Psi= \Psi_p + \Psi_a\)</span>, with</p>
+parts <span id="id8">[<a class="reference internal" href="#id30" title="Pras Pathmanathan, SJ Chapman, DJ Gavaghan, and JP Whiteley. Cardiac electromechanics: the effect of contraction model on the mathematical problem and accuracy of the numerical scheme. Quaterly Journal of Mechanics and Applied Mathematics, 2010.">Pathmanathan <em>et al.</em>, 2010</a>]</span>, <span class="math notranslate nohighlight">\(\Psi= \Psi_p + \Psi_a\)</span>, with</p>
 <div class="math notranslate nohighlight">
 \[\begin{align}
 \Psi_a = \frac{T_a}{2J} \left(( I_{4\mathbf{f}_0} - 1)  + \eta \left[ (I_1 - 3) -
@@ -596,7 +631,7 @@ parts <span id="id8">[<a class="reference internal" href="#id30">Pathmanathan <e
 \mathbf{F}^{T}\)</span>.</p>
 <p>The <em>active strain</em> formulation is a relatively new way of modeling the
 active contraction in the heart and was first introduced in
-<span id="id9">[<a class="reference internal" href="#id40">Taber and Perucchio, 2000</a>]</span>. This formulation is based on a
+<span id="id9">[<a class="reference internal" href="#id40" title="Larry A Taber and Renato Perucchio. Modeling heart development. Journal of elasticity and the physical science of solids, 61(1-3):165–197, 2000.">Taber and Perucchio, 2000</a>]</span>. This formulation is based on a
 multiplicative decomposition of the deformation gradient,</p>
 <div class="math notranslate nohighlight" id="equation-active-strain">
 <span class="eqno">(23)<a class="headerlink" href="#equation-active-strain" title="Permalink to this equation">¶</a></span>\[\begin{equation}
@@ -637,15 +672,15 @@ treated in the same way. It is then straight forward to verify that
 physiological and based on the classical Hill model shown in
 <a class="reference internal" href="#hill-muscle-model"><span class="std std-numref">Fig. 2</span></a>, the motivation behind the active strain
 formulation is more driven by ensuring mathematical robustness. In
-particular it has been shown <span id="id10">[<a class="reference internal" href="#id66">Ambrosi and Pezzuto, 2012</a>]</span> that with the
+particular it has been shown <span id="id10">[<a class="reference internal" href="#id66" title="D Ambrosi and S Pezzuto. Active stress vs. active strain in mechanobiology: constitutive issues. Journal of Elasticity, 107(2):199–212, 2012.">Ambrosi and Pezzuto, 2012</a>]</span> that with the
 active strain formulation, properties such as frame invariance and
 rank-one ellipticity is inherited from the strain energy function. In
 contrast, rank-one ellipticity is not guaranteed for the active stress
 formulation.</p>
 <p>For a more extensive comparison of the active stress and active strain
-approach we refer to <span id="id11">[<a class="reference internal" href="#id66">Ambrosi and Pezzuto, 2012</a>, <a class="reference internal" href="#id17">Giantesio <em>et al.</em>, 2017</a>]</span>,
+approach we refer to <span id="id11">[<a class="reference internal" href="#id66" title="D Ambrosi and S Pezzuto. Active stress vs. active strain in mechanobiology: constitutive issues. Journal of Elasticity, 107(2):199–212, 2012.">Ambrosi and Pezzuto, 2012</a>, <a class="reference internal" href="#id17" title="Giulia Giantesio, Alessandro Musesti, and Davide Riccobelli. A comparison between active strain and active stress in transversely isotropic hyperelastic materials. arXiv preprint arXiv:1709.04977, 2017.">Giantesio <em>et al.</em>, 2017</a>]</span>,
 and for an overview of other methods to model the active contraction
-we refer to <span id="id12">[<a class="reference internal" href="#id67">Goriely, 2017</a>]</span>.</p>
+we refer to <span id="id12">[<a class="reference internal" href="#id67" title="A Goriely. Five ways to model active processes in elastic solids: active forces, active stresses, active strains, active fibers, and active metrics. Mechanics Research Communications, 2017.">Goriely, 2017</a>]</span>.</p>
 </div>
 <div class="section" id="references">
 <h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
@@ -716,8 +751,8 @@ we refer to <span id="id12">[<a class="reference internal" href="#id67">Goriely,
 
               </div>
               
-        
-            <!-- Previous / next buttons -->
+            
+                <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
     <a class='left-prev' id="prev-link" href="force_balance.html" title="previous page">
         <i class="fas fa-angle-left"></i>
@@ -734,19 +769,17 @@ we refer to <span id="id12">[<a class="reference internal" href="#id67">Goriely,
     <i class="fas fa-angle-right"></i>
     </a>
 </div>
-        
+            
         </div>
     </div>
     <footer class="footer">
-    <div class="container">
-      <p>
-        
-          By Henrik Finsberg<br/>
-        
-            &copy; Copyright 2022.<br/>
-      </p>
-    </div>
-  </footer>
+  <p>
+    
+      By Henrik Finsberg<br/>
+    
+        &copy; Copyright 2022.<br/>
+  </p>
+</footer>
 </main>
 
 

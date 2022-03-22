@@ -37,22 +37,24 @@
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/togglebutton.js"></script>
     <script src="_static/clipboard.min.js"></script>
     <script src="_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script src="_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
-    <script>
-        const thebe_selector = ".thebe,.cell"
-        const thebe_selector_input = "pre,.cell_input div.highlight"
-        const thebe_selector_output = ".output,.cell_output"
-    </script>
-    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -348,7 +350,7 @@
                 data-placement="left">.md</button></a>
         <!-- Download PDF via print -->
         <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
     </div>
 </div>
 
@@ -382,7 +384,7 @@
         </div>
 
         <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
             
             <div class="tocsection onthispage pt-5 pb-3">
                 <i class="fas fa-list"></i> Contents
@@ -412,7 +414,40 @@
 </div>
     <div id="main-content" class="row">
         <div class="col-12 col-md-9 pl-md-3 pr-md-0">
-        
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Force-balance equation</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#variational-formulation">
+   Variational formulation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#discretization-of-the-force-balance-equations">
+   Discretization of the force balance equations
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#references">
+   References
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            
               <div>
                 
   <div class="tex2jax_ignore mathjax_ignore section" id="force-balance-equation">
@@ -533,10 +568,10 @@ approximation spaces <span class="math notranslate nohighlight">\(V_h, Q_h\)</sp
 that arises for such saddle-point problems is <em>locking</em>, which can be
 seen if the material do not deform even if forces are applied. The
 problem is solved by requiring the finite element approximation to
-satisfy the discrete inf-sup condition <span id="id1">[<a class="reference internal" href="#id7">Le Tallec, 1982</a>]</span>. There
+satisfy the discrete inf-sup condition <span id="id1">[<a class="reference internal" href="#id7" title="Patrick Le Tallec. Existence and approximation results for nonlinear mixed problems: application to incompressible finite elasticity. Numerische Mathematik, 38(3):365–382, 1982.">Le Tallec, 1982</a>]</span>. There
 exist several mixed elements that satisfies this condition
-<span id="id2">[<a class="reference internal" href="#id29">Chapelle and Bathe, 1993</a>]</span>. The elements used in this thesis are the
-Taylor-Hood finite elements <span id="id3">[<a class="reference internal" href="#id26">Taylor and Hood, 1973</a>]</span>. Let the domain of
+<span id="id2">[<a class="reference internal" href="#id29" title="Dominique Chapelle and Klaus-Jürgen Bathe. The inf-sup test. Computers &amp; structures, 47(4-5):537–545, 1993.">Chapelle and Bathe, 1993</a>]</span>. The elements used in this thesis are the
+Taylor-Hood finite elements <span id="id3">[<a class="reference internal" href="#id26" title="Cedric Taylor and P Hood. A numerical solution of the navier-stokes equations using the finite element technique. Computers &amp; Fluids, 1(1):73–100, 1973.">Taylor and Hood, 1973</a>]</span>. Let the domain of
 interest be denoted by <span class="math notranslate nohighlight">\(\Omega\)</span>, and let <span class="math notranslate nohighlight">\(\mathcal{T}_h\)</span> be a
 triangulation of that domain in the sense that <span class="math notranslate nohighlight">\(\bigcup_{T \in
   \mathcal{T}_h} T = \overline{\Omega}\)</span>. Let <span class="math notranslate nohighlight">\(\mathcal{P}_k
@@ -608,8 +643,8 @@ Gaussian quadrature points where there is no problem with continuity.</p>
 
               </div>
               
-        
-            <!-- Previous / next buttons -->
+            
+                <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
     <a class='left-prev' id="prev-link" href="boundary_conditions.html" title="previous page">
         <i class="fas fa-angle-left"></i>
@@ -626,19 +661,17 @@ Gaussian quadrature points where there is no problem with continuity.</p>
     <i class="fas fa-angle-right"></i>
     </a>
 </div>
-        
+            
         </div>
     </div>
     <footer class="footer">
-    <div class="container">
-      <p>
-        
-          By Henrik Finsberg<br/>
-        
-            &copy; Copyright 2022.<br/>
-      </p>
-    </div>
-  </footer>
+  <p>
+    
+      By Henrik Finsberg<br/>
+    
+        &copy; Copyright 2022.<br/>
+  </p>
+</footer>
 </main>
 
 

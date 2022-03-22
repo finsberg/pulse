@@ -37,22 +37,24 @@
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/togglebutton.js"></script>
     <script src="_static/clipboard.min.js"></script>
     <script src="_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script src="_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
-    <script>
-        const thebe_selector = ".thebe,.cell"
-        const thebe_selector_input = "pre,.cell_input div.highlight"
-        const thebe_selector_output = ".output,.cell_output"
-    </script>
-    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -348,7 +350,7 @@
                 data-placement="left">.md</button></a>
         <!-- Download PDF via print -->
         <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
     </div>
 </div>
 
@@ -382,7 +384,7 @@
         </div>
 
         <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
             
             <div class="tocsection onthispage pt-5 pb-3">
                 <i class="fas fa-list"></i> Contents
@@ -412,7 +414,40 @@
 </div>
     <div id="main-content" class="row">
         <div class="col-12 col-md-9 pl-md-3 pr-md-0">
-        
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Implementation details</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#the-fenics-project">
+   The FEniCS Project
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#numerical-considerations">
+   Numerical considerations
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#references">
+   References
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            
               <div>
                 
   <div class="tex2jax_ignore mathjax_ignore section" id="implementation-details">
@@ -429,16 +464,16 @@ Solving PDEs using FEM involves many implementation details that can
 be tedious to implement yourselves. The idea behind FEniCS is to
 automate code generation so that the user can spend more time on doing
 research and less time on implementation of assembly matrices. At the
-core of FEniCS is DOLFIN <span id="id1">[<a class="reference internal" href="#id16">Logg <em>et al.</em>, 2012</a>]</span>, which is a C++/Python
+core of FEniCS is DOLFIN <span id="id1">[<a class="reference internal" href="#id16" title="Anders Logg, Garth N Wells, and Johan Hake. Dolfin: a c++/python finite element library. Automated Solution of Differential Equations by the Finite Element Method, pages 173–225, 2012.">Logg <em>et al.</em>, 2012</a>]</span>, which is a C++/Python
 library, and works as the main interface in FEniCS. In this thesis
 only the Python interface has been used, in which C++ code is
 automatically generated using SWIG. This allows for simplicity through
 the Python scripting language and the speed of the C++ language.
 The domain specific language used to represent weak formulations is
-called the Unified Form Language (UFL) <span id="id2">[<a class="reference internal" href="#id53">Alnæs <em>et al.</em>, 2014</a>]</span>, and
+called the Unified Form Language (UFL) <span id="id2">[<a class="reference internal" href="#id53" title="Martin S Alnæs, Anders Logg, Kristian B Ølgaard, Marie E Rognes, and Garth N Wells. Unified form language: a domain-specific language for weak formulations of partial differential equations. ACM Transactions on Mathematical Software (TOMS), 40(2):9, 2014.">Alnæs <em>et al.</em>, 2014</a>]</span>, and
 allows for e.g automatic differentiation of forms and expressions. The
-FEniCS form compiler (FFC) <span id="id3">[<a class="reference internal" href="#id55">Logg <em>et al.</em>, 2012</a>]</span> compiles code written in
-UFL to Unified Form-assembly Code (UFC) <span id="id4">[<a class="reference internal" href="#id56">Alnæs <em>et al.</em>, 2012</a>]</span> which are
+FEniCS form compiler (FFC) <span id="id3">[<a class="reference internal" href="#id55" title="Anders Logg, Kristian B Ølgaard, Marie E Rognes, and Garth N Wells. Ffc: the fenics form compiler. Automated Solution of Differential Equations by the Finite Element Method, pages 227–238, 2012.">Logg <em>et al.</em>, 2012</a>]</span> compiles code written in
+UFL to Unified Form-assembly Code (UFC) <span id="id4">[<a class="reference internal" href="#id56" title="Martin Sandve Alnæs, Anders Logg, and Kent-Andre Mardal. Ufc: a finite element code generation interface. Automated Solution of Differential Equations by the Finite Element Method, pages 283–302, 2012.">Alnæs <em>et al.</em>, 2012</a>]</span> which are
 optimized C++ code. The Python interface also makes use of the Instant
 module which allows for just-in-time (JIT) compilation of C++
 code. The compiled code is also stored in a cache so that compilation
@@ -465,7 +500,7 @@ to the end-diastolic pressure. A strategy know as the <em>incremental load</em> 
 reached. If the solver diverges you decrease the step-size (for instance by a factor of 0.5) until convergence is reached, and continue to step up the pressure with the new step-size. This is very robust, but definitely a slow approach. Since many of the
 constitutive models for myocardium consist of an exponential relationship between the stress and strain (so called Fung-type relation), the amount of stress needed to displace a material will be higher if the material is a state with high strain compared to a state
 of low strain. Therefore, in the low strain state, the Newtons solver might perform fewer iterations to reach convergence when the load is increased. As a result, one could improve the incremental load technique by adapting the step size if the number of newton iterations are below a certain threshold (for instance <span class="math notranslate nohighlight">\(8\)</span> iterations).</p>
-<p>An even more clever strategy uses a technique from bifurcation and chaos theory and is known as numerical continuation <span id="id5">[<a class="reference internal" href="#id77">Allgower and Georg, 2003</a>]</span>.  Suppose we want to
+<p>An even more clever strategy uses a technique from bifurcation and chaos theory and is known as numerical continuation <span id="id5">[<a class="reference internal" href="#id77" title="Eugene L Allgower and Kurt Georg. Introduction to numerical continuation methods. SIAM, 2003.">Allgower and Georg, 2003</a>]</span>.  Suppose we want to
 solve the non-linear problem <span class="math notranslate nohighlight">\(F(\mathbf{u}, \lambda)=0\)</span> with state variable
 <span class="math notranslate nohighlight">\(\mathbf{u}\)</span> and parameter <span class="math notranslate nohighlight">\(\lambda\)</span>. For instance <span class="math notranslate nohighlight">\(\mathbf{u}\)</span> could be the
 displacement and <span class="math notranslate nohighlight">\(\lambda\)</span> could be the endocardial pressure.
@@ -483,7 +518,7 @@ parameter <span class="math notranslate nohighlight">\(\lambda_2\)</span>, a pos
 \end{align}\]</div>
 <p>Choosing <span class="math notranslate nohighlight">\(\mathbf{u}_2\)</span> as initial guess for the non-linear solver has been
 successfully performed by others in non-linear cardiac mechanics
-problems <span id="id6">[<a class="reference internal" href="#id76">Pezzuto, 2013</a>]</span>, and this approach is also used
+problems <span id="id6">[<a class="reference internal" href="#id76" title="Simone Pezzuto. Mechanics of the heart: constitutive issues and numerical experiments. PhD thesis, Italy, 2013.">Pezzuto, 2013</a>]</span>, and this approach is also used
 in this thesis.</p>
 </div>
 <div class="section" id="references">
@@ -534,8 +569,8 @@ in this thesis.</p>
 
               </div>
               
-        
-            <!-- Previous / next buttons -->
+            
+                <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
     <a class='left-prev' id="prev-link" href="constitutive_relations.html" title="previous page">
         <i class="fas fa-angle-left"></i>
@@ -552,19 +587,17 @@ in this thesis.</p>
     <i class="fas fa-angle-right"></i>
     </a>
 </div>
-        
+            
         </div>
     </div>
     <footer class="footer">
-    <div class="container">
-      <p>
-        
-          By Henrik Finsberg<br/>
-        
-            &copy; Copyright 2022.<br/>
-      </p>
-    </div>
-  </footer>
+  <p>
+    
+      By Henrik Finsberg<br/>
+    
+        &copy; Copyright 2022.<br/>
+  </p>
+</footer>
 </main>
 
 

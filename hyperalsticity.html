@@ -37,22 +37,24 @@
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/togglebutton.js"></script>
     <script src="_static/clipboard.min.js"></script>
     <script src="_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script src="_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
-    <script>
-        const thebe_selector = ".thebe,.cell"
-        const thebe_selector_input = "pre,.cell_input div.highlight"
-        const thebe_selector_output = ".output,.cell_output"
-    </script>
-    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -348,7 +350,7 @@
                 data-placement="left">.md</button></a>
         <!-- Download PDF via print -->
         <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
     </div>
 </div>
 
@@ -382,7 +384,7 @@
         </div>
 
         <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
             
             <div class="tocsection onthispage pt-5 pb-3">
                 <i class="fas fa-list"></i> Contents
@@ -407,13 +409,41 @@
 </div>
     <div id="main-content" class="row">
         <div class="col-12 col-md-9 pl-md-3 pr-md-0">
-        
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Hyperelasticity</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#general-requirements-for-the-strain-energy-density-function">
+   General requirements for the strain-energy density function
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#references">
+   References
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            
               <div>
                 
   <div class="tex2jax_ignore mathjax_ignore section" id="hyperelasticity">
 <span id="section-hyperelasticity"></span><h1>Hyperelasticity<a class="headerlink" href="#hyperelasticity" title="Permalink to this headline">¶</a></h1>
 <p>Even though experimental studies have indicated visco-elastic behavior
-of the myocardium <span id="id1">[<a class="reference internal" href="#id112">Dokos <em>et al.</em>, 2002</a>, <a class="reference internal" href="#id69">Gültekin <em>et al.</em>, 2016</a>]</span> a
+of the myocardium <span id="id1">[<a class="reference internal" href="#id112" title="Socrates Dokos, Bruce H Smaill, Alistair A Young, and Ian J LeGrice. Shear properties of passive ventricular myocardium. American Journal of Physiology-Heart and Circulatory Physiology, 283(6):H2650–H2659, 2002.">Dokos <em>et al.</em>, 2002</a>, <a class="reference internal" href="#id69" title="Osman Gültekin, Gerhard Sommer, and Gerhard A Holzapfel. An orthotropic viscoelastic model for the passive myocardium: continuum basis and numerical treatment. Computer methods in biomechanics and biomedical engineering, 19(15):1647–1664, 2016.">Gültekin <em>et al.</em>, 2016</a>]</span> a
 common assumption is to consider quasi-static behavior, meaning that
 the inertial term in <a class="reference internal" href="balance_laws.html#equation-chauch-momentum-eq">(6)</a> is negligible and
 static equilibrium is achieved at all points in the cardiac cycle. Therefore
@@ -481,7 +511,7 @@ to another can results in complicated computations. Therefore it would be benefi
 could work with quantities which do not depend on the choice of
 coordinate-system. Such quantities are called invariants.
 If the material is isotropic, the representation theorem for
-invariants <span id="id2">[<a class="reference internal" href="#id11">Wang, 1970</a>]</span> states that <span class="math notranslate nohighlight">\(\Psi\)</span> can be expressed in terms of the
+invariants <span id="id2">[<a class="reference internal" href="#id11" title="C-C Wang. A new representation theorem for isotropic functions: an answer to professor gf smith's criticism of my papers on representations for isotropic functions. Archive for Rational Mechanics and Analysis, 36(3):166–197, 1970.">Wang, 1970</a>]</span> states that <span class="math notranslate nohighlight">\(\Psi\)</span> can be expressed in terms of the
 principle invariants of <span class="math notranslate nohighlight">\(\mathbf{C}\)</span>, that is <span class="math notranslate nohighlight">\(\Psi = \Psi(I_1, I_2,
 I_3)\)</span>. The principle invariants <span class="math notranslate nohighlight">\(I_i, i=1,2,3\)</span> are the coefficients in
 the characteristic polynomial of <span class="math notranslate nohighlight">\(\mathbf{C}\)</span>, and is given by</p>
@@ -514,7 +544,7 @@ is related to the volume ratio of material during deformation, while
 |\)</span> and we see that <span class="math notranslate nohighlight">\(I_{4\mathbf{a}_0 }  =  \mathbf{a}_0 \cdot (\mathbf{C}
 \mathbf{a}_0) = \mathbf{F} \mathbf{a}_0 \cdot (\mathbf{F} \mathbf{a}_0) =
 \lambda_{\mathbf{a}_0}^2\)</span>. For more details about invariants see e.g
-<span id="id3">[<a class="reference internal" href="#id92">Holzapfel and Ogden, 2009</a>, <a class="reference internal" href="#id7">Liu and others, 1982</a>]</span>.</p>
+<span id="id3">[<a class="reference internal" href="#id92" title="Gerhard A Holzapfel and Ray W Ogden. Constitutive modelling of passive myocardium: a structurally based framework for material characterization. Philosophical Transactions of the Royal Society of London A: Mathematical, Physical and Engineering Sciences, 367(1902):3445–3475, 2009.">Holzapfel and Ogden, 2009</a>, <a class="reference internal" href="#id7" title="I Liu and others. On representations of anisotropic invariants. International Journal of Engineering Science, 20(10):1099–1109, 1982.">Liu and others, 1982</a>]</span>.</p>
 <p>The theory of global existence of unique solutions for elastic problems
 was originally based convexity of the free energy function.
 An energy function <span class="math notranslate nohighlight">\(\Psi: \mathrm{Lin}^+ \rightarrow
@@ -537,7 +567,7 @@ positive definite,</p>
      \mathrm{Lin}^+, \mathbf{H} \neq \mathbf{0}.
 \end{align}\]</div>
 <p>However, from a physical point of view this requirement is too strict
-<span id="id4">[<a class="reference internal" href="#id19">Ball, 1976</a>]</span>. A slightly weaker requirement is the strong
+<span id="id4">[<a class="reference internal" href="#id19" title="John M Ball. Convexity conditions and existence theorems in nonlinear elasticity. Archive for rational mechanics and Analysis, 63(4):337–403, 1976.">Ball, 1976</a>]</span>. A slightly weaker requirement is the strong
 ellipticity condition which states that <a class="reference internal" href="#equation-response-posdev">(13)</a>
 should hold for any <span class="math notranslate nohighlight">\(\mathbf{H}\)</span> of rank-one, and is analogous to
 say that the strain energy function is rank-one convex.</p>
@@ -590,8 +620,8 @@ say that the strain energy function is rank-one convex.</p>
 
               </div>
               
-        
-            <!-- Previous / next buttons -->
+            
+                <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
     <a class='left-prev' id="prev-link" href="balance_laws.html" title="previous page">
         <i class="fas fa-angle-left"></i>
@@ -608,19 +638,17 @@ say that the strain energy function is rank-one convex.</p>
     <i class="fas fa-angle-right"></i>
     </a>
 </div>
-        
+            
         </div>
     </div>
     <footer class="footer">
-    <div class="container">
-      <p>
-        
-          By Henrik Finsberg<br/>
-        
-            &copy; Copyright 2022.<br/>
-      </p>
-    </div>
-  </footer>
+  <p>
+    
+      By Henrik Finsberg<br/>
+    
+        &copy; Copyright 2022.<br/>
+  </p>
+</footer>
 </main>
 
 

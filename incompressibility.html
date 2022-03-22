@@ -37,22 +37,24 @@
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/togglebutton.js"></script>
     <script src="_static/clipboard.min.js"></script>
     <script src="_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script src="_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
-    <script>
-        const thebe_selector = ".thebe,.cell"
-        const thebe_selector_input = "pre,.cell_input div.highlight"
-        const thebe_selector_output = ".output,.cell_output"
-    </script>
-    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -348,7 +350,7 @@
                 data-placement="left">.md</button></a>
         <!-- Download PDF via print -->
         <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
     </div>
 </div>
 
@@ -382,7 +384,7 @@
         </div>
 
         <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
             
             <div class="tocsection onthispage pt-5 pb-3">
                 <i class="fas fa-list"></i> Contents
@@ -407,7 +409,35 @@
 </div>
     <div id="main-content" class="row">
         <div class="col-12 col-md-9 pl-md-3 pr-md-0">
-        
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Incompressibility</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#uncoupling-of-volumetric-and-isochoric-response">
+   Uncoupling of volumetric and isochoric response
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#references">
+   References
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            
               <div>
                 
   <div class="tex2jax_ignore mathjax_ignore section" id="incompressibility">
@@ -415,7 +445,7 @@
 <p>The myocardium contains small blood vessels that supply the
 myocardial cells with oxygen. When the myocardium contracts, this
 perfused blood is squeezed out, resulting in an overall loss of
-2-4% volume <span id="id1">[<a class="reference internal" href="#id59">Yin <em>et al.</em>, 1996</a>]</span>. A material that change its
+2-4% volume <span id="id1">[<a class="reference internal" href="#id59" title="FC Yin, CC Chan, and Robert M Judd. Compressibility of perfused passive myocardium. American Journal of Physiology-Heart and Circulatory Physiology, 271(5):H1864–H1870, 1996.">Yin <em>et al.</em>, 1996</a>]</span>. A material that change its
 volume in response to applied loads is referred to as compressible. When the
 volume is preserved we say that the material is incompressible.
 Since 2-4% is very little, a common assumption in cardiac mechanical modeling,
@@ -472,7 +502,7 @@ only deviatoric strains in the strain-energy density function, so that
 \Psi_{\mathrm{vol}}(J)\)</span>. For incompressible material (<span class="math notranslate nohighlight">\(J = 1\)</span>), we
 have <span class="math notranslate nohighlight">\(\mathbf{F}_{\mathrm{vol}} = \mathbf{I}\)</span> so that such a decomposition seems
 unnecessary. However, a similar decomposition has shown to be
-numerically beneficial <span id="id2">[<a class="reference internal" href="#id80">Weiss <em>et al.</em>, 1996</a>]</span>. Note that, in this case, a similar
+numerically beneficial <span id="id2">[<a class="reference internal" href="#id80" title="Jeffrey A Weiss, Bradley N Maker, and Sanjay Govindjee. Finite element implementation of incompressible, transversely isotropic hyperelasticity. Computer methods in applied mechanics and engineering, 135(1-2):107–128, 1996.">Weiss <em>et al.</em>, 1996</a>]</span>. Note that, in this case, a similar
 decoupling of the stress tensors has to be done.</p>
 <p>In the kinematics module you can specify whether if want the isochoric version</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">F_iso</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">kinematics</span><span class="o">.</span><span class="n">DeformationGradient</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">isochoric</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -515,8 +545,8 @@ decoupling of the stress tensors has to be done.</p>
 
               </div>
               
-        
-            <!-- Previous / next buttons -->
+            
+                <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
     <a class='left-prev' id="prev-link" href="hyperalsticity.html" title="previous page">
         <i class="fas fa-angle-left"></i>
@@ -533,19 +563,17 @@ decoupling of the stress tensors has to be done.</p>
     <i class="fas fa-angle-right"></i>
     </a>
 </div>
-        
+            
         </div>
     </div>
     <footer class="footer">
-    <div class="container">
-      <p>
-        
-          By Henrik Finsberg<br/>
-        
-            &copy; Copyright 2022.<br/>
-      </p>
-    </div>
-  </footer>
+  <p>
+    
+      By Henrik Finsberg<br/>
+    
+        &copy; Copyright 2022.<br/>
+  </p>
+</footer>
 </main>
 
 

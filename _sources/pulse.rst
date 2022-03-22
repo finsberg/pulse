@@ -21,14 +21,6 @@ pulse.dolfin\_utils module
    :undoc-members:
    :show-inheritance:
 
-pulse.geometries module
------------------------
-
-.. automodule:: pulse.geometries
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 pulse.geometry module
 ---------------------
 
