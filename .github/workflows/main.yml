@@ -43,7 +43,7 @@ jobs:
       - name: Test with pytest
         uses: nick-invision/retry@v2
         with:
-          timeout_minutes: 60
+          timeout_minutes: 120
           max_attempts: 5
           retry_on: error
           command: python3 -m pytest
