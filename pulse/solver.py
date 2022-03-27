@@ -112,30 +112,15 @@ class NonlinearSolver:
 
     @staticmethod
     def default_solver_parameters():
-        linear_solver = "superlu_dist"
-        if linear_solver not in dolfin.linear_solver_methods():
-            linear_solver = "lu"
         return {
             "petsc": {
                 "ksp_type": "preonly",
-                "ksp_rtol": None,
-                "ksp_atol": None,
-                "ksp_max_it": None,
-                "ksp_norm_type": "preconditioned",
-                "ksp_gmres_restart": None,
-                "pc_type": None,
-                "pc_factor_mat_solver_type": None,
-                "mat_superlu_dist_equil": True,
-                "mat_superlu_dist_rowperm": "LargeDiag_MC64",
-                "mat_superlu_dist_colperm": "PARMETIS",
-                "mat_superlu_dist_parsymbfact": True,
-                "mat_superlu_dist_replacetinypivot": True,
-                "mat_superlu_dist_fact": "DOFACT",
-                "mat_superlu_dist_iterrefine": True,
-                "pc_hypre_type": None,
+                "pc_type": "lu",
+                "pc_factor_mat_solver_type": "mumps",
+                "mat_mumps_icntl_33": 0,
             },
             "verbose": False,
-            "linear_solver": linear_solver,
+            "linear_solver": "mumps",
             "preconditioner": "lu",
             "error_on_nonconvergence": False,
             "relative_tolerance": 1e-5,
