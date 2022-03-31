@@ -34,13 +34,13 @@ conda install -c conda-forge pulse
 
 ### Docker
 It is also possible to use Docker. There is a prebuilt docker image
-using FEniCS 2017.2, python3.6 and pulse. You can get it by typing
+using the development version of FEniCS, python3.10 and pulse. You can get it by typing
 ```
 docker pull finsberg/pulse:latest
 ```
 
 ## Requirements
-* FEniCS version 2016 or newer
+* FEniCS version 2019.1.0 or newer (older versions might work but is not tested against anymore)
 
 Note that if you install FEniCS using anaconda then you will not get support for parallel HDF5
 see e.g [this issue](https://github.com/conda-forge/hdf5-feedstock/issues/51).
