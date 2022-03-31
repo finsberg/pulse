@@ -47,7 +47,7 @@ class HolzapfelOgden(Material):
 
         return {
             "a": 0.059,
-            "b": 0.023,
+            "b": 8.023,
             "a_f": 18.472,
             "b_f": 16.026,
             "a_s": 2.481,
