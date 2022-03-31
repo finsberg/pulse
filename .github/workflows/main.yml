@@ -12,7 +12,6 @@ jobs:
           [
             "finsberg/fenics-extra",
             "finsberg/pyadjoint-extra",
-            "finsberg/fenics2017",
           ]
 
     container:
@@ -30,9 +29,9 @@ jobs:
             ~/.cache/dijitso
             ~/.cache/pulse
             ~/.cache/pip
-          key: ${{ matrix.container }}-cache_v8
+          key: ${{ matrix.container }}-cache_v9
           restore-keys: |
-            ${{ matrix.container }}-cache_v8
+            ${{ matrix.container }}-cache_v9
 
       - name: Install dependencies
         run: |
