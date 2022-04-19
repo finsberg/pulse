@@ -52,6 +52,8 @@ const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="_static/sphinx-thebe.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Simple ellipsoid" href="simple_ellipsoid.html" />
@@ -402,7 +404,7 @@ const thebe_selector_output = ".output, .cell_output"
                 
   <div class="tex2jax_ignore mathjax_ignore section" id="shear-experiment">
 <h1>Shear experiment<a class="headerlink" href="#shear-experiment" title="Permalink to this headline">¶</a></h1>
-<p>Attempt to reproduce Figure 8 in [1].</p>
+<p>Attempt to reproduce Figure 7 in [1].</p>
 <blockquote>
 <div><p>[1] Holzapfel, Gerhard A., and Ray W. Ogden.
 “Constitutive modelling of passive myocardium:
@@ -412,7 +414,9 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
 </div></blockquote>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dolfin</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">dolfin</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 </pre></div>
@@ -421,20 +425,21 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pulse</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pulse</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">dolfin_adjoint</span> <span class="kn">import</span> <span class="p">(</span>
         <span class="n">Constant</span><span class="p">,</span>
         <span class="n">DirichletBC</span><span class="p">,</span>
         <span class="n">Expression</span><span class="p">,</span>
         <span class="n">UnitCubeMesh</span><span class="p">,</span>
         <span class="n">interpolate</span><span class="p">,</span>
+        <span class="n">Function</span><span class="p">,</span>
     <span class="p">)</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">dolfin</span> <span class="kn">import</span> <span class="p">(</span>
@@ -443,6 +448,7 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
         <span class="n">interpolate</span><span class="p">,</span>
         <span class="n">Expression</span><span class="p">,</span>
         <span class="n">UnitCubeMesh</span><span class="p">,</span>
+        <span class="n">Function</span><span class="p">,</span>
     <span class="p">)</span>
 </pre></div>
 </div>
@@ -450,7 +456,7 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create mesh</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create mesh</span>
 <span class="n">N</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">UnitCubeMesh</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
 </pre></div>
@@ -459,7 +465,7 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a facet fuction in order to mark the subdomains</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a facet fuction in order to mark the subdomains</span>
 <span class="n">ffun</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">MeshFunction</span><span class="p">(</span><span class="s2">&quot;size_t&quot;</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 <span class="n">ffun</span><span class="o">.</span><span class="n">set_all</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
@@ -468,7 +474,7 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Mark subdomains</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Mark subdomains</span>
 <span class="n">xlow</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">CompiledSubDomain</span><span class="p">(</span><span class="s2">&quot;near(x[0], 0) &amp;&amp; on_boundary&quot;</span><span class="p">)</span>
 <span class="n">xlow_marker</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">xlow</span><span class="o">.</span><span class="n">mark</span><span class="p">(</span><span class="n">ffun</span><span class="p">,</span> <span class="n">xlow_marker</span><span class="p">)</span>
@@ -478,7 +484,7 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">xhigh</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">CompiledSubDomain</span><span class="p">(</span><span class="s2">&quot;near(x[0], 1.0) &amp;&amp; on_boundary&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xhigh</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">CompiledSubDomain</span><span class="p">(</span><span class="s2">&quot;near(x[0], 1.0) &amp;&amp; on_boundary&quot;</span><span class="p">)</span>
 <span class="n">xhigh_marker</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="n">xhigh</span><span class="o">.</span><span class="n">mark</span><span class="p">(</span><span class="n">ffun</span><span class="p">,</span> <span class="n">xhigh_marker</span><span class="p">)</span>
 </pre></div>
@@ -487,7 +493,7 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ylow</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">CompiledSubDomain</span><span class="p">(</span><span class="s2">&quot;near(x[1], 0) &amp;&amp; on_boundary&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ylow</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">CompiledSubDomain</span><span class="p">(</span><span class="s2">&quot;near(x[1], 0) &amp;&amp; on_boundary&quot;</span><span class="p">)</span>
 <span class="n">ylow_marker</span> <span class="o">=</span> <span class="mi">3</span>
 <span class="n">ylow</span><span class="o">.</span><span class="n">mark</span><span class="p">(</span><span class="n">ffun</span><span class="p">,</span> <span class="n">ylow_marker</span><span class="p">)</span>
 </pre></div>
@@ -496,7 +502,7 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">yhigh</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">CompiledSubDomain</span><span class="p">(</span><span class="s2">&quot;near(x[1], 1) &amp;&amp; on_boundary&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">yhigh</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">CompiledSubDomain</span><span class="p">(</span><span class="s2">&quot;near(x[1], 1) &amp;&amp; on_boundary&quot;</span><span class="p">)</span>
 <span class="n">yhigh_marker</span> <span class="o">=</span> <span class="mi">4</span>
 <span class="n">yhigh</span><span class="o">.</span><span class="n">mark</span><span class="p">(</span><span class="n">ffun</span><span class="p">,</span> <span class="n">yhigh_marker</span><span class="p">)</span>
 </pre></div>
@@ -505,7 +511,25 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Collect the functions containing the markers</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">zlow</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">CompiledSubDomain</span><span class="p">(</span><span class="s2">&quot;near(x[2], 0) &amp;&amp; on_boundary&quot;</span><span class="p">)</span>
+<span class="n">zlow_marker</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">zlow</span><span class="o">.</span><span class="n">mark</span><span class="p">(</span><span class="n">ffun</span><span class="p">,</span> <span class="n">zlow_marker</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">zhigh</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">CompiledSubDomain</span><span class="p">(</span><span class="s2">&quot;near(x[2], 1) &amp;&amp; on_boundary&quot;</span><span class="p">)</span>
+<span class="n">zhigh_marker</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">zhigh</span><span class="o">.</span><span class="n">mark</span><span class="p">(</span><span class="n">ffun</span><span class="p">,</span> <span class="n">zhigh_marker</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Collect the functions containing the markers</span>
 <span class="n">marker_functions</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">MarkerFunctions</span><span class="p">(</span><span class="n">ffun</span><span class="o">=</span><span class="n">ffun</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -513,7 +537,7 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create mictrotructure</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create mictrotructure</span>
 <span class="n">V_f</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -521,7 +545,7 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fibers</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fibers</span>
 <span class="n">f0</span> <span class="o">=</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">Expression</span><span class="p">((</span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;0.0&quot;</span><span class="p">,</span> <span class="s2">&quot;0.0&quot;</span><span class="p">),</span> <span class="n">degree</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">V_f</span><span class="p">)</span>
 <span class="c1"># Sheets</span>
 <span class="n">s0</span> <span class="o">=</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">Expression</span><span class="p">((</span><span class="s2">&quot;0.0&quot;</span><span class="p">,</span> <span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;0.0&quot;</span><span class="p">),</span> <span class="n">degree</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">V_f</span><span class="p">)</span>
@@ -533,7 +557,7 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Collect the mictrotructure</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Collect the mictrotructure</span>
 <span class="n">microstructure</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">Microstructure</span><span class="p">(</span><span class="n">f0</span><span class="o">=</span><span class="n">f0</span><span class="p">,</span> <span class="n">s0</span><span class="o">=</span><span class="n">s0</span><span class="p">,</span> <span class="n">n0</span><span class="o">=</span><span class="n">n0</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -541,7 +565,7 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create the geometry</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create the geometry</span>
 <span class="n">geometry</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span>
     <span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">,</span>
     <span class="n">marker_functions</span><span class="o">=</span><span class="n">marker_functions</span><span class="p">,</span>
@@ -553,15 +577,24 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use the default material parameters</span>
-<span class="n">material_parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="mf">2.28</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="mf">9.726</span><span class="p">,</span> <span class="s2">&quot;a_f&quot;</span><span class="p">:</span> <span class="mf">1.685</span><span class="p">,</span> <span class="s2">&quot;b_f&quot;</span><span class="p">:</span> <span class="mf">15.779</span><span class="p">}</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use the default material parameters</span>
+<span class="n">material_parameters</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="mf">0.059</span><span class="p">,</span>
+    <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="mf">8.023</span><span class="p">,</span>
+    <span class="s2">&quot;a_f&quot;</span><span class="p">:</span> <span class="mf">18.472</span><span class="p">,</span>
+    <span class="s2">&quot;b_f&quot;</span><span class="p">:</span> <span class="mf">16.026</span><span class="p">,</span>
+    <span class="s2">&quot;a_s&quot;</span><span class="p">:</span> <span class="mf">2.481</span><span class="p">,</span>
+    <span class="s2">&quot;b_s&quot;</span><span class="p">:</span> <span class="mf">11.120</span><span class="p">,</span>
+    <span class="s2">&quot;a_fs&quot;</span><span class="p">:</span> <span class="mf">0.216</span><span class="p">,</span>
+    <span class="s2">&quot;b_fs&quot;</span><span class="p">:</span> <span class="mf">11.436</span><span class="p">,</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create material</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create material</span>
 <span class="n">material</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">HolzapfelOgden</span><span class="p">(</span><span class="n">parameters</span><span class="o">=</span><span class="n">material_parameters</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -569,104 +602,848 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Eff / Ess strain ratio</span>
-<span class="n">strain_ratio</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X_space</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;R&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">X_space</span><span class="p">)</span>
+<span class="n">zero</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">((</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create costants defined for the dirichlet BC</span>
-<span class="n">u0</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
-<span class="n">x_strain</span> <span class="o">=</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">strain_ratio</span> <span class="o">/</span> <span class="mi">2</span>
-<span class="n">y_strain</span> <span class="o">=</span> <span class="n">u0</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">strain_ratio</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Make Dirichlet boundary conditions</span>
-<span class="k">def</span> <span class="nf">dirichlet_bc</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
-    <span class="n">V</span> <span class="o">=</span> <span class="n">W</span> <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">num_sub_spaces</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">W</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">[</span>
-        <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">Constant</span><span class="p">(</span><span class="o">-</span><span class="n">x_strain</span><span class="p">),</span> <span class="n">xlow</span><span class="p">),</span>
-        <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">Constant</span><span class="p">(</span><span class="n">x_strain</span><span class="p">),</span> <span class="n">xhigh</span><span class="p">),</span>
-        <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">Constant</span><span class="p">(</span><span class="o">-</span><span class="n">y_strain</span><span class="p">),</span> <span class="n">ylow</span><span class="p">),</span>
-        <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">Constant</span><span class="p">(</span><span class="n">y_strain</span><span class="p">),</span> <span class="n">yhigh</span><span class="p">),</span>
-    <span class="p">]</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Collect Boundary Conditions</span>
-<span class="n">bcs</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">BoundaryConditions</span><span class="p">(</span><span class="n">dirichlet</span><span class="o">=</span><span class="p">(</span><span class="n">dirichlet_bc</span><span class="p">,))</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create problem</span>
-<span class="n">problem</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">MechanicsProblem</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">bcs</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Solve problem</span>
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-<span class="n">u0s</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.045</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">]</span>
-<span class="n">markers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;^&quot;</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">]</span>
-<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sr</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="mf">2.05</span><span class="p">,</span> <span class="mf">1.02</span><span class="p">,</span> <span class="mf">0.48</span><span class="p">]):</span>
-    <span class="n">strain_ratio</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">sr</span><span class="p">)</span>
-    <span class="n">Effs</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">Sffs</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">Esss</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">Ssss</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">xi</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">10</span><span class="p">):</span>
-        <span class="n">pulse</span><span class="o">.</span><span class="n">iterate</span><span class="o">.</span><span class="n">iterate</span><span class="p">(</span>
-            <span class="n">problem</span><span class="p">,</span>
-            <span class="n">u0</span><span class="p">,</span>
-            <span class="n">Constant</span><span class="p">(</span><span class="n">xi</span><span class="p">),</span>
-            <span class="n">reinit_each_step</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">S</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">SecondPiolaStress</span><span class="p">()</span>
-        <span class="n">E</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">GreenLagrangeStrain</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">create_experiment</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>  <span class="c1"># noqa: C901</span>
 
-        <span class="n">Sff</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span><span class="n">dolfin</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="n">f0</span><span class="p">,</span> <span class="n">S</span> <span class="o">*</span> <span class="n">f0</span><span class="p">)</span> <span class="o">*</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">dx</span><span class="p">)</span>
-        <span class="n">Eff</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span><span class="n">dolfin</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="n">f0</span><span class="p">,</span> <span class="n">E</span> <span class="o">*</span> <span class="n">f0</span><span class="p">)</span> <span class="o">*</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">dx</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">case</span> <span class="o">==</span> <span class="s2">&quot;fs&quot;</span><span class="p">:</span>
 
-        <span class="n">Effs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Eff</span><span class="p">)</span>
-        <span class="n">Sffs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Sff</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">dirichlet_bc</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
+            <span class="n">V</span> <span class="o">=</span> <span class="n">W</span> <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">num_sub_spaces</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">W</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">zero</span><span class="p">,</span> <span class="n">xlow</span><span class="p">),</span>
+                <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">xhigh</span><span class="p">),</span>
+            <span class="p">]</span>
 
-        <span class="n">Sss</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span><span class="n">dolfin</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="n">s0</span><span class="p">,</span> <span class="n">S</span> <span class="o">*</span> <span class="n">s0</span><span class="p">)</span> <span class="o">*</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">dx</span><span class="p">)</span>
-        <span class="n">Ess</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span><span class="n">dolfin</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="n">s0</span><span class="p">,</span> <span class="n">E</span> <span class="o">*</span> <span class="n">s0</span><span class="p">)</span> <span class="o">*</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">dx</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">increment</span><span class="p">(</span><span class="n">xi</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
-        <span class="n">Esss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Ess</span><span class="p">)</span>
-        <span class="n">Ssss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Sss</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">shear_component</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">dx</span><span class="p">)</span>
 
-    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Effs</span><span class="p">,</span> <span class="n">Sffs</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="n">markers</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;SR: </span><span class="si">{</span><span class="n">sr</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Esss</span><span class="p">,</span> <span class="n">Ssss</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="n">markers</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;SR: </span><span class="si">{</span><span class="n">sr</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;$S_</span><span class="si">{ff}</span><span class="s2">$ (kPa)&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;$S_</span><span class="si">{ss}</span><span class="s2">$ (kPa)&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">case</span> <span class="o">==</span> <span class="s2">&quot;fn&quot;</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">dirichlet_bc</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
+            <span class="n">V</span> <span class="o">=</span> <span class="n">W</span> <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">num_sub_spaces</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">W</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">zero</span><span class="p">,</span> <span class="n">xlow</span><span class="p">),</span>
+                <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">xhigh</span><span class="p">),</span>
+            <span class="p">]</span>
+
+        <span class="k">def</span> <span class="nf">increment</span><span class="p">(</span><span class="n">xi</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">xi</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">shear_component</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">dx</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">case</span> <span class="o">==</span> <span class="s2">&quot;sf&quot;</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">dirichlet_bc</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
+            <span class="n">V</span> <span class="o">=</span> <span class="n">W</span> <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">num_sub_spaces</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">W</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">zero</span><span class="p">,</span> <span class="n">ylow</span><span class="p">),</span>
+                <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">yhigh</span><span class="p">),</span>
+            <span class="p">]</span>
+
+        <span class="k">def</span> <span class="nf">increment</span><span class="p">(</span><span class="n">xi</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">shear_component</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">dx</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">case</span> <span class="o">==</span> <span class="s2">&quot;sn&quot;</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">dirichlet_bc</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
+            <span class="n">V</span> <span class="o">=</span> <span class="n">W</span> <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">num_sub_spaces</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">W</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">zero</span><span class="p">,</span> <span class="n">ylow</span><span class="p">),</span>
+                <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">yhigh</span><span class="p">),</span>
+            <span class="p">]</span>
+
+        <span class="k">def</span> <span class="nf">increment</span><span class="p">(</span><span class="n">xi</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">xi</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">shear_component</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">dx</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">case</span> <span class="o">==</span> <span class="s2">&quot;nf&quot;</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">dirichlet_bc</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
+            <span class="n">V</span> <span class="o">=</span> <span class="n">W</span> <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">num_sub_spaces</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">W</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">zero</span><span class="p">,</span> <span class="n">zlow</span><span class="p">),</span>
+                <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">zhigh</span><span class="p">),</span>
+            <span class="p">]</span>
+
+        <span class="k">def</span> <span class="nf">increment</span><span class="p">(</span><span class="n">xi</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">shear_component</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">dx</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">case</span> <span class="o">==</span> <span class="s2">&quot;ns&quot;</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">dirichlet_bc</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
+            <span class="n">V</span> <span class="o">=</span> <span class="n">W</span> <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">num_sub_spaces</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">W</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">zero</span><span class="p">,</span> <span class="n">zlow</span><span class="p">),</span>
+                <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">zhigh</span><span class="p">),</span>
+            <span class="p">]</span>
+
+        <span class="k">def</span> <span class="nf">increment</span><span class="p">(</span><span class="n">xi</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">shear_component</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">dx</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown case </span><span class="si">{</span><span class="n">case</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Collect Boundary Conditions</span>
+    <span class="n">bcs</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">BoundaryConditions</span><span class="p">(</span><span class="n">dirichlet</span><span class="o">=</span><span class="p">(</span><span class="n">dirichlet_bc</span><span class="p">,))</span>
+
+    <span class="c1"># Create problem</span>
+    <span class="k">return</span> <span class="n">pulse</span><span class="o">.</span><span class="n">MechanicsProblem</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">bcs</span><span class="p">),</span> <span class="n">increment</span><span class="p">,</span> <span class="n">shear_component</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;$E_</span><span class="si">{ff}</span><span class="s2">$&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;$E_</span><span class="si">{ss}</span><span class="s2">$&quot;</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">axi</span> <span class="ow">in</span> <span class="n">ax</span><span class="p">:</span>
-    <span class="n">axi</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;shear_test&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">stress</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">shear_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">recompute</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="c1"># Solve problem</span>
+<span class="n">results_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;result.npy&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">recompute</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">results_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">,</span> <span class="s2">&quot;fn&quot;</span><span class="p">,</span> <span class="s2">&quot;sf&quot;</span><span class="p">,</span> <span class="s2">&quot;sn&quot;</span><span class="p">,</span> <span class="s2">&quot;nf&quot;</span><span class="p">,</span> <span class="s2">&quot;ns&quot;</span><span class="p">]:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">zero</span><span class="p">)</span>
+        <span class="n">stress</span><span class="p">[</span><span class="n">mode</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">problem</span><span class="p">,</span> <span class="n">increment</span><span class="p">,</span> <span class="n">shear_component</span> <span class="o">=</span> <span class="n">create_experiment</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">shear</span> <span class="ow">in</span> <span class="n">shear_values</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">increment</span><span class="p">(</span><span class="n">shear</span><span class="p">))</span>
+            <span class="n">pulse</span><span class="o">.</span><span class="n">iterate</span><span class="o">.</span><span class="n">iterate</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">increment</span><span class="p">(</span><span class="n">shear</span><span class="p">),</span> <span class="n">reinit_each_step</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">stress</span><span class="p">[</span><span class="n">mode</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shear_component</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">ChachyStress</span><span class="p">()))</span>
+
+    <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">results_file</span><span class="p">,</span> <span class="n">stress</span><span class="p">)</span>
+<span class="n">stress</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">results_file</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">mode</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">stress</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">shear_values</span><span class="p">,</span> <span class="n">stress</span><span class="p">[</span><span class="n">mode</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Shear stress (kPa)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Amount of shear&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:16,908 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:16,911 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:16,912 [320] INFO     pulse.iterate: Target: 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.0, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:18,647 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:18,648 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:18,648 [320] INFO     pulse.iterate: Target: 0.000,0.067,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.06666666666666667, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:18,901 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:18,902 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.067,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:18,903 [320] INFO     pulse.iterate: Target: 0.000,0.133,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.13333333333333333, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:19,111 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:19,113 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.133,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:19,114 [320] INFO     pulse.iterate: Target: 0.000,0.200,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:19,294 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:19,295 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.200,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:19,297 [320] INFO     pulse.iterate: Target: 0.000,0.267,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.2, 0)
+(0, 0.26666666666666666, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:19,490 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:19,491 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.267,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:19,493 [320] INFO     pulse.iterate: Target: 0.000,0.333,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:19,677 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:19,679 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.333,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:19,681 [320] INFO     pulse.iterate: Target: 0.000,0.400,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.3333333333333333, 0)
+(0, 0.4, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:19,872 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:19,875 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.400,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:19,876 [320] INFO     pulse.iterate: Target: 0.000,0.467,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:20,065 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:20,068 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.467,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:20,069 [320] INFO     pulse.iterate: Target: 0.000,0.533,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.4666666666666667, 0)
+(0, 0.5333333333333333, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:20,278 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:20,280 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.533,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:20,282 [320] INFO     pulse.iterate: Target: 0.000,0.600,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.6, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:20,496 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:20,498 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:20,499 [320] INFO     pulse.iterate: Target: 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0, 0.0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:21,705 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:21,707 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:21,707 [320] INFO     pulse.iterate: Target: 0.000,0.000,0.067
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:21,899 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:21,900 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.067
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:21,903 [320] INFO     pulse.iterate: Target: 0.000,0.000,0.133
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0, 0.06666666666666667)
+(0, 0, 0.13333333333333333)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:22,091 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:22,093 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.133
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:22,094 [320] INFO     pulse.iterate: Target: 0.000,0.000,0.200
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:22,273 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:22,276 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.200
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:22,276 [320] INFO     pulse.iterate: Target: 0.000,0.000,0.267
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0, 0.2)
+(0, 0, 0.26666666666666666)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:22,456 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:22,457 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.267
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:22,459 [320] INFO     pulse.iterate: Target: 0.000,0.000,0.333
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:22,637 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:22,638 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.333
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:22,640 [320] INFO     pulse.iterate: Target: 0.000,0.000,0.400
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0, 0.3333333333333333)
+(0, 0, 0.4)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:22,818 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:22,821 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.400
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:22,823 [320] INFO     pulse.iterate: Target: 0.000,0.000,0.467
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:23,010 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:23,013 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.467
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:23,014 [320] INFO     pulse.iterate: Target: 0.000,0.000,0.533
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0, 0.4666666666666667)
+(0, 0, 0.5333333333333333)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:23,226 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:23,229 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.533
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:23,230 [320] INFO     pulse.iterate: Target: 0.000,0.000,0.600
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0, 0.6)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:23,449 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:23,451 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:23,453 [320] INFO     pulse.iterate: Target: 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.0, 0, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:24,593 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:24,595 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:24,595 [320] INFO     pulse.iterate: Target: 0.067,0.000,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.06666666666666667, 0, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:24,885 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:24,886 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.067,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:24,887 [320] INFO     pulse.iterate: Target: 0.133,0.000,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.13333333333333333, 0, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:25,108 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:25,109 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.133,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:25,110 [320] INFO     pulse.iterate: Target: 0.200,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:25,301 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:25,302 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.200,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:25,304 [320] INFO     pulse.iterate: Target: 0.267,0.000,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.2, 0, 0)
+(0.26666666666666666, 0, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:25,484 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:25,487 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.267,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:25,489 [320] INFO     pulse.iterate: Target: 0.333,0.000,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.3333333333333333, 0, 0)
+(0.4, 0, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:25,687 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:25,689 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.333,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:25,691 [320] INFO     pulse.iterate: Target: 0.400,0.000,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:25,900 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:25,902 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.400,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:25,904 [320] INFO     pulse.iterate: Target: 0.467,0.000,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.4666666666666667, 0, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:26,119 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:26,122 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.467,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:26,123 [320] INFO     pulse.iterate: Target: 0.533,0.000,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.5333333333333333, 0, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:26,349 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:26,351 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.533,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:26,353 [320] INFO     pulse.iterate: Target: 0.600,0.000,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.6, 0, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:26,628 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:26,630 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:26,630 [320] INFO     pulse.iterate: Target: 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0, 0.0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:27,782 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:27,783 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:27,786 [320] INFO     pulse.iterate: Target: 0.000,0.000,0.067
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0, 0.06666666666666667)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:28,023 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:28,025 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.067
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:28,027 [320] INFO     pulse.iterate: Target: 0.000,0.000,0.133
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:28,210 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:28,211 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.133
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:28,213 [320] INFO     pulse.iterate: Target: 0.000,0.000,0.200
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0, 0.13333333333333333)
+(0, 0, 0.2)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:28,396 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:28,398 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.200
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:28,399 [320] INFO     pulse.iterate: Target: 0.000,0.000,0.267
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:28,580 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:28,582 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.267
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:28,584 [320] INFO     pulse.iterate: Target: 0.000,0.000,0.333
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0, 0.26666666666666666)
+(0, 0, 0.3333333333333333)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:28,780 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:28,781 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.333
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:28,782 [320] INFO     pulse.iterate: Target: 0.000,0.000,0.400
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:28,963 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:28,964 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.400
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:28,966 [320] INFO     pulse.iterate: Target: 0.000,0.000,0.467
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0, 0.4)
+(0, 0, 0.4666666666666667)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:29,147 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:29,149 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.467
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:29,149 [320] INFO     pulse.iterate: Target: 0.000,0.000,0.533
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:29,330 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:29,331 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.533
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:29,332 [320] INFO     pulse.iterate: Target: 0.000,0.000,0.600
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0, 0.5333333333333333)
+(0, 0, 0.6)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:29,536 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:29,537 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:29,538 [320] INFO     pulse.iterate: Target: 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.0, 0, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:30,693 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:30,695 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:30,695 [320] INFO     pulse.iterate: Target: 0.067,0.000,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.06666666666666667, 0, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:30,962 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:30,963 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.067,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:30,964 [320] INFO     pulse.iterate: Target: 0.133,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:31,158 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.13333333333333333, 0, 0)
+(0.2, 0, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:31,160 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.133,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:31,161 [320] INFO     pulse.iterate: Target: 0.200,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:31,371 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:31,372 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.200,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:31,373 [320] INFO     pulse.iterate: Target: 0.267,0.000,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.26666666666666666, 0, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:31,602 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:31,604 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.267,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:31,604 [320] INFO     pulse.iterate: Target: 0.333,0.000,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.3333333333333333, 0, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:31,814 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:31,815 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.333,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:31,816 [320] INFO     pulse.iterate: Target: 0.400,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:32,009 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:32,011 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.400,0.000,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.4, 0, 0)
+(0.4666666666666667, 0, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:32,013 [320] INFO     pulse.iterate: Target: 0.467,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:32,222 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:32,223 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.467,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:32,224 [320] INFO     pulse.iterate: Target: 0.533,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:32,417 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:32,418 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.533,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:32,419 [320] INFO     pulse.iterate: Target: 0.600,0.000,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.5333333333333333, 0, 0)
+(0.6, 0, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:32,633 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:32,635 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:32,636 [320] INFO     pulse.iterate: Target: 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.0, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:33,861 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:33,862 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:33,863 [320] INFO     pulse.iterate: Target: 0.000,0.067,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.06666666666666667, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:34,145 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:34,146 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.067,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:34,148 [320] INFO     pulse.iterate: Target: 0.000,0.133,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.13333333333333333, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:34,388 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:34,390 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.133,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:34,391 [320] INFO     pulse.iterate: Target: 0.000,0.200,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.2, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:34,600 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:34,601 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.200,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:34,602 [320] INFO     pulse.iterate: Target: 0.000,0.267,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.26666666666666666, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:34,827 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:34,828 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.267,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:34,829 [320] INFO     pulse.iterate: Target: 0.000,0.333,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.3333333333333333, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:35,051 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:35,052 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.333,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:35,053 [320] INFO     pulse.iterate: Target: 0.000,0.400,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.4, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:35,262 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:35,263 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.400,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:35,265 [320] INFO     pulse.iterate: Target: 0.000,0.467,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.4666666666666667, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:35,476 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:35,478 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.467,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:35,480 [320] INFO     pulse.iterate: Target: 0.000,0.533,0.000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.5333333333333333, 0)
+(0, 0.6, 0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:35,677 [320] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:35,679 [320] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.533,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:12:35,681 [320] INFO     pulse.iterate: Target: 0.000,0.600,0.000
+</pre></div>
+</div>
+<img alt="_images/shear_experiment_22_224.png" src="_images/shear_experiment_22_224.png" />
 </div>
 </div>
 </div>

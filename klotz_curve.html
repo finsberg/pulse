@@ -52,6 +52,8 @@ const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="_static/sphinx-thebe.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Optimal controls" href="optimal_control.html" />
@@ -406,14 +408,14 @@ const thebe_selector_output = ".output, .cell_output"
 material models, and compare with the Klotz curve.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">math</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">math</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 </pre></div>
 </div>
@@ -421,14 +423,14 @@ material models, and compare with the Klotz curve.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pulse</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pulse</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">dolfin_adjoint</span> <span class="kn">import</span> <span class="n">Constant</span><span class="p">,</span> <span class="n">DirichletBC</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">dolfin</span> <span class="kn">import</span> <span class="n">Constant</span><span class="p">,</span> <span class="n">DirichletBC</span>
@@ -438,14 +440,14 @@ material models, and compare with the Klotz curve.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ED_pressure</span> <span class="o">=</span> <span class="mf">1.6</span>  <span class="c1"># kPa</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ED_pressure</span> <span class="o">=</span> <span class="mf">1.6</span>  <span class="c1"># kPa</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">setup_material</span><span class="p">(</span><span class="n">material_model</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">setup_material</span><span class="p">(</span><span class="n">material_model</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Choose parameters based on</span>
 
@@ -499,7 +501,7 @@ material models, and compare with the Klotz curve.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">klotz_curve</span><span class="p">(</span><span class="n">ED_pressure</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">klotz_curve</span><span class="p">(</span><span class="n">ED_pressure</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    EDPVR based on Klotz curve</span>
@@ -545,7 +547,7 @@ material models, and compare with the Klotz curve.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">fix_basal_plane</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">fix_basal_plane</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
     <span class="n">V</span> <span class="o">=</span> <span class="n">W</span> <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">num_sub_spaces</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">W</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">bc</span> <span class="o">=</span> <span class="n">DirichletBC</span><span class="p">(</span>
         <span class="n">V</span><span class="p">,</span>
@@ -560,24 +562,30 @@ material models, and compare with the Klotz curve.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">geometry</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">HeartGeometry</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">pulse</span><span class="o">.</span><span class="n">mesh_paths</span><span class="p">[</span><span class="s2">&quot;simple_ellipsoid&quot;</span><span class="p">])</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geometry</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">HeartGeometry</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">pulse</span><span class="o">.</span><span class="n">mesh_paths</span><span class="p">[</span><span class="s2">&quot;simple_ellipsoid&quot;</span><span class="p">])</span>
 <span class="n">geometry</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">coordinates</span><span class="p">()[:]</span> <span class="o">*=</span> <span class="mf">4.7</span>
 <span class="c1"># geometry = pulse.geometries.prolate_ellipsoid_geometry(mesh_size_factor=3.0)</span>
 <span class="c1"># geometry.mesh.coordinates()[:] *= 0.37</span>
 </pre></div>
 </div>
 </div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dirichlet_bc</span> <span class="o">=</span> <span class="p">[</span><span class="n">fix_basal_plane</span><span class="p">]</span>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:33,238 [469] INFO     pulse.geometry_utils: 
+Load mesh from h5
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">lvp</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dirichlet_bc</span> <span class="o">=</span> <span class="p">[</span><span class="n">fix_basal_plane</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lvp</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
 <span class="n">lv_marker</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="s2">&quot;ENDO&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">lv_pressure</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">NeumannBC</span><span class="p">(</span><span class="n">traction</span><span class="o">=</span><span class="n">lvp</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="n">lv_marker</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;lv&quot;</span><span class="p">)</span>
 <span class="n">neumann_bc</span> <span class="o">=</span> <span class="p">[</span><span class="n">lv_pressure</span><span class="p">]</span>
@@ -587,14 +595,14 @@ material models, and compare with the Klotz curve.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bcs</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">BoundaryConditions</span><span class="p">(</span><span class="n">dirichlet</span><span class="o">=</span><span class="n">dirichlet_bc</span><span class="p">,</span> <span class="n">neumann</span><span class="o">=</span><span class="n">neumann_bc</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bcs</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">BoundaryConditions</span><span class="p">(</span><span class="n">dirichlet</span><span class="o">=</span><span class="n">dirichlet_bc</span><span class="p">,</span> <span class="n">neumann</span><span class="o">=</span><span class="n">neumann_bc</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">material_model</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;neo_hookean&quot;</span><span class="p">,</span> <span class="s2">&quot;guccione&quot;</span><span class="p">,</span> <span class="s2">&quot;holzapfel_ogden&quot;</span><span class="p">]:</span>
 
     <span class="n">material</span> <span class="o">=</span> <span class="n">setup_material</span><span class="p">(</span><span class="n">material_model</span><span class="p">)</span>
@@ -616,10 +624,256 @@ material models, and compare with the Klotz curve.</p>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:33,515 [469] INFO     pulse.iterate: Iterating to target control (f_20)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:33,516 [469] INFO     pulse.iterate: Current control: f_20 = 0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:33,516 [469] INFO     pulse.iterate: Target: 0.178
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:36,868 [469] INFO     pulse.iterate: Iterating to target control (f_20)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:36,868 [469] INFO     pulse.iterate: Current control: f_20 = 0.178
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:36,872 [469] INFO     pulse.iterate: Target: 0.356
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:39,727 [469] INFO     pulse.iterate: Iterating to target control (f_20)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:39,728 [469] INFO     pulse.iterate: Current control: f_20 = 0.356
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:39,729 [469] INFO     pulse.iterate: Target: 0.533
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:42,544 [469] INFO     pulse.iterate: Iterating to target control (f_20)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:42,545 [469] INFO     pulse.iterate: Current control: f_20 = 0.533
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:42,545 [469] INFO     pulse.iterate: Target: 0.711
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:45,354 [469] INFO     pulse.iterate: Iterating to target control (f_20)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:45,355 [469] INFO     pulse.iterate: Current control: f_20 = 0.711
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:45,356 [469] INFO     pulse.iterate: Target: 0.889
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:48,172 [469] INFO     pulse.iterate: Iterating to target control (f_20)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:48,173 [469] INFO     pulse.iterate: Current control: f_20 = 0.889
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:48,175 [469] INFO     pulse.iterate: Target: 1.067
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:50,977 [469] INFO     pulse.iterate: Iterating to target control (f_20)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:50,978 [469] INFO     pulse.iterate: Current control: f_20 = 1.067
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:50,979 [469] INFO     pulse.iterate: Target: 1.244
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:53,779 [469] INFO     pulse.iterate: Iterating to target control (f_20)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:53,780 [469] INFO     pulse.iterate: Current control: f_20 = 1.244
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:53,781 [469] INFO     pulse.iterate: Target: 1.422
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:56,606 [469] INFO     pulse.iterate: Iterating to target control (f_20)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:56,607 [469] INFO     pulse.iterate: Current control: f_20 = 1.422
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:56,609 [469] INFO     pulse.iterate: Target: 1.600
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:59,539 [469] INFO     pulse.iterate: Iterating to target control (f_20)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:59,540 [469] INFO     pulse.iterate: Current control: f_20 = 0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:13:59,540 [469] INFO     pulse.iterate: Target: 0.178
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:14:08,113 [469] INFO     pulse.iterate: Iterating to target control (f_20)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:14:08,114 [469] INFO     pulse.iterate: Current control: f_20 = 0.178
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:14:08,115 [469] INFO     pulse.iterate: Target: 0.356
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:14:15,253 [469] INFO     pulse.iterate: Iterating to target control (f_20)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:14:15,255 [469] INFO     pulse.iterate: Current control: f_20 = 0.356
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:14:15,255 [469] INFO     pulse.iterate: Target: 0.533
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:14:22,380 [469] INFO     pulse.iterate: Iterating to target control (f_20)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:14:22,381 [469] INFO     pulse.iterate: Current control: f_20 = 0.533
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:14:22,382 [469] INFO     pulse.iterate: Target: 0.711
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:14:28,801 [469] INFO     pulse.iterate: Iterating to target control (f_20)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:14:28,801 [469] INFO     pulse.iterate: Current control: f_20 = 0.711
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:14:28,804 [469] INFO     pulse.iterate: Target: 0.889
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:14:35,201 [469] INFO     pulse.iterate: Iterating to target control (f_20)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:14:35,202 [469] INFO     pulse.iterate: Current control: f_20 = 0.889
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:14:35,203 [469] INFO     pulse.iterate: Target: 1.067
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:14:40,969 [469] INFO     pulse.iterate: Iterating to target control (f_20)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:14:40,970 [469] INFO     pulse.iterate: Current control: f_20 = 1.067
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:14:40,972 [469] INFO     pulse.iterate: Target: 1.244
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:14:46,723 [469] INFO     pulse.iterate: Iterating to target control (f_20)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:14:46,724 [469] INFO     pulse.iterate: Current control: f_20 = 1.244
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:14:46,726 [469] INFO     pulse.iterate: Target: 1.422
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:14:52,480 [469] INFO     pulse.iterate: Iterating to target control (f_20)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:14:52,481 [469] INFO     pulse.iterate: Current control: f_20 = 1.422
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:14:52,482 [469] INFO     pulse.iterate: Target: 1.600
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:14:58,360 [469] INFO     pulse.iterate: Iterating to target control (f_20)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:14:58,360 [469] INFO     pulse.iterate: Current control: f_20 = 0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:14:58,361 [469] INFO     pulse.iterate: Target: 0.178
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:15:04,230 [469] INFO     pulse.iterate: Iterating to target control (f_20)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:15:04,232 [469] INFO     pulse.iterate: Current control: f_20 = 0.178
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:15:04,232 [469] INFO     pulse.iterate: Target: 0.356
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:15:10,154 [469] INFO     pulse.iterate: Iterating to target control (f_20)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:15:10,155 [469] INFO     pulse.iterate: Current control: f_20 = 0.356
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:15:10,156 [469] INFO     pulse.iterate: Target: 0.533
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:15:15,422 [469] INFO     pulse.iterate: Iterating to target control (f_20)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:15:15,423 [469] INFO     pulse.iterate: Current control: f_20 = 0.533
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:15:15,425 [469] INFO     pulse.iterate: Target: 0.711
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:15:20,798 [469] INFO     pulse.iterate: Iterating to target control (f_20)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:15:20,799 [469] INFO     pulse.iterate: Current control: f_20 = 0.711
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:15:20,801 [469] INFO     pulse.iterate: Target: 0.889
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:15:26,776 [469] INFO     pulse.iterate: Iterating to target control (f_20)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:15:26,777 [469] INFO     pulse.iterate: Current control: f_20 = 0.889
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:15:26,778 [469] INFO     pulse.iterate: Target: 1.067
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:15:32,096 [469] INFO     pulse.iterate: Iterating to target control (f_20)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:15:32,097 [469] INFO     pulse.iterate: Current control: f_20 = 1.067
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:15:32,099 [469] INFO     pulse.iterate: Target: 1.244
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:15:37,385 [469] INFO     pulse.iterate: Iterating to target control (f_20)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:15:37,386 [469] INFO     pulse.iterate: Current control: f_20 = 1.244
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:15:37,387 [469] INFO     pulse.iterate: Target: 1.422
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:15:43,379 [469] INFO     pulse.iterate: Iterating to target control (f_20)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:15:43,380 [469] INFO     pulse.iterate: Current control: f_20 = 1.422
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:15:43,380 [469] INFO     pulse.iterate: Target: 1.600
+</pre></div>
+</div>
+<img alt="_images/klotz_curve_13_81.png" src="_images/klotz_curve_13_81.png" />
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">vs</span><span class="p">,</span> <span class="n">ps</span> <span class="o">=</span> <span class="n">klotz_curve</span><span class="p">(</span><span class="n">ED_pressure</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">vs</span><span class="p">,</span> <span class="n">ps</span> <span class="o">=</span> <span class="n">klotz_curve</span><span class="p">(</span><span class="n">ED_pressure</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="n">ps</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Klotz curve&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Volume (ml)&quot;</span><span class="p">)</span>
