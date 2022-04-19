@@ -1,5 +1,5 @@
 # # Shear experiment
-# Attempt to reproduce Figure 8 in [1].
+# Attempt to reproduce Figure 7 in [1].
 #
 #
 # > [1] Holzapfel, Gerhard A., and Ray W. Ogden.
@@ -9,6 +9,8 @@
 #     Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.
 #
 
+from __future__ import annotations
+from pathlib import Path
 import dolfin
 import matplotlib.pyplot as plt
 import numpy as np
@@ -22,6 +24,7 @@ try:
         Expression,
         UnitCubeMesh,
         interpolate,
+        Function,
     )
 except ImportError:
     from dolfin import (
@@ -30,7 +33,9 @@ except ImportError:
         interpolate,
         Expression,
         UnitCubeMesh,
+        Function,
     )
+
 
 # Create mesh
 N = 2
@@ -58,6 +63,14 @@ yhigh = dolfin.CompiledSubDomain("near(x[1], 1) && on_boundary")
 yhigh_marker = 4
 yhigh.mark(ffun, yhigh_marker)
 
+zlow = dolfin.CompiledSubDomain("near(x[2], 0) && on_boundary")
+zlow_marker = 5
+zlow.mark(ffun, zlow_marker)
+
+zhigh = dolfin.CompiledSubDomain("near(x[2], 1) && on_boundary")
+zhigh_marker = 6
+zhigh.mark(ffun, zhigh_marker)
+
 
 # Collect the functions containing the markers
 marker_functions = pulse.MarkerFunctions(ffun=ffun)
@@ -84,77 +97,152 @@ geometry = pulse.Geometry(
 )
 
 # Use the default material parameters
-material_parameters = {"a": 2.28, "b": 9.726, "a_f": 1.685, "b_f": 15.779}
+material_parameters = {
+    "a": 0.059,
+    "b": 8.023,
+    "a_f": 18.472,
+    "b_f": 16.026,
+    "a_s": 2.481,
+    "b_s": 11.120,
+    "a_fs": 0.216,
+    "b_fs": 11.436,
+}
 
 # Create material
 material = pulse.HolzapfelOgden(parameters=material_parameters)
 
-
-# Eff / Ess strain ratio
-strain_ratio = Constant(1.0)
-
-# Create costants defined for the dirichlet BC
-u0 = Constant(0.0)
-x_strain = u0 * strain_ratio / 2
-y_strain = u0 * (1 / strain_ratio) / 2
+X_space = dolfin.VectorFunctionSpace(mesh, "R", 0)
+x = Function(X_space)
+zero = Constant((0.0, 0.0, 0.0))
 
 
-# Make Dirichlet boundary conditions
-def dirichlet_bc(W):
-    V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
-    return [
-        DirichletBC(V.sub(0), Constant(-x_strain), xlow),
-        DirichletBC(V.sub(0), Constant(x_strain), xhigh),
-        DirichletBC(V.sub(1), Constant(-y_strain), ylow),
-        DirichletBC(V.sub(1), Constant(y_strain), yhigh),
-    ]
+def create_experiment(case):  # noqa: C901
+
+    if case == "fs":
+
+        def dirichlet_bc(W):
+            V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
+            return [
+                DirichletBC(V, zero, xlow),
+                DirichletBC(V, x, xhigh),
+            ]
+
+        def increment(xi):
+            return (0, xi, 0)
+
+        def shear_component(T):
+            return dolfin.assemble(T[0, 1] * dolfin.dx)
+
+    elif case == "fn":
+
+        def dirichlet_bc(W):
+            V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
+            return [
+                DirichletBC(V, zero, xlow),
+                DirichletBC(V, x, xhigh),
+            ]
+
+        def increment(xi):
+            return (0, 0, xi)
+
+        def shear_component(T):
+            return dolfin.assemble(T[0, 2] * dolfin.dx)
+
+    elif case == "sf":
+
+        def dirichlet_bc(W):
+            V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
+            return [
+                DirichletBC(V, zero, ylow),
+                DirichletBC(V, x, yhigh),
+            ]
+
+        def increment(xi):
+            return (xi, 0, 0)
+
+        def shear_component(T):
+            return dolfin.assemble(T[1, 0] * dolfin.dx)
+
+    elif case == "sn":
+
+        def dirichlet_bc(W):
+            V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
+            return [
+                DirichletBC(V, zero, ylow),
+                DirichletBC(V, x, yhigh),
+            ]
+
+        def increment(xi):
+            return (0, 0, xi)
+
+        def shear_component(T):
+            return dolfin.assemble(T[1, 2] * dolfin.dx)
+
+    elif case == "nf":
+
+        def dirichlet_bc(W):
+            V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
+            return [
+                DirichletBC(V, zero, zlow),
+                DirichletBC(V, x, zhigh),
+            ]
+
+        def increment(xi):
+            return (xi, 0, 0)
+
+        def shear_component(T):
+            return dolfin.assemble(T[2, 0] * dolfin.dx)
+
+    elif case == "ns":
+
+        def dirichlet_bc(W):
+            V = W if W.sub(0).num_sub_spaces() == 0 else W.sub(0)
+            return [
+                DirichletBC(V, zero, zlow),
+                DirichletBC(V, x, zhigh),
+            ]
+
+        def increment(xi):
+            return (0, xi, 0)
+
+        def shear_component(T):
+            return dolfin.assemble(T[2, 1] * dolfin.dx)
+
+    else:
+        raise ValueError(f"Unknown case {case}")
+
+    # Collect Boundary Conditions
+    bcs = pulse.BoundaryConditions(dirichlet=(dirichlet_bc,))
+
+    # Create problem
+    return pulse.MechanicsProblem(geometry, material, bcs), increment, shear_component
 
 
-# Collect Boundary Conditions
-bcs = pulse.BoundaryConditions(dirichlet=(dirichlet_bc,))
+stress: dict[str, list[float]] = {}
+shear_values = np.linspace(0, 0.6, 10)
 
-# Create problem
-problem = pulse.MechanicsProblem(geometry, material, bcs)
-
+recompute = True
 # Solve problem
-fig, ax = plt.subplots(1, 2)
-u0s = [0.045, 0.6, 0.8]
-markers = ["^", "s", "o"]
-for i, sr in enumerate([2.05, 1.02, 0.48]):
-    strain_ratio.assign(sr)
-    Effs = []
-    Sffs = []
-    Esss = []
-    Ssss = []
-    for xi in np.linspace(0, 0.1, 10):
-        pulse.iterate.iterate(
-            problem,
-            u0,
-            Constant(xi),
-            reinit_each_step=True,
-        )
-        S = problem.SecondPiolaStress()
-        E = problem.GreenLagrangeStrain()
+results_file = Path("result.npy")
+if recompute or not results_file.is_file():
+    for mode in ["fs", "fn", "sf", "sn", "nf", "ns"]:
+        x.assign(zero)
+        stress[mode] = []
+        problem, increment, shear_component = create_experiment(mode)
 
-        Sff = dolfin.assemble(dolfin.inner(f0, S * f0) * dolfin.dx)
-        Eff = dolfin.assemble(dolfin.inner(f0, E * f0) * dolfin.dx)
+        for shear in shear_values:
+            print(increment(shear))
+            pulse.iterate.iterate(problem, x, increment(shear), reinit_each_step=True)
+            stress[mode].append(shear_component(problem.ChachyStress()))
 
-        Effs.append(Eff)
-        Sffs.append(Sff)
-
-        Sss = dolfin.assemble(dolfin.inner(s0, S * s0) * dolfin.dx)
-        Ess = dolfin.assemble(dolfin.inner(s0, E * s0) * dolfin.dx)
-
-        Esss.append(Ess)
-        Ssss.append(Sss)
-
-    ax[0].plot(Effs, Sffs, marker=markers[i], label=f"SR: {sr:.2f}")
-    ax[1].plot(Esss, Ssss, marker=markers[i], label=f"SR: {sr:.2f}")
-ax[0].set_ylabel("$S_{ff}$ (kPa)")
-ax[1].set_ylabel("$S_{ss}$ (kPa)")
-
-ax[0].set_xlabel("$E_{ff}$")
-ax[1].set_xlabel("$E_{ss}$")
-for axi in ax:
-    axi.legend()
-fig.savefig("shear_test")
+    np.save(results_file, stress)
+stress = np.load(results_file, allow_pickle=True).item()
+fig, ax = plt.subplots()
+for mode, values in stress.items():
+    ax.plot(shear_values, stress[mode], label=mode)
+ax.set_ylabel("Shear stress (kPa)")
+ax.set_xlabel("Amount of shear")
+ax.set_ylim((0, 16))
+ax.grid()
+ax.legend()
+plt.show()
