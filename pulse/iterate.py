@@ -36,6 +36,8 @@ def copy(f, deepcopy=True, name="copied_function"):
         else:
             return f.copy(deepcopy=deepcopy)
     elif isinstance(f, dolfin.Constant):
+        if f.value_size() > 1:
+            return dolfin.Constant(f.values(), name=name)
         return dolfin.Constant(f, name=name)
     elif isinstance(f, Constant):
         return Constant(f, name=name)
@@ -98,7 +100,11 @@ def get_delta(new_control, c0, c1):
         new_control_arr = numpy_mpi.gather_vector(new_control)
         c0_arr = numpy_mpi.gather_vector(c0)
         c1_arr = numpy_mpi.gather_vector(c1)
-        delta = (new_control_arr[0] - c0_arr[0]) / float(c1_arr[0] - c0_arr[0])
+
+        delta = (
+            np.subtract(new_control_arr, c0_arr).mean()
+            / np.subtract(c1_arr, c0_arr).mean()
+        )
 
     elif isinstance(new_control, (dolfin.Function, Function)):
         new_control_arr = numpy_mpi.gather_vector(
@@ -107,7 +113,11 @@ def get_delta(new_control, c0, c1):
         )
         c0_arr = numpy_mpi.gather_vector(c0.vector(), c0.function_space().dim())
         c1_arr = numpy_mpi.gather_vector(c1.vector(), c1.function_space().dim())
-        delta = (new_control_arr[0] - c0_arr[0]) / float(c1_arr[0] - c0_arr[0])
+
+        delta = (
+            np.subtract(new_control_arr, c0_arr).mean()
+            / np.subtract(c1_arr, c0_arr).mean()
+        )
 
     else:
         msg = ("Unexpected type for new_crontrol in get_delta" "Got {}").format(
