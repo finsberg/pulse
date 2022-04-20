@@ -419,6 +419,8 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
 <span class="kn">import</span> <span class="nn">dolfin</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">ufl</span>
+<span class="kn">import</span> <span class="nn">typing</span>
 </pre></div>
 </div>
 </div>
@@ -426,6 +428,7 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pulse</span>
+<span class="kn">from</span> <span class="nn">pulse.mechanicsproblem</span> <span class="kn">import</span> <span class="n">MechanicsProblem</span>
 </pre></div>
 </div>
 </div>
@@ -456,6 +459,16 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Experiment</span><span class="p">(</span><span class="n">typing</span><span class="o">.</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">problem</span><span class="p">:</span> <span class="n">MechanicsProblem</span>
+    <span class="n">increment</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">float</span><span class="p">],</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span>
+    <span class="n">shear_component</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">[[</span><span class="n">ufl</span><span class="o">.</span><span class="n">tensors</span><span class="o">.</span><span class="n">ComponentTensor</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create mesh</span>
 <span class="n">N</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">UnitCubeMesh</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
@@ -463,19 +476,19 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
 </div>
 </div>
 </div>
+<p>Create a facet fuction in order to mark the subdomains</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a facet fuction in order to mark the subdomains</span>
-<span class="n">ffun</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">MeshFunction</span><span class="p">(</span><span class="s2">&quot;size_t&quot;</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ffun</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">MeshFunction</span><span class="p">(</span><span class="s2">&quot;size_t&quot;</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 <span class="n">ffun</span><span class="o">.</span><span class="n">set_all</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
+<p>Mark subdomains</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Mark subdomains</span>
-<span class="n">xlow</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">CompiledSubDomain</span><span class="p">(</span><span class="s2">&quot;near(x[0], 0) &amp;&amp; on_boundary&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xlow</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">CompiledSubDomain</span><span class="p">(</span><span class="s2">&quot;near(x[0], 0) &amp;&amp; on_boundary&quot;</span><span class="p">)</span>
 <span class="n">xlow_marker</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">xlow</span><span class="o">.</span><span class="n">mark</span><span class="p">(</span><span class="n">ffun</span><span class="p">,</span> <span class="n">xlow_marker</span><span class="p">)</span>
 </pre></div>
@@ -527,46 +540,44 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
 </div>
 </div>
 </div>
+<p>Collect the functions containing the markers</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Collect the functions containing the markers</span>
-<span class="n">marker_functions</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">MarkerFunctions</span><span class="p">(</span><span class="n">ffun</span><span class="o">=</span><span class="n">ffun</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">marker_functions</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">MarkerFunctions</span><span class="p">(</span><span class="n">ffun</span><span class="o">=</span><span class="n">ffun</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
+<p>Create mictrotructure</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create mictrotructure</span>
-<span class="n">V_f</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">V_f</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
+<p>Fibers, sheets and fiber-sheet normal</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fibers</span>
-<span class="n">f0</span> <span class="o">=</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">Expression</span><span class="p">((</span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;0.0&quot;</span><span class="p">,</span> <span class="s2">&quot;0.0&quot;</span><span class="p">),</span> <span class="n">degree</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">V_f</span><span class="p">)</span>
-<span class="c1"># Sheets</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f0</span> <span class="o">=</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">Expression</span><span class="p">((</span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;0.0&quot;</span><span class="p">,</span> <span class="s2">&quot;0.0&quot;</span><span class="p">),</span> <span class="n">degree</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">V_f</span><span class="p">)</span>
 <span class="n">s0</span> <span class="o">=</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">Expression</span><span class="p">((</span><span class="s2">&quot;0.0&quot;</span><span class="p">,</span> <span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;0.0&quot;</span><span class="p">),</span> <span class="n">degree</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">V_f</span><span class="p">)</span>
-<span class="c1"># Fiber-sheet normal</span>
 <span class="n">n0</span> <span class="o">=</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">Expression</span><span class="p">((</span><span class="s2">&quot;0.0&quot;</span><span class="p">,</span> <span class="s2">&quot;0.0&quot;</span><span class="p">,</span> <span class="s2">&quot;1.0&quot;</span><span class="p">),</span> <span class="n">degree</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">V_f</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
+<p>Collect the mictrotructure</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Collect the mictrotructure</span>
-<span class="n">microstructure</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">Microstructure</span><span class="p">(</span><span class="n">f0</span><span class="o">=</span><span class="n">f0</span><span class="p">,</span> <span class="n">s0</span><span class="o">=</span><span class="n">s0</span><span class="p">,</span> <span class="n">n0</span><span class="o">=</span><span class="n">n0</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">microstructure</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">Microstructure</span><span class="p">(</span><span class="n">f0</span><span class="o">=</span><span class="n">f0</span><span class="p">,</span> <span class="n">s0</span><span class="o">=</span><span class="n">s0</span><span class="p">,</span> <span class="n">n0</span><span class="o">=</span><span class="n">n0</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
+<p>Create the geometry</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create the geometry</span>
-<span class="n">geometry</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geometry</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span>
     <span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">,</span>
     <span class="n">marker_functions</span><span class="o">=</span><span class="n">marker_functions</span><span class="p">,</span>
     <span class="n">microstructure</span><span class="o">=</span><span class="n">microstructure</span><span class="p">,</span>
@@ -575,10 +586,10 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
 </div>
 </div>
 </div>
+<p>Use the default material parameters from the paper</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use the default material parameters</span>
-<span class="n">material_parameters</span> <span class="o">=</span> <span class="p">{</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">material_parameters</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="mf">0.059</span><span class="p">,</span>
     <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="mf">8.023</span><span class="p">,</span>
     <span class="s2">&quot;a_f&quot;</span><span class="p">:</span> <span class="mf">18.472</span><span class="p">,</span>
@@ -592,14 +603,15 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
 </div>
 </div>
 </div>
+<p>Create material</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create material</span>
-<span class="n">material</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">HolzapfelOgden</span><span class="p">(</span><span class="n">parameters</span><span class="o">=</span><span class="n">material_parameters</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">material</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">HolzapfelOgden</span><span class="p">(</span><span class="n">parameters</span><span class="o">=</span><span class="n">material_parameters</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
+<p>Make a space for controling the amount of shear displacement</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X_space</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;R&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
@@ -609,6 +621,7 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
 </div>
 </div>
 </div>
+<p>Make a method that will return</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">create_experiment</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>  <span class="c1"># noqa: C901</span>
@@ -710,750 +723,616 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
     <span class="n">bcs</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">BoundaryConditions</span><span class="p">(</span><span class="n">dirichlet</span><span class="o">=</span><span class="p">(</span><span class="n">dirichlet_bc</span><span class="p">,))</span>
 
     <span class="c1"># Create problem</span>
-    <span class="k">return</span> <span class="n">pulse</span><span class="o">.</span><span class="n">MechanicsProblem</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">bcs</span><span class="p">),</span> <span class="n">increment</span><span class="p">,</span> <span class="n">shear_component</span>
+    <span class="k">return</span> <span class="n">Experiment</span><span class="p">(</span>
+        <span class="n">problem</span><span class="o">=</span><span class="n">pulse</span><span class="o">.</span><span class="n">MechanicsProblem</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">bcs</span><span class="p">),</span>
+        <span class="n">increment</span><span class="o">=</span><span class="n">increment</span><span class="p">,</span>
+        <span class="n">shear_component</span><span class="o">=</span><span class="n">shear_component</span><span class="p">,</span>
+    <span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
+<p>Loop over all modes and collect the stress values</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">stress</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">modes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">,</span> <span class="s2">&quot;fn&quot;</span><span class="p">,</span> <span class="s2">&quot;sf&quot;</span><span class="p">,</span> <span class="s2">&quot;sn&quot;</span><span class="p">,</span> <span class="s2">&quot;nf&quot;</span><span class="p">,</span> <span class="s2">&quot;ns&quot;</span><span class="p">]</span>
+<span class="n">stress</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;cauchy&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">m</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">modes</span><span class="p">},</span>
+    <span class="s2">&quot;pk1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">m</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">modes</span><span class="p">},</span>
+<span class="p">}</span>
 <span class="n">shear_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">recompute</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">recompute</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="c1"># Solve problem</span>
 <span class="n">results_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;result.npy&quot;</span><span class="p">)</span>
 <span class="k">if</span> <span class="n">recompute</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">results_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-    <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">,</span> <span class="s2">&quot;fn&quot;</span><span class="p">,</span> <span class="s2">&quot;sf&quot;</span><span class="p">,</span> <span class="s2">&quot;sn&quot;</span><span class="p">,</span> <span class="s2">&quot;nf&quot;</span><span class="p">,</span> <span class="s2">&quot;ns&quot;</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="n">modes</span><span class="p">:</span>
         <span class="n">x</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">zero</span><span class="p">)</span>
-        <span class="n">stress</span><span class="p">[</span><span class="n">mode</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">problem</span><span class="p">,</span> <span class="n">increment</span><span class="p">,</span> <span class="n">shear_component</span> <span class="o">=</span> <span class="n">create_experiment</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+        <span class="n">experiment</span> <span class="o">=</span> <span class="n">create_experiment</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">shear</span> <span class="ow">in</span> <span class="n">shear_values</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">increment</span><span class="p">(</span><span class="n">shear</span><span class="p">))</span>
-            <span class="n">pulse</span><span class="o">.</span><span class="n">iterate</span><span class="o">.</span><span class="n">iterate</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">increment</span><span class="p">(</span><span class="n">shear</span><span class="p">),</span> <span class="n">reinit_each_step</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">stress</span><span class="p">[</span><span class="n">mode</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shear_component</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">ChachyStress</span><span class="p">()))</span>
+            <span class="n">pulse</span><span class="o">.</span><span class="n">iterate</span><span class="o">.</span><span class="n">iterate</span><span class="p">(</span>
+                <span class="n">experiment</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span>
+                <span class="n">x</span><span class="p">,</span>
+                <span class="n">experiment</span><span class="o">.</span><span class="n">increment</span><span class="p">(</span><span class="n">shear</span><span class="p">),</span>
+                <span class="n">reinit_each_step</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">stress</span><span class="p">[</span><span class="s2">&quot;cauchy&quot;</span><span class="p">][</span><span class="n">mode</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">experiment</span><span class="o">.</span><span class="n">shear_component</span><span class="p">(</span><span class="n">experiment</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">ChachyStress</span><span class="p">()),</span>
+            <span class="p">)</span>
+            <span class="n">stress</span><span class="p">[</span><span class="s2">&quot;pk1&quot;</span><span class="p">][</span><span class="n">mode</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">experiment</span><span class="o">.</span><span class="n">shear_component</span><span class="p">(</span><span class="n">experiment</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">FirstPiolaStress</span><span class="p">()),</span>
+            <span class="p">)</span>
 
     <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">results_file</span><span class="p">,</span> <span class="n">stress</span><span class="p">)</span>
-<span class="n">stress</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">results_file</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
-<span class="k">for</span> <span class="n">mode</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">stress</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">shear_values</span><span class="p">,</span> <span class="n">stress</span><span class="p">[</span><span class="n">mode</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Shear stress (kPa)&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Amount of shear&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">))</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:53,064 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:53,065 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:53,067 [634] INFO     pulse.iterate: Target: 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:55,321 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:55,322 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:55,322 [634] INFO     pulse.iterate: Target: 0.000,0.067,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:55,544 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:55,545 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.067,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:55,546 [634] INFO     pulse.iterate: Target: 0.000,0.133,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:55,717 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:55,719 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.133,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:55,721 [634] INFO     pulse.iterate: Target: 0.000,0.200,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:55,878 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:55,880 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.200,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:55,882 [634] INFO     pulse.iterate: Target: 0.000,0.267,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:56,052 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:56,053 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.267,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:56,055 [634] INFO     pulse.iterate: Target: 0.000,0.333,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:56,213 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:56,215 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.333,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:56,216 [634] INFO     pulse.iterate: Target: 0.000,0.400,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:56,385 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:56,387 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.400,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:56,388 [634] INFO     pulse.iterate: Target: 0.000,0.467,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:56,558 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:56,560 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.467,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:56,562 [634] INFO     pulse.iterate: Target: 0.000,0.533,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:56,744 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:56,746 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.533,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:56,747 [634] INFO     pulse.iterate: Target: 0.000,0.600,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:56,934 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:56,936 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:56,937 [634] INFO     pulse.iterate: Target: 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:58,813 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:58,814 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:58,815 [634] INFO     pulse.iterate: Target: 0.000,0.000,0.067
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:58,985 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:58,986 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.067
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:58,986 [634] INFO     pulse.iterate: Target: 0.000,0.000,0.133
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:59,145 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:59,146 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.133
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:59,146 [634] INFO     pulse.iterate: Target: 0.000,0.000,0.200
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:59,302 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:59,303 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.200
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:59,305 [634] INFO     pulse.iterate: Target: 0.000,0.000,0.267
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:59,461 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:59,463 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.267
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:59,465 [634] INFO     pulse.iterate: Target: 0.000,0.000,0.333
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:59,622 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:59,624 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.333
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:59,626 [634] INFO     pulse.iterate: Target: 0.000,0.000,0.400
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:59,782 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:59,784 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.400
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:59,786 [634] INFO     pulse.iterate: Target: 0.000,0.000,0.467
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:59,955 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:59,957 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.467
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:47:59,958 [634] INFO     pulse.iterate: Target: 0.000,0.000,0.533
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:00,140 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:00,142 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.533
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:00,144 [634] INFO     pulse.iterate: Target: 0.000,0.000,0.600
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:00,331 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:00,333 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:00,334 [634] INFO     pulse.iterate: Target: 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:02,214 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:02,215 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:02,215 [634] INFO     pulse.iterate: Target: 0.067,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:02,471 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:02,471 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.067,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:02,472 [634] INFO     pulse.iterate: Target: 0.133,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:02,667 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:02,669 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.133,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:02,670 [634] INFO     pulse.iterate: Target: 0.200,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:02,840 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:02,841 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.200,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:02,843 [634] INFO     pulse.iterate: Target: 0.267,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:03,001 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:03,003 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.267,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:03,004 [634] INFO     pulse.iterate: Target: 0.333,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:03,173 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:03,175 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.333,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:03,177 [634] INFO     pulse.iterate: Target: 0.400,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:03,357 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:03,359 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.400,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:03,361 [634] INFO     pulse.iterate: Target: 0.467,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:03,542 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:03,544 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.467,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:03,546 [634] INFO     pulse.iterate: Target: 0.533,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:03,740 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:03,742 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.533,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:03,743 [634] INFO     pulse.iterate: Target: 0.600,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:03,979 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:03,981 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:03,983 [634] INFO     pulse.iterate: Target: 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:05,815 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:05,816 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:05,816 [634] INFO     pulse.iterate: Target: 0.000,0.000,0.067
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:06,024 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:06,025 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.067
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:06,027 [634] INFO     pulse.iterate: Target: 0.000,0.000,0.133
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:06,183 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:06,184 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.133
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:06,185 [634] INFO     pulse.iterate: Target: 0.000,0.000,0.200
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:06,340 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:06,341 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.200
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:06,343 [634] INFO     pulse.iterate: Target: 0.000,0.000,0.267
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:06,499 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:06,500 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.267
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:06,502 [634] INFO     pulse.iterate: Target: 0.000,0.000,0.333
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:06,670 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:06,672 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.333
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:06,673 [634] INFO     pulse.iterate: Target: 0.000,0.000,0.400
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:06,830 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:06,832 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.400
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:06,833 [634] INFO     pulse.iterate: Target: 0.000,0.000,0.467
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:06,989 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:06,991 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.467
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:06,993 [634] INFO     pulse.iterate: Target: 0.000,0.000,0.533
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:07,150 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:07,152 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.533
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:07,154 [634] INFO     pulse.iterate: Target: 0.000,0.000,0.600
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:07,331 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:07,333 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:07,334 [634] INFO     pulse.iterate: Target: 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:09,206 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:09,207 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:09,208 [634] INFO     pulse.iterate: Target: 0.067,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:09,440 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:09,441 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.067,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:09,443 [634] INFO     pulse.iterate: Target: 0.133,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:09,613 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:09,614 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.133,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:09,614 [634] INFO     pulse.iterate: Target: 0.200,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:09,833 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:09,834 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.200,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:09,835 [634] INFO     pulse.iterate: Target: 0.267,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:10,028 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:10,029 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.267,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:10,030 [634] INFO     pulse.iterate: Target: 0.333,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:10,213 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:10,215 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.333,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:10,216 [634] INFO     pulse.iterate: Target: 0.400,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:10,385 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:10,387 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.400,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:10,388 [634] INFO     pulse.iterate: Target: 0.467,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:10,569 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:10,571 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.467,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:10,572 [634] INFO     pulse.iterate: Target: 0.533,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:10,741 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:10,743 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.533,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:10,745 [634] INFO     pulse.iterate: Target: 0.600,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:10,931 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:10,933 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:10,935 [634] INFO     pulse.iterate: Target: 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:12,762 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:12,763 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:12,763 [634] INFO     pulse.iterate: Target: 0.000,0.067,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:13,008 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:13,008 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.067,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:13,010 [634] INFO     pulse.iterate: Target: 0.000,0.133,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:13,215 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:13,216 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.133,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:13,216 [634] INFO     pulse.iterate: Target: 0.000,0.200,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:13,396 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:13,397 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.200,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:13,397 [634] INFO     pulse.iterate: Target: 0.000,0.267,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:13,589 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:13,590 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.267,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:13,591 [634] INFO     pulse.iterate: Target: 0.000,0.333,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:13,784 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:13,785 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.333,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:13,786 [634] INFO     pulse.iterate: Target: 0.000,0.400,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:13,967 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:13,970 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.400,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:13,971 [634] INFO     pulse.iterate: Target: 0.000,0.467,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:14,152 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:14,154 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.467,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:14,155 [634] INFO     pulse.iterate: Target: 0.000,0.533,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:14,323 [634] INFO     pulse.iterate: Iterating to target control (f_32)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:14,325 [634] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.533,0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-20 06:48:14,326 [634] INFO     pulse.iterate: Target: 0.000,0.600,0.000
+</pre></div>
+</div>
+</div>
+</div>
+<p>Plot results</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">stress</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">results_file</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">mode</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">stress</span><span class="p">[</span><span class="s2">&quot;cauchy&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">shear_values</span><span class="p">,</span> <span class="n">stress</span><span class="p">[</span><span class="s2">&quot;cauchy&quot;</span><span class="p">][</span><span class="n">mode</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Cauchy Stress&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">mode</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">stress</span><span class="p">[</span><span class="s2">&quot;pk1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">shear_values</span><span class="p">,</span> <span class="n">stress</span><span class="p">[</span><span class="s2">&quot;pk1&quot;</span><span class="p">][</span><span class="n">mode</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;First Piola Kirchhoff Stress&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Shear stress (kPa)&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">axi</span> <span class="ow">in</span> <span class="n">ax</span><span class="p">:</span>
+    <span class="n">axi</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Amount of shear&quot;</span><span class="p">)</span>
+    <span class="n">axi</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">))</span>
+    <span class="n">axi</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+    <span class="n">axi</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:40,249 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:40,251 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:40,253 [635] INFO     pulse.iterate: Target: 0.000,0.000,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.0, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:41,957 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:41,959 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:41,960 [635] INFO     pulse.iterate: Target: 0.000,0.067,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.06666666666666667, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:42,224 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:42,225 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.067,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:42,226 [635] INFO     pulse.iterate: Target: 0.000,0.133,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.13333333333333333, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:42,431 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:42,432 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.133,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:42,433 [635] INFO     pulse.iterate: Target: 0.000,0.200,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:42,620 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:42,621 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.200,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:42,622 [635] INFO     pulse.iterate: Target: 0.000,0.267,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.2, 0)
-(0, 0.26666666666666666, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:42,823 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:42,825 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.267,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:42,825 [635] INFO     pulse.iterate: Target: 0.000,0.333,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:43,009 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:43,010 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.333,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:43,011 [635] INFO     pulse.iterate: Target: 0.000,0.400,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.3333333333333333, 0)
-(0, 0.4, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:43,211 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:43,212 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.400,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:43,213 [635] INFO     pulse.iterate: Target: 0.000,0.467,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.4666666666666667, 0)
-(0, 0.5333333333333333, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:43,412 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:43,413 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.467,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:43,414 [635] INFO     pulse.iterate: Target: 0.000,0.533,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:43,626 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:43,627 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.533,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:43,628 [635] INFO     pulse.iterate: Target: 0.000,0.600,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.6, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:43,859 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:43,861 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:43,861 [635] INFO     pulse.iterate: Target: 0.000,0.000,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0, 0.0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:45,023 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:45,025 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:45,026 [635] INFO     pulse.iterate: Target: 0.000,0.000,0.067
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0, 0.06666666666666667)
-(0, 0, 0.13333333333333333)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:45,226 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:45,227 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.067
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:45,228 [635] INFO     pulse.iterate: Target: 0.000,0.000,0.133
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:45,412 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:45,414 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.133
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:45,415 [635] INFO     pulse.iterate: Target: 0.000,0.000,0.200
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:45,597 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:45,599 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.200
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:45,600 [635] INFO     pulse.iterate: Target: 0.000,0.000,0.267
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0, 0.2)
-(0, 0, 0.26666666666666666)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:45,785 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:45,786 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.267
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:45,787 [635] INFO     pulse.iterate: Target: 0.000,0.000,0.333
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:45,971 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:45,973 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.333
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:45,974 [635] INFO     pulse.iterate: Target: 0.000,0.000,0.400
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0, 0.3333333333333333)
-(0, 0, 0.4)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:46,162 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:46,163 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.400
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:46,164 [635] INFO     pulse.iterate: Target: 0.000,0.000,0.467
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0, 0.4666666666666667)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:46,366 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:46,367 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.467
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:46,369 [635] INFO     pulse.iterate: Target: 0.000,0.000,0.533
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0, 0.5333333333333333)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:46,583 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:46,585 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.533
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:46,587 [635] INFO     pulse.iterate: Target: 0.000,0.000,0.600
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0, 0.6)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:46,811 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:46,814 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:46,816 [635] INFO     pulse.iterate: Target: 0.000,0.000,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.0, 0, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:48,101 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:48,102 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:48,103 [635] INFO     pulse.iterate: Target: 0.067,0.000,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.06666666666666667, 0, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:48,432 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:48,433 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.067,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:48,434 [635] INFO     pulse.iterate: Target: 0.133,0.000,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.13333333333333333, 0, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:48,668 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:48,670 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.133,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:48,672 [635] INFO     pulse.iterate: Target: 0.200,0.000,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.2, 0, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:48,872 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:48,874 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.200,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:48,876 [635] INFO     pulse.iterate: Target: 0.267,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:49,059 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:49,062 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.267,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:49,064 [635] INFO     pulse.iterate: Target: 0.333,0.000,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.26666666666666666, 0, 0)
-(0.3333333333333333, 0, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:49,267 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:49,269 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.333,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:49,271 [635] INFO     pulse.iterate: Target: 0.400,0.000,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.4, 0, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:49,490 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:49,493 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.400,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:49,494 [635] INFO     pulse.iterate: Target: 0.467,0.000,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.4666666666666667, 0, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:49,711 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:49,714 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.467,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:49,715 [635] INFO     pulse.iterate: Target: 0.533,0.000,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.5333333333333333, 0, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:49,947 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:49,950 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.533,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:49,951 [635] INFO     pulse.iterate: Target: 0.600,0.000,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.6, 0, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:50,233 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:50,236 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:50,238 [635] INFO     pulse.iterate: Target: 0.000,0.000,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0, 0.0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:51,442 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:51,444 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:51,446 [635] INFO     pulse.iterate: Target: 0.000,0.000,0.067
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0, 0.06666666666666667)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:51,693 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:51,695 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.067
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:51,696 [635] INFO     pulse.iterate: Target: 0.000,0.000,0.133
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:51,884 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:51,885 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.133
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:51,887 [635] INFO     pulse.iterate: Target: 0.000,0.000,0.200
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0, 0.13333333333333333)
-(0, 0, 0.2)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:52,076 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:52,079 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.200
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:52,080 [635] INFO     pulse.iterate: Target: 0.000,0.000,0.267
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:52,269 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:52,271 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.267
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:52,273 [635] INFO     pulse.iterate: Target: 0.000,0.000,0.333
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0, 0.26666666666666666)
-(0, 0, 0.3333333333333333)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:52,479 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:52,481 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.333
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:52,483 [635] INFO     pulse.iterate: Target: 0.000,0.000,0.400
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:52,668 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:52,671 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.400
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:52,672 [635] INFO     pulse.iterate: Target: 0.000,0.000,0.467
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0, 0.4)
-(0, 0, 0.4666666666666667)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:52,860 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:52,863 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.467
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:52,865 [635] INFO     pulse.iterate: Target: 0.000,0.000,0.533
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:53,049 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:53,052 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.533
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:53,054 [635] INFO     pulse.iterate: Target: 0.000,0.000,0.600
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0, 0.5333333333333333)
-(0, 0, 0.6)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:53,265 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:53,267 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:53,269 [635] INFO     pulse.iterate: Target: 0.000,0.000,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.0, 0, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:54,440 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:54,442 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:54,442 [635] INFO     pulse.iterate: Target: 0.067,0.000,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.06666666666666667, 0, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:54,724 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:54,725 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.067,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:54,726 [635] INFO     pulse.iterate: Target: 0.133,0.000,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.13333333333333333, 0, 0)
-(0.2, 0, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:54,923 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:54,925 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.133,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:54,925 [635] INFO     pulse.iterate: Target: 0.200,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:55,138 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:55,140 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.200,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:55,141 [635] INFO     pulse.iterate: Target: 0.267,0.000,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.26666666666666666, 0, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:55,368 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:55,370 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.267,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:55,371 [635] INFO     pulse.iterate: Target: 0.333,0.000,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.3333333333333333, 0, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:55,584 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:55,585 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.333,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:55,587 [635] INFO     pulse.iterate: Target: 0.400,0.000,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.4, 0, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:55,790 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:55,792 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.400,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:55,793 [635] INFO     pulse.iterate: Target: 0.467,0.000,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.4666666666666667, 0, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:56,010 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:56,012 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.467,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:56,014 [635] INFO     pulse.iterate: Target: 0.533,0.000,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.5333333333333333, 0, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:56,213 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:56,215 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.533,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:56,217 [635] INFO     pulse.iterate: Target: 0.600,0.000,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.6, 0, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:56,438 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:56,441 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:56,443 [635] INFO     pulse.iterate: Target: 0.000,0.000,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.0, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:57,624 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:57,625 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.000,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:57,626 [635] INFO     pulse.iterate: Target: 0.000,0.067,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.06666666666666667, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:57,922 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:57,923 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.067,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:57,924 [635] INFO     pulse.iterate: Target: 0.000,0.133,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.13333333333333333, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:58,172 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:58,173 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.133,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:58,175 [635] INFO     pulse.iterate: Target: 0.000,0.200,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.2, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:58,393 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:58,396 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.200,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:58,397 [635] INFO     pulse.iterate: Target: 0.000,0.267,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.26666666666666666, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:58,630 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:58,633 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.267,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:58,635 [635] INFO     pulse.iterate: Target: 0.000,0.333,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.3333333333333333, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:58,867 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:58,870 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.333,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:58,872 [635] INFO     pulse.iterate: Target: 0.000,0.400,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.4, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:59,089 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:59,092 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.400,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:59,093 [635] INFO     pulse.iterate: Target: 0.000,0.467,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.4666666666666667, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:59,308 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:59,310 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.467,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:59,312 [635] INFO     pulse.iterate: Target: 0.000,0.533,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.5333333333333333, 0)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:59,515 [635] INFO     pulse.iterate: Iterating to target control (f_32)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:59,517 [635] INFO     pulse.iterate: Current control: f_32 = Current control: f_32 = 0.000,0.533,0.000
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-04-19 19:34:59,519 [635] INFO     pulse.iterate: Target: 0.000,0.600,0.000
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.6, 0)
-</pre></div>
-</div>
-<img alt="_images/shear_experiment_22_229.png" src="_images/shear_experiment_22_229.png" />
+<img alt="_images/shear_experiment_36_0.png" src="_images/shear_experiment_36_0.png" />
 </div>
 </div>
 </div>
