@@ -49,6 +49,8 @@ see e.g [this issue](https://github.com/conda-forge/hdf5-feedstock/issues/51).
 Check out the demos in the demo folder. These demos are currently in jupyter notebook format.
 If you want to run them as python files you can convert the notebooks to `.py` files using e.g [jupytext](https://jupytext.readthedocs.io/en/latest/)
 
+If you have a question about how to use the software you can ask a question or start a new discussion in the [discussion section](https://github.com/finsberg/pulse/discussions) 
+
 ## Automated test
 Test are provided in the folder [`tests`](tests). You can run the test
 with `pytest`
