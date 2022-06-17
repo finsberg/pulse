@@ -41,6 +41,7 @@ from .. import numpy_mpi
 from .. import project
 from ..dolfin_utils import RegionalParameter
 from ..dolfin_utils import update_function
+from ..geometry import HeartGeometry
 
 
 def compressibility(model, *args, **kwargs):
@@ -125,7 +126,7 @@ class Material(ABC):
         self.active = active
         self.compressible_model = compressible_model
 
-    def _set_parameter_attrs(self, geometry=None):
+    def _set_parameter_attrs(self, geometry: Optional[HeartGeometry] = None):
         for k, v in self.parameters.items():
 
             if isinstance(v, (float, int)):
@@ -135,7 +136,7 @@ class Material(ABC):
 
                 if geometry is not None:
 
-                    v_new = RegionalParameter(geometry.sfun)
+                    v_new = RegionalParameter(geometry.cfun)
                     numpy_mpi.assign_to_vector(
                         v_new.vector(),
                         numpy_mpi.gather_vector(v.vector()),
