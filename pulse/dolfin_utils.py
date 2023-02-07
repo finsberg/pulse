@@ -31,7 +31,6 @@ def map_vector_field(f0, new_mesh, u=None, name="fiber", normalize=True):
     f0_new = Function(dolfin.FunctionSpace(new_mesh, ufl_elem))
 
     if u is not None:
-
         f0_mesh = f0.function_space().mesh()
         u_elm = u.function_space().ufl_element()
         V = dolfin.FunctionSpace(f0_mesh, u_elm)
@@ -126,7 +125,6 @@ def compute_meshvolume(domain=None, dx=dolfin.dx, subdomain_id=None):
 
 
 def get_cavity_volume(geometry, unload=False, chamber="lv", u=None, xshift=0.0):
-
     if unload:
         mesh = geometry.original_geometry
         ffun = dolfin.MeshFunction("size_t", mesh, 2, mesh.domains())
@@ -153,7 +151,6 @@ def get_cavity_volume(geometry, unload=False, chamber="lv", u=None, xshift=0.0):
 
 
 def get_cavity_volume_form(mesh, u=None, xshift=0.0):
-
     from . import kinematics
 
     shift = Constant((xshift, 0.0, 0.0))
@@ -171,7 +168,6 @@ def get_cavity_volume_form(mesh, u=None, xshift=0.0):
 
 
 def get_constant(val, value_size=None, value_rank=0, constant=Constant):
-
     if isinstance(val, (Constant, dolfin.Constant)):
         return val
     elif isinstance(val, (Function, dolfin.Function)):
@@ -204,7 +200,6 @@ def get_constant(val, value_size=None, value_rank=0, constant=Constant):
 
 
 def get_dimesion(u):
-
     # TODO : Check argument
     try:
         from ufl.domain import find_geometric_dimension
@@ -212,7 +207,6 @@ def get_dimesion(u):
         dim = find_geometric_dimension(u)
 
     except ufl.UFLException as ex:
-
         try:
             dim = len(u)
         except Exception as ex2:
@@ -383,7 +377,6 @@ class RegionalParameter(Function):
     """
 
     def __init__(self, meshfunction):
-
         # assert isinstance(
         #     meshfunction, dolfin.MeshFunctionSizet
         # ), "Invalid meshfunction for regional gamma"
@@ -432,7 +425,6 @@ class RegionalParameter(Function):
         return self._proj_space
 
     def _make_indicator_function(self, marker):
-
         dofs = self._meshfunction.where_equal(marker)
         f = Function(self._proj_space)
         f.vector()[dofs] = 1.0

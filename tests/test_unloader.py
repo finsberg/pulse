@@ -15,7 +15,6 @@ def problem():
 
 
 def test_fixedpointunloader(problem):
-
     unloader = FixedPointUnloader(
         problem=problem,
         pressure=0.1,

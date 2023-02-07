@@ -183,7 +183,6 @@ def get_diff(current, target):
 
 
 def squeeze(x):
-
     try:
         y = np.squeeze(x)
     except Exception:
@@ -254,7 +253,7 @@ def step_too_large(current, target, step):
         return np.any(comp(current + step, target))
     else:
         too_large = []
-        for (c, t, s) in zip(current, target, step):
+        for c, t, s in zip(current, target, step):
             too_large.append(step_too_large(c, t, s))
 
     return np.any(too_large)
@@ -274,7 +273,6 @@ def iterate(
     initial_number_of_steps=5,
     reinit_each_step=False,
 ):
-
     """
     Using the given problem, iterate control to given target.
 
@@ -395,7 +393,6 @@ class Iterator(object):
         self._step = s
 
     def solve(self):
-
         self.ncrashes = 0
         self.niters = 0
         # print(type(self.control))
@@ -406,13 +403,11 @@ class Iterator(object):
         msg = "Target: "
         logger.info(print_control(self.target, msg))
         while not self.target_reached():
-
             self.niters += 1
             if (
                 self.ncrashes > self.parameters["max_nr_crash"]
                 or self.niters > self.parameters["max_iters"]
             ):
-
                 self.problem.reinit(self.prev_states[0])
                 self.assign_control(enlist(self.control_values[0]))
 
@@ -489,7 +484,6 @@ class Iterator(object):
         logger.debug(msg)
 
     def continuation_step(self):
-
         first_step = len(self.prev_states) < 2
         if first_step:
             return
@@ -512,7 +506,6 @@ class Iterator(object):
             self.problem.state.vector().axpy(delta, s1.vector())
 
     def increment_control(self):
-
         for c, s in zip(self.control, self.step):
             # if isinstance(s, (dolfin.Function, Function))
             if isinstance(c, (dolfin.Function, Function)):
@@ -571,12 +564,10 @@ class Iterator(object):
         self.step = step
 
     def _check_target(self, target):
-
         target = enlist(target)
 
         targets = []
         for tar in target:
-
             try:
                 t = get_constant(tar)
             except TypeError:
@@ -598,7 +589,6 @@ class Iterator(object):
         logger.debug(f"Target: {[constant2float(t) for t in self.target]}")
 
     def _check_control(self, control):
-
         control = enlist(control)
         # Control has to be either a function or
         # a constant
@@ -626,7 +616,6 @@ class Iterator(object):
             max_diff = diff.max()
 
         else:
-
             max_diff = np.max(abs(diff))
 
         reached = max_diff < 1e-6

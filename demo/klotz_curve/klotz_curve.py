@@ -33,7 +33,6 @@ def setup_material(material_model):
 
     """
     if material_model == "guccione":
-
         matparams = pulse.Guccione.default_parameters()
         matparams["C"] = 0.18  # kPa
         matparams["bf"] = 27.75
@@ -47,13 +46,11 @@ def setup_material(material_model):
         )
 
     elif material_model == "neo_hookean":
-
         matparams = pulse.NeoHookean.default_parameters()
         matparams["mu"] = 10.0  # kPa
         material = pulse.NeoHookean(parameters=matparams)
 
     elif material_model == "holzapfel_ogden":
-
         matparams = pulse.HolzapfelOgden.default_parameters()
 
         matparams["a"] = 4.0  # kPa
@@ -138,7 +135,6 @@ bcs = pulse.BoundaryConditions(dirichlet=dirichlet_bc, neumann=neumann_bc)
 
 fig, ax = plt.subplots()
 for material_model in ["neo_hookean", "guccione", "holzapfel_ogden"]:
-
     material = setup_material(material_model)
     problem = pulse.MechanicsProblem(geometry, material, bcs)
 

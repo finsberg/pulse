@@ -8,7 +8,6 @@ import numpy as np
 
 class MPIFilt(logging.Filter):
     def filter(self, record):
-
         if dolfin.MPI.rank(mpi_comm_world()) == 0:
             return 1
         else:
@@ -133,7 +132,6 @@ class Object(object):
 
 
 def get_lv_marker(geometry):
-
     for key in ["ENDO", "ENDO_LV", "endo", "endo_lv"]:
         if key in geometry.markers:
             return geometry.markers[key][0]

@@ -45,7 +45,6 @@ from ..geometry import HeartGeometry
 
 
 def compressibility(model, *args, **kwargs):
-
     if model == "incompressible":
         return incompressible(*args, **kwargs)
 
@@ -103,7 +102,6 @@ class Material(ABC):
         *args,
         **kwargs
     ):
-
         # Parameters
         self.parameters = self.__class__.default_parameters()
         if parameters is not None:
@@ -128,14 +126,11 @@ class Material(ABC):
 
     def _set_parameter_attrs(self, geometry: Optional[HeartGeometry] = None):
         for k, v in self.parameters.items():
-
             if isinstance(v, (float, int)):
                 setattr(self, k, Constant(v, name=k))
 
             elif isinstance(v, RegionalParameter):
-
                 if geometry is not None:
-
                     v_new = RegionalParameter(geometry.cfun)
                     numpy_mpi.assign_to_vector(
                         v_new.vector(),
@@ -150,7 +145,6 @@ class Material(ABC):
                 mat.assign(project(matfun, ind_space))
 
             else:
-
                 if geometry is not None and v.ufl_element().cell() is not None:
                     v_new = update_function(geometry.mesh, v)
                     v = v_new
@@ -167,7 +161,6 @@ class Material(ABC):
         pass
 
     def update_geometry(self, geometry):
-
         # Loop over the possible attributes containing
         # a domain and update it
         for m in ("f0", "s0", "n0"):
@@ -177,11 +170,9 @@ class Material(ABC):
 
         activation_element = self.activation.ufl_element()
         if activation_element.cell() is not None:
-
             self.active._activation = update_function(geometry.mesh, self.activation)
 
     def copy(self, geometry=None):
-
         if geometry is not None:
             f0, s0, n0 = geometry.f0, geometry.s0, geometry.n0
         else:
@@ -212,7 +203,6 @@ class Material(ABC):
         ).format(self=self)
 
     def compressibility(self, p, J):
-
         return compressibility(self.compressible_model, p, J)
 
     @property
@@ -289,7 +279,6 @@ class Material(ABC):
         return self.active.activation
 
     def CauchyStress(self, F, p=None, deviatoric=False):
-
         F = dolfin.variable(F)
 
         # First Piola Kirchoff
@@ -304,7 +293,6 @@ class Material(ABC):
         return T
 
     def SecondPiolaStress(self, F, p=None, deviatoric=False, *args, **kwargs):
-
         # First Piola Kirchoff
         if deviatoric:
             p = None
@@ -316,7 +304,6 @@ class Material(ABC):
         return S
 
     def FirstPiolaStress(self, F, p=None, *args, **kwargs):
-
         F = dolfin.variable(F)
 
         # First Piola Kirchoff

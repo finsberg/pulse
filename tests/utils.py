@@ -13,13 +13,11 @@ from pulse.mechanicsproblem import MechanicsProblem
 
 
 def make_lv_mechanics_problem(space="R_0"):
-
     geometry = HeartGeometry.from_file(mesh_paths["prolate_ellipsoid"])
     return make_mechanics_problem(geometry, space)
 
 
 def make_mechanics_problem(geometry, space="R_0"):
-
     Material = NeoHookean
     # Material = HolzapfelOgden
 

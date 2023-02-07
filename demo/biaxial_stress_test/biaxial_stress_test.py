@@ -133,7 +133,6 @@ problem = pulse.MechanicsProblem(geometry, material, bcs)
 max_xi = [0.1, 0.15, 0.1]
 data = {}
 for i, sr in enumerate([2.05, 1.02, 0.48]):
-
     strain_ratio.assign(sr)
     Effs = []
     Sffs = []

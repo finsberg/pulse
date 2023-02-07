@@ -18,7 +18,6 @@ logger = getLogger(__name__)
 
 class ResidualCalculator(object):
     def __init__(self, mesh):
-
         try:
             from scipy import spatial
 
@@ -34,7 +33,6 @@ class ResidualCalculator(object):
             self.bbtree = None
 
         else:
-
             self.mesh = mesh
             d = self.mesh.topology().dim()
             local_points = [v.point() for v in dolfin.vertices(self.mesh)]
@@ -59,7 +57,6 @@ class ResidualCalculator(object):
 
 
 def inflate_to_pressure(target_pressure, problem, ntries=5, n=2, annotate=False):
-
     logger.debug(f"\nInflate geometry to p = {target_pressure} kPa")
     pressure = get_pressure(problem)
     solve(target_pressure, problem, pressure, ntries, n, annotate)
@@ -68,7 +65,6 @@ def inflate_to_pressure(target_pressure, problem, ntries=5, n=2, annotate=False)
 
 
 def print_volumes(geometry, logger=logger, txt="original", u=None):
-
     logger.info(
         ("\nLV Volume of {} geometry = {:.3f} ml" "").format(
             txt,
@@ -85,7 +81,6 @@ def print_volumes(geometry, logger=logger, txt="original", u=None):
 
 
 def solve(target_pressure, problem, pressure, ntries=5, n=2, annotate=False):
-
     annotation.annotate = False
 
     level = logger_it.logger.level
@@ -104,7 +99,6 @@ def solve(target_pressure, problem, pressure, ntries=5, n=2, annotate=False):
 
 
 def load_opt_target(h5name, h5group, key="volume", data="simulated"):
-
     with h5py.File(h5name) as f:
         vols = [a[:][0] for a in f[h5group]["passive_inflation"][key][data].values()]
 
@@ -112,7 +106,6 @@ def load_opt_target(h5name, h5group, key="volume", data="simulated"):
 
 
 def continuation_step(params, it_, paramvec):
-
     # Use data from the two prevoious steps and continuation
     # to get a good next gues
     values = []
@@ -136,7 +129,6 @@ def continuation_step(params, it_, paramvec):
 
     # Make sure next step is not to far away
     if hasattr(a_cont, "__len__"):
-
         a_next = np.array(
             [
                 min(max(a_cont[i], a_prev[i] / 2), a_prev[i] * 2)
@@ -156,7 +148,6 @@ def continuation_step(params, it_, paramvec):
         )
 
     else:
-
         a_next = min(max(a_cont, a_prev / 2), a_prev * 2)
 
         # Just make sure that we are within the given bounds

@@ -18,13 +18,11 @@ class Guccione(Material):
 
     @staticmethod
     def default_parameters():
-
         p = {"C": 2.0, "bf": 8.0, "bt": 2.0, "bfs": 4.0}
 
         return p
 
     def SecondPiolaStress(self, F, p, *args, **kwargs):
-
         P = self.FirstPiolaStress(F, p)
         S = dolfin.inv(F) * P
         return S

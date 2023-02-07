@@ -15,7 +15,6 @@ class NeoHookean(Material):
         return {"mu": 15.0}
 
     def W_1(self, I_1, diff=0, dim=3, *args, **kwargs):
-
         mu = self.mu
 
         if diff == 0:

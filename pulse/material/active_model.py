@@ -92,7 +92,6 @@ class ActiveModel:
 
     @property
     def Fa(self):
-
         if self.model == ActiveModels.active_stress:
             return dolfin.Identity(self.dim)
 
@@ -121,7 +120,6 @@ class ActiveModel:
         C = F.T * F
 
         if diff == 0:
-
             return Wactive(
                 Ta=self.activation_field,
                 C=C,
@@ -164,7 +162,6 @@ def Wactive(
         )
 
     elif active_isotropy == "fully_anisotropic":
-
         return Wactive_anisotropic(
             Ta=Ta,
             C=C,

@@ -128,7 +128,6 @@ class MeshUnloader(object):
         overwrite=False,
         merge_control="",
     ):
-
         self.problem = problem
         self.pressure = pressure
 
@@ -326,7 +325,6 @@ class RaghavanUnloader(MeshUnloader):
     """
 
     def unload_step(self, u, residual, save=True):
-
         raise NotImplementedError("RahavanUnloader is not yet implemented")
 
         # big_res = 100.0
@@ -406,7 +404,6 @@ class FixedPointUnloader(MeshUnloader):
 
         res = np.inf
         while it < self.parameters["maxiter"] and res > self.parameters["tol"]:
-
             logger.info(f"\nIteration: {it}")
             self.U.vector()[:] = u.vector()
 

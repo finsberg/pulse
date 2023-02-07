@@ -93,7 +93,6 @@ class MooneyRivelin(pulse.Material):
         return dict(C1=1.0, C2=1.0)
 
     def strain_energy(self, F_):
-
         # Get elastic part of deformation gradient,
         # in case of active strain model
         F = self.Fe(F_)

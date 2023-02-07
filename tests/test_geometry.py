@@ -41,7 +41,6 @@ def strain_markers_3d(mesh, nregions):
     for it_x in range(nregions):
         for it_y in range(nregions):
             for it_z in range(nregions):
-
                 region += 1
                 domain_str = ""
 
@@ -97,7 +96,6 @@ def unitcube_geometry():
 
 
 def test_create_geometry(unitcube_geometry):
-
     # Check that attributes are set correctly
     assert unitcube_geometry.f0 is not None
     assert unitcube_geometry.s0 is not None
@@ -117,7 +115,6 @@ def test_create_geometry(unitcube_geometry):
 
 
 def test_mesvolumes(unitcube_geometry):
-
     assert (float(unitcube_geometry.meshvol) - 1.0) < dolfin.DOLFIN_EPS_LARGE
     assert all(
         [
@@ -129,7 +126,6 @@ def test_mesvolumes(unitcube_geometry):
 
 
 def test_crl_basis(unitcube_geometry):
-
     assert unitcube_geometry.crl_basis_list
     assert unitcube_geometry.nbasis == 3
 
