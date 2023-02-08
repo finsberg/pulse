@@ -43,7 +43,6 @@ def rigid_motion_term(mesh, u, r):
 
 class RigidMotionProblem(pulse.MechanicsProblem):
     def _init_spaces(self):
-
         mesh = self.geometry.mesh
 
         P1 = dolfin.FiniteElement("Lagrange", mesh.ufl_cell(), 1)
@@ -59,7 +58,6 @@ class RigidMotionProblem(pulse.MechanicsProblem):
         self.bcs = pulse.BoundaryConditions()
 
     def _init_forms(self):
-
         p, u, r = dolfin.split(self.state)
         q, v, w = dolfin.split(self.state_test)
 

@@ -138,7 +138,6 @@ zero = Constant((0.0, 0.0, 0.0))
 
 
 def create_experiment(case):  # noqa: C901
-
     if case == "fs":
 
         def dirichlet_bc(W):

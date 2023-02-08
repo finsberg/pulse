@@ -110,7 +110,6 @@ class Geometry(object):
         microstructure=None,
         crl_basis=None,
     ):
-
         self.mesh = mesh
 
         self.markers = markers or {}
@@ -135,7 +134,6 @@ class Geometry(object):
 
     @classmethod
     def from_file(cls, h5name, h5group="", comm=None):
-
         comm = comm if comm is not None else mpi_comm_world()
 
         return cls(**cls.load_from_file(h5name, h5group, comm))
@@ -166,7 +164,6 @@ class Geometry(object):
 
         microstructure_ = {}
         for field in ("f0", "s0", "n0"):
-
             v0 = getattr(self, field)
             if v0 is None:
                 continue
@@ -177,7 +174,6 @@ class Geometry(object):
 
         crl_basis_ = {}
         for basis in ("c0", "r0", "l0"):
-
             v0 = getattr(self, basis)
             if v0 is None:
                 continue
@@ -202,7 +198,6 @@ class Geometry(object):
 
     @staticmethod
     def load_from_file(h5name, h5group, comm):
-
         logger.debug(f"Load geometry from file {h5name}")
 
         geo = load_geometry_from_h5(h5name, h5group, include_sheets=True, comm=comm)
@@ -238,7 +233,6 @@ class Geometry(object):
         overwrite_file=False,
         overwrite_group=True,
     ):
-
         h5name = os.path.splitext(h5name)[0] + ".h5"
         logger.debug(f"Save to {h5name}...")
         save_geometry_to_h5(
@@ -272,7 +266,6 @@ class Geometry(object):
         if not hasattr(self, "_crl_basis_list"):
             self._crl_basis_list = []
             for basis in ["c0", "r0", "l0"]:
-
                 e = getattr(self.crl_basis, basis)
                 if e is not None:
                     self._crl_basis_list.append(e)
@@ -428,7 +421,6 @@ class HeartGeometry(Geometry):
         return False
 
     def cavity_volume(self, chamber="lv", u=None):
-
         return get_cavity_volume(self, chamber=chamber, u=u, xshift=self.xshift)
 
     @property
@@ -448,5 +440,4 @@ class HeartGeometry(Geometry):
         return np.mean(self.mesh.coordinates()[point_inidces, :], 0)
 
     def update_xshift(self):
-
         self.xshift = self.base_mean_position[0]

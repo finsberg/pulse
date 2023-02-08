@@ -5,10 +5,8 @@ from pulse import dolfin_utils
 
 
 def test_get_constant():
-
     for value_size in (1, 2):
         for value_rank in (0, 1):
-
             vals = np.zeros(value_size)
             constant = dolfin_utils.get_constant(
                 val=1,

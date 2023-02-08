@@ -21,7 +21,6 @@ def create_forward_problem(
     active_model="active_stain",
     T_ref=1.0,
 ):
-
     ffun = df.MeshFunction("size_t", mesh, 2)
     ffun.set_all(0)
 

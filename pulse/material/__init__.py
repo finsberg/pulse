@@ -21,9 +21,7 @@ material_model_names = [m.name for m in material_models]
 
 
 def get_material_model(material_model):
-
     for model in material_models:
-
         if model.name == material_model:
             return model
 

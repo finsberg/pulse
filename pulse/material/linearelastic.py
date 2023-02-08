@@ -16,7 +16,6 @@ class LinearElastic(Material):
         return {"mu": 100.0, "lmbda": 1.0}
 
     def strain_energy(self, F_):
-
         F = self.Fe(F_)
 
         dim = get_dimesion(F)

@@ -49,7 +49,6 @@ free_marker = 2
 
 @pytest.fixture
 def unitcube_geometry():
-
     N = 3
     mesh = UnitCubeMesh(mpi_comm_world(), N, N, N)
 
@@ -88,7 +87,6 @@ cases = itertools.product(
 
 @pytest.mark.parametrize("Material, active_model, isochoric", cases)
 def test_material(unitcube_geometry, Material, active_model, isochoric):
-
     compressible_model = "incompressible"
 
     if active_model == "active_stress":
@@ -133,7 +131,6 @@ def test_material(unitcube_geometry, Material, active_model, isochoric):
 
     print(material.name)
     if active_model == "active_strain":
-
         tol = 1e-4
 
         if not isochoric:
@@ -144,7 +141,6 @@ def test_material(unitcube_geometry, Material, active_model, isochoric):
             ]:
                 assert all(abs(p.vector().get_local()) < tol)
             elif material.name == "holzapfel_ogden":
-
                 assert all(abs(p.vector().get_local() - material.parameters["a"]) < tol)
             elif material.name == "neo_hookean":
                 assert all(
@@ -157,7 +153,6 @@ def test_material(unitcube_geometry, Material, active_model, isochoric):
             assert all(abs(p.vector().get_local()) < tol)
 
     else:
-
         F = kinematics.DeformationGradient(u)
         T = material.CauchyStress(F, p)
 
@@ -183,7 +178,6 @@ def test_material(unitcube_geometry, Material, active_model, isochoric):
             ]:
                 assert all(abs(p.vector().get_local()) < tol)
             elif material.name == "holzapfel_ogden":
-
                 assert all(abs(p.vector().get_local() - material.parameters["a"]) < tol)
             elif material.name == "neo_hookean":
                 assert all(
@@ -193,13 +187,11 @@ def test_material(unitcube_geometry, Material, active_model, isochoric):
                 raise TypeError(f"Unkown material {material.name}")
 
         else:
-
             assert all(abs(p.vector().get_local()) < tol)
 
 
 @pytest.mark.parametrize("active_model", ("active_strain", "active_stress"))
 def test_active_contraction_yield_displacement(unitcube_geometry, active_model):
-
     activation = Constant(0.001)
 
     def dirichlet_bc(W):
@@ -223,7 +215,6 @@ def test_active_contraction_yield_displacement(unitcube_geometry, active_model):
 
 
 def test_pass_active_model_as_object(unitcube_geometry):
-
     activation = Constant(0.001)
 
     def dirichlet_bc(W):
@@ -247,7 +238,6 @@ def test_pass_active_model_as_object(unitcube_geometry):
 
 
 if __name__ == "__main__":
-
     active_model = "active_stress"
     dev_iso_split = True
     geo = unitcube_geometry()

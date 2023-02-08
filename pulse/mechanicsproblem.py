@@ -66,7 +66,6 @@ def dirichlet_fix_base_directional(W, ffun, marker, direction=0):
 def cardiac_boundary_conditions(
     geometry, pericardium_spring=0.0, base_spring=0.0, base_bc="fix_x", **kwargs
 ):
-
     msg = (
         "Cardiac boundary conditions can only be applied to a "
         "HeartGeometry got {}".format(type(geometry))
@@ -83,7 +82,6 @@ def cardiac_boundary_conditions(
     neumann_bc = [lv_pressure]
 
     if geometry.is_biv:
-
         rv_pressure = NeumannBC(
             traction=Constant(0.0, name="rv_pressure"),
             marker=geometry.markers["ENDO_RV"][0],
@@ -94,7 +92,6 @@ def cardiac_boundary_conditions(
 
     # Robin BC
     if pericardium_spring > 0.0:
-
         robin_bc = [
             RobinBC(
                 value=Constant(pericardium_spring),
@@ -113,7 +110,6 @@ def cardiac_boundary_conditions(
 
     # Dirichlet BC
     if base_bc == "fixed":
-
         dirichlet_bc = [
             partial(
                 dirichlet_fix_base,
@@ -123,7 +119,6 @@ def cardiac_boundary_conditions(
         ]
 
     elif base_bc == "fix_x":
-
         dirichlet_bc = [
             partial(
                 dirichlet_fix_base_directional,
@@ -160,7 +155,6 @@ class MechanicsProblem(object):
         bcs_parameters=None,
         solver_parameters=None,
     ):
-
         logger.debug("Initialize mechanics problem")
         self.geometry = geometry
         self.material = material
@@ -205,7 +199,6 @@ class MechanicsProblem(object):
         return dict(pericardium_spring=0.0, base_spring=0.0, base_bc="fixed")
 
     def _init_spaces(self):
-
         logger.debug("Initialize spaces for mechanics problem")
         mesh = self.geometry.mesh
 
@@ -220,7 +213,6 @@ class MechanicsProblem(object):
         self.state_test = dolfin.TestFunction(self.state_space)
 
     def _init_forms(self):
-
         logger.debug("Initialize forms mechanics problem")
         # Displacement and hydrostatic_pressure
         u, p = dolfin.split(self.state)
@@ -282,7 +274,6 @@ class MechanicsProblem(object):
     def _set_dirichlet_bc(self):
         # DirichletBC
         for dirichlet_bc in self.bcs.dirichlet:
-
             msg = (
                 "DirichletBC only implemented for as "
                 "callable. Please provide DirichletBC "
@@ -297,11 +288,9 @@ class MechanicsProblem(object):
                     logger.error(msg)
                     raise ex
             else:
-
                 raise NotImplementedError(msg)
 
     def _external_work(self, u, v):
-
         F = dolfin.variable(kinematics.DeformationGradient(u))
 
         N = self.geometry.facet_normal
@@ -311,16 +300,13 @@ class MechanicsProblem(object):
         external_work = []
 
         for neumann in self.bcs.neumann:
-
             n = neumann.traction * ufl.cofac(F) * N
             external_work.append(dolfin.inner(v, n) * ds(neumann.marker))
 
         for robin in self.bcs.robin:
-
             external_work.append(dolfin.inner(robin.value * u, v) * ds(robin.marker))
 
         for body_force in self.bcs.body_force:
-
             external_work.append(
                 -dolfin.derivative(dolfin.inner(body_force, u) * dx, u, v),
             )
@@ -378,7 +364,6 @@ class MechanicsProblem(object):
         return nliter, nlconv
 
     def get_displacement(self, annotate=False):
-
         D = self.state_space.sub(0)
         V = D.collapse()
 

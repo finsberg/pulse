@@ -36,7 +36,6 @@ class CompressibleProblem(pulse.MechanicsProblem):
     """
 
     def _init_spaces(self):
-
         mesh = self.geometry.mesh
 
         element = dolfin.VectorElement("P", mesh.ufl_cell(), 1)
@@ -48,7 +47,6 @@ class CompressibleProblem(pulse.MechanicsProblem):
         self.kappa = Constant(1e3)
 
     def _init_forms(self):
-
         u = self.state
         v = self.state_test
 

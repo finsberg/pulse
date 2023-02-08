@@ -36,7 +36,6 @@ def read_meshfunction(fname, obj):
 
 
 def gmsh2dolfin(msh_file):
-
     msh = meshio.gmsh.read(msh_file)
 
     vertex_mesh = create_mesh(msh, "vertex")
@@ -116,7 +115,6 @@ def gmsh2dolfin(msh_file):
 
 
 def create_disk(mesh_name, mesh_size_factor=1.0):
-
     gmsh.initialize(sys.argv)
     gmsh.option.setNumber("Mesh.MeshSizeFactor", mesh_size_factor)
 
@@ -167,7 +165,6 @@ def create_disk(mesh_name, mesh_size_factor=1.0):
 
 
 def create_square(mesh_name, mesh_size_factor=1.0):
-
     gmsh.initialize(sys.argv)
     gmsh.option.setNumber("Mesh.MeshSizeFactor", mesh_size_factor)
 
@@ -201,7 +198,6 @@ def create_square(mesh_name, mesh_size_factor=1.0):
 
 
 def create_prolate_mesh(mesh_name, mesh_size_factor=1.0):
-
     gmsh.initialize(sys.argv)
     gmsh.option.setNumber("Mesh.MeshSizeFactor", mesh_size_factor)
 

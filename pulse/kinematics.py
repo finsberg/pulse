@@ -83,7 +83,6 @@ def EulerAlmansiStrain(F, isochoric=False):
 
 
 def I1(F, isochoric=False):
-
     C = RightCauchyGreen(F, isochoric)
     I1 = tr(C)
     return I1
@@ -100,7 +99,6 @@ def I3(F, isochoric=False):
 
 
 def I4(F, a0=None, isochoric=False):
-
     if a0 is not None:
         C = RightCauchyGreen(F, isochoric)
         I4 = inner(C * a0, a0)

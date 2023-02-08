@@ -96,7 +96,6 @@ def load_geometry_from_h5(
     geo = Geometry()
 
     with dolfin.HDF5File(comm, h5name.as_posix(), "r") as h5file:
-
         # Load mesh
         mesh = Mesh(comm)
         io_utils.read_h5file(h5file, mesh, mgroup, True)
@@ -104,7 +103,6 @@ def load_geometry_from_h5(
 
         # Get mesh functions
         for dim, attr in enumerate(["vfun", "efun", "ffun", "cfun"]):
-
             if dim > get_geometric_dimension(mesh):
                 setattr(geo, attr, None)
                 continue
@@ -155,7 +153,6 @@ def load_markers(h5file, mesh, ggroup, dgroup):
 
                 for aname in get_attributes():
                     if aname.startswith("marker_name"):
-
                         name = aname.rsplit("marker_name_")[-1]
                         marker = h5file.attributes(dgroup)[f"marker_name_{name}"]
                         markers[name] = (int(marker), dim)
@@ -169,7 +166,6 @@ def load_markers(h5file, mesh, ggroup, dgroup):
 
 
 def load_local_basis(h5file, lgroup, mesh, geo):
-
     if h5file.has_dataset(lgroup):
         # Get local bais functions
         local_basis_attrs = h5file.attributes(lgroup)
@@ -202,7 +198,6 @@ def load_local_basis(h5file, lgroup, mesh, geo):
 
 
 def load_microstructure(h5file, fgroup, mesh, geo, include_sheets=True):
-
     if h5file.has_dataset(fgroup):
         # Get fibers
         fiber_attrs = h5file.attributes(fgroup)
@@ -252,7 +247,6 @@ def load_microstructure(h5file, fgroup, mesh, geo, include_sheets=True):
 
 def save_meshfunctions(h5file, h5group, mesh, meshfunctions, comm):
     for dim in range(get_geometric_dimension(mesh) + 1):
-
         if meshfunctions is not None and dim in meshfunctions:
             mf = meshfunctions[dim]
         else:
@@ -270,7 +264,6 @@ def save_markers(h5file, h5group, markers):
         return
     # Save the boundary markers
     for name, (marker, dim) in markers.items():
-
         for key_str in ["domain", "meshfunction"]:
             dgroup = f"{ggroup(h5group)}/mesh/{key_str}_{dim}"
 
@@ -354,7 +347,6 @@ def save_geometry_to_h5(
             file_mode = "w"
 
     with dolfin.HDF5File(comm, h5name.as_posix(), file_mode) as h5file:
-
         # Save mesh
         h5file.write(mesh, mgroup(h5group))
         save_meshfunctions(h5file, h5group, mesh, meshfunctions, comm)

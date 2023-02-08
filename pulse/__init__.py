@@ -20,7 +20,6 @@ Functions = Function
 try:
     import dolfin_adjoint  # noqa: F401
 except ImportError:
-
     has_dolfin_adjoint = False
 else:
     has_dolfin_adjoint = True
