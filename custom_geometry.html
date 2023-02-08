@@ -491,7 +491,6 @@ These examples are based on the snippets from
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">gmsh2dolfin</span><span class="p">(</span><span class="n">msh_file</span><span class="p">):</span>
-
     <span class="n">msh</span> <span class="o">=</span> <span class="n">meshio</span><span class="o">.</span><span class="n">gmsh</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">msh_file</span><span class="p">)</span>
 
     <span class="n">vertex_mesh</span> <span class="o">=</span> <span class="n">create_mesh</span><span class="p">(</span><span class="n">msh</span><span class="p">,</span> <span class="s2">&quot;vertex&quot;</span><span class="p">)</span>
@@ -575,7 +574,6 @@ These examples are based on the snippets from
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">create_disk</span><span class="p">(</span><span class="n">mesh_name</span><span class="p">,</span> <span class="n">mesh_size_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
-
     <span class="n">gmsh</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">setNumber</span><span class="p">(</span><span class="s2">&quot;Mesh.MeshSizeFactor&quot;</span><span class="p">,</span> <span class="n">mesh_size_factor</span><span class="p">)</span>
 
@@ -630,7 +628,6 @@ These examples are based on the snippets from
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">create_square</span><span class="p">(</span><span class="n">mesh_name</span><span class="p">,</span> <span class="n">mesh_size_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
-
     <span class="n">gmsh</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">setNumber</span><span class="p">(</span><span class="s2">&quot;Mesh.MeshSizeFactor&quot;</span><span class="p">,</span> <span class="n">mesh_size_factor</span><span class="p">)</span>
 
@@ -668,7 +665,6 @@ These examples are based on the snippets from
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">create_prolate_mesh</span><span class="p">(</span><span class="n">mesh_name</span><span class="p">,</span> <span class="n">mesh_size_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
-
     <span class="n">gmsh</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">setNumber</span><span class="p">(</span><span class="s2">&quot;Mesh.MeshSizeFactor&quot;</span><span class="p">,</span> <span class="n">mesh_size_factor</span><span class="p">)</span>
 
