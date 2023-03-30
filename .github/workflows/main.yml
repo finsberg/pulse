@@ -10,7 +10,7 @@ jobs:
       matrix:
         container:
           [
-            "finsberg/fenics-extra",
+            "ghcr.io/scientificcomputing/fenics-gmsh:2023-02-20",
             "finsberg/pyadjoint-extra",
           ]
 
@@ -18,11 +18,11 @@ jobs:
       image: ${{ matrix.container }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Cache
         id: cache-primes
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.cache/instant
@@ -46,3 +46,24 @@ jobs:
           max_attempts: 5
           retry_on: error
           command: python3 -m pytest
+
+      - name: Install pypa/build
+        run: >-
+          python3 -m
+          pip install
+          build
+
+      - name: Build a binary wheel and a source tarball
+        run: >-
+          python3 -m
+          build
+          --sdist
+          --wheel
+          --outdir dist/
+          .
+
+      - name: Publish distribution 📦 to PyPI
+        if: startsWith(github.ref, 'refs/tags')
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}

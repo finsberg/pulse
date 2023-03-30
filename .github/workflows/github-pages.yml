@@ -3,19 +3,19 @@ name: github pages
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     container:
-      image: finsberg/fenics-extra
+      image: ghcr.io/scientificcomputing/fenics-gmsh:2023-02-20
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Cache
         id: cache-primes
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.cache/instant
