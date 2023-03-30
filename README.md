@@ -1,4 +1,5 @@
-[![InstallConda](https://anaconda.org/finsberg/pulse/badges/installer/conda.svg)](https://anaconda.org/finsberg/pulse)
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/pulse/badges/version.svg)](https://anaconda.org/conda-forge/pulse)
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/pulse/badges/downloads.svg)](https://anaconda.org/conda-forge/pulse)
 [![CI](https://github.com/finsberg/pulse/actions/workflows/main.yml/badge.svg)](https://github.com/finsberg/pulse/actions/workflows/main.yml)
 [![Platform](https://anaconda.org/finsberg/pulse/badges/platforms.svg)](https://anaconda.org/finsberg/pulse)
 [![status](http://joss.theoj.org/papers/9abee735e6abadabe9252d5fcc84fd40/status.svg)](http://joss.theoj.org/papers/9abee735e6abadabe9252d5fcc84fd40)
@@ -19,7 +20,7 @@ While FEniCS offers a general framework for solving PDEs, `pulse` specifically t
 ### Install with pip
 `pulse` can be installed directly from [PyPI](https://pypi.org/project/fenics-pulse/)
 ```
-python3  -m pip install fenics-pulse
+python3 -m pip install fenics-pulse
 ```
 or you can install the most recent development version
 ```
