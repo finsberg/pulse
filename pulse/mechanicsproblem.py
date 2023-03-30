@@ -180,7 +180,7 @@ class MechanicsProblem(object):
                     self.bcs_parameters.update(**bcs_parameters)
             else:
                 raise ValueError(
-                    ("Please provive boundary conditions " "to MechanicsProblem"),
+                    ("Please provide boundary conditions " "to MechanicsProblem"),
                 )
 
             self.bcs = cardiac_boundary_conditions(self.geometry, **self.bcs_parameters)
