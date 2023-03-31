@@ -120,11 +120,9 @@ dist: clean ## builds source and wheel package
 install: clean ## install the package to the active Python's site-packages
 	python3 -m pip install --upgrade pip
 	python3 -m pip install h5py --no-binary=h5py
-	python3 -m pip install -r requirements.txt
 	python3 -m pip install .
 
 dev: clean ## Just need to make sure that libfiles remains
-	python3 -m pip install -r requirements_dev.txt
 	python3 -m pip install -e ".[test,plot,docs,dev]"
 
 bump:
