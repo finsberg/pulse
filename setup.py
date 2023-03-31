@@ -9,7 +9,7 @@ from setuptools import Command
 from setuptools import setup
 
 
-VERSION = "2022.2.1"
+VERSION = "2023.0.0"
 
 here = Path(__file__).parent
 

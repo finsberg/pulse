@@ -1,4 +1,4 @@
-__version__ = "2022.2.1"
+__version__ = "2023.0.0"
 import logging as _logging
 
 try:
