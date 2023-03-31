@@ -1,0 +1,131 @@
+[build-system] # Require setuptool version due to https://github.com/pypa/setuptools/issues/2938
+requires = ["setuptools>=61.0.0", "wheel"]
+
+[project]
+name = "fenics_pulse"
+version = "2023.0.0"
+description = "A python library based on FEniCS that aims to solve problems in continuum mechanics, in particular cardiac mechanics"
+authors = [{name = "Henrik Finsberg", email = "henriknf@simula.no"}]
+license = {file = "LICENSE"}
+readme = "README.md"
+keywords = [
+    "finite element",
+    "mechanics",
+    "cardiac",
+    "heart",
+]
+dependencies = [
+    "daiquiri",
+    "h5py",
+    "numpy",
+    "scipy",
+]
+
+[project.optional-dependencies]
+dev = [
+    "bump2version",
+    "ipython",
+    "pdbpp",
+    "pre-commit",
+]
+docs = [
+    "jupyter-book",
+    "sphinxcontrib-bibtex",
+]
+mesh = [
+    "gmsh",
+    "ldrb",
+    "meshio",
+]
+plot = [
+    "fenics-plotly",
+    "matplotlib",
+]
+test = [
+    "black",
+    "flake8",
+    "jupytext",
+    "mypy",
+    "pytest",
+    "pytest-cov",
+    "pytest-env",
+]
+all = [
+   "fenics-pulse[test]",
+   "fenics-pulse[docs]",
+   "fenics-pulse[mesh]",
+   "fenics-pulse[dev]"
+]
+
+
+
+[project.urls]
+Homepage = "https://finsberg.github.io/pulse/"
+Documentation = "https://finsberg.github.io/pulse/"
+Source = "https://github.com/finsberg/pulse"
+Tracker = "https://github.com/finsberg/pulse/issues"
+
+[tool.setuptools]
+license-files = ["LICENSE_fsahli"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+
+[tool.pytest.ini_options]
+addopts = [
+   "--cov=fractal_tree",
+   "--cov-report=html",
+   "--cov-report=term-missing",
+   "-v"
+]
+
+testpaths = [
+    "tests"
+]
+
+[tool.ruff]
+# Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default.
+select = ["E", "F"]
+ignore = ["E402", "E741"]
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["A", "B", "C", "D", "E", "F"]
+unfixable = []
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
+# Same as Black.
+line-length = 100
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+# Assume Python 3.10.
+target-version = "py310"
+
+[tool.ruff.mccabe]
+# Unlike Flake8, default to a complexity level of 10.
+max-complexity = 10

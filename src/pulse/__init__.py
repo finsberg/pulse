@@ -1,5 +1,6 @@
 import logging as _logging
 import os
+from importlib.metadata import metadata
 
 from dolfin import as_backend_type
 from dolfin import assemble
@@ -10,6 +11,14 @@ from dolfin import FunctionAssigner
 from dolfin import interpolate
 from dolfin import Mesh
 from dolfin import project
+
+
+meta = metadata("fenics-pulse")
+__version__ = meta["Version"]
+__author__ = meta["Author"]
+__license__ = meta["License"]
+__email__ = meta["Author-email"]
+__program_name__ = meta["Name"]
 
 
 Constants = Constant
@@ -61,7 +70,6 @@ from . import numpy_mpi
 from . import solver
 from . import unloader
 from . import utils
-from .__version__ import __version__
 from .dolfin_utils import MixedParameter
 from .dolfin_utils import QuadratureSpace
 from .dolfin_utils import RegionalParameter
@@ -190,7 +198,6 @@ __all__ = [
     "PiolaTransform",
     "InversePiolaTransform",
     "set_log_level",
-    "__version__",
     "solver",
     "mesh_paths",
     "NonlinearProblem",

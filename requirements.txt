@@ -1,8 +1,0 @@
---no-binary=h5py
-fenics_plotly
-h5py
-matplotlib
-numpy
-pytest
-sphinx
-sphinx_rtd_theme
