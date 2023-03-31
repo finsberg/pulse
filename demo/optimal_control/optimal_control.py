@@ -10,7 +10,9 @@ import pulse
 
 
 def cost_function(u_model, u_data):
-    norm = lambda f: da.assemble(df.inner(f, f) * df.dx)
+    def norm(f):
+        return da.assemble(df.inner(f, f) * df.dx)
+
     return norm(u_model - u_data)
 
 

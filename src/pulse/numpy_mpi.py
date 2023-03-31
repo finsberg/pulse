@@ -60,7 +60,9 @@ def broadcast(array, from_process):
         cpp_code = """
 
         namespace dolfin {
-            std::vector<double> broadcast(const MPI_Comm mpi_comm, const Array<double>& inarray, int from_process)
+            std::vector<double> broadcast(
+                const MPI_Comm mpi_comm,
+                const Array<double>& inarray, int from_process)
             {
                 int this_process = dolfin::MPI::rank(mpi_comm);
                 std::vector<double> outvector(inarray.size());
@@ -119,11 +121,15 @@ def gather(array, on_process=0, flatten=False):
     if not hasattr(gather, "cpp_module"):
         cpp_code = """
         namespace dolfin {
-            std::vector<double> gather(const MPI_Comm mpi_comm, const Array<double>& inarray, int on_process)
+            std::vector<double> gather(
+                const MPI_Comm mpi_comm,
+                const Array<double>& inarray, int on_process)
             {
                 int this_process = dolfin::MPI::rank(mpi_comm);
 
-                std::vector<double> outvector(dolfin::MPI::size(mpi_comm)*dolfin::MPI::sum(mpi_comm, inarray.size()));
+                std::vector<double> outvector(
+                    dolfin::MPI::size(mpi_comm)*dolfin::MPI::sum(mpi_comm, inarray.size())
+                );
                 std::vector<double> invector(inarray.size());
 
                 for(int i=0; i<inarray.size(); i++)
