@@ -74,7 +74,7 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 addopts = [
-   "--cov=fractal_tree",
+   "--cov=pulse",
    "--cov-report=html",
    "--cov-report=term-missing",
    "-v"
@@ -82,6 +82,9 @@ addopts = [
 
 testpaths = [
     "tests"
+]
+env = [
+    "FENICS_PLOTLY_SHOW=0"
 ]
 
 [tool.ruff]
