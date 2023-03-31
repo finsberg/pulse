@@ -1,7 +1,9 @@
 # # Rigid motion
-# In this example we show to use a Lagrange Multiplier Formuations to enforce a solution that is free of rigid motions as explained in [1]
+# In this example we show to use a Lagrange Multiplier Formuations
+# to enforce a solution that is free of rigid motions as explained in [1]
 #
-# > [1] Kuchta, M., Mardal, K. A., & Mortensen, M. (2019). On the singular Neumann problem in linear elasticity. Numerical Linear Algebra with Applications, 26(1), e2212.
+# > [1] Kuchta, M., Mardal, K. A., & Mortensen, M. (2019). On the singular
+# Neumann problem in linear elasticity. Numerical Linear Algebra with Applications, 26(1), e2212.
 #
 # Credits to [Aashild Telle](https://github.com/aashildte)
 #

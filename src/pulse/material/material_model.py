@@ -53,6 +53,9 @@ def incompressible(p, J):
     return -p * (J - 1.0)
 
 
+_t = _active_model.ActiveStressModels.transversally
+
+
 class Material(ABC):
     """
     Initialize material model
@@ -98,7 +101,7 @@ class Material(ABC):
         f0=None,
         s0=None,
         n0=None,
-        active_isotropy: _active_model.ActiveStressModels = _active_model.ActiveStressModels.transversally,
+        active_isotropy: _active_model.ActiveStressModels = _t,
         *args,
         **kwargs
     ):
