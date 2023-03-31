@@ -16,7 +16,7 @@ jobs:
           python-version: "3.10"
 
       - name: Install dependencies
-        run: python3 -m pip install ".[pypi]"
+        run: python3 -m pip install build twine
 
       - name: Build a binary wheel and a source tarball
         run: >-
