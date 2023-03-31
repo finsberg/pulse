@@ -5,6 +5,8 @@ docs/pulse.material.rst
 docs/pulse.rst
 demo/custom_geometry/test.msh
 docs/data/
+docs/CONTRIBUTING.md
+demo/shear_experiment/result.npy
 publish_conda.sh
 pulse-feedstock/
 joss/components.pptx

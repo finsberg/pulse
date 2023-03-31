@@ -1,7 +1,7 @@
-[![InstallConda](https://anaconda.org/finsberg/pulse/badges/installer/conda.svg)](https://anaconda.org/finsberg/pulse)
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/pulse/badges/version.svg)](https://anaconda.org/conda-forge/pulse)
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/pulse/badges/downloads.svg)](https://anaconda.org/conda-forge/pulse)
 [![CI](https://github.com/finsberg/pulse/actions/workflows/main.yml/badge.svg)](https://github.com/finsberg/pulse/actions/workflows/main.yml)
 [![Platform](https://anaconda.org/finsberg/pulse/badges/platforms.svg)](https://anaconda.org/finsberg/pulse)
-[![Binder](https://binder.pangeo.io/badge_logo.svg)](https://binder.pangeo.io/v2/gh/finsberg/pulse/master?filepath=index.ipynb)
 [![status](http://joss.theoj.org/papers/9abee735e6abadabe9252d5fcc84fd40/status.svg)](http://joss.theoj.org/papers/9abee735e6abadabe9252d5fcc84fd40)
 [![codecov](https://codecov.io/gh/finsberg/pulse/branch/master/graph/badge.svg?token=cZEkiXSOKm)](https://codecov.io/gh/finsberg/pulse)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/finsberg/pulse/master.svg)](https://results.pre-commit.ci/latest/github/finsberg/pulse/master)
@@ -20,7 +20,7 @@ While FEniCS offers a general framework for solving PDEs, `pulse` specifically t
 ### Install with pip
 `pulse` can be installed directly from [PyPI](https://pypi.org/project/fenics-pulse/)
 ```
-python3  -m pip install fenics-pulse
+python3 -m pip install fenics-pulse
 ```
 or you can install the most recent development version
 ```
@@ -35,13 +35,13 @@ conda install -c conda-forge pulse
 
 ### Docker
 It is also possible to use Docker. There is a prebuilt docker image
-using FEniCS 2017.2, python3.6 and pulse. You can get it by typing
+using the development version of FEniCS, python3.10 and pulse. You can get it by typing
 ```
 docker pull finsberg/pulse:latest
 ```
 
 ## Requirements
-* FEniCS version 2016 or newer
+* FEniCS version 2019.1.0 or newer (older versions might work but is not tested against anymore)
 
 Note that if you install FEniCS using anaconda then you will not get support for parallel HDF5
 see e.g [this issue](https://github.com/conda-forge/hdf5-feedstock/issues/51).
@@ -50,13 +50,14 @@ see e.g [this issue](https://github.com/conda-forge/hdf5-feedstock/issues/51).
 Check out the demos in the demo folder. These demos are currently in jupyter notebook format.
 If you want to run them as python files you can convert the notebooks to `.py` files using e.g [jupytext](https://jupytext.readthedocs.io/en/latest/)
 
+If you have a question about how to use the software you can ask a question or start a new discussion in the [discussion section](https://github.com/finsberg/pulse/discussions)
+
 ## Automated test
 Test are provided in the folder [`tests`](tests). You can run the test
 with `pytest`
 ```
 python3 -m pytest tests -vv
 ```
-
 
 ## Documentation
 Documentation can be found at [finsberg.github.io/pulse](https://finsberg.github.io/pulse)
@@ -88,3 +89,6 @@ If you use `pulse` in your own research, please cite the [JOSS paper](https://jo
 ```
 python3 -m pip install h5py --no-binary=h5py
 ```
+
+## Contributing
+See [CONTRIBUTING.md](CONTRIBUTING.md)
