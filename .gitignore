@@ -21,7 +21,7 @@ tests/jitfailure*
 *.xdmf
 *.h5
 .vscode/*
-
+_build
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

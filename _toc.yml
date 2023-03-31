@@ -1,0 +1,37 @@
+# Table of contents
+# Learn more at https://jupyterbook.org/customize/toc.html
+
+format: jb-book
+root: README
+chapters:
+  - file: docs/INSTALL
+  - file: docs/cardiac_mechanics_intro
+    sections:
+      - file: docs/kinematics
+      - file: docs/balance_laws
+      - file: docs/hyperalsticity
+      - file: docs/incompressibility
+      - file: docs/boundary_conditions
+      - file: docs/force_balance
+      - file: docs/constitutive_relations
+      - file: docs/implementation_details
+  - file: Examples
+    sections:
+      - file: docs/problem1.ipynb
+      - file: docs/problem2.ipynb
+      - file: docs/problem3.ipynb
+      - file: docs/biaxial_stress_test.ipynb
+      - file: docs/compressible_model.ipynb
+      - file: docs/compute_stress_strain.ipynb
+      - file: docs/custom_geometry.ipynb
+      - file: docs/demo_custom_material.ipynb
+      - file: docs/from_xml.ipynb
+      - file: docs/klotz_curve.ipynb
+      - file: docs/optimal_control.ipynb
+      - file: docs/rigid_motion.ipynb
+      - file: docs/shear_experiment.ipynb
+      - file: docs/simple_ellipsoid.ipynb
+      - file: docs/unit_cube_demo.ipynb
+      - file: docs/demo_fixedpointunloader.ipynb
+  - file: CONTRIBUTING.md
+  - file: docs/api.rst
