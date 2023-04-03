@@ -1,0 +1,1055 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Biaxial stress test &#8212; pulse</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'docs/biaxial_stress_test';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../README.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../README.html">
+                    pulse
+                </a>
+            </li>
+        </ul>
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="cardiac_mechanics_intro.html">Cardiac Mechanics</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="kinematics.html">Kinematics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="balance_laws.html">Balance laws and transformations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hyperalsticity.html">Hyperelasticity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="incompressibility.html">Incompressibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boundary_conditions.html">Boundary Conditions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="force_balance.html">Force-balance equation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="constitutive_relations.html">Constitutive relations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="implementation_details.html">Implementation details</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../CONTRIBUTING.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">pulse package</a></li>
+
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li>
+<button onclick="initThebeSBT()"
+  class="btn btn-sm btn-launch-thebe dropdown-item"
+  title="Launch Thebe"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-play"></i>
+  </span>
+<span class="btn__text-container">Live Code</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/finsberg/pulse" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/finsberg/pulse/issues/new?title=Issue%20on%20page%20%2Fdocs/biaxial_stress_test.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/docs/biaxial_stress_test.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Biaxial stress test</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="biaxial-stress-test">
+<h1>Biaxial stress test<a class="headerlink" href="#biaxial-stress-test" title="Permalink to this heading">#</a></h1>
+<p>Attempt to reproduce Figure 8 in [1].</p>
+<blockquote>
+<div><p>[1] Holzapfel, Gerhard A., and Ray W. Ogden.
+“Constitutive modelling of passive myocardium:
+a structurally based framework for material characterization.
+“Philosophical Transactions of the Royal Society of London A:
+Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
+</div></blockquote>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dolfin</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">dolfin_adjoint</span> <span class="kn">import</span> <span class="p">(</span>
+        <span class="n">Constant</span><span class="p">,</span>
+        <span class="n">DirichletBC</span><span class="p">,</span>
+        <span class="n">Expression</span><span class="p">,</span>
+        <span class="n">UnitCubeMesh</span><span class="p">,</span>
+        <span class="n">interpolate</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">dolfin</span> <span class="kn">import</span> <span class="p">(</span>
+        <span class="n">Constant</span><span class="p">,</span>
+        <span class="n">DirichletBC</span><span class="p">,</span>
+        <span class="n">interpolate</span><span class="p">,</span>
+        <span class="n">Expression</span><span class="p">,</span>
+        <span class="n">UnitCubeMesh</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="c1"># -</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pulse</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create mesh</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">UnitCubeMesh</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a facet fuction in order to mark the subdomains</span>
+<span class="n">ffun</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">MeshFunction</span><span class="p">(</span><span class="s2">&quot;size_t&quot;</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">ffun</span><span class="o">.</span><span class="n">set_all</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Mark subdomains</span>
+<span class="n">xlow</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">CompiledSubDomain</span><span class="p">(</span><span class="s2">&quot;near(x[0], 0) &amp;&amp; on_boundary&quot;</span><span class="p">)</span>
+<span class="n">xlow_marker</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">xlow</span><span class="o">.</span><span class="n">mark</span><span class="p">(</span><span class="n">ffun</span><span class="p">,</span> <span class="n">xlow_marker</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xhigh</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">CompiledSubDomain</span><span class="p">(</span><span class="s2">&quot;near(x[0], 1.0) &amp;&amp; on_boundary&quot;</span><span class="p">)</span>
+<span class="n">xhigh_marker</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">xhigh</span><span class="o">.</span><span class="n">mark</span><span class="p">(</span><span class="n">ffun</span><span class="p">,</span> <span class="n">xhigh_marker</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ylow</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">CompiledSubDomain</span><span class="p">(</span><span class="s2">&quot;near(x[1], 0) &amp;&amp; on_boundary&quot;</span><span class="p">)</span>
+<span class="n">ylow_marker</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">ylow</span><span class="o">.</span><span class="n">mark</span><span class="p">(</span><span class="n">ffun</span><span class="p">,</span> <span class="n">ylow_marker</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">yhigh</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">CompiledSubDomain</span><span class="p">(</span><span class="s2">&quot;near(x[1], 1) &amp;&amp; on_boundary&quot;</span><span class="p">)</span>
+<span class="n">yhigh_marker</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">yhigh</span><span class="o">.</span><span class="n">mark</span><span class="p">(</span><span class="n">ffun</span><span class="p">,</span> <span class="n">yhigh_marker</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">center</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">CompiledSubDomain</span><span class="p">(</span>
+    <span class="s2">&quot;near(x[0], 0.5) &amp;&amp; near(x[1], 0.5) &amp;&amp; near(x[2], 0.5)&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">center_marker</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">center</span><span class="o">.</span><span class="n">mark</span><span class="p">(</span><span class="n">ffun</span><span class="p">,</span> <span class="n">center_marker</span><span class="p">)</span>
+<span class="n">dolfin</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="s2">&quot;ffun.pvd&quot;</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">ffun</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Collect the functions containing the markers</span>
+<span class="n">marker_functions</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">MarkerFunctions</span><span class="p">(</span><span class="n">ffun</span><span class="o">=</span><span class="n">ffun</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create mictrotructure</span>
+<span class="n">V_f</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fibers</span>
+<span class="n">f0</span> <span class="o">=</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">Expression</span><span class="p">((</span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;0.0&quot;</span><span class="p">,</span> <span class="s2">&quot;0.0&quot;</span><span class="p">),</span> <span class="n">degree</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">V_f</span><span class="p">)</span>
+<span class="c1"># Sheets</span>
+<span class="n">s0</span> <span class="o">=</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">Expression</span><span class="p">((</span><span class="s2">&quot;0.0&quot;</span><span class="p">,</span> <span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;0.0&quot;</span><span class="p">),</span> <span class="n">degree</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">V_f</span><span class="p">)</span>
+<span class="c1"># Fiber-sheet normal</span>
+<span class="n">n0</span> <span class="o">=</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">Expression</span><span class="p">((</span><span class="s2">&quot;0.0&quot;</span><span class="p">,</span> <span class="s2">&quot;0.0&quot;</span><span class="p">,</span> <span class="s2">&quot;1.0&quot;</span><span class="p">),</span> <span class="n">degree</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">V_f</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Collect the mictrotructure</span>
+<span class="n">microstructure</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">Microstructure</span><span class="p">(</span><span class="n">f0</span><span class="o">=</span><span class="n">f0</span><span class="p">,</span> <span class="n">s0</span><span class="o">=</span><span class="n">s0</span><span class="p">,</span> <span class="n">n0</span><span class="o">=</span><span class="n">n0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create the geometry</span>
+<span class="n">geometry</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">,</span>
+    <span class="n">marker_functions</span><span class="o">=</span><span class="n">marker_functions</span><span class="p">,</span>
+    <span class="n">microstructure</span><span class="o">=</span><span class="n">microstructure</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="c1"># Use the default material parameters</span>
+<span class="n">material_parameters</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="mf">2.28</span><span class="p">,</span>
+    <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="mf">9.726</span><span class="p">,</span>
+    <span class="s2">&quot;a_f&quot;</span><span class="p">:</span> <span class="mf">1.685</span><span class="p">,</span>
+    <span class="s2">&quot;b_f&quot;</span><span class="p">:</span> <span class="mf">15.779</span><span class="p">,</span>
+    <span class="s2">&quot;a_s&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;a_fs&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create material</span>
+<span class="n">material</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">HolzapfelOgden</span><span class="p">(</span><span class="n">parameters</span><span class="o">=</span><span class="n">material_parameters</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Eff / Ess strain ratio</span>
+<span class="n">strain_ratio</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create costants defined for the dirichlet BC</span>
+<span class="n">u0</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="n">x_strain</span> <span class="o">=</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">strain_ratio</span> <span class="o">/</span> <span class="mi">2</span>
+<span class="n">y_strain</span> <span class="o">=</span> <span class="n">u0</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">strain_ratio</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Make Dirichlet boundary conditions</span>
+<span class="k">def</span> <span class="nf">dirichlet_bc</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="n">W</span> <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">num_sub_spaces</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">W</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">Constant</span><span class="p">(</span><span class="o">-</span><span class="n">x_strain</span><span class="p">),</span> <span class="n">xlow</span><span class="p">),</span>
+        <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">Constant</span><span class="p">(</span><span class="n">x_strain</span><span class="p">),</span> <span class="n">xhigh</span><span class="p">),</span>
+        <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">Constant</span><span class="p">(</span><span class="o">-</span><span class="n">y_strain</span><span class="p">),</span> <span class="n">ylow</span><span class="p">),</span>
+        <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">Constant</span><span class="p">(</span><span class="n">y_strain</span><span class="p">),</span> <span class="n">yhigh</span><span class="p">),</span>
+        <span class="n">DirichletBC</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">center</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;pointwise&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Collect Boundary Conditions</span>
+<span class="n">bcs</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">BoundaryConditions</span><span class="p">(</span><span class="n">dirichlet</span><span class="o">=</span><span class="p">(</span><span class="n">dirichlet_bc</span><span class="p">,))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create problem</span>
+<span class="n">problem</span> <span class="o">=</span> <span class="n">pulse</span><span class="o">.</span><span class="n">MechanicsProblem</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">bcs</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Solve problem</span>
+<span class="n">max_xi</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">]</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sr</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="mf">2.05</span><span class="p">,</span> <span class="mf">1.02</span><span class="p">,</span> <span class="mf">0.48</span><span class="p">]):</span>
+    <span class="n">strain_ratio</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">sr</span><span class="p">)</span>
+    <span class="n">Effs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">Sffs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">Esss</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">Ssss</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">xi</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_xi</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="mi">10</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">pulse</span><span class="o">.</span><span class="n">iterate</span><span class="o">.</span><span class="n">iterate</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">u0</span><span class="p">,</span> <span class="n">Constant</span><span class="p">(</span><span class="n">xi</span><span class="p">),</span> <span class="n">reinit_each_step</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">pulse</span><span class="o">.</span><span class="n">mechanicsproblem</span><span class="o">.</span><span class="n">SolverDidNotConverge</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">S</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">SecondPiolaStress</span><span class="p">()</span>
+        <span class="n">E</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">GreenLagrangeStrain</span><span class="p">()</span>
+
+        <span class="n">Sff</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span><span class="n">dolfin</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="n">f0</span><span class="p">,</span> <span class="n">S</span> <span class="o">*</span> <span class="n">f0</span><span class="p">)</span> <span class="o">*</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">dx</span><span class="p">)</span>
+        <span class="n">Eff</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span><span class="n">dolfin</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="n">f0</span><span class="p">,</span> <span class="n">E</span> <span class="o">*</span> <span class="n">f0</span><span class="p">)</span> <span class="o">*</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">dx</span><span class="p">)</span>
+
+        <span class="n">Effs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Eff</span><span class="p">)</span>
+        <span class="n">Sffs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Sff</span><span class="p">)</span>
+
+        <span class="n">Sss</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span><span class="n">dolfin</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="n">s0</span><span class="p">,</span> <span class="n">S</span> <span class="o">*</span> <span class="n">s0</span><span class="p">)</span> <span class="o">*</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">dx</span><span class="p">)</span>
+        <span class="n">Ess</span> <span class="o">=</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span><span class="n">dolfin</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="n">s0</span><span class="p">,</span> <span class="n">E</span> <span class="o">*</span> <span class="n">s0</span><span class="p">)</span> <span class="o">*</span> <span class="n">dolfin</span><span class="o">.</span><span class="n">dx</span><span class="p">)</span>
+
+        <span class="n">Esss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Ess</span><span class="p">)</span>
+        <span class="n">Ssss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Sss</span><span class="p">)</span>
+
+        <span class="n">u</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">deepcopy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">data</span><span class="p">[</span><span class="n">sr</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Eff&quot;</span><span class="p">:</span> <span class="n">Effs</span><span class="p">,</span> <span class="s2">&quot;Sff&quot;</span><span class="p">:</span> <span class="n">Sffs</span><span class="p">,</span> <span class="s2">&quot;Ess&quot;</span><span class="p">:</span> <span class="n">Esss</span><span class="p">,</span> <span class="s2">&quot;Sss&quot;</span><span class="p">:</span> <span class="n">Ssss</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:52:08,029 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:52:08,030 [298] INFO     pulse.iterate: Current control: f_31 = 0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:52:08,031 [298] INFO     pulse.iterate: Target: 0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:52:24,333 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:52:24,334 [298] INFO     pulse.iterate: Current control: f_31 = 0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:52:24,334 [298] INFO     pulse.iterate: Target: 0.011
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:33,402 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:33,403 [298] INFO     pulse.iterate: Current control: f_31 = 0.011
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:33,404 [298] INFO     pulse.iterate: Target: 0.022
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:34,134 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:34,135 [298] INFO     pulse.iterate: Current control: f_31 = 0.022
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:34,136 [298] INFO     pulse.iterate: Target: 0.033
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:34,873 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:34,874 [298] INFO     pulse.iterate: Current control: f_31 = 0.033
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:34,875 [298] INFO     pulse.iterate: Target: 0.044
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:35,603 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:35,604 [298] INFO     pulse.iterate: Current control: f_31 = 0.044
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:35,605 [298] INFO     pulse.iterate: Target: 0.056
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:36,335 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:36,336 [298] INFO     pulse.iterate: Current control: f_31 = 0.056
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:36,337 [298] INFO     pulse.iterate: Target: 0.067
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:37,067 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:37,068 [298] INFO     pulse.iterate: Current control: f_31 = 0.067
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:37,070 [298] INFO     pulse.iterate: Target: 0.078
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:37,797 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:37,798 [298] INFO     pulse.iterate: Current control: f_31 = 0.078
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:37,799 [298] INFO     pulse.iterate: Target: 0.089
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:38,528 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:38,529 [298] INFO     pulse.iterate: Current control: f_31 = 0.089
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:38,529 [298] INFO     pulse.iterate: Target: 0.100
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:39,335 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:39,336 [298] INFO     pulse.iterate: Current control: f_31 = 0.100
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:39,337 [298] INFO     pulse.iterate: Target: 0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:40,363 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:40,364 [298] INFO     pulse.iterate: Current control: f_31 = 0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:40,365 [298] INFO     pulse.iterate: Target: 0.017
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:41,110 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:41,111 [298] INFO     pulse.iterate: Current control: f_31 = 0.017
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:41,111 [298] INFO     pulse.iterate: Target: 0.033
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:41,838 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:41,839 [298] INFO     pulse.iterate: Current control: f_31 = 0.033
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:41,841 [298] INFO     pulse.iterate: Target: 0.050
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:42,572 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:42,573 [298] INFO     pulse.iterate: Current control: f_31 = 0.050
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:42,573 [298] INFO     pulse.iterate: Target: 0.067
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:43,304 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:43,304 [298] INFO     pulse.iterate: Current control: f_31 = 0.067
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:43,305 [298] INFO     pulse.iterate: Target: 0.083
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:44,035 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:44,036 [298] INFO     pulse.iterate: Current control: f_31 = 0.083
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:44,037 [298] INFO     pulse.iterate: Target: 0.100
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:44,771 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:44,772 [298] INFO     pulse.iterate: Current control: f_31 = 0.100
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:44,772 [298] INFO     pulse.iterate: Target: 0.117
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:45,506 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:45,507 [298] INFO     pulse.iterate: Current control: f_31 = 0.117
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:45,509 [298] INFO     pulse.iterate: Target: 0.133
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:46,244 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:46,245 [298] INFO     pulse.iterate: Current control: f_31 = 0.133
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:46,246 [298] INFO     pulse.iterate: Target: 0.150
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:47,050 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:47,051 [298] INFO     pulse.iterate: Current control: f_31 = 0.150
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:47,052 [298] INFO     pulse.iterate: Target: 0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:48,081 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:48,082 [298] INFO     pulse.iterate: Current control: f_31 = 0.000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:48,082 [298] INFO     pulse.iterate: Target: 0.011
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:48,809 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:48,810 [298] INFO     pulse.iterate: Current control: f_31 = 0.011
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:48,810 [298] INFO     pulse.iterate: Target: 0.022
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:49,541 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:49,542 [298] INFO     pulse.iterate: Current control: f_31 = 0.022
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:49,542 [298] INFO     pulse.iterate: Target: 0.033
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:50,271 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:50,272 [298] INFO     pulse.iterate: Current control: f_31 = 0.033
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:50,273 [298] INFO     pulse.iterate: Target: 0.044
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:51,012 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:51,013 [298] INFO     pulse.iterate: Current control: f_31 = 0.044
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:51,013 [298] INFO     pulse.iterate: Target: 0.056
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:51,747 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:51,748 [298] INFO     pulse.iterate: Current control: f_31 = 0.056
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:51,748 [298] INFO     pulse.iterate: Target: 0.067
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:52,485 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:52,486 [298] INFO     pulse.iterate: Current control: f_31 = 0.067
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:52,487 [298] INFO     pulse.iterate: Target: 0.078
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:53,225 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:53,226 [298] INFO     pulse.iterate: Current control: f_31 = 0.078
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:53,226 [298] INFO     pulse.iterate: Target: 0.089
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:53,960 [298] INFO     pulse.iterate: Iterating to target control (f_31)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:53,961 [298] INFO     pulse.iterate: Current control: f_31 = 0.089
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-04-03 20:53:53,961 [298] INFO     pulse.iterate: Target: 0.100
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">markers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;^&quot;</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">sr</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;Eff&quot;</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;Sff&quot;</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="n">markers</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;SR: </span><span class="si">{</span><span class="n">sr</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;Ess&quot;</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;Sss&quot;</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="n">markers</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;SR: </span><span class="si">{</span><span class="n">sr</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;$S_</span><span class="si">{ff}</span><span class="s2">$ (kPa)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;$S_</span><span class="si">{ss}</span><span class="s2">$ (kPa)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;$E_</span><span class="si">{ff}</span><span class="s2">$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;$E_</span><span class="si">{ss}</span><span class="s2">$&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">axi</span> <span class="ow">in</span> <span class="n">ax</span><span class="p">:</span>
+    <span class="n">axi</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">axi</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+    <span class="n">axi</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/053acbd35ac05f1c79e0bc9b79f4e4568e2e453d8951b0787ba7256482084acd.png" src="../_images/053acbd35ac05f1c79e0bc9b79f4e4568e2e453d8951b0787ba7256482084acd.png" />
+</div>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "finsberg/pulse",
+            ref: "main",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./docs"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Henrik Finsberg
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

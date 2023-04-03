@@ -1,0 +1,669 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Hyperelasticity &#8212; pulse</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'docs/hyperalsticity';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Incompressibility" href="incompressibility.html" />
+    <link rel="prev" title="Balance laws and transformations" href="balance_laws.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../README.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../README.html">
+                    pulse
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="cardiac_mechanics_intro.html">Cardiac Mechanics</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="kinematics.html">Kinematics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="balance_laws.html">Balance laws and transformations</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Hyperelasticity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="incompressibility.html">Incompressibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boundary_conditions.html">Boundary Conditions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="force_balance.html">Force-balance equation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="constitutive_relations.html">Constitutive relations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="implementation_details.html">Implementation details</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../CONTRIBUTING.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">pulse package</a></li>
+
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/finsberg/pulse" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/finsberg/pulse/issues/new?title=Issue%20on%20page%20%2Fdocs/hyperalsticity.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/docs/hyperalsticity.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Hyperelasticity</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#general-requirements-for-the-strain-energy-density-function">General requirements for the strain-energy density function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="hyperelasticity">
+<span id="section-hyperelasticity"></span><h1>Hyperelasticity<a class="headerlink" href="#hyperelasticity" title="Permalink to this heading">#</a></h1>
+<p>Even though experimental studies have indicated visco-elastic behavior
+of the myocardium <span id="id1">[<a class="reference internal" href="#id112" title="Socrates Dokos, Bruce H Smaill, Alistair A Young, and Ian J LeGrice. Shear properties of passive ventricular myocardium. American Journal of Physiology-Heart and Circulatory Physiology, 283(6):H2650–H2659, 2002.">Dokos <em>et al.</em>, 2002</a>, <a class="reference internal" href="#id69" title="Osman Gültekin, Gerhard Sommer, and Gerhard A Holzapfel. An orthotropic viscoelastic model for the passive myocardium: continuum basis and numerical treatment. Computer methods in biomechanics and biomedical engineering, 19(15):1647–1664, 2016.">Gültekin <em>et al.</em>, 2016</a>]</span> a
+common assumption is to consider quasi-static behavior, meaning that
+the inertial term in <a class="reference internal" href="balance_laws.html#equation-chauch-momentum-eq">(6)</a> is negligible and
+static equilibrium is achieved at all points in the cardiac cycle. Therefore
+it is also possible to model the myocardium as a hyperelastic
+material,which is a type of elastic material.
+This means that we postulate the existence of
+a strain-energy density function <span class="math notranslate nohighlight">\(\Psi:\mathrm{Lin}^+ \rightarrow
+\mathbb{R}^+\)</span>, and that stress is given by the relation</p>
+<div class="math notranslate nohighlight" id="equation-docs-hyperalsticity-0">
+<span class="eqno">(10)<a class="headerlink" href="#equation-docs-hyperalsticity-0" title="Permalink to this equation">#</a></span>\[\begin{align}
+\mathbf{P} = \frac{\partial \Psi(\mathbf{F})}{\partial \mathbf{F}}.
+\end{align}\]</div>
+<p>Since stress has unit Pa, we see that the strain-energy density
+function is defined as energy per unit reference volume, and has units
+<span class="math notranslate nohighlight">\(\frac{\text{Joule}}{m^3}\)</span>.
+The strain-energy density function relates  the amount of
+energy that is stored within the material in response to a given
+strain. Hence, the stresses in a hyperelastic material with a given
+strain-energy density function, depend only on the strain, and not the
+path for which the material deforms. On the contrary, if the model had
+been visco-elastic we would expect to see hysteresis in the
+stress/strain curve, but this is not possible for a hyperelastic
+material.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The second law of thermodynamics states that the total entropy
+production in a thermodynamic process can never be negative. Elastic
+materials define a special class of materials in which the entropy
+production is zero. Within this thermodynamic framework the
+strain-energy density function coincides (up to a constant) with the
+Helmholtz free energy density.</p>
+</div>
+<section id="general-requirements-for-the-strain-energy-density-function">
+<span id="section-strain-energy-req"></span><h2>General requirements for the strain-energy density function<a class="headerlink" href="#general-requirements-for-the-strain-energy-density-function" title="Permalink to this heading">#</a></h2>
+<p>Some general requirements must hold for the strain-energy function.
+First of all, we require that the reference state is stress free and
+that the stored energy increases monotonically with the deformation.
+Formally this can be stated simply as</p>
+<div class="math notranslate nohighlight">
+\[\begin{align*}
+  \Psi(\mathbf{I}) = 0 \; &amp;&amp; \text{and} &amp;&amp;\; \Psi(\mathbf{F}) \geq 0.
+\end{align*}\]</div>
+<p>Moreover, expanding or compressing a body to zero volume would
+require an infinite amount of energy, i.e</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+  \Psi(\mathbf{F}) \rightarrow \infty \; &amp;&amp; \text{as} &amp;&amp;\; \det \mathbf{F} \rightarrow&amp; 0 \\
+  \Psi(\mathbf{F}) \rightarrow \infty \; &amp;&amp; \text{as} &amp;&amp;\; \det \mathbf{F} \rightarrow&amp; \infty
+\end{align*}\end{split}\]</div>
+<p>We say that the strain energy should be objective, meaning that the
+stored energy in the material should be invariant with respect to
+change of observer. Formally we must have: <em>given any positive symmetric
+rank-2 tensor <span class="math notranslate nohighlight">\(\mathbf{C} \in \mathrm{Sym}\)</span>:</em></p>
+<div class="math notranslate nohighlight">
+\[\begin{align}
+  \Psi(\mathbf{C}) = \Psi(\mathbf{Q}\mathbf{C}\mathbf{Q}^T), \; \forall \mathbf{Q} \in \mathcal{G} \subseteq \mathrm{Orth}.
+\end{align}\]</div>
+<p>Here <span class="math notranslate nohighlight">\(\mathrm{Orth}\)</span> is the group of all positive orthogonal matrices.
+If <span class="math notranslate nohighlight">\(\mathcal{G} = \mathrm{Orth}\)</span> we say that the material is
+isotropic, and otherwise we say that the material is anisotropic.
+This brings us to another important issue, which is related to the
+choice of coordinate-system. Having to deal with different
+coordinate-systems, and mapping quantities from one coordinate-system
+to another can results in complicated computations. Therefore it would be beneficial if we
+could work with quantities which do not depend on the choice of
+coordinate-system. Such quantities are called invariants.
+If the material is isotropic, the representation theorem for
+invariants <span id="id2">[<a class="reference internal" href="#id11" title="C-C Wang. A new representation theorem for isotropic functions: an answer to professor gf smith's criticism of my papers on representations for isotropic functions. Archive for Rational Mechanics and Analysis, 36(3):166–197, 1970.">Wang, 1970</a>]</span> states that <span class="math notranslate nohighlight">\(\Psi\)</span> can be expressed in terms of the
+principle invariants of <span class="math notranslate nohighlight">\(\mathbf{C}\)</span>, that is <span class="math notranslate nohighlight">\(\Psi = \Psi(I_1, I_2,
+I_3)\)</span>. The principle invariants <span class="math notranslate nohighlight">\(I_i, i=1,2,3\)</span> are the coefficients in
+the characteristic polynomial of <span class="math notranslate nohighlight">\(\mathbf{C}\)</span>, and is given by</p>
+<div class="math notranslate nohighlight" id="equation-docs-hyperalsticity-1">
+<span class="eqno">(11)<a class="headerlink" href="#equation-docs-hyperalsticity-1" title="Permalink to this equation">#</a></span>\[\begin{align}
+  I_1 = \mathrm{tr} \; \mathbf{C},  &amp;&amp; I_2 = \frac{1}{2}\left[ I_1^2 - \mathrm{tr} \;(\mathbf{C}^2)\right] &amp;&amp; \text{and} &amp;&amp; I_3 = \det \mathbf{C}.
+\end{align}\]</div>
+<p>In the case when the material constitutes a transversely isotropic
+behavior, that is, the material has a preferred direction <span class="math notranslate nohighlight">\(\mathbf{a}_0\)</span>,
+which in the case of the myocardium could be the direction of fiber
+muscle fibers, we have</p>
+<div class="math notranslate nohighlight">
+\[\begin{align*}
+  \mathcal{G} = \{ \mathbf{Q} \in \mathrm{Orth}: \mathbf{Q}(\mathbf{a}_0\otimes\mathbf{a}_0)\mathbf{Q}^T = \mathbf{a}_0\otimes\mathbf{a}_0 \},
+\end{align*}\]</div>
+<p>with <span class="math notranslate nohighlight">\(\otimes\)</span> being the outer product. In this case the strain-energy
+density function can still be expressed through invariants. However,
+we need to include the so called quasi-invariants, which are defined
+as stretches in the local microstructural coordinate-system. The
+transversely isotropic invariants are given by</p>
+<div class="math notranslate nohighlight">
+\[\begin{align*}
+  I_{4\mathbf{a}_0 } = \mathbf{a}_0 \cdot (\mathbf{C} \mathbf{a}_0) &amp;&amp; \text{and} &amp;&amp; I_5 = \mathbf{a}_0 \cdot (\mathbf{C}^2 \mathbf{a}_0).
+\end{align*}\]</div>
+<p>Some of the invariants do have a physical interpretation. For instance, <span class="math notranslate nohighlight">\(I_3\)</span>
+is related to the volume ratio of material during deformation, while
+<span class="math notranslate nohighlight">\(I_{4\mathbf{a}_0 } \)</span> is related to the stretch along the direction
+<span class="math notranslate nohighlight">\(\mathbf{a}_0 \)</span>. Indeed the <em>stretch</em> ratio in the direction
+<span class="math notranslate nohighlight">\(\mathbf{a}_0\)</span> is given by <span class="math notranslate nohighlight">\(\lambda_{\mathbf{a}_0} = | \mathbf{F} \mathbf{a}_0
+|\)</span> and we see that <span class="math notranslate nohighlight">\(I_{4\mathbf{a}_0 }  =  \mathbf{a}_0 \cdot (\mathbf{C}
+\mathbf{a}_0) = \mathbf{F} \mathbf{a}_0 \cdot (\mathbf{F} \mathbf{a}_0) =
+\lambda_{\mathbf{a}_0}^2\)</span>. For more details about invariants see e.g
+<span id="id3">[<a class="reference internal" href="#id92" title="Gerhard A Holzapfel and Ray W Ogden. Constitutive modelling of passive myocardium: a structurally based framework for material characterization. Philosophical Transactions of the Royal Society of London A: Mathematical, Physical and Engineering Sciences, 367(1902):3445–3475, 2009.">Holzapfel and Ogden, 2009</a>, <a class="reference internal" href="#id7" title="I Liu and others. On representations of anisotropic invariants. International Journal of Engineering Science, 20(10):1099–1109, 1982.">Liu and others, 1982</a>]</span>.</p>
+<p>The theory of global existence of unique solutions for elastic problems
+was originally based convexity of the free energy function.
+An energy function <span class="math notranslate nohighlight">\(\Psi: \mathrm{Lin}^+ \rightarrow
+\mathbb{R}^+\)</span> is strictly <em>convex</em> if for each <span class="math notranslate nohighlight">\(\mathbf{F} \in
+\mathrm{Lin}^+\)</span> and <span class="math notranslate nohighlight">\(\mathbf{H} \neq \mathbf{0}\)</span> with <span class="math notranslate nohighlight">\(\det (\mathbf{F} +
+(1-\lambda)\mathbf{H}) &gt; 0\)</span>, we have</p>
+<div class="math notranslate nohighlight" id="equation-strain-convex">
+<span class="eqno">(12)<a class="headerlink" href="#equation-strain-convex" title="Permalink to this equation">#</a></span>\[\begin{align}
+  \Psi(\lambda \mathbf{F} + (1-\lambda) \mathbf{H})
+  &lt; \lambda \Psi(\mathbf{F})
+  + (1-\lambda) \Psi(\mathbf{F} + \mathbf{H}), &amp;&amp; \lambda \in (0,1).
+\end{align}\]</div>
+<p>If the response <span class="math notranslate nohighlight">\(\mathbf{P}\)</span> is differentiable, then condition
+<a class="reference internal" href="#equation-strain-convex">(12)</a> is equivalent of saying that the response is
+positive definite,</p>
+<div class="math notranslate nohighlight" id="equation-response-posdev">
+<span class="eqno">(13)<a class="headerlink" href="#equation-response-posdev" title="Permalink to this equation">#</a></span>\[\begin{align}
+  \mathbf{H} : \frac{\partial \mathbf{P}}{\partial \mathbf{F}} : \mathbf{H} &gt; 0,
+  &amp;&amp; \mathbf{F} \in
+     \mathrm{Lin}^+, \mathbf{H} \neq \mathbf{0}.
+\end{align}\]</div>
+<p>However, from a physical point of view this requirement is too strict
+<span id="id4">[<a class="reference internal" href="#id19" title="John M Ball. Convexity conditions and existence theorems in nonlinear elasticity. Archive for rational mechanics and Analysis, 63(4):337–403, 1976.">Ball, 1976</a>]</span>. A slightly weaker requirement is the strong
+ellipticity condition which states that <a class="reference internal" href="#equation-response-posdev">(13)</a>
+should hold for any <span class="math notranslate nohighlight">\(\mathbf{H}\)</span> of rank-one, and is analogous to
+say that the strain energy function is rank-one convex.</p>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
+<div class="docutils container" id="id5">
+<div class="citation" id="id19" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">Bal76</a><span class="fn-bracket">]</span></span>
+<p>John M Ball. Convexity conditions and existence theorems in nonlinear elasticity. <em>Archive for rational mechanics and Analysis</em>, 63(4):337–403, 1976.</p>
+</div>
+<div class="citation" id="id112" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">DSYL02</a><span class="fn-bracket">]</span></span>
+<p>Socrates Dokos, Bruce H Smaill, Alistair A Young, and Ian J LeGrice. Shear properties of passive ventricular myocardium. <em>American Journal of Physiology-Heart and Circulatory Physiology</em>, 283(6):H2650–H2659, 2002.</p>
+</div>
+<div class="citation" id="id69" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">GultekinSH16</a><span class="fn-bracket">]</span></span>
+<p>Osman Gültekin, Gerhard Sommer, and Gerhard A Holzapfel. An orthotropic viscoelastic model for the passive myocardium: continuum basis and numerical treatment. <em>Computer methods in biomechanics and biomedical engineering</em>, 19(15):1647–1664, 2016.</p>
+</div>
+<div class="citation" id="id92" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">HO09</a><span class="fn-bracket">]</span></span>
+<p>Gerhard A Holzapfel and Ray W Ogden. Constitutive modelling of passive myocardium: a structurally based framework for material characterization. <em>Philosophical Transactions of the Royal Society of London A: Mathematical, Physical and Engineering Sciences</em>, 367(1902):3445–3475, 2009.</p>
+</div>
+<div class="citation" id="id7" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">L+82</a><span class="fn-bracket">]</span></span>
+<p>I Liu and others. On representations of anisotropic invariants. <em>International Journal of Engineering Science</em>, 20(10):1099–1109, 1982.</p>
+</div>
+<div class="citation" id="id11" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">Wan70</a><span class="fn-bracket">]</span></span>
+<p>C-C Wang. A new representation theorem for isotropic functions: an answer to professor gf smith's criticism of my papers on representations for isotropic functions. <em>Archive for Rational Mechanics and Analysis</em>, 36(3):166–197, 1970.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "finsberg/pulse",
+            ref: "main",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./docs"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="balance_laws.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Balance laws and transformations</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="incompressibility.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Incompressibility</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#general-requirements-for-the-strain-energy-density-function">General requirements for the strain-energy density function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Henrik Finsberg
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
