@@ -3,8 +3,8 @@
 
 title: pulse
 author: Henrik Finsberg
-logo: logo.png
-copyright: "2022"
+logo: docs/logo.png
+copyright: "2023"
 
 # Cache output from notebooks.
 # See https://jupyterbook.org/content/execute.html
@@ -23,7 +23,7 @@ launch_buttons:
 # Information about where the book exists on the web
 repository:
   url: https://github.com/finsberg/pulse # Online location of your book
-  path_to_book: docs # Optional path to your book, relative to the repository root
+  path_to_book: . # Optional path to your book, relative to the repository root
   branch: main # Which branch of the repository should be used when creating links (optional)
 
 # Add GitHub buttons to your book
@@ -34,7 +34,7 @@ html:
   extra_navbar: <a href="https://www.simula.no/research/projects/department-computational-physiology">Computational Physiology at Simula</a>
 
 bibtex_bibfiles:
-  - refs.bib
+  - docs/refs.bib
 
 sphinx:
   extra_extensions:

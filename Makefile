@@ -71,13 +71,6 @@ coverage: ## check code coverage quickly with the default Python
 	$(BROWSER) htmlcov/index.html
 
 docs: ## generate Sphinx HTML documentation, including API docs
-	rm -f docs/pulse.rst
-	rm -f docs/pulse.material.rst
-	rm -f docs/modules.rst
-	sphinx-apidoc -o docs pulse
-	for file in README.md CONTRIBUTING.md; do \
-		cp $$file docs/. ;\
-	done
 	jupytext demo/benchmark/problem1.py -o docs/problem1.ipynb --update
 	jupytext demo/benchmark/problem2.py -o docs/problem2.ipynb --update
 	jupytext demo/benchmark/problem3.py -o docs/problem3.ipynb --update
@@ -95,7 +88,7 @@ docs: ## generate Sphinx HTML documentation, including API docs
 	jupytext demo/simple_ellipsoid/simple_ellipsoid.py -o docs/simple_ellipsoid.ipynb --update
 	jupytext demo/unit_cube/unit_cube_demo.py -o docs/unit_cube_demo.ipynb --update
 	jupytext demo/unloading/demo_fixedpointunloader.py -o docs/demo_fixedpointunloader.ipynb --update
-	jupyter-book build docs
+	jupyter-book build .
 	# python -m http.server --directory docs/_build/html
 
 docs-html:

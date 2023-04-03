@@ -21,7 +21,7 @@ jobs:
             ~/.cache/instant
             ~/.cache/dijitso
             ~/.cache/pip
-            /__w/pulse/pulse/docs/_build/jupyter_execute
+            /__w/pulse/pulse/_build/jupyter_execute
           key: cache_v5
           restore-keys: |
             cache_v5
@@ -43,4 +43,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/_build/html
+          publish_dir: ./_build/html
