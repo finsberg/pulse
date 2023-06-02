@@ -42,11 +42,9 @@ plot = [
     "matplotlib",
 ]
 test = [
-    "black",
-    "flake8",
     "jupytext",
-    "mypy",
     "pytest",
+    "fenics-plotly",
     "pytest-cov",
     "pytest-env",
 ]
