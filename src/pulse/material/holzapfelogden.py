@@ -19,6 +19,7 @@ class HolzapfelOgden(Material):
        + \frac{a_f}{2 b_f} \left( e^{ b_f (I_{4f_0} - 1)_+^2} -1 \right)
        + \frac{a_s}{2 b_s} \left( e^{ b_s (I_{4s_0} - 1)_+^2} -1 \right)
        + \frac{a_fs}{2 b_fs} \left( e^{ b_fs I_{8fs}^2} -1 \right)
+
     where
 
     .. math::
@@ -27,12 +28,11 @@ class HolzapfelOgden(Material):
 
 
     .. rubric:: Reference
-
-    [1] Holzapfel, Gerhard A., and Ray W. Ogden.
-    "Constitutive modelling of passive myocardium:
-    a structurally based framework for material characterization.
-    "Philosophical Transactions of the Royal Society of London A:
-    Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.
+        [1] Holzapfel, Gerhard A., and Ray W. Ogden.
+        "Constitutive modelling of passive myocardium:
+        a structurally based framework for material characterization.
+        "Philosophical Transactions of the Royal Society of London A:
+        Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.
 
     """
     name = "holzapfel_ogden"

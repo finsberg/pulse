@@ -4,7 +4,6 @@
 format: jb-book
 root: README
 chapters:
-  - file: docs/INSTALL
   - file: docs/cardiac_mechanics_intro
     sections:
       - file: docs/kinematics
@@ -15,7 +14,7 @@ chapters:
       - file: docs/force_balance
       - file: docs/constitutive_relations
       - file: docs/implementation_details
-  - file: Examples
+  - file: docs/DEMO
     sections:
       - file: docs/problem1.ipynb
       - file: docs/problem2.ipynb

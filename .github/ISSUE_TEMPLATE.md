@@ -1,16 +1,16 @@
-## Expected Behavior
+**Expected Behavior**
 
 
-## Actual Behavior
+**Actual Behavior**
 
 
-## Steps to Reproduce the Problem
+**Steps to Reproduce the Problem**
 
   1.
-  1.
-  1.
+  2.
+  3.
 
-## Specifications
+**Specifications**
 
   - Version of pulse:
   - Version of FEniCS:
