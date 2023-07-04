@@ -103,7 +103,7 @@ class Material(ABC):
         n0=None,
         active_isotropy: _active_model.ActiveStressModels = _t,
         *args,
-        **kwargs
+        **kwargs,
     ):
         # Parameters
         self.parameters = self.__class__.default_parameters()

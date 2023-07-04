@@ -29,7 +29,7 @@ def dump_matrix_to_mtx(A: dolfin.PETScMatrix, filename: Path) -> None:
 
 class NonlinearProblem(dolfin.NonlinearProblem):
     def __init__(
-        self, J, F, bcs, output_matrix=False, output_matrix_path="output", **kwargs
+        self, J, F, bcs, output_matrix=False, output_matrix_path="output", **kwargs,
     ):
         super().__init__(**kwargs)
         self._J = J

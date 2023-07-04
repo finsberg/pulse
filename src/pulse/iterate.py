@@ -327,7 +327,7 @@ class Iterator(object):
     _control_types = (Function, dolfin.Function, Constant, dolfin.Constant)
 
     def __init__(
-        self, problem, control, target, old_states=None, old_controls=None, **params
+        self, problem, control, target, old_states=None, old_controls=None, **params,
     ):
         self.parameters = Iterator.default_parameters()
         self.parameters.update(params)

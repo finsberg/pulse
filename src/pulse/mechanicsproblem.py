@@ -64,7 +64,7 @@ def dirichlet_fix_base_directional(W, ffun, marker, direction=0):
 
 
 def cardiac_boundary_conditions(
-    geometry, pericardium_spring=0.0, base_spring=0.0, base_bc="fix_x", **kwargs
+    geometry, pericardium_spring=0.0, base_spring=0.0, base_bc="fix_x", **kwargs,
 ):
     msg = (
         "Cardiac boundary conditions can only be applied to a "

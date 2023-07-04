@@ -423,7 +423,7 @@ class FixedPointUnloader(MeshUnloader):
             # use cardiac_boundary_conditions function for mechanicsproblem
             # in make_solver_paramerters
             bcs = cardiac_boundary_conditions(
-                geometry=new_geometry, **self.problem.bcs_parameters
+                geometry=new_geometry, **self.problem.bcs_parameters,
             )
             problem = MechanicsProblem(
                 geometry=new_geometry,
