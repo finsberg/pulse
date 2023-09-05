@@ -17,7 +17,7 @@ repos:
       - id: black
 
   - repo: https://github.com/asottile/add-trailing-comma
-    rev: v3.0.1
+    rev: v3.1.0
     hooks:
       - id: add-trailing-comma
 
@@ -27,7 +27,7 @@ repos:
       - id: setup-cfg-fmt
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.0.286'
+    rev: 'v0.0.287'
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
