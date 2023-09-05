@@ -128,7 +128,7 @@ def I8(F, a0, b0, isochoric=False):
     if a0 is None or b0 is None:
         I8 = Constant(0.0)
     else:
-        F_ = IsochoricDeformationGradient(F) if isichoric else F
+        F_ = IsochoricDeformationGradient(F) if isochoric else F_
         I8 = inner(F_ * a0, F_ * b0)
     return I8
 
