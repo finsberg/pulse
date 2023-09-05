@@ -124,11 +124,12 @@ def I7(F, b0):
     return I5(F, b0)
 
 
-def I8(F, a0, b0):
+def I8(F, a0, b0, isochoric=False):
     if a0 is None or b0 is None:
         I8 = Constant(0.0)
     else:
-        I8 = inner(F * a0, F * b0)
+        F_ = IsochoricDeformationGradient(F) if isochoric else F
+        I8 = inner(F_ * a0, F_ * b0)
     return I8
 
 

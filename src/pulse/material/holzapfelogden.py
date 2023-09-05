@@ -210,7 +210,7 @@ class HolzapfelOgden(Material):
         I1 = kinematics.I1(F, isochoric=self.isochoric)
         I4f = kinematics.I4(F, self.f0, isochoric=self.isochoric)
         I4s = kinematics.I4(F, self.s0, isochoric=self.isochoric)
-        I8fs = kinematics.I8(F, self.f0, self.s0)
+        I8fs = kinematics.I8(F, self.f0, self.s0, isochoric=self.isochoric)
 
         if self.active_model == ActiveModels.active_strain:
             mgamma = 1 - self.activation_field
