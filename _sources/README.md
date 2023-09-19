@@ -37,7 +37,7 @@ conda install -c conda-forge pulse
 It is also possible to use Docker. There is a prebuilt docker image
 using the development version of FEniCS, python3.10 and pulse. You can get it by typing
 ```
-docker pull finsberg/pulse:latest
+docker pull ghcr.io/finsberg/pulse:latest
 ```
 
 ## Requirements
