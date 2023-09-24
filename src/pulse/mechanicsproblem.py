@@ -3,7 +3,11 @@ from dataclasses import dataclass
 from functools import partial
 
 import dolfin
-import ufl
+
+try:
+    import ufl_legacy as ufl
+except ImportError:
+    import ufl
 
 from . import Constant
 from . import DirichletBC

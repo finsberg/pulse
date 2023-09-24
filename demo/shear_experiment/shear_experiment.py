@@ -14,7 +14,11 @@ from pathlib import Path
 import dolfin
 import matplotlib.pyplot as plt
 import numpy as np
-import ufl
+
+try:
+    import ufl_legacy as ufl
+except ImportError:
+    import ufl
 import typing
 
 import pulse

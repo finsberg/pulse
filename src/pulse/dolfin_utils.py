@@ -1,6 +1,10 @@
 import dolfin
 import numpy as np
-import ufl
+
+try:
+    import ufl_legacy as ufl
+except ImportError:
+    import ufl
 
 from . import assemble
 from . import Constant
@@ -202,9 +206,7 @@ def get_constant(val, value_size=None, value_rank=0, constant=Constant):
 def get_dimesion(u):
     # TODO : Check argument
     try:
-        from ufl.domain import find_geometric_dimension
-
-        dim = find_geometric_dimension(u)
+        dim = ufl.domain.find_geometric_dimension(u)
 
     except ufl.UFLException as ex:
         try:
