@@ -31,7 +31,11 @@ from typing import Optional
 from typing import Union
 
 import dolfin
-import ufl
+
+try:
+    import ufl_legacy as ufl
+except ImportError:
+    import ufl
 
 from . import active_model as _active_model
 from .. import Constant
