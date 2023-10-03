@@ -22,12 +22,12 @@ repos:
       - id: add-trailing-comma
 
   - repo: https://github.com/asottile/setup-cfg-fmt
-    rev: v2.4.0
+    rev: v2.5.0
     hooks:
       - id: setup-cfg-fmt
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.0.290'
+    rev: 'v0.0.292'
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
