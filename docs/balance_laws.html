@@ -1,13 +1,12 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" >
+<html lang="en" data-content_root="../" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Balance laws and transformations &#8212; pulse</title>
   
@@ -19,53 +18,57 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509" />
-  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=bd9e20870c6007c4c509"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/clipboard.min.js"></script>
-    <script src="../_static/copybutton.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../_static/togglebutton.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="../_static/design-tabs.js"></script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
 const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
-    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=afe5de03"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'docs/balance_laws';</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Hyperelasticity" href="hyperalsticity.html" />
@@ -82,7 +85,6 @@ const thebe_selector_output = ".output, .cell_output"
   <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
   
   <div id="pst-scroll-pixel-helper"></div>
-
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>
@@ -122,20 +124,15 @@ const thebe_selector_output = ".output, .cell_output"
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
-
-  <header>
   
-    <div class="bd-header navbar navbar-expand-lg bd-navbar">
-    </div>
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    </header>
   
-  </header>
 
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
       
-      
-        
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -169,7 +166,18 @@ const thebe_selector_output = ".output, .cell_output"
   
   
 </a></div>
-        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
@@ -424,11 +432,11 @@ document.write(`
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="balance-laws-and-transformations">
-<h1>Balance laws and transformations<a class="headerlink" href="#balance-laws-and-transformations" title="Permalink to this heading">#</a></h1>
+<h1>Balance laws and transformations<a class="headerlink" href="#balance-laws-and-transformations" title="Link to this heading">#</a></h1>
 <p>In this section we will cover some basic transformations used to
 derive the fore-balance equations for the mechanics of the heart.</p>
 <section id="transformations-between-reference-and-current-configuration">
-<h2>Transformations between reference and current configuration<a class="headerlink" href="#transformations-between-reference-and-current-configuration" title="Permalink to this heading">#</a></h2>
+<h2>Transformations between reference and current configuration<a class="headerlink" href="#transformations-between-reference-and-current-configuration" title="Link to this heading">#</a></h2>
 <p>By definition, the reference configuration <span class="math notranslate nohighlight">\(\Omega\)</span>, and current
 configuration <span class="math notranslate nohighlight">\(\omega\)</span>, are related via the deformation map <span class="math notranslate nohighlight">\(\varphi\)</span> in the
 sense that a point <span class="math notranslate nohighlight">\(\mathfrak{p} \in \mathfrak{B}\)</span> with reference
@@ -444,7 +452,7 @@ configuration, <span class="math notranslate nohighlight">\(\mathrm{d}V\)</span>
 element in the current configuration, <span class="math notranslate nohighlight">\(\mathrm{d}v\)</span>  via the determinant of the
 deformation gradient,</p>
 <div class="math notranslate nohighlight" id="equation-volume-element">
-<span class="eqno">(3)<a class="headerlink" href="#equation-volume-element" title="Permalink to this equation">#</a></span>\[\begin{align}
+<span class="eqno">(3)<a class="headerlink" href="#equation-volume-element" title="Link to this equation">#</a></span>\[\begin{align}
   \mathrm{d}v =\mathrm{det} \; (\mathbf{F}) \mathrm{d}V.
 \end{align}\]</div>
 <p>Another important transformation is the transformation of normal
@@ -458,19 +466,19 @@ surface elements</p>
 \end{align*}\end{split}\]</div>
 <p>we get <em>Nanson’s formula</em></p>
 <div class="math notranslate nohighlight" id="equation-docs-balance-laws-0">
-<span class="eqno">(4)<a class="headerlink" href="#equation-docs-balance-laws-0" title="Permalink to this equation">#</a></span>\[\begin{align}
+<span class="eqno">(4)<a class="headerlink" href="#equation-docs-balance-laws-0" title="Link to this equation">#</a></span>\[\begin{align}
   \mathrm{d}s \mathbf{n}  =  \mathrm{det} \; (\mathbf{F}) \mathbf{F}^{-T} \mathrm{d}S \mathbf{N},
 \end{align}\]</div>
 <p>which relates the normal vector in the current configuration to the
 normal vector in the reference configuration.</p>
 </section>
 <section id="conservation-of-linear-momentum">
-<h2>Conservation of linear momentum<a class="headerlink" href="#conservation-of-linear-momentum" title="Permalink to this heading">#</a></h2>
+<h2>Conservation of linear momentum<a class="headerlink" href="#conservation-of-linear-momentum" title="Link to this heading">#</a></h2>
 <p>Newton’s seconds law states that the change in linear momentum equals
 the net impulse acting on it. For a continuum material with constant
 mass density <span class="math notranslate nohighlight">\(\rho\)</span> this implies that</p>
 <div class="math notranslate nohighlight" id="equation-cons-lin-mom">
-<span class="eqno">(5)<a class="headerlink" href="#equation-cons-lin-mom" title="Permalink to this equation">#</a></span>\[\begin{align}
+<span class="eqno">(5)<a class="headerlink" href="#equation-cons-lin-mom" title="Link to this equation">#</a></span>\[\begin{align}
   \int_{\omega} \rho \dot{\mathbf{v}} \mathrm{d}v = \mathbf{f},
   &amp;&amp; \mathbf{f} = \int_{\partial \omega} \mathbf{t} \mathrm{d}s
      + \int_{\omega} \mathbf{b} \mathrm{d}v,
@@ -491,7 +499,7 @@ Using the divergence theorem we get</p>
 <p>and by collecting the terms from <a class="reference internal" href="#equation-cons-lin-mom">(5)</a> we arrive at
 Cauchy’s momentum equation</p>
 <div class="math notranslate nohighlight" id="equation-chauch-momentum-eq">
-<span class="eqno">(6)<a class="headerlink" href="#equation-chauch-momentum-eq" title="Permalink to this equation">#</a></span>\[\begin{align}
+<span class="eqno">(6)<a class="headerlink" href="#equation-chauch-momentum-eq" title="Link to this equation">#</a></span>\[\begin{align}
   \nabla \cdot \sigma + \mathbf{b} =  \rho \dot{\mathbf{v}}.
 \end{align}\]</div>
 <p>The contribution from the body force (<span class="math notranslate nohighlight">\(\mathbf{b}\)</span>)  and inertial term
@@ -499,7 +507,7 @@ Cauchy’s momentum equation</p>
 <span id="id1">[<a class="reference internal" href="#id102" title="KD Costa, PJ Hunter, JM Rogers, Julius M Guccione, LK Waldman, and Andrew D McCulloch. A three-dimensional finite element method for large elastic deformations of ventricular myocardium: i—cylindrical and spherical polar coordinates. Journal of biomechanical engineering, 118(4):452–463, 1996.">Costa <em>et al.</em>, 1996</a>, <a class="reference internal" href="#id17" title="Samuel E Moskowitz. Effects of inertia and viscoelasticity in late rapid filling of the left ventricle. Journal of biomechanics, 14(6):443–445, 1981.">Moskowitz, 1981</a>, <a class="reference internal" href="#id103" title="Ronald J Tallarida, Ben F Rusy, and Michael H Loughnane. Left ventricular wall acceleration and the law of laplace. Cardiovascular research, 4(2):217–223, 1970.">Tallarida <em>et al.</em>, 1970</a>]</span>, which is
 why the force balance equations is typically only stated as</p>
 <div class="math notranslate nohighlight" id="equation-docs-balance-laws-1">
-<span class="eqno">(7)<a class="headerlink" href="#equation-docs-balance-laws-1" title="Permalink to this equation">#</a></span>\[\begin{align}
+<span class="eqno">(7)<a class="headerlink" href="#equation-docs-balance-laws-1" title="Link to this equation">#</a></span>\[\begin{align}
   \nabla \cdot \sigma = \mathbf{0}.
   \label{momentum_simple_current}
 \end{align}\]</div>
@@ -507,7 +515,7 @@ why the force balance equations is typically only stated as</p>
 configuration. An equivalent statement can be formulated in terms of
 the reference configuration</p>
 <div class="math notranslate nohighlight" id="equation-docs-balance-laws-2">
-<span class="eqno">(8)<a class="headerlink" href="#equation-docs-balance-laws-2" title="Permalink to this equation">#</a></span>\[\begin{align}
+<span class="eqno">(8)<a class="headerlink" href="#equation-docs-balance-laws-2" title="Link to this equation">#</a></span>\[\begin{align}
   \nabla \cdot \mathbf{P} = \mathbf{0},
   \label{momentum_simple_reference}
 \end{align}\]</div>
@@ -519,18 +527,19 @@ tensor represent differentiation with respect to coordinates in the
 reference configuration.</p>
 </section>
 <section id="conservation-of-angular-momentum">
-<h2>Conservation of angular momentum<a class="headerlink" href="#conservation-of-angular-momentum" title="Permalink to this heading">#</a></h2>
+<h2>Conservation of angular momentum<a class="headerlink" href="#conservation-of-angular-momentum" title="Link to this heading">#</a></h2>
 <p>Just like linear momentum, the angular momentum is also a conserved
 quantity. We will not go through the derivation, but state that as a
 consequence, the Cauchy stress tensor is symmetric</p>
 <div class="math notranslate nohighlight" id="equation-docs-balance-laws-3">
-<span class="eqno">(9)<a class="headerlink" href="#equation-docs-balance-laws-3" title="Permalink to this equation">#</a></span>\[\begin{align}
+<span class="eqno">(9)<a class="headerlink" href="#equation-docs-balance-laws-3" title="Link to this equation">#</a></span>\[\begin{align}
   \sigma = \sigma^T.
 \end{align}\]</div>
 </section>
 <section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
 <div class="docutils container" id="id2">
+<div role="list" class="citation-list">
 <div class="citation" id="id102" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">CHR+96</a><span class="fn-bracket">]</span></span>
 <p>KD Costa, PJ Hunter, JM Rogers, Julius M Guccione, LK Waldman, and Andrew D McCulloch. A three-dimensional finite element method for large elastic deformations of ventricular myocardium: i—cylindrical and spherical polar coordinates. <em>Journal of biomechanical engineering</em>, 118(4):452–463, 1996.</p>
@@ -664,8 +673,8 @@ By Henrik Finsberg
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
 
   <footer class="bd-footer">
   </footer>
