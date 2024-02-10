@@ -35,6 +35,7 @@ class HolzapfelOgden(Material):
         Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.
 
     """
+
     name = "holzapfel_ogden"
 
     @staticmethod

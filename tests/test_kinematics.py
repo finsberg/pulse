@@ -89,9 +89,7 @@ def test_I1(F_dict, F_str):
     F = F_dict[F_str]
     c = 0 if "2D" in F_str else C
     # Trace of F**2
-    assert (
-        abs(df.assemble(kinematics.I1(F) * df.dx) - (A**2 + B**2 + c**2)) < 1e-12
-    )
+    assert abs(df.assemble(kinematics.I1(F) * df.dx) - (A**2 + B**2 + c**2)) < 1e-12
 
 
 @pytest.mark.parametrize("F_str", ["F_2D_Real", "F_2D_CG1", "F_3D_Real", "F_3D_CG1"])
@@ -185,6 +183,4 @@ def test_I8xy(F_dict, F_str):
         x = df.as_vector([1, 0, 0])
         y = df.as_vector([0, 1, 0])
 
-    assert (
-        abs(df.assemble(kinematics.I8(F, x, y) * df.dx) - (A**2 * 0 + 0 * B)) < 1e-12
-    )
+    assert abs(df.assemble(kinematics.I8(F, x, y) * df.dx) - (A**2 * 0 + 0 * B)) < 1e-12
