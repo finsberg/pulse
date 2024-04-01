@@ -28,7 +28,7 @@ geometry = pulse.HeartGeometry.from_file(pulse.mesh_paths["benchmark"])
 
 # Create the material
 material_parameters = pulse.Guccione.default_parameters()
-material_parameters["CC"] = 10.0
+material_parameters["C"] = 10.0
 material_parameters["bf"] = 1.0
 material_parameters["bfs"] = 1.0
 material_parameters["bt"] = 1.0
