@@ -17,14 +17,20 @@ except ImportError:
     from dolfin import DirichletBC, Constant, interpolate, Mesh
 
 import pulse
+import cardiac_geometries as cg
 from fenics_plotly import plot
 
-here = Path(__file__).absolute().parent
 
-
-geometry = pulse.HeartGeometry.from_file(pulse.mesh_paths["benchmark"])
-# geometry = pulse.geometries.benchmark_ellipsoid_geometry()
-
+geo_path = Path("geometry")
+if not geo_path.is_dir():
+    cg.create_benchmark_geometry_land15(outdir=geo_path)
+geo = cg.geometry.Geometry.from_folder(geo_path)
+geometry = pulse.HeartGeometry(
+    mesh=geo.mesh,
+    markers=geo.markers,
+    marker_functions=pulse.MarkerFunctions(vfun=geo.vfun, ffun=geo.ffun),
+    microstructure=pulse.Microstructure(f0=geo.f0, s0=geo.s0, n0=geo.n0),
+)
 
 # Create the material
 material_parameters = pulse.Guccione.default_parameters()
