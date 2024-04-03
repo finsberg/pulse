@@ -17,18 +17,24 @@ except ImportError:
     from dolfin import DirichletBC, Constant, interpolate, Mesh
 
 import pulse
+import cardiac_geometries as cg
 from fenics_plotly import plot
 
-here = Path(__file__).absolute().parent
 
-
-geometry = pulse.HeartGeometry.from_file(pulse.mesh_paths["benchmark"])
-# geometry = pulse.geometries.benchmark_ellipsoid_geometry()
-
+geo_path = Path("geometry")
+if not geo_path.is_dir():
+    cg.create_benchmark_geometry_land15(outdir=geo_path)
+geo = cg.geometry.Geometry.from_folder(geo_path)
+geometry = pulse.HeartGeometry(
+    mesh=geo.mesh,
+    markers=geo.markers,
+    marker_functions=pulse.MarkerFunctions(vfun=geo.vfun, ffun=geo.ffun),
+    microstructure=pulse.Microstructure(f0=geo.f0, s0=geo.s0, n0=geo.n0),
+)
 
 # Create the material
 material_parameters = pulse.Guccione.default_parameters()
-material_parameters["CC"] = 10.0
+material_parameters["C"] = 10.0
 material_parameters["bf"] = 1.0
 material_parameters["bfs"] = 1.0
 material_parameters["bt"] = 1.0
@@ -63,7 +69,7 @@ pulse.iterate.iterate(problem, lvp, 10.0, initial_number_of_steps=200)
 # Get displacement and hydrostatic pressure
 u, p = problem.state.split(deepcopy=True)
 
-endo_apex_marker = geometry.markers["APEX_ENDO"][0]
+endo_apex_marker = geometry.markers["ENDOPT"][0]
 endo_apex_idx = geometry.vfun.array().tolist().index(endo_apex_marker)
 endo_apex = geometry.mesh.coordinates()[endo_apex_idx, :]
 endo_apex_pos = endo_apex + u(endo_apex)
@@ -75,7 +81,7 @@ print(
 )
 
 
-epi_apex_marker = geometry.markers["APEX_EPI"][0]
+epi_apex_marker = geometry.markers["EPIPT"][0]
 epi_apex_idx = geometry.vfun.array().tolist().index(epi_apex_marker)
 epi_apex = geometry.mesh.coordinates()[epi_apex_idx, :]
 epi_apex_pos = epi_apex + u(epi_apex)

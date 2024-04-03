@@ -47,6 +47,7 @@ test = [
     "fenics-plotly",
     "pytest-cov",
     "pytest-env",
+    "cardiac-geometries>=1.1.2"
 ]
 all = [
    "fenics-pulse[test]",
