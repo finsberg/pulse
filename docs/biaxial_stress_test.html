@@ -14,19 +14,19 @@
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
@@ -34,12 +34,12 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
-  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
@@ -52,7 +52,7 @@
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
     <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
@@ -72,27 +72,23 @@
 
   
   
-  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
@@ -114,8 +110,13 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
     </header>
   
 
@@ -178,7 +179,7 @@
             </li>
         </ul>
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="cardiac_mechanics_intro.html">Cardiac Mechanics</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="cardiac_mechanics_intro.html">Cardiac Mechanics</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="kinematics.html">Kinematics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="balance_laws.html">Balance laws and transformations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="hyperalsticity.html">Hyperelasticity</a></li>
@@ -187,9 +188,9 @@
 <li class="toctree-l2"><a class="reference internal" href="force_balance.html">Force-balance equation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="constitutive_relations.html">Constitutive relations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="implementation_details.html">Implementation details</a></li>
-</ul>
-</li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="DEMO.html">Demos</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+</ul><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="DEMO.html">Demos</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="problem1.html">Cardiac mechanics Benchmark - Problem 1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="problem2.html">Cardiac mechanics Benchmark - Problem 2</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Biaxial stress test</a></li>
@@ -205,8 +206,8 @@
 <li class="toctree-l2"><a class="reference internal" href="simple_ellipsoid.html">Simple ellipsoid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_cube_demo.html">Contracting cube</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo_fixedpointunloader.html">Finding the unloaded geometry</a></li>
-</ul>
-</li>
+</ul><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary>
+</details></li>
 <li class="toctree-l1"><a class="reference internal" href="../CONTRIBUTING.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">pulse package</a></li>
 
@@ -225,7 +226,7 @@
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
 
@@ -234,7 +235,7 @@
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
@@ -708,366 +709,366 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:24,657 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:23,508 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:24,658 [284] INFO     pulse.iterate: Current control: f_31 = 0.000
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:23,509 [285] INFO     pulse.iterate: Current control: f_31 = 0.000
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:24,658 [284] INFO     pulse.iterate: Target: 0.000
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:23,509 [285] INFO     pulse.iterate: Target: 0.000
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:24,789 [284] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:23,637 [285] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:24,790 [284] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:23,638 [285] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:24,791 [284] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:23,638 [285] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:24,791 [284] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:23,639 [285] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:24,792 [284] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:23,639 [285] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:24,792 [284] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:23,639 [285] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:24,971 [284] DEBUG    UFL_LEGACY: Blocks of each mode: 
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:23,817 [285] DEBUG    UFL_LEGACY: Blocks of each mode: 
   1	full
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:35,678 [284] DEBUG    UFL_LEGACY: Blocks of each mode: 
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:34,395 [285] DEBUG    UFL_LEGACY: Blocks of each mode: 
   1	full
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:36,157 [284] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:34,860 [285] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:36,157 [284] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:34,861 [285] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:36,158 [284] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:34,861 [285] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:36,158 [284] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:34,862 [285] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:36,159 [284] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:34,862 [285] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:36,159 [284] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:34,863 [285] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:36,383 [284] DEBUG    UFL_LEGACY: Blocks of each mode: 
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:35,074 [285] DEBUG    UFL_LEGACY: Blocks of each mode: 
   1	full
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:37,008 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:35,690 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:37,009 [284] INFO     pulse.iterate: Current control: f_31 = 0.000
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:35,691 [285] INFO     pulse.iterate: Current control: f_31 = 0.000
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:37,009 [284] INFO     pulse.iterate: Target: 0.011
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:35,691 [285] INFO     pulse.iterate: Target: 0.011
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:37,066 [284] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:35,746 [285] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:37,066 [284] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:35,746 [285] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:37,067 [284] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:35,747 [285] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:37,067 [284] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:35,747 [285] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:37,068 [284] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:35,748 [285] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:37,068 [284] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:35,748 [285] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:53:37,541 [284] DEBUG    UFL_LEGACY: Blocks of each mode: 
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:22:36,213 [285] DEBUG    UFL_LEGACY: Blocks of each mode: 
   99	full
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:28,545 [284] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:26,733 [285] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:28,546 [284] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:26,733 [285] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:28,546 [284] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:26,734 [285] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:28,547 [284] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:26,735 [285] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:28,547 [284] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:26,735 [285] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:28,548 [284] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:26,736 [285] INFO     UFL_LEGACY: Adjusting missing element cell to tetrahedron.
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:28,688 [284] DEBUG    UFL_LEGACY: Blocks of each mode: 
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:26,872 [285] DEBUG    UFL_LEGACY: Blocks of each mode: 
   10	full
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:29,996 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:28,172 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:29,997 [284] INFO     pulse.iterate: Current control: f_31 = 0.011
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:28,173 [285] INFO     pulse.iterate: Current control: f_31 = 0.011
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:29,997 [284] INFO     pulse.iterate: Target: 0.022
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:28,173 [285] INFO     pulse.iterate: Target: 0.022
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:30,617 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:28,783 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:30,618 [284] INFO     pulse.iterate: Current control: f_31 = 0.022
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:28,783 [285] INFO     pulse.iterate: Current control: f_31 = 0.022
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:30,618 [284] INFO     pulse.iterate: Target: 0.033
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:28,784 [285] INFO     pulse.iterate: Target: 0.033
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:31,245 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:29,397 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:31,245 [284] INFO     pulse.iterate: Current control: f_31 = 0.033
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:29,398 [285] INFO     pulse.iterate: Current control: f_31 = 0.033
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:31,246 [284] INFO     pulse.iterate: Target: 0.044
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:29,398 [285] INFO     pulse.iterate: Target: 0.044
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:31,867 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:30,013 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:31,868 [284] INFO     pulse.iterate: Current control: f_31 = 0.044
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:30,013 [285] INFO     pulse.iterate: Current control: f_31 = 0.044
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:31,868 [284] INFO     pulse.iterate: Target: 0.056
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:30,014 [285] INFO     pulse.iterate: Target: 0.056
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:32,487 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:30,626 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:32,487 [284] INFO     pulse.iterate: Current control: f_31 = 0.056
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:30,627 [285] INFO     pulse.iterate: Current control: f_31 = 0.056
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:32,488 [284] INFO     pulse.iterate: Target: 0.067
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:30,628 [285] INFO     pulse.iterate: Target: 0.067
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:33,113 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:31,238 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:33,113 [284] INFO     pulse.iterate: Current control: f_31 = 0.067
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:31,239 [285] INFO     pulse.iterate: Current control: f_31 = 0.067
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:33,114 [284] INFO     pulse.iterate: Target: 0.078
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:31,239 [285] INFO     pulse.iterate: Target: 0.078
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:33,734 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:31,853 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:33,735 [284] INFO     pulse.iterate: Current control: f_31 = 0.078
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:31,854 [285] INFO     pulse.iterate: Current control: f_31 = 0.078
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:33,735 [284] INFO     pulse.iterate: Target: 0.089
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:31,855 [285] INFO     pulse.iterate: Target: 0.089
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:34,356 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:32,469 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:34,357 [284] INFO     pulse.iterate: Current control: f_31 = 0.089
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:32,470 [285] INFO     pulse.iterate: Current control: f_31 = 0.089
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:34,357 [284] INFO     pulse.iterate: Target: 0.100
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:32,470 [285] INFO     pulse.iterate: Target: 0.100
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:35,041 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:33,145 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:35,042 [284] INFO     pulse.iterate: Current control: f_31 = 0.100
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:33,146 [285] INFO     pulse.iterate: Current control: f_31 = 0.100
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:35,042 [284] INFO     pulse.iterate: Target: 0.000
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:33,146 [285] INFO     pulse.iterate: Target: 0.000
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:35,916 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:34,017 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:35,916 [284] INFO     pulse.iterate: Current control: f_31 = 0.000
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:34,018 [285] INFO     pulse.iterate: Current control: f_31 = 0.000
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:35,917 [284] INFO     pulse.iterate: Target: 0.017
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:34,018 [285] INFO     pulse.iterate: Target: 0.017
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:36,540 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:34,627 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:36,540 [284] INFO     pulse.iterate: Current control: f_31 = 0.017
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:34,628 [285] INFO     pulse.iterate: Current control: f_31 = 0.017
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:36,541 [284] INFO     pulse.iterate: Target: 0.033
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:34,628 [285] INFO     pulse.iterate: Target: 0.033
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:37,165 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:35,241 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:37,166 [284] INFO     pulse.iterate: Current control: f_31 = 0.033
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:35,242 [285] INFO     pulse.iterate: Current control: f_31 = 0.033
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:37,166 [284] INFO     pulse.iterate: Target: 0.050
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:35,243 [285] INFO     pulse.iterate: Target: 0.050
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:37,786 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:35,854 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:37,787 [284] INFO     pulse.iterate: Current control: f_31 = 0.050
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:35,855 [285] INFO     pulse.iterate: Current control: f_31 = 0.050
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:37,788 [284] INFO     pulse.iterate: Target: 0.067
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:35,856 [285] INFO     pulse.iterate: Target: 0.067
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:38,433 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:36,469 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:38,434 [284] INFO     pulse.iterate: Current control: f_31 = 0.067
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:36,470 [285] INFO     pulse.iterate: Current control: f_31 = 0.067
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:38,434 [284] INFO     pulse.iterate: Target: 0.083
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:36,470 [285] INFO     pulse.iterate: Target: 0.083
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:39,060 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:37,082 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:39,061 [284] INFO     pulse.iterate: Current control: f_31 = 0.083
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:37,082 [285] INFO     pulse.iterate: Current control: f_31 = 0.083
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:39,061 [284] INFO     pulse.iterate: Target: 0.100
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:37,083 [285] INFO     pulse.iterate: Target: 0.100
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:39,682 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:37,693 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:39,682 [284] INFO     pulse.iterate: Current control: f_31 = 0.100
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:37,694 [285] INFO     pulse.iterate: Current control: f_31 = 0.100
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:39,683 [284] INFO     pulse.iterate: Target: 0.117
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:37,694 [285] INFO     pulse.iterate: Target: 0.117
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:40,299 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:38,311 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:40,300 [284] INFO     pulse.iterate: Current control: f_31 = 0.117
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:38,311 [285] INFO     pulse.iterate: Current control: f_31 = 0.117
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:40,301 [284] INFO     pulse.iterate: Target: 0.133
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:38,312 [285] INFO     pulse.iterate: Target: 0.133
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:40,920 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:38,927 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:40,921 [284] INFO     pulse.iterate: Current control: f_31 = 0.133
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:38,927 [285] INFO     pulse.iterate: Current control: f_31 = 0.133
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:40,921 [284] INFO     pulse.iterate: Target: 0.150
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:38,928 [285] INFO     pulse.iterate: Target: 0.150
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:41,607 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:39,604 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:41,608 [284] INFO     pulse.iterate: Current control: f_31 = 0.150
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:39,605 [285] INFO     pulse.iterate: Current control: f_31 = 0.150
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:41,608 [284] INFO     pulse.iterate: Target: 0.000
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:39,605 [285] INFO     pulse.iterate: Target: 0.000
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:42,481 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:40,471 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:42,482 [284] INFO     pulse.iterate: Current control: f_31 = 0.000
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:40,472 [285] INFO     pulse.iterate: Current control: f_31 = 0.000
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:42,483 [284] INFO     pulse.iterate: Target: 0.011
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:40,472 [285] INFO     pulse.iterate: Target: 0.011
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:43,105 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:41,085 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:43,106 [284] INFO     pulse.iterate: Current control: f_31 = 0.011
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:41,085 [285] INFO     pulse.iterate: Current control: f_31 = 0.011
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:43,106 [284] INFO     pulse.iterate: Target: 0.022
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:41,086 [285] INFO     pulse.iterate: Target: 0.022
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:43,723 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:41,697 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:43,724 [284] INFO     pulse.iterate: Current control: f_31 = 0.022
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:41,698 [285] INFO     pulse.iterate: Current control: f_31 = 0.022
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:43,724 [284] INFO     pulse.iterate: Target: 0.033
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:41,698 [285] INFO     pulse.iterate: Target: 0.033
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:44,342 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:42,308 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:44,343 [284] INFO     pulse.iterate: Current control: f_31 = 0.033
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:42,309 [285] INFO     pulse.iterate: Current control: f_31 = 0.033
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:44,344 [284] INFO     pulse.iterate: Target: 0.044
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:42,309 [285] INFO     pulse.iterate: Target: 0.044
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:44,969 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:42,920 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:44,970 [284] INFO     pulse.iterate: Current control: f_31 = 0.044
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:42,921 [285] INFO     pulse.iterate: Current control: f_31 = 0.044
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:44,970 [284] INFO     pulse.iterate: Target: 0.056
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:42,922 [285] INFO     pulse.iterate: Target: 0.056
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:45,593 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:43,537 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:45,593 [284] INFO     pulse.iterate: Current control: f_31 = 0.056
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:43,537 [285] INFO     pulse.iterate: Current control: f_31 = 0.056
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:45,594 [284] INFO     pulse.iterate: Target: 0.067
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:43,538 [285] INFO     pulse.iterate: Target: 0.067
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:46,213 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:44,151 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:46,214 [284] INFO     pulse.iterate: Current control: f_31 = 0.067
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:44,151 [285] INFO     pulse.iterate: Current control: f_31 = 0.067
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:46,215 [284] INFO     pulse.iterate: Target: 0.078
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:44,152 [285] INFO     pulse.iterate: Target: 0.078
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:46,832 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:44,763 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:46,832 [284] INFO     pulse.iterate: Current control: f_31 = 0.078
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:44,764 [285] INFO     pulse.iterate: Current control: f_31 = 0.078
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:46,833 [284] INFO     pulse.iterate: Target: 0.089
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:44,765 [285] INFO     pulse.iterate: Target: 0.089
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:47,456 [284] INFO     pulse.iterate: Iterating to target control (f_31)...
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:45,378 [285] INFO     pulse.iterate: Iterating to target control (f_31)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:47,457 [284] INFO     pulse.iterate: Current control: f_31 = 0.089
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:45,379 [285] INFO     pulse.iterate: Current control: f_31 = 0.089
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-05-16 07:54:47,458 [284] INFO     pulse.iterate: Target: 0.100
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-06-08 18:23:45,379 [285] INFO     pulse.iterate: Target: 0.100
 </pre></div>
 </div>
 </div>
@@ -1124,7 +1125,7 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
               
               
               
-                <footer class="prev-next-footer">
+                <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
     <a class="left-prev"
@@ -1151,8 +1152,6 @@ Mathematical, Physical and Engineering Sciences 367.1902 (2009): 3445-3475.</p>
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"></div>
               
             
           </div>
@@ -1197,8 +1196,8 @@ By Henrik Finsberg
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
 
   <footer class="bd-footer">
   </footer>
