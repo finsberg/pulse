@@ -11,6 +11,7 @@ from .utils import mpi_comm_world
 
 
 def gather_vector(u, size=None):
+    return u
     comm = mpi_comm_world()
 
     if size is None:
