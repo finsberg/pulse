@@ -513,16 +513,9 @@ class Iterator(object):
 
     def increment_control(self):
         for c, s in zip(self.control, self.step):
-            # if isinstance(s, (dolfin.Function, Function))
             if isinstance(c, (dolfin.Function, Function)):
-                # c_arr = numpy_mpi.gather_vector(c.vector(), c.function_space().dim())
-                # c_tmp = Function(c.function_space())
-                # c_tmp.vector().set_local(np.array(c_arr + s))
-                # c_tmp.vector().apply("")
-                # c.assign(c_tmp)
                 c.vector()[:] += s
             else:
-                c_arr = c
                 c.assign(Constant(constant2float(c) + s))
 
         if self.parameters["reinit_each_step"]:
