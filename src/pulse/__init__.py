@@ -15,7 +15,7 @@ from dolfin import project
 
 meta = metadata("fenics-pulse")
 __version__ = meta["Version"]
-__author__ = meta["Author"]
+__author__ = meta["Author-email"]
 __license__ = meta["License"]
 __email__ = meta["Author-email"]
 __program_name__ = meta["Name"]
@@ -150,11 +150,6 @@ ufl_logger = _logging.getLogger("UFL")
 ufl_logger.setLevel(_logging.FATAL)
 ufl_logger.addFilter(utils.mpi_filt)
 
-__author__ = "Henrik Finsberg"
-__credits__ = ["Henrik Finsberg"]
-__license__ = "LGPL-3.0-or-later"
-__maintainer__ = "Henrik Finsberg"
-__email__ = "henriknf@simula.no"
 
 __all__ = [
     "annotation",
@@ -216,9 +211,3 @@ __all__ = [
     "DirichletBC",
     "as_backend_type",
 ]
-
-__author__ = "Henrik Finsberg"
-__credits__ = ["Henrik Finsberg"]
-__license__ = "LGPL-3"
-__maintainer__ = "Henrik Finsberg"
-__email__ = "henriknf@simula.no"
