@@ -167,8 +167,8 @@ class NonlinearSolver:
             logger.debug(f"Resiudal      : {residuals[-1]}")
 
         return num_iterations, self._snes.converged
-    
+
     def __del__(self):
-        # Clean up the solver resources 
+        # Clean up the solver resources
         # to avoid memory leaks
         self._snes.destroy()
