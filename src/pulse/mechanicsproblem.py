@@ -75,7 +75,7 @@ def cardiac_boundary_conditions(
     **kwargs,
 ):
     msg = "Cardiac boundary conditions can only be applied to a HeartGeometry got {}".format(
-        type(geometry)
+        type(geometry),
     )
     assert isinstance(geometry, HeartGeometry), msg
 
