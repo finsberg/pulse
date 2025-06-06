@@ -11,32 +11,7 @@ from .utils import mpi_comm_world
 
 
 def gather_vector(u, size=None):
-    comm = mpi_comm_world()
-
-    if size is None:
-        # size = int(MPI.size(comm) * MPI.sum(comm, u.size()))
-        size = int(MPI.sum(comm, u.size()))
-
-    # From this post: https://fenicsproject.discourse.group/t/gather-function-in-parallel-error/1114/4
-    u_vec = dolfin.Vector(comm, size)
-    # Values from everywhere on 0
-    u_vec = u.gather_on_zero()
-    # To everywhere from 0
-    try:
-        mine = comm.bcast(u_vec)
-    except AttributeError:
-        comm = comm.tompi4py()
-        mine = comm.bcast(u_vec)
-
-    # Reconstruct
-    if comm.rank == 0:
-        x = u_vec
-    else:
-        v = dolfin.Vector(MPI.comm_self, size)
-        v.set_local(mine)
-        x = v.get_local()
-
-    return x
+    return u
 
 
 def compile_extension_module(cpp_code, **kwargs):
