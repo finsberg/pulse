@@ -74,9 +74,8 @@ def cardiac_boundary_conditions(
     base_bc="fix_x",
     **kwargs,
 ):
-    msg = (
-        "Cardiac boundary conditions can only be applied to a "
-        "HeartGeometry got {}".format(type(geometry))
+    msg = "Cardiac boundary conditions can only be applied to a HeartGeometry got {}".format(
+        type(geometry),
     )
     assert isinstance(geometry, HeartGeometry), msg
 
@@ -188,7 +187,7 @@ class MechanicsProblem(object):
                     self.bcs_parameters.update(**bcs_parameters)
             else:
                 raise ValueError(
-                    ("Please provide boundary conditions " "to MechanicsProblem"),
+                    ("Please provide boundary conditions to MechanicsProblem"),
                 )
 
             self.bcs = cardiac_boundary_conditions(self.geometry, **self.bcs_parameters)
@@ -254,6 +253,11 @@ class MechanicsProblem(object):
         self._init_solver()
 
     def _init_solver(self):
+        if hasattr(self, "_dirichlet_bc"):
+            bcs = self._dirichlet_bc
+        else:
+            bcs = None
+
         if has_dolfin_adjoint:
             from dolfin_adjoint import (
                 NonlinearVariationalProblem,
@@ -264,14 +268,14 @@ class MechanicsProblem(object):
                 J=self._jacobian,
                 F=self._virtual_work,
                 u=self.state,
-                bcs=self._dirichlet_bc,
+                bcs=bcs,
             )
             self.solver = NonlinearVariationalSolver(self._problem)
         else:
             self._problem = NonlinearProblem(
                 J=self._jacobian,
                 F=self._virtual_work,
-                bcs=self._dirichlet_bc,
+                bcs=bcs,
             )
             self.solver = NonlinearSolver(
                 self._problem,

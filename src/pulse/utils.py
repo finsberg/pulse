@@ -87,6 +87,8 @@ class Enlisted(tuple):
 
 
 def enlist(x, force_enlist=False):
+    if x is None:
+        return Enlisted([])
     if isinstance(x, Enlisted):
         return x
     elif isinstance(x, (list, tuple, np.ndarray)):
