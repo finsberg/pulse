@@ -79,7 +79,10 @@ class NonlinearSolver:
         self._state = state
 
         self._solver = dolfin.PETScSNESSolver(mpi_comm_world())
-        self._solver.set_from_options()
+        try:
+            self._solver.set_from_options()
+        except RuntimeError:
+            logger.warning("Unable to set PETSc options")
 
         self._solver.parameters.update(self.parameters)
         self._snes = self._solver.snes()
