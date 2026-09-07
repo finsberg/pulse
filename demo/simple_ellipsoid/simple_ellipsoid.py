@@ -6,7 +6,6 @@ from fenics_plotly import plot
 
 import pulse
 
-
 try:
     from dolfin_adjoint import Constant, DirichletBC, Function, Mesh, interpolate
 except ImportError:

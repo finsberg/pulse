@@ -12,7 +12,6 @@ from dolfin import interpolate
 from dolfin import Mesh
 from dolfin import project
 
-
 meta = metadata("fenics-pulse")
 __version__ = meta["Version"]
 __author__ = meta["Author-email"]
