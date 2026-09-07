@@ -2,6 +2,7 @@
 """These functions are copied from
 cbcpost https://bitbucket.org/simula_cbc/cbcpost
 """
+
 import dolfin
 import numpy as np
 from dolfin import MPI
