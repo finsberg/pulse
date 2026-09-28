@@ -31,7 +31,6 @@ except ImportError:
 import pulse
 from fenics_plotly import plot
 
-
 pulse.iterate.logger.setLevel(10)
 
 # Create mesh
