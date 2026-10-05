@@ -34,7 +34,6 @@ except ImportError:
 
 import pulse
 
-
 # Create mesh
 N = 4
 mesh = UnitCubeMesh(N, N, N)
