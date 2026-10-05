@@ -20,7 +20,6 @@ import pulse
 import cardiac_geometries as cg
 from fenics_plotly import plot
 
-
 geo_path = Path("geometry")
 if not geo_path.is_dir():
     cg.create_benchmark_geometry_land15(outdir=geo_path)
