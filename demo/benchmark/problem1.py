@@ -25,7 +25,6 @@ except ImportError:
 import pulse
 from fenics_plotly import plot
 
-
 # Create the Beam geometry
 
 # Length
